@@ -1,0 +1,20 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-dark: #15161b;
+  --color-dark-alt: #131313;
+  --color-accent: #0fd1ea;
+  --color-accent-green: #ddff6e;
+  --font-heading: "Bebas Neue", sans-serif;
+  --font-body: "Roboto", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-dark);
+  color: white;
+  font-family: var(--font-body);
+}
