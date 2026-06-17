@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { asset } from "@/lib/asset";
 
 const navLinks = [
   { label: "HOME", href: "/" },
@@ -23,7 +24,7 @@ export default function Navbar() {
         {/* Logo */}
         <Link href="/" className="shrink-0">
           <Image
-            src="/images/logo.png"
+            src={asset("/images/logo.png")}
             alt="Logo"
             width={164}
             height={58}

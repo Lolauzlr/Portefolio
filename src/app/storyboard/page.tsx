@@ -1,3 +1,5 @@
+import { asset } from "@/lib/asset";
+
 export default function StoryboardPage() {
   const loremIpsum =
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula.";
@@ -36,7 +38,7 @@ export default function StoryboardPage() {
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-10" />
         <img
-          src="/images/storyboard_recent.png"
+          src={asset("/images/storyboard_recent.png")}
           alt="Musique Clip"
           className="w-full h-[675px] object-cover"
         />
@@ -64,7 +66,7 @@ export default function StoryboardPage() {
               }`}
             >
               <img
-                src={project.src}
+                src={asset(project.src)}
                 alt={project.title}
                 className="w-full md:w-[792px] h-auto object-cover flex-shrink-0"
               />
@@ -78,7 +80,7 @@ export default function StoryboardPage() {
                 </p>
                 {project.src2 && (
                   <img
-                    src={project.src2}
+                    src={asset(project.src2)}
                     alt={`${project.title} additional`}
                     className="w-full h-auto object-cover mt-6"
                   />

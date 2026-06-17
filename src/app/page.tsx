@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { asset } from "@/lib/asset";
 
 const trailerProjects = [
   { img: "/images/imgImage.png", title: "MIO : MEMORIES IN ORBIT", desc: "Cinematic trailer pour un jeu d'exploration spatiale." },
@@ -52,7 +53,7 @@ export default function Home() {
       {/* Hero */}
       <section className="relative h-[500px] md:h-[810px] bg-black overflow-hidden">
         <img
-          src="/images/imgImage31.png"
+          src={asset("/images/imgImage31.png")}
           alt="A Plague Tale: Requiem"
           className="absolute inset-0 w-full h-full object-cover object-right"
         />
@@ -85,7 +86,7 @@ export default function Home() {
           {trailerProjects.map((p) => (
             <div key={p.title} className="flex-shrink-0 w-[300px] md:w-[382px]">
               <img
-                src={p.img}
+                src={asset(p.img)}
                 alt={p.title}
                 className="w-full h-[170px] md:h-[215px] object-cover rounded-lg"
               />
@@ -110,15 +111,15 @@ export default function Home() {
           <div className="flex flex-col md:flex-row gap-8">
             <div className="flex-1">
               <img
-                src="/images/movies_saintex.png"
+                src={asset("/images/movies_saintex.png")}
                 alt="Saint Ex"
                 className="w-full h-[300px] md:h-[400px] object-cover rounded-lg"
               />
             </div>
             <div className="flex-1 flex flex-col gap-4">
               <div className="grid grid-cols-2 gap-4">
-                <img src="/images/movies_fauve.png" alt="Fauve" className="w-full h-[140px] md:h-[190px] object-cover rounded-lg" />
-                <img src="/images/movies_jerry.png" alt="Jerry" className="w-full h-[140px] md:h-[190px] object-cover rounded-lg" />
+                <img src={asset("/images/movies_fauve.png")} alt="Fauve" className="w-full h-[140px] md:h-[190px] object-cover rounded-lg" />
+                <img src={asset("/images/movies_jerry.png")} alt="Jerry" className="w-full h-[140px] md:h-[190px] object-cover rounded-lg" />
               </div>
               <div>
                 <h3 className="font-[var(--font-heading)] text-[28px] tracking-widest">
@@ -140,12 +141,12 @@ export default function Home() {
           <SectionTitle>ILLUSTRATIONS</SectionTitle>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <img
-              src="/images/imgSpace.png"
+              src={asset("/images/imgSpace.png")}
               alt="Space"
               className="w-full h-[250px] md:h-[400px] object-cover rounded-lg"
             />
             <img
-              src="/images/imgSeaAll.png"
+              src={asset("/images/imgSeaAll.png")}
               alt="Sea All"
               className="w-full h-[250px] md:h-[400px] object-cover rounded-lg"
             />
@@ -154,7 +155,7 @@ export default function Home() {
             {illustrationCards.map((c) => (
               <div key={c.title}>
                 <img
-                  src={c.img}
+                  src={asset(c.img)}
                   alt={c.title}
                   className="w-full h-[200px] md:h-[250px] object-cover rounded-lg"
                 />
@@ -176,7 +177,7 @@ export default function Home() {
             {storyboardCards.map((c) => (
               <div key={c.title}>
                 <img
-                  src={c.img}
+                  src={asset(c.img)}
                   alt={c.title}
                   className="w-full h-[200px] md:h-[250px] object-cover rounded-lg"
                 />
@@ -217,7 +218,7 @@ export default function Home() {
             </div>
             <div className="flex-shrink-0">
               <img
-                src="/images/imgElHOef5400X4001Photoroom1.png"
+                src={asset("/images/imgElHOef5400X4001Photoroom1.png")}
                 alt="Marie Chalandre"
                 className="w-[250px] md:w-[350px] h-auto rounded-2xl object-cover"
               />

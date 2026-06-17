@@ -1,3 +1,5 @@
+import { asset } from "@/lib/asset";
+
 export default function TrailerPage() {
   const loremIpsum =
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula.";
@@ -21,12 +23,12 @@ export default function TrailerPage() {
       {/* Hero Section */}
       <section className="relative h-[810px] w-full overflow-hidden">
         <img
-          src="/images/trailer_hero.png"
+          src={asset("/images/trailer_hero.png")}
           alt="Trailer hero background"
           className="absolute inset-0 w-full h-full object-cover"
         />
         <img
-          src="/images/trailer_hero_video.png"
+          src={asset("/images/trailer_hero_video.png")}
           alt="Video overlay"
           className="absolute inset-0 w-full h-full object-cover"
         />
@@ -60,7 +62,7 @@ export default function TrailerPage() {
           {recentTrailers.map((card) => (
             <div key={card.title} className="flex-shrink-0">
               <img
-                src={card.src}
+                src={asset(card.src)}
                 alt={card.title}
                 className="w-[382px] h-[215px] object-cover"
               />
@@ -85,7 +87,7 @@ export default function TrailerPage() {
               className="flex flex-col md:flex-row gap-6 border border-white/10 bg-[#15161b] p-5"
             >
               <img
-                src={card.src}
+                src={asset(card.src)}
                 alt={card.title}
                 className="w-full md:w-[792px] h-auto object-cover flex-shrink-0"
               />

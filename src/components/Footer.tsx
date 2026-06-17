@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { asset } from "@/lib/asset";
 
 const exploreLinks = [
   { label: "Home", href: "/" },
@@ -11,9 +12,9 @@ const exploreLinks = [
 ];
 
 const socials = [
-  { src: "/images/instagram.png", alt: "Instagram", href: "https://instagram.com" },
-  { src: "/images/linkedin.png", alt: "LinkedIn", href: "https://linkedin.com" },
-  { src: "/images/artstation.png", alt: "ArtStation", href: "https://artstation.com" },
+  { src: asset("/images/instagram.png"), alt: "Instagram", href: "https://instagram.com" },
+  { src: asset("/images/linkedin.png"), alt: "LinkedIn", href: "https://linkedin.com" },
+  { src: asset("/images/artstation.png"), alt: "ArtStation", href: "https://artstation.com" },
 ];
 
 export default function Footer() {
@@ -23,7 +24,7 @@ export default function Footer() {
         {/* Left: Logo */}
         <div className="flex flex-col items-center gap-2 pr-12 md:border-r border-gray-600">
           <Image
-            src="/images/logo_footer.png"
+            src={asset("/images/logo_footer.png")}
             alt="Logo"
             width={120}
             height={42}

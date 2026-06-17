@@ -1,3 +1,5 @@
+import { asset } from "@/lib/asset";
+
 export default function MoviesPage() {
   const loremIpsum =
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula.";
@@ -29,7 +31,7 @@ export default function MoviesPage() {
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-10" />
         <img
-          src="/images/movies_saintex.png"
+          src={asset("/images/movies_saintex.png")}
           alt="Saint Ex"
           className="w-full h-[675px] object-cover"
         />
@@ -57,7 +59,7 @@ export default function MoviesPage() {
               }`}
             >
               <img
-                src={doc.src}
+                src={asset(doc.src)}
                 alt={doc.title}
                 className="w-full md:w-[792px] h-auto object-cover flex-shrink-0"
               />

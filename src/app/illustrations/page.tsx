@@ -1,3 +1,5 @@
+import { asset } from "@/lib/asset";
+
 export default function IllustrationsPage() {
   const loremIpsum =
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula.";
@@ -33,7 +35,7 @@ export default function IllustrationsPage() {
           {featured.map((item) => (
             <div key={item.title} className="flex flex-col items-center">
               <img
-                src={item.src}
+                src={asset(item.src)}
                 alt={item.title}
                 className="object-cover"
                 style={{ width: item.w, height: item.h }}
@@ -56,7 +58,7 @@ export default function IllustrationsPage() {
         {/* Main feature row */}
         <div className="flex flex-col md:flex-row gap-6 mb-10">
           <img
-            src="/images/illus_main.png"
+            src={asset("/images/illus_main.png")}
             alt="Main illustration"
             className="w-full md:w-1/2 h-auto object-cover"
           />
@@ -71,7 +73,7 @@ export default function IllustrationsPage() {
               </p>
             </div>
             <img
-              src="/images/illus_dragon.png"
+              src={asset("/images/illus_dragon.png")}
               alt="Dragon illustration"
               className="w-full h-auto object-cover mt-6"
             />
@@ -101,7 +103,7 @@ export default function IllustrationsPage() {
               {row.map((src) => (
                 <img
                   key={src}
-                  src={src}
+                  src={asset(src)}
                   alt=""
                   className="w-full h-auto object-cover"
                 />

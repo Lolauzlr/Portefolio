@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
   output: "export",
   basePath: isGithubPages ? "/Portefolio" : "",
   assetPrefix: isGithubPages ? "/Portefolio/" : "",
+  env: {
+    NEXT_PUBLIC_BASE_PATH: isGithubPages ? "/Portefolio" : "",
+  },
   images: {
     unoptimized: true,
   },
