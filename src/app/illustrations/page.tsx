@@ -27,7 +27,7 @@ export default function IllustrationsPage() {
     <div className="pt-[95px] bg-[#15161b] text-white min-h-screen">
       {/* Les Plus Récentes */}
       <section className="px-4 md:px-[120px] py-16">
-        <h2 className="text-[40px] md:text-[60px] font-[var(--font-heading)] tracking-widest mb-2">
+        <h2 className="text-[40px] md:text-[60px] font-[var(--font-heading)] tracking-[4.8px] mb-2">
           LES PLUS RÉCENTES
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-10" />
@@ -40,7 +40,7 @@ export default function IllustrationsPage() {
                 className="object-cover"
                 style={{ width: item.w, height: item.h }}
               />
-              <p className="mt-3 text-[28px] font-[var(--font-heading)] tracking-widest text-center">
+              <p className="mt-3 text-[24px] font-[var(--font-heading)] tracking-[1.92px] text-center">
                 {item.title}
               </p>
             </div>
@@ -50,7 +50,7 @@ export default function IllustrationsPage() {
 
       {/* Vric à Vrac */}
       <section className="bg-[#131313] px-4 md:px-[120px] py-16">
-        <h2 className="text-[40px] md:text-[60px] font-[var(--font-heading)] tracking-widest mb-2">
+        <h2 className="text-[40px] md:text-[60px] font-[var(--font-heading)] tracking-[4.8px] mb-2">
           VRIC À VRAC
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-10" />
@@ -64,10 +64,10 @@ export default function IllustrationsPage() {
           />
           <div className="flex flex-col justify-between md:w-1/2">
             <div>
-              <h3 className="text-[28px] font-[var(--font-heading)] tracking-widest mb-2">
+              <h3 className="text-[28px] font-[var(--font-heading)] tracking-[2.24px] mb-2">
                 UNE IDÉE DE TITRE
               </h3>
-              <div className="w-[60px] h-[3px] bg-white mb-4" />
+              <div className="w-[80px] h-[4px] bg-white mb-4" />
               <p className="text-base font-[var(--font-body)] tracking-[1.28px]">
                 {loremIpsum}
               </p>
@@ -85,10 +85,10 @@ export default function IllustrationsPage() {
           <div key={rowIdx}>
             {rowIdx === 3 || rowIdx === 7 ? (
               <div className="my-8">
-                <h3 className="text-[28px] font-[var(--font-heading)] tracking-widest mb-2">
+                <h3 className="text-[28px] font-[var(--font-heading)] tracking-[2.24px] mb-2">
                   UNE IDÉE DE TITRE
                 </h3>
-                <div className="w-[60px] h-[3px] bg-white mb-4" />
+                <div className="w-[80px] h-[4px] bg-white mb-4" />
               </div>
             ) : null}
             <div

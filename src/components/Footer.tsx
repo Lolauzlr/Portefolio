@@ -8,74 +8,79 @@ const exploreLinks = [
   { label: "Movies", href: "/movies" },
   { label: "Illustrations", href: "/illustrations" },
   { label: "Storyboard", href: "/storyboard" },
-  { label: "About me", href: "/about" },
 ];
 
 const socials = [
-  { src: asset("/images/instagram.png"), alt: "Instagram", href: "https://instagram.com" },
-  { src: asset("/images/linkedin.png"), alt: "LinkedIn", href: "https://linkedin.com" },
-  { src: asset("/images/artstation.png"), alt: "ArtStation", href: "https://artstation.com" },
+  { src: "/images/instagram.png", alt: "Instagram", href: "https://instagram.com" },
+  { src: "/images/linkedin.png", alt: "LinkedIn", href: "https://linkedin.com" },
+  { src: "/images/artstation.png", alt: "ArtStation", href: "https://artstation.com" },
 ];
 
 export default function Footer() {
   return (
-    <footer className="bg-black/60 backdrop-blur-md py-12 px-8">
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-start gap-12">
-        {/* Left: Logo */}
-        <div className="flex flex-col items-center gap-2 pr-12 md:border-r border-gray-600">
+    <footer className="backdrop-blur-[3.15px] bg-black/40 py-[40px] px-4 md:px-[120px]">
+      <div className="flex flex-col md:flex-row items-center gap-10">
+        {/* Left: Logo + STUDIO */}
+        <div className="flex flex-col items-start pr-0 md:pr-[80px] md:border-r border-[#797979] shrink-0">
           <Image
             src={asset("/images/logo_footer.png")}
             alt="Logo"
-            width={120}
-            height={42}
+            width={162}
+            height={47}
           />
-          <span className="font-[family-name:var(--font-heading)] text-white text-lg tracking-widest uppercase">
+          <span className="font-[family-name:var(--font-heading)] text-white text-[12px] tracking-[0.96px] uppercase">
             STUDIO
           </span>
         </div>
 
-        {/* Center: Explore */}
-        <div className="flex flex-col gap-3">
-          <h3 className="font-[family-name:var(--font-heading)] text-white text-xl tracking-widest uppercase">
-            EXPLORE
-            <span className="block w-10 h-0.5 bg-[#ddff6e] mt-1" />
-          </h3>
-          <ul className="flex flex-col gap-2">
-            {exploreLinks.map((link) => (
-              <li key={link.href}>
+        {/* Center + Right */}
+        <div className="flex flex-1 flex-col md:flex-row items-start md:items-center justify-between w-full">
+          {/* Explore */}
+          <div className="flex flex-col gap-6">
+            <div>
+              <h3 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
+                EXPLORE
+              </h3>
+              <div className="w-full h-[4px] bg-[#ddff6e] mt-2" />
+            </div>
+            <div className="flex flex-wrap gap-4">
+              {exploreLinks.map((link) => (
                 <Link
+                  key={link.href}
                   href={link.href}
-                  className="font-[family-name:var(--font-body)] text-gray-300 hover:text-white transition-colors text-base tracking-[1.28px]"
+                  className="font-[family-name:var(--font-body)] text-white text-[16px] tracking-[1.28px] hover:opacity-80 transition-opacity"
                 >
                   {link.label}
                 </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+              ))}
+            </div>
+          </div>
 
-        {/* Right: Contact */}
-        <div className="flex flex-col gap-3">
-          <h3 className="font-[family-name:var(--font-heading)] text-white text-xl tracking-widest uppercase">
-            CONTACT
-            <span className="block w-10 h-0.5 bg-[#ddff6e] mt-1" />
-          </h3>
-          <div className="flex items-center gap-4">
-            {socials.map((social) => (
-              <a
-                key={social.alt}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Image
-                  src={social.src}
-                  alt={social.alt}
-                  width={24}
-                  height={24}
-                />
-              </a>
-            ))}
+          {/* Contact */}
+          <div className="flex flex-col gap-6 mt-6 md:mt-0">
+            <div>
+              <h3 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
+                CONTACT
+              </h3>
+              <div className="w-full h-[4px] bg-[#ddff6e] mt-2" />
+            </div>
+            <div className="flex items-center gap-4">
+              {socials.map((social) => (
+                <a
+                  key={social.alt}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Image
+                    src={asset(social.src)}
+                    alt={social.alt}
+                    width={24}
+                    height={24}
+                  />
+                </a>
+              ))}
+            </div>
           </div>
         </div>
       </div>

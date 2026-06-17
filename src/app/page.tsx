@@ -15,19 +15,28 @@ const illustrationCards = [
 ];
 
 const storyboardCards = [
-  { img: "/images/storyboard_scene.png", title: "COURT-MÉTRAGE", desc: "Storyboard pour un court-métrage dramatique." },
-  { img: "/images/storyboard_nabil.png", title: "CLIP MUSICAL", desc: "Storyboard pour un clip musical." },
-  { img: "/images/storyboard_shortfilm.png", title: "FILM D'ANIMATION", desc: "Storyboard pour un film d'animation." },
+  { img: "/images/storyboard_scene.png", title: "SHORTFILM", desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula." },
+  { img: "/images/storyboard_nabil.png", title: "MUSIC CLIP", desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula." },
+  { img: "/images/storyboard_shortfilm.png", title: "CLIP NABIL HARLOW - C'EST PAS VRAI", desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula." },
 ];
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div className="mb-10">
-      <h2 className="font-[var(--font-heading)] text-[40px] md:text-[60px] tracking-widest uppercase text-white">
+      <h2 className="font-[var(--font-heading)] text-[40px] md:text-[60px] tracking-[4.8px] uppercase text-white">
         {children}
       </h2>
       <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-2" />
     </div>
+  );
+}
+
+function CaretCircleRight() {
+  return (
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="20" cy="20" r="19" stroke="#0FD1EA" strokeWidth="2" />
+      <path d="M16 12l8 8-8 8" stroke="#0FD1EA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }
 
@@ -36,12 +45,10 @@ function ToutVoirLink({ href }: { href: string }) {
     <div className="flex justify-end mt-8">
       <Link
         href={href}
-        className="font-[var(--font-heading)] text-[32px] text-[#0FD1EA] flex items-center gap-2 hover:underline tracking-widest uppercase"
+        className="font-[var(--font-heading)] text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:opacity-80 tracking-[2.56px] uppercase transition-opacity"
       >
-        Tout voir
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="#0FD1EA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
+        TOUT VOIR
+        <CaretCircleRight />
       </Link>
     </div>
   );
@@ -49,26 +56,33 @@ function ToutVoirLink({ href }: { href: string }) {
 
 export default function Home() {
   return (
-    <div className="flex flex-col gap-0 bg-[#15161b] text-white">
+    <div className="flex flex-col gap-[60px] bg-[#15161b] text-white">
       {/* Hero */}
-      <section className="relative h-[500px] md:h-[810px] bg-black overflow-hidden">
+      <section className="relative h-[500px] md:h-[810px] bg-[#060000] overflow-hidden">
         <img
           src={asset("/images/imgImage31.png")}
           alt="A Plague Tale: Requiem"
-          className="absolute inset-0 w-full h-full object-cover object-right"
+          className="absolute right-0 top-[174px] w-[1131px] h-[636px] object-cover hidden md:block"
         />
-        <div className="absolute left-4 md:left-[120px] bottom-8 md:top-[527px] backdrop-blur-md bg-black/50 rounded-xl p-6 md:p-8 max-w-[600px]">
-          <p className="font-[var(--font-heading)] text-[18px] md:text-[24px] tracking-widest text-white/70 uppercase mb-2">
-            Trailer
-          </p>
-          <h1 className="font-[var(--font-heading)] text-[40px] md:text-[80px] leading-none tracking-widest uppercase">
-            A PLAGUE TALE : REQUIEM
-          </h1>
-          <div className="flex flex-wrap gap-3 mt-4">
+        <img
+          src={asset("/images/imgImage31.png")}
+          alt="A Plague Tale: Requiem"
+          className="absolute inset-0 w-full h-full object-cover md:hidden"
+        />
+        <div className="absolute left-4 md:left-[120px] bottom-8 md:top-[527px] backdrop-blur-[5px] py-5 max-w-[792px]">
+          <div className="px-4">
+            <p className="font-[var(--font-heading)] text-[24px] tracking-[1.92px] text-white uppercase">
+              Trailer
+            </p>
+            <h1 className="font-[var(--font-heading)] text-[40px] md:text-[80px] leading-none tracking-[6.4px] uppercase">
+              A PLAGUE TALE : REQUIEM
+            </h1>
+          </div>
+          <div className="flex flex-wrap gap-3 mt-4 px-4">
             {["2019", "Jeu vidéo", "Action aventure"].map((tag) => (
               <span
                 key={tag}
-                className="font-[var(--font-body)] text-base tracking-[1.28px] border border-white rounded-full px-4 py-1"
+                className="font-[var(--font-body)] text-[20px] tracking-[1.6px] border border-white rounded-full px-3 py-1"
               >
                 {tag}
               </span>
@@ -78,7 +92,7 @@ export default function Home() {
       </section>
 
       {/* Trailer */}
-      <section className="py-10 md:py-15">
+      <section className="py-[60px]">
         <div className="px-4 md:px-[120px]">
           <SectionTitle>TRAILER</SectionTitle>
         </div>
@@ -88,14 +102,16 @@ export default function Home() {
               <img
                 src={asset(p.img)}
                 alt={p.title}
-                className="w-full h-[170px] md:h-[215px] object-cover rounded-lg"
+                className="w-full h-[170px] md:h-[215px] object-cover"
               />
-              <h3 className="font-[var(--font-heading)] text-[28px] tracking-widest mt-3">
-                {p.title}
-              </h3>
-              <p className="font-[var(--font-body)] text-base tracking-[1.28px] text-white/60 mt-1">
-                {p.desc}
-              </p>
+              <div className="flex flex-col gap-3 mt-4">
+                <h3 className="font-[var(--font-heading)] text-[24px] tracking-[1.92px]">
+                  {p.title}
+                </h3>
+                <p className="font-[var(--font-body)] text-[16px] tracking-[1.28px] text-white">
+                  {p.desc}
+                </p>
+              </div>
             </div>
           ))}
         </div>
@@ -105,124 +121,168 @@ export default function Home() {
       </section>
 
       {/* Movies */}
-      <section className="py-10 md:py-15 bg-[#131313]">
-        <div className="px-4 md:px-[120px]">
-          <SectionTitle>MOVIES</SectionTitle>
-          <div className="flex flex-col md:flex-row gap-8">
-            <div className="flex-1">
-              <img
-                src={asset("/images/movies_saintex.png")}
-                alt="Saint Ex"
-                className="w-full h-[300px] md:h-[400px] object-cover rounded-lg"
-              />
-            </div>
-            <div className="flex-1 flex flex-col gap-4">
-              <div className="grid grid-cols-2 gap-4">
-                <img src={asset("/images/movies_fauve.png")} alt="Fauve" className="w-full h-[140px] md:h-[190px] object-cover rounded-lg" />
-                <img src={asset("/images/movies_jerry.png")} alt="Jerry" className="w-full h-[140px] md:h-[190px] object-cover rounded-lg" />
+      <section className="py-[60px] bg-[#131313] px-4 md:px-[120px]">
+        <SectionTitle>MOVIES</SectionTitle>
+        <div className="flex flex-col gap-10">
+          {/* Featured: Saint Ex */}
+          <div className="border border-[#797979] p-5">
+            <div className="flex flex-col md:flex-row gap-6">
+              <div className="md:w-[792px] shrink-0">
+                <img
+                  src={asset("/images/movies_saintex.png")}
+                  alt="Saint Ex"
+                  className="w-full h-[300px] md:h-[446px] object-cover"
+                />
               </div>
-              <div>
-                <h3 className="font-[var(--font-heading)] text-[28px] tracking-widest">
-                  SAINT EX
-                </h3>
-                <p className="font-[var(--font-body)] text-base tracking-[1.28px] text-white/60 mt-2">
-                  Recherches graphiques et color scripts pour un long-métrage d&apos;animation inspiré de la vie de Saint-Exupéry.
+              <div className="flex flex-col gap-6 flex-1">
+                <div>
+                  <h3 className="font-[var(--font-heading)] text-[28px] tracking-[2.24px]">SAINT EX</h3>
+                  <div className="w-[80px] h-[4px] bg-white mt-1" />
+                </div>
+                <p className="font-[var(--font-body)] text-[16px] tracking-[1.28px] text-white">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui.
                 </p>
               </div>
             </div>
           </div>
-          <ToutVoirLink href="/movies" />
+          {/* Secondary cards */}
+          <div className="flex flex-col md:flex-row gap-10">
+            <div className="border border-[#797979] p-5 flex-1 flex flex-col gap-6">
+              <img src={asset("/images/movies_fauve.png")} alt="Jerry Gretzinger" className="w-full h-[250px] md:h-[388px] object-cover" />
+              <div>
+                <h3 className="font-[var(--font-heading)] text-[28px] tracking-[2.24px]">JERRY GRETZINGER</h3>
+                <div className="w-[80px] h-[4px] bg-white mt-1" />
+              </div>
+              <p className="font-[var(--font-body)] text-[16px] tracking-[1.28px] text-white">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa.
+              </p>
+            </div>
+            <div className="border border-[#797979] p-5 flex-1 flex flex-col gap-6">
+              <img src={asset("/images/movies_jerry.png")} alt="Il était une fois le musée du Louvre" className="w-full h-[200px] md:h-[219px] object-cover" />
+              <div>
+                <h3 className="font-[var(--font-heading)] text-[28px] tracking-[2.24px]">IL ETAIT UNE FOIS LE MUSEE DU LOUVRE</h3>
+                <div className="w-[80px] h-[4px] bg-white mt-1" />
+              </div>
+              <p className="font-[var(--font-body)] text-[16px] tracking-[1.28px] text-white">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa.
+              </p>
+            </div>
+          </div>
         </div>
+        <ToutVoirLink href="/movies" />
       </section>
 
       {/* Illustrations */}
-      <section className="py-10 md:py-15">
-        <div className="px-4 md:px-[120px]">
-          <SectionTitle>ILLUSTRATIONS</SectionTitle>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <img
-              src={asset("/images/imgSpace.png")}
-              alt="Space"
-              className="w-full h-[250px] md:h-[400px] object-cover rounded-lg"
-            />
-            <img
-              src={asset("/images/imgSeaAll.png")}
-              alt="Sea All"
-              className="w-full h-[250px] md:h-[400px] object-cover rounded-lg"
-            />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-8">
-            {illustrationCards.map((c) => (
-              <div key={c.title}>
-                <img
-                  src={asset(c.img)}
-                  alt={c.title}
-                  className="w-full h-[200px] md:h-[250px] object-cover rounded-lg"
-                />
-                <h3 className="font-[var(--font-heading)] text-[28px] tracking-widest mt-3">
-                  {c.title}
-                </h3>
+      <section className="py-[60px] px-4 md:px-[120px]">
+        <SectionTitle>ILLUSTRATIONS</SectionTitle>
+        <div className="flex flex-col gap-[100px]">
+          {/* Featured illustration */}
+          <div className="flex flex-col md:flex-row gap-10">
+            <div className="relative md:w-[587px] h-[500px] md:h-[662px] shrink-0">
+              <img src={asset("/images/imgSpace.png")} alt="SPACE" className="absolute top-0 left-[9%] right-[15%] h-[14%] object-contain" />
+              <img src={asset("/images/imgSkateRemovebg1.png")} alt="Skate" className="absolute top-[25%] left-[5%] right-[6%] h-[50%] object-contain" />
+              <img src={asset("/images/imgSeaAll.png")} alt="SEA ALL" className="absolute bottom-0 left-0 right-0 h-[14%] object-contain" />
+            </div>
+            <div className="flex flex-col justify-between flex-1">
+              <div className="flex flex-col gap-6">
+                <div>
+                  <h3 className="font-[var(--font-heading)] text-[28px] tracking-[2.24px]">UNE IDÉE DE TITRE</h3>
+                  <div className="w-[80px] h-[4px] bg-white mt-1" />
+                </div>
+                <p className="font-[var(--font-body)] text-[16px] tracking-[1.28px] text-white">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque.
+                </p>
               </div>
-            ))}
+              <img src={asset("/images/illus_dragon.png")} alt="" className="w-full h-[322px] object-cover mt-6" />
+            </div>
           </div>
-          <ToutVoirLink href="/illustrations" />
+
+          {/* Sub-section title */}
+          <div>
+            <div className="mb-10">
+              <h3 className="font-[var(--font-heading)] text-[32px] tracking-[2.56px]">UNE IDÉE DE TITRE</h3>
+              <div className="w-[80px] h-[4px] bg-white mt-1" />
+            </div>
+            <div className="flex gap-6 overflow-x-auto pb-4">
+              {illustrationCards.map((c) => (
+                <div key={c.title} className="flex-shrink-0 w-[382px]">
+                  <img
+                    src={asset(c.img)}
+                    alt={c.title}
+                    className="w-full h-[383px] object-cover"
+                  />
+                  <div className="flex flex-col gap-3 mt-4">
+                    <h3 className="font-[var(--font-heading)] text-[24px] tracking-[1.92px]">
+                      {c.title}
+                    </h3>
+                    <p className="font-[var(--font-body)] text-[16px] tracking-[1.28px] text-white">
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula.
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <ToutVoirLink href="/illustrations" />
+          </div>
         </div>
       </section>
 
       {/* Storyboards */}
-      <section className="py-10 md:py-15 bg-[#131313]">
-        <div className="px-4 md:px-[120px]">
-          <SectionTitle>STORYBOARDS</SectionTitle>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {storyboardCards.map((c) => (
-              <div key={c.title}>
-                <img
-                  src={asset(c.img)}
-                  alt={c.title}
-                  className="w-full h-[200px] md:h-[250px] object-cover rounded-lg"
-                />
-                <h3 className="font-[var(--font-heading)] text-[28px] tracking-widest mt-3">
+      <section className="py-[60px] bg-[#131313] px-4 md:px-[120px]">
+        <SectionTitle>STORYBOARDS</SectionTitle>
+        <div className="flex flex-col gap-10">
+          {storyboardCards.map((c) => (
+            <div key={c.title} className="flex flex-col md:flex-row gap-4">
+              <img
+                src={asset(c.img)}
+                alt={c.title}
+                className="w-full md:w-[612px] h-[250px] md:h-[344px] object-cover shrink-0"
+              />
+              <div className="flex flex-col gap-3">
+                <h3 className="font-[var(--font-heading)] text-[24px] tracking-[1.92px]">
                   {c.title}
                 </h3>
-                <p className="font-[var(--font-body)] text-base tracking-[1.28px] text-white/60 mt-1">
+                <p className="font-[var(--font-body)] text-[16px] tracking-[1.28px] text-white">
                   {c.desc}
                 </p>
               </div>
-            ))}
-          </div>
-          <ToutVoirLink href="/storyboard" />
+            </div>
+          ))}
         </div>
+        <ToutVoirLink href="/storyboard" />
       </section>
 
       {/* About Me */}
-      <section className="py-10 md:py-15">
-        <div className="px-4 md:px-[120px]">
-          <SectionTitle>ABOUT ME</SectionTitle>
-          <div className="flex flex-col md:flex-row gap-10 items-center">
-            <div className="flex-1">
-              <h3 className="font-[var(--font-heading)] text-[32px] md:text-[48px] tracking-widest leading-tight">
-                HELLO, I&apos;M MARIE CHALANDRE 👋
-              </h3>
-              <p className="font-[var(--font-heading)] text-[18px] md:text-[24px] tracking-widest text-[#0fd1ea] mt-4">
+      <section className="px-4 md:px-[120px] py-[80px]">
+        <SectionTitle>ABOUT ME</SectionTitle>
+        <div className="flex flex-col md:flex-row gap-10 items-center mt-[80px]">
+          <div className="flex-1 flex flex-col justify-between">
+            <div className="flex flex-col gap-10">
+              <div>
+                <div className="font-[var(--font-heading)] text-white">
+                  <p className="text-[48px] md:text-[80px] tracking-[6.4px] leading-none">HELLO,</p>
+                  <p className="text-[32px] md:text-[52px] tracking-[4.16px] leading-none">I&apos;M MARIE CHALANDRE 👋</p>
+                </div>
+                <div className="w-[80px] h-[4px] bg-white mt-2" />
+              </div>
+              <p className="font-[var(--font-heading)] text-[24px] tracking-[1.92px] text-[#ddff6e]">
                 CINEMATIC ARTIST &bull; CONCEPT ARTIST &bull; STORYBOARDER
               </p>
-              <p className="font-[var(--font-body)] text-base tracking-[1.28px] text-white/70 mt-6 leading-relaxed max-w-[600px]">
-                Passionnée par le storytelling visuel, je crée des univers immersifs à travers le cinéma, l&apos;illustration et le storyboard. Mon travail explore la narration par l&apos;image, en mêlant composition, lumière et émotion pour donner vie à des histoires captivantes.
+              <p className="font-[var(--font-body)] text-[16px] tracking-[1.28px] text-white leading-relaxed">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque.
               </p>
-              <Link
-                href="/cv"
-                className="inline-block mt-8 font-[var(--font-heading)] text-[32px] text-[#0FD1EA] border border-[#0FD1EA] rounded-full px-6 py-2 hover:bg-[#0FD1EA]/10 transition-colors uppercase tracking-widest"
-              >
-                Voir mon CV
-              </Link>
             </div>
-            <div className="flex-shrink-0">
-              <img
-                src={asset("/images/imgElHOef5400X4001Photoroom1.png")}
-                alt="Marie Chalandre"
-                className="w-[250px] md:w-[350px] h-auto rounded-2xl object-cover"
-              />
+            <div className="flex items-center gap-3 mt-8">
+              <span className="font-[var(--font-heading)] text-[32px] text-[#0FD1EA] tracking-[2.56px]">VOIR MON CV</span>
+              <CaretCircleRight />
             </div>
+          </div>
+          <div className="shrink-0">
+            <img
+              src={asset("/images/imgElHOef5400X4001Photoroom1.png")}
+              alt="Marie Chalandre"
+              className="w-[350px] md:w-[599px] h-auto object-cover"
+            />
           </div>
         </div>
       </section>
