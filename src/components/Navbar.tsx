@@ -54,7 +54,7 @@ export default function Navbar() {
         <div className="flex items-center gap-4">
           <Link
             href="/contact"
-            className="hidden lg:block font-[family-name:var(--font-heading)] text-xl tracking-widest uppercase text-[#0fd1ea] border border-[#0fd1ea] rounded-full px-6 py-3 hover:bg-[#0fd1ea]/10 transition-colors"
+            className="hidden lg:block font-[family-name:var(--font-heading)] text-[32px] tracking-widest uppercase text-[#0fd1ea] border border-[#0fd1ea] rounded-full px-6 py-3 hover:bg-[#0fd1ea]/10 transition-colors"
           >
             ME CONTACTER
           </Link>
@@ -93,7 +93,7 @@ export default function Navbar() {
           <Link
             href="/contact"
             onClick={() => setMenuOpen(false)}
-            className="font-[family-name:var(--font-heading)] text-xl tracking-widest uppercase text-[#0fd1ea] border border-[#0fd1ea] rounded-full px-6 py-3 mt-4"
+            className="font-[family-name:var(--font-heading)] text-[32px] tracking-widest uppercase text-[#0fd1ea] border border-[#0fd1ea] rounded-full px-6 py-3 mt-4"
           >
             ME CONTACTER
           </Link>

@@ -25,7 +25,7 @@ export default function IllustrationsPage() {
     <div className="pt-[95px] bg-[#15161b] text-white min-h-screen">
       {/* Les Plus Récentes */}
       <section className="px-4 md:px-[120px] py-16">
-        <h2 className="text-[40px] font-[var(--font-heading)] tracking-widest mb-2">
+        <h2 className="text-[40px] md:text-[60px] font-[var(--font-heading)] tracking-widest mb-2">
           LES PLUS RÉCENTES
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-10" />
@@ -38,7 +38,7 @@ export default function IllustrationsPage() {
                 className="object-cover"
                 style={{ width: item.w, height: item.h }}
               />
-              <p className="mt-3 text-[16px] font-[var(--font-heading)] tracking-widest text-center">
+              <p className="mt-3 text-[28px] font-[var(--font-heading)] tracking-widest text-center">
                 {item.title}
               </p>
             </div>
@@ -48,7 +48,7 @@ export default function IllustrationsPage() {
 
       {/* Vric à Vrac */}
       <section className="bg-[#131313] px-4 md:px-[120px] py-16">
-        <h2 className="text-[40px] font-[var(--font-heading)] tracking-widest mb-2">
+        <h2 className="text-[40px] md:text-[60px] font-[var(--font-heading)] tracking-widest mb-2">
           VRIC À VRAC
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-10" />
@@ -66,7 +66,7 @@ export default function IllustrationsPage() {
                 UNE IDÉE DE TITRE
               </h3>
               <div className="w-[60px] h-[3px] bg-white mb-4" />
-              <p className="text-[16px] font-[var(--font-body)] tracking-wide">
+              <p className="text-base font-[var(--font-body)] tracking-[1.28px]">
                 {loremIpsum}
               </p>
             </div>

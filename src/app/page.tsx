@@ -25,7 +25,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
       <h2 className="font-[var(--font-heading)] text-[40px] md:text-[60px] tracking-widest uppercase text-white">
         {children}
       </h2>
-      <div className="w-[80px] h-[4px] bg-[#0fd1ea] mt-2" />
+      <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-2" />
     </div>
   );
 }
@@ -35,11 +35,11 @@ function ToutVoirLink({ href }: { href: string }) {
     <div className="flex justify-end mt-8">
       <Link
         href={href}
-        className="font-[var(--font-body)] text-[16px] text-[#ddff6e] flex items-center gap-2 hover:underline tracking-wide uppercase"
+        className="font-[var(--font-heading)] text-[32px] text-[#0FD1EA] flex items-center gap-2 hover:underline tracking-widest uppercase"
       >
         Tout voir
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="#ddff6e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="#0FD1EA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </Link>
     </div>
@@ -67,7 +67,7 @@ export default function Home() {
             {["2019", "Jeu vidéo", "Action aventure"].map((tag) => (
               <span
                 key={tag}
-                className="font-[var(--font-body)] text-[14px] md:text-[20px] border border-white rounded-full px-4 py-1"
+                className="font-[var(--font-body)] text-base tracking-[1.28px] border border-white rounded-full px-4 py-1"
               >
                 {tag}
               </span>
@@ -89,10 +89,10 @@ export default function Home() {
                 alt={p.title}
                 className="w-full h-[170px] md:h-[215px] object-cover rounded-lg"
               />
-              <h3 className="font-[var(--font-heading)] text-[20px] md:text-[24px] tracking-widest mt-3">
+              <h3 className="font-[var(--font-heading)] text-[28px] tracking-widest mt-3">
                 {p.title}
               </h3>
-              <p className="font-[var(--font-body)] text-[14px] md:text-[16px] text-white/60 mt-1">
+              <p className="font-[var(--font-body)] text-base tracking-[1.28px] text-white/60 mt-1">
                 {p.desc}
               </p>
             </div>
@@ -121,10 +121,10 @@ export default function Home() {
                 <img src="/images/movies_jerry.png" alt="Jerry" className="w-full h-[140px] md:h-[190px] object-cover rounded-lg" />
               </div>
               <div>
-                <h3 className="font-[var(--font-heading)] text-[28px] md:text-[36px] tracking-widest">
+                <h3 className="font-[var(--font-heading)] text-[28px] tracking-widest">
                   SAINT EX
                 </h3>
-                <p className="font-[var(--font-body)] text-[14px] md:text-[16px] text-white/60 mt-2">
+                <p className="font-[var(--font-body)] text-base tracking-[1.28px] text-white/60 mt-2">
                   Recherches graphiques et color scripts pour un long-métrage d&apos;animation inspiré de la vie de Saint-Exupéry.
                 </p>
               </div>
@@ -158,7 +158,7 @@ export default function Home() {
                   alt={c.title}
                   className="w-full h-[200px] md:h-[250px] object-cover rounded-lg"
                 />
-                <h3 className="font-[var(--font-heading)] text-[20px] md:text-[24px] tracking-widest mt-3">
+                <h3 className="font-[var(--font-heading)] text-[28px] tracking-widest mt-3">
                   {c.title}
                 </h3>
               </div>
@@ -180,10 +180,10 @@ export default function Home() {
                   alt={c.title}
                   className="w-full h-[200px] md:h-[250px] object-cover rounded-lg"
                 />
-                <h3 className="font-[var(--font-heading)] text-[20px] md:text-[24px] tracking-widest mt-3">
+                <h3 className="font-[var(--font-heading)] text-[28px] tracking-widest mt-3">
                   {c.title}
                 </h3>
-                <p className="font-[var(--font-body)] text-[14px] md:text-[16px] text-white/60 mt-1">
+                <p className="font-[var(--font-body)] text-base tracking-[1.28px] text-white/60 mt-1">
                   {c.desc}
                 </p>
               </div>
@@ -205,12 +205,12 @@ export default function Home() {
               <p className="font-[var(--font-heading)] text-[18px] md:text-[24px] tracking-widest text-[#0fd1ea] mt-4">
                 CINEMATIC ARTIST &bull; CONCEPT ARTIST &bull; STORYBOARDER
               </p>
-              <p className="font-[var(--font-body)] text-[14px] md:text-[16px] text-white/70 mt-6 leading-relaxed max-w-[600px]">
+              <p className="font-[var(--font-body)] text-base tracking-[1.28px] text-white/70 mt-6 leading-relaxed max-w-[600px]">
                 Passionnée par le storytelling visuel, je crée des univers immersifs à travers le cinéma, l&apos;illustration et le storyboard. Mon travail explore la narration par l&apos;image, en mêlant composition, lumière et émotion pour donner vie à des histoires captivantes.
               </p>
               <Link
                 href="/cv"
-                className="inline-block mt-8 font-[var(--font-body)] text-[16px] text-[#ddff6e] border border-[#ddff6e] rounded-full px-6 py-2 hover:bg-[#ddff6e] hover:text-black transition-colors uppercase tracking-wide"
+                className="inline-block mt-8 font-[var(--font-heading)] text-[32px] text-[#0FD1EA] border border-[#0FD1EA] rounded-full px-6 py-2 hover:bg-[#0FD1EA]/10 transition-colors uppercase tracking-widest"
               >
                 Voir mon CV
               </Link>

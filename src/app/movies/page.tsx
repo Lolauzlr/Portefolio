@@ -24,7 +24,7 @@ export default function MoviesPage() {
     <div className="pt-[95px] bg-[#15161b] text-white min-h-screen">
       {/* Features Films */}
       <section className="px-4 md:px-[120px] py-16">
-        <h2 className="text-[40px] font-[var(--font-heading)] tracking-widest mb-2">
+        <h2 className="text-[40px] md:text-[60px] font-[var(--font-heading)] tracking-widest mb-2">
           FEATURES FILMS
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-10" />
@@ -37,14 +37,14 @@ export default function MoviesPage() {
           SAINT EX
         </h3>
         <div className="w-[60px] h-[3px] bg-white mb-4" />
-        <p className="text-[16px] font-[var(--font-body)] tracking-wide max-w-3xl">
+        <p className="text-base font-[var(--font-body)] tracking-[1.28px] max-w-3xl">
           {loremIpsum}
         </p>
       </section>
 
       {/* Documentary */}
       <section className="bg-[#131313] px-4 md:px-[120px] py-16">
-        <h2 className="text-[40px] font-[var(--font-heading)] tracking-widest mb-2">
+        <h2 className="text-[40px] md:text-[60px] font-[var(--font-heading)] tracking-widest mb-2">
           DOCUMENTARY
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-10" />
@@ -66,7 +66,7 @@ export default function MoviesPage() {
                   {doc.title}
                 </h3>
                 <div className="w-[60px] h-[3px] bg-white mb-4" />
-                <p className="text-[16px] font-[var(--font-body)] tracking-wide">
+                <p className="text-base font-[var(--font-body)] tracking-[1.28px]">
                   {loremIpsum}
                 </p>
               </div>
