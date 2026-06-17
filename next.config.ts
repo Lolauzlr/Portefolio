@@ -4,8 +4,8 @@ const isGithubPages = process.env.GITHUB_ACTIONS === "true";
 
 const nextConfig: NextConfig = {
   output: "export",
-  basePath: isGithubPages ? "/portefolio" : "",
-  assetPrefix: isGithubPages ? "/portefolio/" : "",
+  basePath: isGithubPages ? "/Portefolio" : "",
+  assetPrefix: isGithubPages ? "/Portefolio/" : "",
   images: {
     unoptimized: true,
   },

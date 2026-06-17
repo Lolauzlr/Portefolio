@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://lolauzlr.github.io/portefolio/sitemap.xml
+Sitemap: https://lolauzlr.github.io/Portefolio/sitemap.xml
