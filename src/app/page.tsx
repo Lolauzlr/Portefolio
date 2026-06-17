@@ -23,7 +23,7 @@ const storyboardCards = [
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div className="mb-10">
-      <h2 className="font-[var(--font-heading)] text-[40px] md:text-[60px] tracking-[4.8px] uppercase text-white">
+      <h2 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[60px] tracking-[4.8px] uppercase text-white">
         {children}
       </h2>
       <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-2" />
@@ -45,7 +45,7 @@ function ToutVoirLink({ href }: { href: string }) {
     <div className="flex justify-end mt-8">
       <Link
         href={href}
-        className="font-[var(--font-heading)] text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:opacity-80 tracking-[2.56px] uppercase transition-opacity"
+        className="font-[family-name:var(--font-heading)] text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:opacity-80 tracking-[2.56px] uppercase transition-opacity"
       >
         TOUT VOIR
         <CaretCircleRight />
@@ -71,10 +71,10 @@ export default function Home() {
         />
         <div className="absolute left-4 md:left-[120px] bottom-8 md:top-[527px] backdrop-blur-[5px] py-5 max-w-[792px]">
           <div className="px-4">
-            <p className="font-[var(--font-heading)] text-[24px] tracking-[1.92px] text-white uppercase">
+            <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-white uppercase">
               Trailer
             </p>
-            <h1 className="font-[var(--font-heading)] text-[40px] md:text-[80px] leading-none tracking-[6.4px] uppercase">
+            <h1 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[80px] leading-none tracking-[6.4px] uppercase">
               A PLAGUE TALE : REQUIEM
             </h1>
           </div>
@@ -82,7 +82,7 @@ export default function Home() {
             {["2019", "Jeu vidéo", "Action aventure"].map((tag) => (
               <span
                 key={tag}
-                className="font-[var(--font-body)] text-[20px] tracking-[1.6px] border border-white rounded-full px-3 py-1"
+                className="font-[family-name:var(--font-body)] text-[20px] tracking-[1.6px] border border-white rounded-full px-3 py-1"
               >
                 {tag}
               </span>
@@ -105,10 +105,10 @@ export default function Home() {
                 className="w-full h-[170px] md:h-[215px] object-cover"
               />
               <div className="flex flex-col gap-3 mt-4">
-                <h3 className="font-[var(--font-heading)] text-[24px] tracking-[1.92px]">
+                <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">
                   {p.title}
                 </h3>
-                <p className="font-[var(--font-body)] text-[16px] tracking-[1.28px] text-white">
+                <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
                   {p.desc}
                 </p>
               </div>
@@ -136,10 +136,10 @@ export default function Home() {
               </div>
               <div className="flex flex-col gap-6 flex-1">
                 <div>
-                  <h3 className="font-[var(--font-heading)] text-[28px] tracking-[2.24px]">SAINT EX</h3>
+                  <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">SAINT EX</h3>
                   <div className="w-[80px] h-[4px] bg-white mt-1" />
                 </div>
-                <p className="font-[var(--font-body)] text-[16px] tracking-[1.28px] text-white">
+                <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui.
                 </p>
               </div>
@@ -150,20 +150,20 @@ export default function Home() {
             <div className="border border-[#797979] p-5 flex-1 flex flex-col gap-6">
               <img src={asset("/images/movies_fauve.png")} alt="Jerry Gretzinger" className="w-full h-[250px] md:h-[388px] object-cover" />
               <div>
-                <h3 className="font-[var(--font-heading)] text-[28px] tracking-[2.24px]">JERRY GRETZINGER</h3>
+                <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">JERRY GRETZINGER</h3>
                 <div className="w-[80px] h-[4px] bg-white mt-1" />
               </div>
-              <p className="font-[var(--font-body)] text-[16px] tracking-[1.28px] text-white">
+              <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa.
               </p>
             </div>
             <div className="border border-[#797979] p-5 flex-1 flex flex-col gap-6">
               <img src={asset("/images/movies_jerry.png")} alt="Il était une fois le musée du Louvre" className="w-full h-[200px] md:h-[219px] object-cover" />
               <div>
-                <h3 className="font-[var(--font-heading)] text-[28px] tracking-[2.24px]">IL ETAIT UNE FOIS LE MUSEE DU LOUVRE</h3>
+                <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">IL ETAIT UNE FOIS LE MUSEE DU LOUVRE</h3>
                 <div className="w-[80px] h-[4px] bg-white mt-1" />
               </div>
-              <p className="font-[var(--font-body)] text-[16px] tracking-[1.28px] text-white">
+              <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa.
               </p>
             </div>
@@ -186,10 +186,10 @@ export default function Home() {
             <div className="flex flex-col justify-between flex-1">
               <div className="flex flex-col gap-6">
                 <div>
-                  <h3 className="font-[var(--font-heading)] text-[28px] tracking-[2.24px]">UNE IDÉE DE TITRE</h3>
+                  <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">UNE IDÉE DE TITRE</h3>
                   <div className="w-[80px] h-[4px] bg-white mt-1" />
                 </div>
-                <p className="font-[var(--font-body)] text-[16px] tracking-[1.28px] text-white">
+                <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque.
                 </p>
               </div>
@@ -200,7 +200,7 @@ export default function Home() {
           {/* Sub-section title */}
           <div>
             <div className="mb-10">
-              <h3 className="font-[var(--font-heading)] text-[32px] tracking-[2.56px]">UNE IDÉE DE TITRE</h3>
+              <h3 className="font-[family-name:var(--font-heading)] text-[32px] tracking-[2.56px]">UNE IDÉE DE TITRE</h3>
               <div className="w-[80px] h-[4px] bg-white mt-1" />
             </div>
             <div className="flex gap-6 overflow-x-auto pb-4">
@@ -212,10 +212,10 @@ export default function Home() {
                     className="w-full h-[383px] object-cover"
                   />
                   <div className="flex flex-col gap-3 mt-4">
-                    <h3 className="font-[var(--font-heading)] text-[24px] tracking-[1.92px]">
+                    <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">
                       {c.title}
                     </h3>
-                    <p className="font-[var(--font-body)] text-[16px] tracking-[1.28px] text-white">
+                    <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
                       Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula.
                     </p>
                   </div>
@@ -239,10 +239,10 @@ export default function Home() {
                 className="w-full md:w-[612px] h-[250px] md:h-[344px] object-cover shrink-0"
               />
               <div className="flex flex-col gap-3">
-                <h3 className="font-[var(--font-heading)] text-[24px] tracking-[1.92px]">
+                <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">
                   {c.title}
                 </h3>
-                <p className="font-[var(--font-body)] text-[16px] tracking-[1.28px] text-white">
+                <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
                   {c.desc}
                 </p>
               </div>
@@ -259,21 +259,21 @@ export default function Home() {
           <div className="flex-1 flex flex-col justify-between">
             <div className="flex flex-col gap-10">
               <div>
-                <div className="font-[var(--font-heading)] text-white">
+                <div className="font-[family-name:var(--font-heading)] text-white">
                   <p className="text-[48px] md:text-[80px] tracking-[6.4px] leading-none">HELLO,</p>
                   <p className="text-[32px] md:text-[52px] tracking-[4.16px] leading-none">I&apos;M MARIE CHALANDRE 👋</p>
                 </div>
                 <div className="w-[80px] h-[4px] bg-white mt-2" />
               </div>
-              <p className="font-[var(--font-heading)] text-[24px] tracking-[1.92px] text-[#ddff6e]">
+              <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-[#ddff6e]">
                 CINEMATIC ARTIST &bull; CONCEPT ARTIST &bull; STORYBOARDER
               </p>
-              <p className="font-[var(--font-body)] text-[16px] tracking-[1.28px] text-white leading-relaxed">
+              <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white leading-relaxed">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque.
               </p>
             </div>
             <div className="flex items-center gap-3 mt-8">
-              <span className="font-[var(--font-heading)] text-[32px] text-[#0FD1EA] tracking-[2.56px]">VOIR MON CV</span>
+              <span className="font-[family-name:var(--font-heading)] text-[32px] text-[#0FD1EA] tracking-[2.56px]">VOIR MON CV</span>
               <CaretCircleRight />
             </div>
           </div>

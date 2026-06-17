@@ -33,7 +33,7 @@ export default function StoryboardPage() {
     <div className="pt-[95px] bg-[#15161b] text-white min-h-screen">
       {/* Le Plus Récent */}
       <section className="px-4 md:px-[120px] py-16">
-        <h2 className="text-[40px] md:text-[60px] font-[var(--font-heading)] tracking-[4.8px] mb-2">
+        <h2 className="text-[40px] md:text-[60px] font-[family-name:var(--font-heading)] tracking-[4.8px] mb-2">
           LE PLUS RÉCENT
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-10" />
@@ -42,18 +42,18 @@ export default function StoryboardPage() {
           alt="Musique Clip"
           className="w-full h-[675px] object-cover"
         />
-        <h3 className="text-[28px] font-[var(--font-heading)] tracking-[2.24px] mt-6 mb-2">
+        <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px] mt-6 mb-2">
           MUSIQUE CLIP
         </h3>
         <div className="w-[80px] h-[4px] bg-white mb-4" />
-        <p className="text-base font-[var(--font-body)] tracking-[1.28px] max-w-3xl">
+        <p className="text-base font-[family-name:var(--font-body)] tracking-[1.28px] max-w-3xl">
           {loremIpsum}
         </p>
       </section>
 
       {/* Tous Mes Travaux */}
       <section className="bg-[#131313] px-4 md:px-[120px] py-16">
-        <h2 className="text-[40px] md:text-[60px] font-[var(--font-heading)] tracking-[4.8px] mb-2">
+        <h2 className="text-[40px] md:text-[60px] font-[family-name:var(--font-heading)] tracking-[4.8px] mb-2">
           TOUS MES TRAVAUX
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-10" />
@@ -71,11 +71,11 @@ export default function StoryboardPage() {
                 className="w-full md:w-[792px] h-auto object-cover flex-shrink-0"
               />
               <div className="flex flex-col justify-center">
-                <h3 className="text-[24px] font-[var(--font-heading)] tracking-[1.92px] mb-2">
+                <h3 className="text-[24px] font-[family-name:var(--font-heading)] tracking-[1.92px] mb-2">
                   {project.title}
                 </h3>
                 <div className="w-[80px] h-[4px] bg-white mb-4" />
-                <p className="text-base font-[var(--font-body)] tracking-[1.28px]">
+                <p className="text-base font-[family-name:var(--font-body)] tracking-[1.28px]">
                   {loremIpsum}
                 </p>
                 {project.src2 && (
