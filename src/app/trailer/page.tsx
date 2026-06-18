@@ -14,11 +14,24 @@ export default function TrailerPage() {
   const [isMuted, setIsMuted] = useState(true);
   const [showPause, setShowPause] = useState(false);
   const [cadreSize, setCadreSize] = useState({ w: 792, h: 201 });
+  const [watchSizes, setWatchSizes] = useState<Record<string, { w: number; h: number }>>({});
   const playerRef = useRef<YT.Player | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const cadreRef = useRef<HTMLDivElement>(null);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const watchObservers = useRef<Map<string, ResizeObserver>>(new Map());
+
+  const watchCardRef = useCallback((videoId: string) => (el: HTMLDivElement | null) => {
+    const existing = watchObservers.current.get(videoId);
+    if (existing) existing.disconnect();
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setWatchSizes(prev => ({ ...prev, [videoId]: { w: entry.contentRect.width, h: entry.contentRect.height } }));
+    });
+    ro.observe(el);
+    watchObservers.current.set(videoId, ro);
+  }, []);
 
   useEffect(() => {
     const el = cadreRef.current;
@@ -345,48 +358,83 @@ export default function TrailerPage() {
           <div className="w-[80px] h-[4px] bg-[#ddff6e]" />
         </div>
         <div className="flex flex-col gap-10">
-          {watchCards.map((card) => (
-            <div
-              key={card.videoId}
-              className="flex flex-col md:flex-row border border-[#797979] p-5"
-            >
+          {watchCards.map((card) => {
+            const s = watchSizes[card.videoId] || { w: 1200, h: 500 };
+            return (
               <div
-                className="relative w-full md:w-[792px] flex-shrink-0 cursor-pointer overflow-hidden bg-black"
-                style={{ aspectRatio: "16 / 9" }}
-                onMouseEnter={() => setHoveredWatch(card.videoId)}
-                onMouseLeave={() => setHoveredWatch(null)}
-                onClick={() => setWatchOverlay({ videoId: card.videoId, title: card.title })}
+                key={card.videoId}
+                ref={watchCardRef(card.videoId)}
+                className="relative"
               >
-                {hoveredWatch === card.videoId ? (
-                  <iframe
-                    className="absolute inset-0 w-full h-full"
-                    src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
-                    title={card.title}
-                    allow="autoplay; encrypted-media"
-                    style={{ border: 0, pointerEvents: "none" }}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    clipPath: "polygon(0 0, calc(100% - 27px) 0, 100% 12px, 100% 100%, 0 100%)",
+                    background: "rgba(0,0,0,0.40)",
+                  }}
+                />
+                <svg
+                  className="absolute inset-0 w-full h-full z-10 pointer-events-none"
+                  viewBox={`0 0 ${s.w} ${s.h}`}
+                  preserveAspectRatio="none"
+                  fill="none"
+                >
+                  <defs>
+                    <linearGradient id={`silver-watch-${card.videoId}`} x1="0" y1="0" x2={s.w} y2={s.h} gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stopColor="rgba(255,255,255,0.9)" />
+                      <stop offset="25%" stopColor="rgba(200,200,200,0.5)" />
+                      <stop offset="50%" stopColor="rgba(255,255,255,0.7)" />
+                      <stop offset="75%" stopColor="rgba(180,180,180,0.4)" />
+                      <stop offset="100%" stopColor="rgba(220,220,220,0.6)" />
+                    </linearGradient>
+                  </defs>
+                  <polygon
+                    points={`0.5,0.5 ${s.w - 27},0.5 ${s.w - 0.5},12 ${s.w - 0.5},${s.h - 0.5} 0.5,${s.h - 0.5}`}
+                    stroke={`url(#silver-watch-${card.videoId})`}
+                    strokeWidth="1"
+                    fill="none"
                   />
-                ) : (
-                  <img
-                    src={`https://img.youtube.com/vi/${card.videoId}/maxresdefault.jpg`}
-                    alt={card.title}
-                    className="w-full h-full object-cover"
-                    onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${card.videoId}/hqdefault.jpg`; }}
-                  />
-                )}
-              </div>
-              <div className="flex flex-col gap-6 p-6">
-                <div>
-                  <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px]">
-                    {card.title}
-                  </h3>
-                  <div className="w-[80px] h-[4px] bg-white mt-1" />
+                </svg>
+                <div className="relative z-20 flex flex-col md:flex-row p-5">
+                  <div
+                    className="relative w-full md:w-[792px] flex-shrink-0 cursor-pointer overflow-hidden bg-black"
+                    style={{ aspectRatio: "16 / 9" }}
+                    onMouseEnter={() => setHoveredWatch(card.videoId)}
+                    onMouseLeave={() => setHoveredWatch(null)}
+                    onClick={() => setWatchOverlay({ videoId: card.videoId, title: card.title })}
+                  >
+                    {hoveredWatch === card.videoId ? (
+                      <iframe
+                        className="absolute inset-0 w-full h-full"
+                        src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
+                        title={card.title}
+                        allow="autoplay; encrypted-media"
+                        style={{ border: 0, pointerEvents: "none" }}
+                      />
+                    ) : (
+                      <img
+                        src={`https://img.youtube.com/vi/${card.videoId}/maxresdefault.jpg`}
+                        alt={card.title}
+                        className="w-full h-full object-cover"
+                        onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${card.videoId}/hqdefault.jpg`; }}
+                      />
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-6 p-6">
+                    <div>
+                      <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px]">
+                        {card.title}
+                      </h3>
+                      <div className="w-[80px] h-[4px] bg-white mt-1" />
+                    </div>
+                    <p className="text-[16px] font-[family-name:var(--font-body)] tracking-[1.28px] text-white">
+                      {card.description}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-[16px] font-[family-name:var(--font-body)] tracking-[1.28px] text-white">
-                  {card.description}
-                </p>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
