@@ -96,12 +96,12 @@ export default function TrailerPage() {
 
     (window as unknown as Record<string, unknown>).onYouTubeIframeAPIReady = () => {
       playerRef.current = new YT.Player("yt-bg-player", {
-        videoId: "z1CWk2Ft884",
+        videoId: "MOEbrOqLL2o",
         playerVars: {
           autoplay: 1,
           mute: 1,
           loop: 1,
-          playlist: "z1CWk2Ft884",
+          playlist: "MOEbrOqLL2o",
           controls: 0,
           showinfo: 0,
           rel: 0,
@@ -387,7 +387,7 @@ export default function TrailerPage() {
             <div className="w-full max-w-5xl aspect-video">
               <iframe
                 className="w-full h-full"
-                src="https://www.youtube.com/embed/z1CWk2Ft884?autoplay=1&rel=0"
+                src="https://www.youtube.com/embed/MOEbrOqLL2o?autoplay=1&rel=0"
                 title="Resonance : A Plague Tale Legacy"
                 allow="autoplay; encrypted-media; fullscreen"
                 allowFullScreen
