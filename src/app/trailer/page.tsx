@@ -6,6 +6,8 @@ import { asset } from "@/lib/asset";
 export default function TrailerPage() {
   const [screenshotsOpen, setScreenshotsOpen] = useState(false);
   const [videoOverlayOpen, setVideoOverlayOpen] = useState(false);
+  const [recentOverlay, setRecentOverlay] = useState<{ videoId: string; title: string } | null>(null);
+  const [hoveredRecent, setHoveredRecent] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [showPause, setShowPause] = useState(false);
@@ -54,9 +56,9 @@ export default function TrailerPage() {
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque. Vivamus dapibus semper justo, interdum tincidunt tellus placerat a. Quisque vel orci et nulla vestibulum interdum.";
 
   const recentTrailers = [
-    { src: "/images/trailer_chants.png", title: "CHANTS OF SENNAAR" },
-    { src: "/images/trailer_warstride.png", title: "WARSTRIDE CHALLENGES" },
-    { src: "/images/trailer_dordogne.png", title: "DORDOGNE" },
+    { videoId: "ewZufHtEl68", title: "CHANTS OF SENNAAR" },
+    { videoId: "cZgim-KYkZQ", title: "WARSTRIDE CHALLENGES" },
+    { videoId: "QwxFR1g7Uy4", title: "DORDOGNE" },
   ];
 
   const watchCards = [
@@ -293,11 +295,28 @@ export default function TrailerPage() {
         <div className="flex gap-6 overflow-x-auto pb-4">
           {recentTrailers.map((card) => (
             <div key={card.title} className="flex-shrink-0 flex flex-col gap-4">
-              <img
-                src={asset(card.src)}
-                alt={card.title}
-                className="w-[382px] h-[215px] object-cover"
-              />
+              <div
+                className="relative w-[382px] h-[215px] cursor-pointer overflow-hidden bg-black"
+                onMouseEnter={() => setHoveredRecent(card.videoId)}
+                onMouseLeave={() => setHoveredRecent(null)}
+                onClick={() => setRecentOverlay({ videoId: card.videoId, title: card.title })}
+              >
+                {hoveredRecent === card.videoId ? (
+                  <iframe
+                    className="absolute inset-0 w-full h-full"
+                    src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
+                    title={card.title}
+                    allow="autoplay; encrypted-media"
+                    style={{ border: 0, pointerEvents: "none" }}
+                  />
+                ) : (
+                  <img
+                    src={`https://img.youtube.com/vi/${card.videoId}/hqdefault.jpg`}
+                    alt={card.title}
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </div>
               <div className="flex flex-col gap-3">
                 <p className="text-[24px] font-[family-name:var(--font-heading)] tracking-[1.92px]">
                   {card.title}
@@ -369,6 +388,41 @@ export default function TrailerPage() {
                 className="w-full h-full"
                 src="https://www.youtube.com/embed/ZPQFsx9XXoM?autoplay=1&rel=0"
                 title="Resonance : A Plague Tale Legacy"
+                allow="autoplay; encrypted-media; fullscreen"
+                allowFullScreen
+                style={{ border: 0 }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Recent Video Overlay */}
+      {recentOverlay && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/95 flex flex-col"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setRecentOverlay(null);
+          }}
+        >
+          <div className="flex items-center justify-between px-6 md:px-16 py-6">
+            <h2 className="font-[family-name:var(--font-heading)] text-[32px] tracking-[2.56px] text-white">
+              {recentOverlay.title}
+            </h2>
+            <button
+              onClick={() => setRecentOverlay(null)}
+              className="text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
+              aria-label="Fermer"
+            >
+              ✕
+            </button>
+          </div>
+          <div className="flex-1 flex items-center justify-center px-6 md:px-16 pb-10">
+            <div className="w-full max-w-5xl aspect-video">
+              <iframe
+                className="w-full h-full"
+                src={`https://www.youtube.com/embed/${recentOverlay.videoId}?autoplay=1&rel=0`}
+                title={recentOverlay.title}
                 allow="autoplay; encrypted-media; fullscreen"
                 allowFullScreen
                 style={{ border: 0 }}
