@@ -8,6 +8,8 @@ export default function TrailerPage() {
   const [videoOverlayOpen, setVideoOverlayOpen] = useState(false);
   const [recentOverlay, setRecentOverlay] = useState<{ videoId: string; title: string } | null>(null);
   const [hoveredRecent, setHoveredRecent] = useState<string | null>(null);
+  const [hoveredWatch, setHoveredWatch] = useState<string | null>(null);
+  const [watchOverlay, setWatchOverlay] = useState<{ videoId: string; title: string } | null>(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [showPause, setShowPause] = useState(false);
@@ -52,9 +54,6 @@ export default function TrailerPage() {
     };
   }, []);
 
-  const loremIpsum =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque. Vivamus dapibus semper justo, interdum tincidunt tellus placerat a. Quisque vel orci et nulla vestibulum interdum.";
-
   const recentTrailers = [
     { videoId: "ZPQFsx9XXoM", title: "RESONANCE : A PLAGUE TALE LEGACY • GAMEPLAY", description: "2026 • In-game video capture • Video editing • Sound editing" },
     { videoId: "ewZufHtEl68", title: "YERBA BUENA • GAMEPLAY", description: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing" },
@@ -62,11 +61,17 @@ export default function TrailerPage() {
   ];
 
   const watchCards = [
-    { src: "/images/trailer_watch_chants.png", title: "CHANTS OF SENNAAR" },
-    { src: "/images/trailer_watch_atlas.png", title: "ATLAS FALLEN" },
-    { src: "/images/trailer_watch_sandrock.png", title: "MY TIME AT SANDROCK" },
-    { src: "/images/trailer_watch_hotel.png", title: "HOTEL RENOVATOR" },
-    { src: "/images/trailer_watch_blacktail.png", title: "BLACKTAIL" },
+    { videoId: "QwxFR1g7Uy4", title: "John Carpenter's Toxic Commando • Gameplay Overview Trailer", description: "2026 • In-game video capture • Video editing • Sound editing" },
+    { videoId: "CxtlJ06u_lc", title: "Space Marine 2 • Year 2 Trailer", description: "2025 • In-game video capture • Video editing • Sound editing" },
+    { videoId: "ETCpWo0A0i0", title: "MIO: Memories In Orbit • Gameplay Trailer", description: "2025 • In-game video capture • Video editing • Sound editing" },
+    { videoId: "tSN6KhscgiE", title: "Chants of Sennaar • Gameplay Overview Trailer | Gamescom 2023", description: "2023 • In-game video capture • Camera Animation in Unity • Video editing • Sound editing" },
+    { videoId: "LpxuWSy8b9U", title: "Atlas Fallen • Gameplay Overview Trailer", description: "2023 • In-game video capture • Video editing • Sound editing" },
+    { videoId: "_nFYp6BFviM", title: "My Time at Sandrock • \"Shape your future\" Release Date Reveal Trailer", description: "2023 • In-game video capture • Video editing • Sound editing" },
+    { videoId: "a1JhKnaLxN0", title: "Dordogne • Release Date Reveal Trailer", description: "2023 • Scene Set-up and Animation in Unity • In-game Video Capture • Motion Graphics • Video Editing • Sound Editing" },
+    { videoId: "EdGCL3cVGPo", title: "Hotel Renovator • Release Date Reveal Trailer", description: "2023 • Camera • Animation & Scene set up in Unreal Engine 4 • Video Editing • Sound Editing" },
+    { videoId: "MTskFVe8P3Q", title: "A Plague Tale: Requiem • The Game Awards 2022 Spotlight", description: "2022 • In-game video capture • Video editing • Sound editing" },
+    { videoId: "3pEJJdJStiQ", title: "BLACKTAIL • 'The Forest Awaits' Gameplay Trailer | THE PARASIGHT", description: "2022 • In-game video capture • Video editing • Sound editing" },
+    { videoId: "U4XA_dhCx_M", title: "Warstride Challenges • Multiplayer Update Trailer", description: "2022 • Camera & Character Animation in Unreal Engine 4 • In-game Video Capture • Video Editing • Sound Editing" },
   ];
 
   const screenshots = [
@@ -339,26 +344,38 @@ export default function TrailerPage() {
           </h2>
           <div className="w-[80px] h-[4px] bg-[#ddff6e]" />
         </div>
-        <div className="flex flex-col gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {watchCards.map((card) => (
-            <div
-              key={card.title}
-              className="flex flex-col md:flex-row gap-0 border border-[#797979] p-5"
-            >
-              <img
-                src={asset(card.src)}
-                alt={card.title}
-                className="w-full md:w-[792px] h-[300px] md:h-[444px] object-cover flex-shrink-0"
-              />
-              <div className="flex flex-col gap-6 p-6 md:pl-6">
-                <div>
-                  <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px]">
-                    {card.title}
-                  </h3>
-                  <div className="w-[80px] h-[4px] bg-white mt-1" />
-                </div>
+            <div key={card.videoId} className="flex flex-col gap-4">
+              <div
+                className="relative w-full aspect-video cursor-pointer overflow-hidden bg-black"
+                onMouseEnter={() => setHoveredWatch(card.videoId)}
+                onMouseLeave={() => setHoveredWatch(null)}
+                onClick={() => setWatchOverlay({ videoId: card.videoId, title: card.title })}
+              >
+                {hoveredWatch === card.videoId ? (
+                  <iframe
+                    className="absolute inset-0 w-full h-full"
+                    src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
+                    title={card.title}
+                    allow="autoplay; encrypted-media"
+                    style={{ border: 0, pointerEvents: "none" }}
+                  />
+                ) : (
+                  <img
+                    src={`https://img.youtube.com/vi/${card.videoId}/maxresdefault.jpg`}
+                    alt={card.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${card.videoId}/hqdefault.jpg`; }}
+                  />
+                )}
+              </div>
+              <div className="flex flex-col gap-3">
+                <p className="text-[24px] font-[family-name:var(--font-heading)] tracking-[1.92px]">
+                  {card.title}
+                </p>
                 <p className="text-[16px] font-[family-name:var(--font-body)] tracking-[1.28px] text-white">
-                  {loremIpsum}
+                  {card.description}
                 </p>
               </div>
             </div>
@@ -424,6 +441,41 @@ export default function TrailerPage() {
                 className="w-full h-full"
                 src={`https://www.youtube.com/embed/${recentOverlay.videoId}?autoplay=1&rel=0`}
                 title={recentOverlay.title}
+                allow="autoplay; encrypted-media; fullscreen"
+                allowFullScreen
+                style={{ border: 0 }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Watch Video Overlay */}
+      {watchOverlay && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/95 flex flex-col"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setWatchOverlay(null);
+          }}
+        >
+          <div className="flex items-center justify-between px-6 md:px-16 py-6">
+            <h2 className="font-[family-name:var(--font-heading)] text-[32px] tracking-[2.56px] text-white">
+              {watchOverlay.title}
+            </h2>
+            <button
+              onClick={() => setWatchOverlay(null)}
+              className="text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
+              aria-label="Fermer"
+            >
+              ✕
+            </button>
+          </div>
+          <div className="flex-1 flex items-center justify-center px-6 md:px-16 pb-10">
+            <div className="w-full max-w-5xl aspect-video">
+              <iframe
+                className="w-full h-full"
+                src={`https://www.youtube.com/embed/${watchOverlay.videoId}?autoplay=1&rel=0`}
+                title={watchOverlay.title}
                 allow="autoplay; encrypted-media; fullscreen"
                 allowFullScreen
                 style={{ border: 0 }}
