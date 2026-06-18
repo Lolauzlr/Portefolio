@@ -12,9 +12,9 @@ const exploreLinks = [
 ];
 
 const socials = [
-  { src: "/images/instagram.png", alt: "Instagram", href: "https://instagram.com" },
-  { src: "/images/linkedin.png", alt: "LinkedIn", href: "https://linkedin.com" },
-  { src: "/images/artstation.png", alt: "ArtStation", href: "https://artstation.com" },
+  { src: "/images/instagram.svg", alt: "Instagram", href: "https://www.instagram.com/m_chalandre/?hl=fr" },
+  { src: "/images/linkedin.svg", alt: "LinkedIn", href: "https://www.linkedin.com/in/marie-chalandre-076948103/" },
+  { src: "/images/artstation.svg", alt: "ArtStation", href: "https://www.artstation.com/mariechalandre" },
 ];
 
 export default function Footer() {
