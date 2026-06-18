@@ -197,7 +197,7 @@ export default function TrailerPage() {
         {/* Sound toggle - always visible, aligned right with ME CONTACTER, bottom with pentagon */}
         <button
           onClick={toggleMute}
-          className="absolute right-4 md:right-[120px] bottom-8 md:bottom-[80px] z-20 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+          className="absolute right-4 md:right-[24px] bottom-8 md:bottom-[24px] z-20 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
           aria-label={isMuted ? "Activer le son" : "Couper le son"}
         >
           {isMuted ? (
