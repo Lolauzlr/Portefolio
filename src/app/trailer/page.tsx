@@ -311,9 +311,10 @@ export default function TrailerPage() {
                   />
                 ) : (
                   <img
-                    src={`https://img.youtube.com/vi/${card.videoId}/hqdefault.jpg`}
+                    src={`https://img.youtube.com/vi/${card.videoId}/maxresdefault.jpg`}
                     alt={card.title}
                     className="w-full h-full object-cover"
+                    onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${card.videoId}/hqdefault.jpg`; }}
                   />
                 )}
               </div>
