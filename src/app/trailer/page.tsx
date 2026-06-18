@@ -1,10 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { asset } from "@/lib/asset";
 
 export default function TrailerPage() {
   const [screenshotsOpen, setScreenshotsOpen] = useState(false);
+  const [videoOverlayOpen, setVideoOverlayOpen] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
+  const playerRef = useRef<YT.Player | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const loremIpsum =
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque. Vivamus dapibus semper justo, interdum tincidunt tellus placerat a. Quisque vel orci et nulla vestibulum interdum.";
@@ -32,55 +37,211 @@ export default function TrailerPage() {
     "/images/trailer_watch_blacktail.png",
   ];
 
+  const onPlayerReady = useCallback((event: YT.PlayerEvent) => {
+    event.target.mute();
+    event.target.playVideo();
+  }, []);
+
+  const onPlayerStateChange = useCallback((event: YT.OnStateChangeEvent) => {
+    if (event.data === YT.PlayerState.ENDED) {
+      event.target.playVideo();
+    }
+  }, []);
+
+  useEffect(() => {
+    const tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+
+    (window as unknown as Record<string, unknown>).onYouTubeIframeAPIReady = () => {
+      playerRef.current = new YT.Player("yt-bg-player", {
+        videoId: "CxtlJ06u_lc",
+        playerVars: {
+          autoplay: 1,
+          mute: 1,
+          loop: 1,
+          playlist: "CxtlJ06u_lc",
+          controls: 0,
+          showinfo: 0,
+          rel: 0,
+          modestbranding: 1,
+          playsinline: 1,
+          iv_load_policy: 3,
+          disablekb: 1,
+        },
+        events: {
+          onReady: onPlayerReady,
+          onStateChange: onPlayerStateChange,
+        },
+      });
+    };
+  }, [onPlayerReady, onPlayerStateChange]);
+
+  const togglePlay = () => {
+    if (!playerRef.current) return;
+    if (isPlaying) {
+      playerRef.current.pauseVideo();
+    } else {
+      playerRef.current.playVideo();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const toggleMute = () => {
+    if (!playerRef.current) return;
+    if (isMuted) {
+      playerRef.current.unMute();
+    } else {
+      playerRef.current.mute();
+    }
+    setIsMuted(!isMuted);
+  };
+
   return (
-    <div className="pt-[95px] bg-[#15161b] text-white min-h-screen">
-      {/* Hero Section */}
-      <section className="relative h-[810px] w-full overflow-hidden">
-        {/* YouTube video background - autoplay, loop, muted */}
-        <iframe
-          className="absolute inset-0 w-full h-full pointer-events-none"
-          src="https://www.youtube.com/embed/CxtlJ06u_lc?autoplay=1&mute=1&loop=1&playlist=CxtlJ06u_lc&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3&disablekb=1"
-          title="Space Marine 2 - Year 2 Trailer"
-          allow="autoplay; encrypted-media"
-          style={{ border: 0, transform: "scale(1.5)", transformOrigin: "center center" }}
+    <div className="bg-[#15161b] text-white min-h-screen">
+      {/* Hero Section - no top padding, video bleeds under navbar */}
+      <section className="relative h-[100vh] md:h-[810px] w-full overflow-hidden">
+        {/* YouTube video background via API */}
+        <div
+          ref={containerRef}
+          className="absolute inset-0 overflow-hidden pointer-events-none"
+        >
+          <div
+            id="yt-bg-player"
+            className="absolute top-1/2 left-1/2"
+            style={{
+              width: "177.78vh",
+              height: "100vh",
+              minWidth: "100%",
+              minHeight: "100%",
+              transform: "translate(-50%, -50%)",
+            }}
+          />
+        </div>
+
+        {/* Click zone to open video overlay */}
+        <button
+          className="absolute inset-0 w-full h-full z-10 cursor-pointer"
+          onClick={() => setVideoOverlayOpen(true)}
+          aria-label="Ouvrir la vidéo"
         />
 
-        {/* Cadre with gradient silver stroke + backdrop blur */}
+        {/* Video controls - play/pause + mute/unmute */}
+        <div className="absolute top-[120px] right-4 md:right-[120px] z-20 flex items-center gap-3">
+          <button
+            onClick={togglePlay}
+            className="w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+            aria-label={isPlaying ? "Pause" : "Play"}
+          >
+            {isPlaying ? (
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="white">
+                <rect x="4" y="3" width="4" height="14" rx="1" />
+                <rect x="12" y="3" width="4" height="14" rx="1" />
+              </svg>
+            ) : (
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="white">
+                <polygon points="5,3 17,10 5,17" />
+              </svg>
+            )}
+          </button>
+          <button
+            onClick={toggleMute}
+            className="w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+            aria-label={isMuted ? "Activer le son" : "Couper le son"}
+          >
+            {isMuted ? (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
+                <line x1="23" y1="9" x2="17" y2="15" />
+                <line x1="17" y1="9" x2="23" y2="15" />
+              </svg>
+            ) : (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+              </svg>
+            )}
+          </button>
+        </div>
+
+        {/* Pentagon cadre - top-right corner cut */}
         <div
-          className="absolute left-4 md:left-[120px] bottom-8 md:top-[527px] w-[calc(100%-2rem)] md:w-[792px] backdrop-blur-[10px] py-5 px-4 flex flex-col gap-5"
+          className="absolute left-4 md:left-[120px] bottom-8 md:bottom-[80px] w-[calc(100%-2rem)] md:w-[792px] z-20 pointer-events-auto"
           style={{
-            border: "1px solid transparent",
-            borderImage: "linear-gradient(135deg, rgba(255,255,255,0.8), rgba(160,160,160,0.4), rgba(255,255,255,0.6), rgba(120,120,120,0.3)) 1",
-            background: "rgba(0,0,0,0.3)",
+            clipPath: "polygon(0 0, calc(100% - 80px) 0, 100% 80px, 100% 100%, 0 100%)",
           }}
         >
-          <div className="flex flex-col gap-3">
-            <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-white uppercase">
-              Trailer
-            </p>
-            <h1 className="font-[family-name:var(--font-heading)] text-[36px] md:text-[80px] leading-none tracking-[6.4px] uppercase">
-              SPACE MARINE 2 - YEAR 2 TRAILER
-            </h1>
-          </div>
+          {/* Background with blur */}
+          <div
+            className="absolute inset-0 backdrop-blur-[10px]"
+            style={{
+              background: "rgba(0,0,0,0.35)",
+              clipPath: "polygon(0 0, calc(100% - 80px) 0, 100% 80px, 100% 100%, 0 100%)",
+            }}
+          />
+          {/* Gradient silver border using SVG */}
+          <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="silver-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="rgba(255,255,255,0.8)" />
+                <stop offset="30%" stopColor="rgba(160,160,160,0.4)" />
+                <stop offset="60%" stopColor="rgba(255,255,255,0.6)" />
+                <stop offset="100%" stopColor="rgba(120,120,120,0.3)" />
+              </linearGradient>
+            </defs>
+            <polygon
+              points="0,0 calc(100% - 80px),0 100%,80 100%,100% 0,100%"
+              fill="none"
+              stroke="url(#silver-gradient)"
+              strokeWidth="1"
+              vectorEffect="non-scaling-stroke"
+            />
+          </svg>
+          {/* Use a proper border overlay with clip-path */}
+          <div
+            className="absolute inset-[-1px]"
+            style={{
+              clipPath: "polygon(0 0, calc(100% - 80px) 0, 100% 80px, 100% 100%, 0 100%)",
+              background: "linear-gradient(135deg, rgba(255,255,255,0.8), rgba(160,160,160,0.4), rgba(255,255,255,0.6), rgba(120,120,120,0.3))",
+              mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+              maskComposite: "exclude",
+              WebkitMaskComposite: "xor",
+              padding: "1px",
+            }}
+          />
 
-          <div className="flex flex-wrap gap-3">
-            {["2025", "Jeu vidéo", "In-game video capture", "Motion design"].map((tag) => (
-              <span
-                key={tag}
-                className="font-[family-name:var(--font-body)] text-[20px] tracking-[1.6px] border border-white rounded-full px-3 py-1"
+          {/* Content */}
+          <div className="relative z-10 p-6 md:p-8 flex flex-col gap-5">
+            <div className="flex items-start justify-between">
+              <div className="flex flex-col gap-3 flex-1">
+                <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-white uppercase">
+                  Trailer
+                </p>
+                <h1 className="font-[family-name:var(--font-heading)] text-[36px] md:text-[72px] leading-none tracking-[4px] md:tracking-[6.4px] uppercase">
+                  SPACE MARINE 2 - YEAR 2
+                </h1>
+              </div>
+              {/* CTA - Voir les screenshots */}
+              <button
+                onClick={(e) => { e.stopPropagation(); setScreenshotsOpen(true); }}
+                className="font-[family-name:var(--font-heading)] text-[20px] md:text-[24px] tracking-[1.92px] text-[#0fd1ea] uppercase shrink-0 hover:opacity-80 transition-opacity cursor-pointer whitespace-nowrap mt-1"
               >
-                {tag}
-              </span>
-            ))}
-          </div>
+                VOIR LES SCREENSHOTS
+              </button>
+            </div>
 
-          {/* CTA text - Voir les screenshots */}
-          <button
-            onClick={() => setScreenshotsOpen(true)}
-            className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-[#0fd1ea] uppercase self-start hover:opacity-80 transition-opacity cursor-pointer"
-          >
-            Voir les screenshots →
-          </button>
+            <div className="flex flex-wrap gap-3">
+              {["2025", "Jeu vidéo", "In-game video capture", "Motion design"].map((tag) => (
+                <span
+                  key={tag}
+                  className="font-[family-name:var(--font-body)] text-[16px] md:text-[20px] tracking-[1.6px] border border-white rounded-full px-3 py-1"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -148,16 +309,47 @@ export default function TrailerPage() {
         </div>
       </section>
 
+      {/* Video Overlay */}
+      {videoOverlayOpen && (
+        <div className="fixed inset-0 z-[100] bg-black/95 flex flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between px-6 md:px-16 py-6">
+            <h2 className="font-[family-name:var(--font-heading)] text-[32px] tracking-[2.56px] text-white">
+              SPACE MARINE 2 - YEAR 2
+            </h2>
+            <button
+              onClick={() => setVideoOverlayOpen(false)}
+              className="text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
+              aria-label="Fermer"
+            >
+              ✕
+            </button>
+          </div>
+          {/* Video */}
+          <div className="flex-1 flex items-center justify-center px-6 md:px-16 pb-10">
+            <div className="w-full max-w-5xl aspect-video">
+              <iframe
+                className="w-full h-full"
+                src="https://www.youtube.com/embed/CxtlJ06u_lc?autoplay=1&rel=0"
+                title="Space Marine 2 - Year 2 Trailer"
+                allow="autoplay; encrypted-media; fullscreen"
+                allowFullScreen
+                style={{ border: 0 }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Screenshots Overlay */}
       {screenshotsOpen && (
         <div
-          className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md overflow-y-auto"
+          className="fixed inset-0 z-[100] bg-black/95 overflow-y-auto"
           onClick={(e) => {
             if (e.target === e.currentTarget) setScreenshotsOpen(false);
           }}
         >
           <div className="max-w-6xl mx-auto px-6 py-16">
-            {/* Close button */}
             <div className="flex justify-between items-center mb-10">
               <h2 className="font-[family-name:var(--font-heading)] text-[40px] tracking-[3.2px] text-white">
                 SCREENSHOTS
@@ -170,15 +362,13 @@ export default function TrailerPage() {
                 ✕
               </button>
             </div>
-
-            {/* Gallery grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {screenshots.map((src, i) => (
                 <img
                   key={i}
                   src={asset(src)}
                   alt={`Screenshot ${i + 1}`}
-                  className="w-full h-auto object-cover cursor-zoom-in hover:opacity-90 transition-opacity"
+                  className="w-full h-auto object-cover hover:opacity-90 transition-opacity"
                 />
               ))}
             </div>
