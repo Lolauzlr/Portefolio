@@ -165,7 +165,7 @@ export default function TrailerPage() {
           </button>
         </div>
 
-        {/* Pentagon cadre - large diagonal cut top-right */}
+        {/* Pentagon cadre - small chamfer top-right corner */}
         <div
           className="absolute left-4 md:left-[120px] bottom-8 md:bottom-[80px] w-[calc(100%-2rem)] md:w-[792px] z-20 pointer-events-auto"
         >
@@ -174,7 +174,7 @@ export default function TrailerPage() {
             className="absolute inset-0 backdrop-blur-[10px]"
             style={{
               background: "rgba(0,0,0,0.40)",
-              clipPath: "polygon(0 0, 63% 0, 100% 75%, 100% 100%, 0 100%)",
+              clipPath: "polygon(0 0, calc(100% - 27px) 0, 100% 12px, 100% 100%, 0 100%)",
             }}
           />
           {/* SVG gradient silver border - pentagon shape */}
@@ -194,7 +194,7 @@ export default function TrailerPage() {
               </linearGradient>
             </defs>
             <polygon
-              points="0.5,0.5 499,0.5 791.5,151 791.5,200.5 0.5,200.5"
+              points="0.5,0.5 765,0.5 791.5,12 791.5,200.5 0.5,200.5"
               stroke="url(#silver-stroke)"
               strokeWidth="1"
               fill="none"
@@ -204,7 +204,7 @@ export default function TrailerPage() {
           {/* Content */}
           <div className="relative z-10 p-6 md:p-8 flex flex-col gap-5">
             <div className="flex items-start justify-between">
-              <div className="flex flex-col gap-3 flex-1 max-w-[60%]">
+              <div className="flex flex-col gap-3 flex-1">
                 <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-white uppercase">
                   Trailer
                 </p>
