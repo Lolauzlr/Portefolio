@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { asset } from "@/lib/asset";
 
 const navLinks = [
   { label: "HOME", href: "/" },
@@ -19,6 +20,16 @@ export default function Navbar() {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center px-6 md:px-[120px] pt-[32px] pb-[20px]">
+        {/* Logo - absolutely positioned left */}
+        <Link href="/" className="absolute left-6 md:left-[120px] shrink-0">
+          <img
+            src={asset("/images/LogoMC.svg")}
+            alt="Marie Chalandre"
+            width={164}
+            height={58}
+          />
+        </Link>
+
         {/* Center nav pill */}
         <nav className="hidden lg:flex items-center gap-10 rounded-[40px] bg-black/40 backdrop-blur-[5px] px-[40px] pt-[32px] pb-[20px]">
           {navLinks.map((link) => {

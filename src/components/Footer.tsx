@@ -22,9 +22,9 @@ export default function Footer() {
       <div className="flex flex-col md:flex-row items-center gap-10">
         {/* Left: Logo + STUDIO */}
         <div className="flex flex-col items-start pr-0 md:pr-[80px] md:border-r border-[#797979] shrink-0">
-          <Image
-            src={asset("/images/logo_footer.png")}
-            alt="Logo"
+          <img
+            src={asset("/images/LogoMC.svg")}
+            alt="Marie Chalandre"
             width={162}
             height={47}
           />
