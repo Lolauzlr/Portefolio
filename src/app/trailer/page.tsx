@@ -8,8 +8,35 @@ export default function TrailerPage() {
   const [videoOverlayOpen, setVideoOverlayOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
+  const [showPause, setShowPause] = useState(false);
   const playerRef = useRef<YT.Player | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLElement>(null);
+  const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const hero = heroRef.current;
+    if (!hero) return;
+
+    const handleMouseMove = () => {
+      setShowPause(true);
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+      idleTimerRef.current = setTimeout(() => setShowPause(false), 5000);
+    };
+
+    const handleMouseLeave = () => {
+      setShowPause(false);
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+    };
+
+    hero.addEventListener("mousemove", handleMouseMove);
+    hero.addEventListener("mouseleave", handleMouseLeave);
+    return () => {
+      hero.removeEventListener("mousemove", handleMouseMove);
+      hero.removeEventListener("mouseleave", handleMouseLeave);
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
+    };
+  }, []);
 
   const loremIpsum =
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque. Vivamus dapibus semper justo, interdum tincidunt tellus placerat a. Quisque vel orci et nulla vestibulum interdum.";
@@ -100,7 +127,7 @@ export default function TrailerPage() {
   return (
     <div className="bg-[#15161b] text-white min-h-screen">
       {/* Hero Section - no top padding, video bleeds under navbar */}
-      <section className="relative h-[100vh] md:h-[810px] w-full overflow-hidden group/hero">
+      <section ref={heroRef} className="relative h-[100vh] md:h-[810px] w-full overflow-hidden">
         {/* YouTube video background via API */}
         <div
           ref={containerRef}
@@ -126,10 +153,10 @@ export default function TrailerPage() {
           aria-label="Ouvrir la vidéo"
         />
 
-        {/* Pause button - visible on hero hover only when playing */}
-        {isPlaying && (
+        {/* Pause button - visible on mouse move, hides after 5s idle */}
+        {isPlaying && showPause && (
           <button
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[80px] h-[80px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-opacity duration-300 cursor-pointer opacity-0 group-hover/hero:opacity-100"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[80px] h-[80px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-opacity duration-300 cursor-pointer"
             onClick={(e) => { e.stopPropagation(); togglePlay(); }}
             aria-label="Pause"
           >
@@ -188,7 +215,7 @@ export default function TrailerPage() {
           />
           {/* Gradient silver border - pentagon shape via outline trick */}
           <div
-            className="absolute inset-0 pointer-events-none"
+            className="absolute inset-0 z-10 pointer-events-none"
             style={{
               clipPath: "polygon(0 0, calc(100% - 27px) 0, 100% 12px, 100% 100%, 0 100%)",
               background: "linear-gradient(135deg, rgba(255,255,255,0.9), rgba(200,200,200,0.5), rgba(255,255,255,0.7), rgba(180,180,180,0.4), rgba(220,220,220,0.6))",
