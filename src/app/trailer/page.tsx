@@ -253,7 +253,7 @@ export default function TrailerPage() {
           </svg>
 
           {/* Content */}
-          <div className="relative z-10 p-6 md:p-8 flex flex-col gap-5">
+          <div className="relative z-10 p-4 flex flex-col gap-5">
             <div className="flex items-start justify-between">
               <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-white uppercase">
                 Trailer
