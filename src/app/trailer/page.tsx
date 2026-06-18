@@ -4,7 +4,12 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { asset } from "@/lib/asset";
 
 export default function TrailerPage() {
-  const [screenshotsOpen, setScreenshotsOpen] = useState(false);
+  const [screenshotsData, setScreenshotsData] = useState<{
+    category: string;
+    title: string;
+    screenshots: { src: string; tag: string; description: string }[];
+  } | null>(null);
+  const [screenshotIndex, setScreenshotIndex] = useState(0);
   const [videoOverlayOpen, setVideoOverlayOpen] = useState(false);
   const [recentOverlay, setRecentOverlay] = useState<{ videoId: string; title: string } | null>(null);
   const [hoveredRecent, setHoveredRecent] = useState<string | null>(null);
@@ -67,34 +72,75 @@ export default function TrailerPage() {
     };
   }, []);
 
+  const openScreenshots = (category: string, title: string, screenshots: { src: string; tag: string; description: string }[]) => {
+    setScreenshotIndex(0);
+    setScreenshotsData({ category, title, screenshots });
+  };
+
   const recentTrailers = [
-    { videoId: "ZPQFsx9XXoM", title: "RESONANCE : A PLAGUE TALE LEGACY • GAMEPLAY", description: "2026 • In-game video capture • Video editing • Sound editing" },
-    { videoId: "ewZufHtEl68", title: "YERBA BUENA • GAMEPLAY", description: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing" },
-    { videoId: "cZgim-KYkZQ", title: "YERBA BUENA • REVEAL TRAILER", description: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing" },
+    { videoId: "ZPQFsx9XXoM", title: "RESONANCE : A PLAGUE TALE LEGACY • GAMEPLAY", description: "2026 • In-game video capture • Video editing • Sound editing",
+      screenshotCategory: "GAMEPLAY · 2026", screenshotTitle: "RESONANCE : A PLAGUE TALE LEGACY",
+      screenshots: [
+        { src: "/images/trailer_hero.png", tag: "SCÈNE 01", description: "Capture in-game" },
+      ] },
+    { videoId: "ewZufHtEl68", title: "YERBA BUENA • GAMEPLAY", description: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing",
+      screenshotCategory: "GAMEPLAY · 2026", screenshotTitle: "YERBA BUENA",
+      screenshots: [
+        { src: "/images/trailer_hero.png", tag: "SCÈNE 01", description: "Capture in-game" },
+      ] },
+    { videoId: "cZgim-KYkZQ", title: "YERBA BUENA • REVEAL TRAILER", description: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing",
+      screenshotCategory: "REVEAL TRAILER · 2026", screenshotTitle: "YERBA BUENA",
+      screenshots: [
+        { src: "/images/trailer_hero.png", tag: "SCÈNE 01", description: "Capture in-game" },
+      ] },
   ];
 
   const watchCards = [
-    { videoId: "QwxFR1g7Uy4", title: "John Carpenter's Toxic Commando • Gameplay Overview Trailer", description: "2026 • In-game video capture • Video editing • Sound editing" },
-    { videoId: "CxtlJ06u_lc", title: "Space Marine 2 • Year 2 Trailer", description: "2025 • In-game video capture • Video editing • Sound editing" },
-    { videoId: "ETCpWo0A0i0", title: "MIO: Memories In Orbit • Gameplay Trailer", description: "2025 • In-game video capture • Video editing • Sound editing" },
-    { videoId: "tSN6KhscgiE", title: "Chants of Sennaar • Gameplay Overview Trailer | Gamescom 2023", description: "2023 • In-game video capture • Camera Animation in Unity • Video editing • Sound editing" },
-    { videoId: "LpxuWSy8b9U", title: "Atlas Fallen • Gameplay Overview Trailer", description: "2023 • In-game video capture • Video editing • Sound editing" },
-    { videoId: "_nFYp6BFviM", title: "My Time at Sandrock • \"Shape your future\" Release Date Reveal Trailer", description: "2023 • In-game video capture • Video editing • Sound editing" },
-    { videoId: "a1JhKnaLxN0", title: "Dordogne • Release Date Reveal Trailer", description: "2023 • Scene Set-up and Animation in Unity • In-game Video Capture • Motion Graphics • Video Editing • Sound Editing" },
-    { videoId: "EdGCL3cVGPo", title: "Hotel Renovator • Release Date Reveal Trailer", description: "2023 • Camera • Animation & Scene set up in Unreal Engine 4 • Video Editing • Sound Editing" },
-    { videoId: "MTskFVe8P3Q", title: "A Plague Tale: Requiem • The Game Awards 2022 Spotlight", description: "2022 • In-game video capture • Video editing • Sound editing" },
-    { videoId: "3pEJJdJStiQ", title: "BLACKTAIL • 'The Forest Awaits' Gameplay Trailer | THE PARASIGHT", description: "2022 • In-game video capture • Video editing • Sound editing" },
-    { videoId: "U4XA_dhCx_M", title: "Warstride Challenges • Multiplayer Update Trailer", description: "2022 • Camera & Character Animation in Unreal Engine 4 • In-game Video Capture • Video Editing • Sound Editing" },
+    { videoId: "QwxFR1g7Uy4", title: "John Carpenter's Toxic Commando • Gameplay Overview Trailer", description: "2026 • In-game video capture • Video editing • Sound editing",
+      screenshotCategory: "GAMEPLAY OVERVIEW · 2026", screenshotTitle: "JOHN CARPENTER'S TOXIC COMMANDO",
+      screenshots: [{ src: "/images/trailer_hero.png", tag: "SCÈNE 01", description: "Capture in-game" }] },
+    { videoId: "CxtlJ06u_lc", title: "Space Marine 2 • Year 2 Trailer", description: "2025 • In-game video capture • Video editing • Sound editing",
+      screenshotCategory: "YEAR 2 TRAILER · 2025", screenshotTitle: "SPACE MARINE 2",
+      screenshots: [{ src: "/images/trailer_hero.png", tag: "SCÈNE 01", description: "Capture in-game" }] },
+    { videoId: "ETCpWo0A0i0", title: "MIO: Memories In Orbit • Gameplay Trailer", description: "2025 • In-game video capture • Video editing • Sound editing",
+      screenshotCategory: "GAMEPLAY TRAILER · 2025", screenshotTitle: "MIO: MEMORIES IN ORBIT",
+      screenshots: [{ src: "/images/trailer_hero.png", tag: "SCÈNE 01", description: "Capture in-game" }] },
+    { videoId: "tSN6KhscgiE", title: "Chants of Sennaar • Gameplay Overview Trailer | Gamescom 2023", description: "2023 • In-game video capture • Camera Animation in Unity • Video editing • Sound editing",
+      screenshotCategory: "GAMEPLAY OVERVIEW · 2023", screenshotTitle: "CHANTS OF SENNAAR",
+      screenshots: [
+        { src: "/images/trailer_watch_chants.png", tag: "SCÈNE 01", description: "Capture in-game" },
+        { src: "/images/trailer_chants.png", tag: "SCÈNE 02", description: "Camera animation in Unity" },
+      ] },
+    { videoId: "LpxuWSy8b9U", title: "Atlas Fallen • Gameplay Overview Trailer", description: "2023 • In-game video capture • Video editing • Sound editing",
+      screenshotCategory: "GAMEPLAY OVERVIEW · 2023", screenshotTitle: "ATLAS FALLEN",
+      screenshots: [{ src: "/images/trailer_watch_atlas.png", tag: "SCÈNE 01", description: "Capture in-game" }] },
+    { videoId: "_nFYp6BFviM", title: "My Time at Sandrock • \"Shape your future\" Release Date Reveal Trailer", description: "2023 • In-game video capture • Video editing • Sound editing",
+      screenshotCategory: "RELEASE DATE REVEAL · 2023", screenshotTitle: "MY TIME AT SANDROCK",
+      screenshots: [{ src: "/images/trailer_watch_sandrock.png", tag: "SCÈNE 01", description: "Capture in-game" }] },
+    { videoId: "a1JhKnaLxN0", title: "Dordogne • Release Date Reveal Trailer", description: "2023 • Scene Set-up and Animation in Unity • In-game Video Capture • Motion Graphics • Video Editing • Sound Editing",
+      screenshotCategory: "RELEASE DATE REVEAL · 2023", screenshotTitle: "DORDOGNE",
+      screenshots: [{ src: "/images/trailer_dordogne.png", tag: "SCÈNE 01", description: "Scene set-up and animation in Unity" }] },
+    { videoId: "EdGCL3cVGPo", title: "Hotel Renovator • Release Date Reveal Trailer", description: "2023 • Camera • Animation & Scene set up in Unreal Engine 4 • Video Editing • Sound Editing",
+      screenshotCategory: "RELEASE DATE REVEAL · 2023", screenshotTitle: "HOTEL RENOVATOR",
+      screenshots: [{ src: "/images/trailer_watch_hotel.png", tag: "SCÈNE 01", description: "Animation & Scene set up in Unreal Engine 4" }] },
+    { videoId: "MTskFVe8P3Q", title: "A Plague Tale: Requiem • The Game Awards 2022 Spotlight", description: "2022 • In-game video capture • Video editing • Sound editing",
+      screenshotCategory: "SPOTLIGHT · 2022", screenshotTitle: "A PLAGUE TALE : REQUIEM",
+      screenshots: [{ src: "/images/trailer_hero.png", tag: "SCÈNE 01", description: "Capture in-game" }] },
+    { videoId: "3pEJJdJStiQ", title: "BLACKTAIL • 'The Forest Awaits' Gameplay Trailer | THE PARASIGHT", description: "2022 • In-game video capture • Video editing • Sound editing",
+      screenshotCategory: "GAMEPLAY TRAILER · 2022", screenshotTitle: "BLACKTAIL",
+      screenshots: [{ src: "/images/trailer_watch_blacktail.png", tag: "SCÈNE 01", description: "Capture in-game" }] },
+    { videoId: "U4XA_dhCx_M", title: "Warstride Challenges • Multiplayer Update Trailer", description: "2022 • Camera & Character Animation in Unreal Engine 4 • In-game Video Capture • Video Editing • Sound Editing",
+      screenshotCategory: "MULTIPLAYER UPDATE · 2022", screenshotTitle: "WARSTRIDE CHALLENGES",
+      screenshots: [{ src: "/images/trailer_warstride.png", tag: "SCÈNE 01", description: "Character animation in Unreal Engine 4" }] },
   ];
 
-  const screenshots = [
-    "/images/trailer_hero.png",
-    "/images/trailer_watch_chants.png",
-    "/images/trailer_watch_atlas.png",
-    "/images/trailer_watch_sandrock.png",
-    "/images/trailer_watch_hotel.png",
-    "/images/trailer_watch_blacktail.png",
-  ];
+  const heroScreenshots = {
+    category: "GAMEPLAY · 2026",
+    title: "RESONANCE : A PLAGUE TALE LEGACY",
+    screenshots: [
+      { src: "/images/trailer_hero.png", tag: "SCÈNE 01", description: "Capture in-game" },
+    ],
+  };
 
   const onPlayerReady = useCallback((event: YT.PlayerEvent) => {
     event.target.mute();
@@ -278,7 +324,7 @@ export default function TrailerPage() {
               </p>
               {/* CTA - Voir les screenshots */}
               <button
-                onClick={(e) => { e.stopPropagation(); setScreenshotsOpen(true); }}
+                onClick={(e) => { e.stopPropagation(); openScreenshots(heroScreenshots.category, heroScreenshots.title, heroScreenshots.screenshots); }}
                 className="font-[family-name:var(--font-heading)] text-[20px] md:text-[24px] tracking-[1.92px] text-[#0fd1ea] uppercase shrink-0 hover:opacity-80 transition-opacity cursor-pointer whitespace-nowrap"
               >
                 VOIR LES SCREENSHOTS
@@ -344,7 +390,7 @@ export default function TrailerPage() {
                   {card.description}
                 </p>
                 <button
-                  onClick={() => setScreenshotsOpen(true)}
+                  onClick={() => openScreenshots(card.screenshotCategory, card.screenshotTitle, card.screenshots)}
                   className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-start hover:opacity-80 transition-opacity cursor-pointer"
                 >
                   VOIR LES SCREENSHOTS
@@ -439,7 +485,7 @@ export default function TrailerPage() {
                       </p>
                     </div>
                     <button
-                      onClick={() => setScreenshotsOpen(true)}
+                      onClick={() => openScreenshots(card.screenshotCategory, card.screenshotTitle, card.screenshots)}
                       className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-end hover:opacity-80 transition-opacity cursor-pointer"
                     >
                       VOIR LES SCREENSHOTS
@@ -554,36 +600,89 @@ export default function TrailerPage() {
         </div>
       )}
 
-      {/* Screenshots Overlay */}
-      {screenshotsOpen && (
+      {/* Screenshots Carousel Overlay */}
+      {screenshotsData && (
         <div
-          className="fixed inset-0 z-[100] bg-black/95 overflow-y-auto"
+          className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
           onClick={(e) => {
-            if (e.target === e.currentTarget) setScreenshotsOpen(false);
+            if (e.target === e.currentTarget) setScreenshotsData(null);
           }}
         >
-          <div className="max-w-6xl mx-auto px-6 py-16">
-            <div className="flex justify-between items-center mb-10">
-              <h2 className="font-[family-name:var(--font-heading)] text-[40px] tracking-[3.2px] text-white">
-                SCREENSHOTS
-              </h2>
+          <div className="w-full h-full flex flex-col md:flex-row">
+            {/* Left: Carousel */}
+            <div className="relative flex-1 flex items-center justify-center bg-black/50 min-h-0">
+              {/* Counter */}
+              <span className="absolute top-6 left-6 font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white z-10">
+                {screenshotIndex + 1}/{screenshotsData.screenshots.length}
+              </span>
+
+              {/* Previous */}
+              {screenshotsData.screenshots.length > 1 && (
+                <button
+                  onClick={() => setScreenshotIndex((screenshotIndex - 1 + screenshotsData.screenshots.length) % screenshotsData.screenshots.length)}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+                  aria-label="Précédent"
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="15,18 9,12 15,6" />
+                  </svg>
+                </button>
+              )}
+
+              {/* Image */}
+              <img
+                src={asset(screenshotsData.screenshots[screenshotIndex].src)}
+                alt={screenshotsData.screenshots[screenshotIndex].tag}
+                className="max-w-full max-h-full object-contain p-12"
+              />
+
+              {/* Next */}
+              {screenshotsData.screenshots.length > 1 && (
+                <button
+                  onClick={() => setScreenshotIndex((screenshotIndex + 1) % screenshotsData.screenshots.length)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+                  aria-label="Suivant"
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9,6 15,12 9,18" />
+                  </svg>
+                </button>
+              )}
+            </div>
+
+            {/* Right: Info panel */}
+            <div className="w-full md:w-[400px] flex flex-col gap-6 p-8 md:p-10 bg-[#15161b] overflow-y-auto">
+              {/* Close button */}
               <button
-                onClick={() => setScreenshotsOpen(false)}
-                className="text-white text-4xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
+                onClick={() => setScreenshotsData(null)}
+                className="self-end text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
                 aria-label="Fermer"
               >
                 ✕
               </button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {screenshots.map((src, i) => (
-                <img
-                  key={i}
-                  src={asset(src)}
-                  alt={`Screenshot ${i + 1}`}
-                  className="w-full h-auto object-cover hover:opacity-90 transition-opacity"
-                />
-              ))}
+
+              {/* Category */}
+              <p className="font-[family-name:var(--font-heading)] text-[16px] tracking-[1.28px] text-[#797979] uppercase">
+                {screenshotsData.category}
+              </p>
+
+              {/* Title */}
+              <h2 className="font-[family-name:var(--font-heading)] text-[32px] md:text-[40px] tracking-[3.2px] text-white leading-tight">
+                {screenshotsData.title}
+              </h2>
+
+              {/* Separator */}
+              <div className="w-[80px] h-[4px] bg-[#ddff6e]" />
+
+              {/* Tag */}
+              <p className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white uppercase">
+                {screenshotsData.screenshots[screenshotIndex].tag}
+              </p>
+
+              {/* Description */}
+              <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-[#b0b0b0]">
+                {screenshotsData.screenshots[screenshotIndex].description}
+              </p>
             </div>
           </div>
         </div>
