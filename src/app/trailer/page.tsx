@@ -213,22 +213,20 @@ export default function TrailerPage() {
           {/* Content */}
           <div className="relative z-10 p-6 md:p-8 flex flex-col gap-5">
             <div className="flex items-start justify-between">
-              <div className="flex flex-col gap-3 flex-1">
-                <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-white uppercase">
-                  Trailer
-                </p>
-                <h1 className="font-[family-name:var(--font-heading)] text-[36px] md:text-[72px] leading-none tracking-[4px] md:tracking-[6.4px] uppercase">
-                  RESONANCE : A PLAGUE TALE LEGACY
-                </h1>
-              </div>
+              <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-white uppercase">
+                Trailer
+              </p>
               {/* CTA - Voir les screenshots */}
               <button
                 onClick={(e) => { e.stopPropagation(); setScreenshotsOpen(true); }}
-                className="font-[family-name:var(--font-heading)] text-[20px] md:text-[24px] tracking-[1.92px] text-[#0fd1ea] uppercase shrink-0 hover:opacity-80 transition-opacity cursor-pointer whitespace-nowrap mt-1"
+                className="font-[family-name:var(--font-heading)] text-[20px] md:text-[24px] tracking-[1.92px] text-[#0fd1ea] uppercase shrink-0 hover:opacity-80 transition-opacity cursor-pointer whitespace-nowrap"
               >
                 VOIR LES SCREENSHOTS
               </button>
             </div>
+            <h1 className="font-[family-name:var(--font-heading)] text-[36px] md:text-[72px] leading-none tracking-[4px] md:tracking-[6.4px] uppercase w-full">
+              RESONANCE : A PLAGUE TALE LEGACY
+            </h1>
 
             <div className="flex flex-wrap gap-3">
               {["2026", "Jeu vidéo", "In-game video capture", "Gameplay"].map((tag) => (
