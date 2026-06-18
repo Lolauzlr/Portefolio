@@ -31,7 +31,7 @@ export default function Navbar() {
         </Link>
 
         {/* Center nav pill */}
-        <nav className="hidden lg:flex items-center gap-10 rounded-[40px] bg-black/40 backdrop-blur-[5px] px-[40px] pt-[32px] pb-[20px]">
+        <nav className="hidden lg:flex items-center gap-10 rounded-[40px] bg-black/40 backdrop-blur-[5px] px-[40px] pt-[28px] pb-[20px]">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
