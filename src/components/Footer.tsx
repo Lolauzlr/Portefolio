@@ -8,6 +8,7 @@ const exploreLinks = [
   { label: "Movies", href: "/movies" },
   { label: "Illustrations", href: "/illustrations" },
   { label: "Storyboard", href: "/storyboard" },
+  { label: "About me", href: "/contact" },
 ];
 
 const socials = [
@@ -34,16 +35,16 @@ export default function Footer() {
         </div>
 
         {/* Center + Right */}
-        <div className="flex flex-1 flex-col md:flex-row items-start md:items-center justify-between w-full">
+        <div className="flex flex-1 flex-col md:flex-row items-start md:items-start justify-between w-full">
           {/* Explore */}
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4">
             <div>
               <h3 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
                 EXPLORE
               </h3>
               <div className="w-full h-[4px] bg-[#ddff6e] mt-2" />
             </div>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-6">
               {exploreLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -57,7 +58,7 @@ export default function Footer() {
           </div>
 
           {/* Contact */}
-          <div className="flex flex-col gap-6 mt-6 md:mt-0">
+          <div className="flex flex-col gap-4 mt-6 md:mt-0 items-start md:items-end">
             <div>
               <h3 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
                 CONTACT
