@@ -56,9 +56,9 @@ export default function TrailerPage() {
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque. Vivamus dapibus semper justo, interdum tincidunt tellus placerat a. Quisque vel orci et nulla vestibulum interdum.";
 
   const recentTrailers = [
-    { videoId: "ewZufHtEl68", title: "CHANTS OF SENNAAR" },
-    { videoId: "cZgim-KYkZQ", title: "WARSTRIDE CHALLENGES" },
-    { videoId: "QwxFR1g7Uy4", title: "DORDOGNE" },
+    { videoId: "ZPQFsx9XXoM", title: "RESONANCE : A PLAGUE TALE LEGACY", description: "Long Gameplay • 2026" },
+    { videoId: "ewZufHtEl68", title: "YERBA BUENA", description: "Gameplay • 2026" },
+    { videoId: "cZgim-KYkZQ", title: "YERBA BUENA", description: "Reveal Trailer • 2026" },
   ];
 
   const watchCards = [
@@ -323,7 +323,7 @@ export default function TrailerPage() {
                   {card.title}
                 </p>
                 <p className="text-[16px] font-[family-name:var(--font-body)] tracking-[1.28px] text-white">
-                  {loremIpsum.slice(0, 110)}
+                  {card.description}
                 </p>
               </div>
             </div>
