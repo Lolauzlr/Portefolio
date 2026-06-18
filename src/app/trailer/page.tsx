@@ -186,29 +186,18 @@ export default function TrailerPage() {
               clipPath: "polygon(0 0, calc(100% - 27px) 0, 100% 12px, 100% 100%, 0 100%)",
             }}
           />
-          {/* SVG gradient silver border - pentagon shape */}
-          <svg
-            className="absolute inset-0 w-full h-full pointer-events-none"
-            viewBox="0 0 792 201"
-            preserveAspectRatio="none"
-            fill="none"
-          >
-            <defs>
-              <linearGradient id="silver-stroke" x1="0" y1="0" x2="792" y2="201" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stopColor="rgba(255,255,255,0.9)" />
-                <stop offset="25%" stopColor="rgba(200,200,200,0.5)" />
-                <stop offset="50%" stopColor="rgba(255,255,255,0.7)" />
-                <stop offset="75%" stopColor="rgba(180,180,180,0.4)" />
-                <stop offset="100%" stopColor="rgba(220,220,220,0.6)" />
-              </linearGradient>
-            </defs>
-            <polygon
-              points="0.5,0.5 765,0.5 791.5,12 791.5,200.5 0.5,200.5"
-              stroke="url(#silver-stroke)"
-              strokeWidth="1"
-              fill="none"
-            />
-          </svg>
+          {/* Gradient silver border - pentagon shape via outline trick */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              clipPath: "polygon(0 0, calc(100% - 27px) 0, 100% 12px, 100% 100%, 0 100%)",
+              background: "linear-gradient(135deg, rgba(255,255,255,0.9), rgba(200,200,200,0.5), rgba(255,255,255,0.7), rgba(180,180,180,0.4), rgba(220,220,220,0.6))",
+              mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+              maskComposite: "exclude",
+              WebkitMaskComposite: "xor",
+              padding: "1px",
+            }}
+          />
 
           {/* Content */}
           <div className="relative z-10 p-6 md:p-8 flex flex-col gap-5">
