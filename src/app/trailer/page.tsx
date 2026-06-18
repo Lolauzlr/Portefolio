@@ -55,12 +55,12 @@ export default function TrailerPage() {
 
     (window as unknown as Record<string, unknown>).onYouTubeIframeAPIReady = () => {
       playerRef.current = new YT.Player("yt-bg-player", {
-        videoId: "CxtlJ06u_lc",
+        videoId: "ZPQFsx9XXoM",
         playerVars: {
           autoplay: 1,
           mute: 1,
           loop: 1,
-          playlist: "CxtlJ06u_lc",
+          playlist: "ZPQFsx9XXoM",
           controls: 0,
           showinfo: 0,
           rel: 0,
@@ -100,7 +100,7 @@ export default function TrailerPage() {
   return (
     <div className="bg-[#15161b] text-white min-h-screen">
       {/* Hero Section - no top padding, video bleeds under navbar */}
-      <section className="relative h-[100vh] md:h-[810px] w-full overflow-hidden">
+      <section className="relative h-[100vh] md:h-[810px] w-full overflow-hidden group/hero">
         {/* YouTube video background via API */}
         <div
           ref={containerRef}
@@ -119,24 +119,32 @@ export default function TrailerPage() {
           />
         </div>
 
-        {/* Click zone - pause if playing, open overlay if paused */}
+        {/* Click zone - opens overlay, or pauses on hover-visible button */}
         <button
-          className="absolute inset-0 w-full h-full z-10 cursor-pointer"
-          onClick={() => {
-            if (isPlaying) {
-              togglePlay();
-            } else {
-              setVideoOverlayOpen(true);
-            }
-          }}
-          aria-label={isPlaying ? "Pause" : "Ouvrir la vidéo"}
+          className="absolute inset-0 w-full h-full z-10 cursor-pointer group"
+          onClick={() => setVideoOverlayOpen(true)}
+          aria-label="Ouvrir la vidéo"
         />
 
-        {/* Play button - only visible when paused */}
+        {/* Pause button - visible on hero hover only when playing */}
+        {isPlaying && (
+          <button
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[80px] h-[80px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-opacity duration-300 cursor-pointer opacity-0 group-hover/hero:opacity-100"
+            onClick={(e) => { e.stopPropagation(); togglePlay(); }}
+            aria-label="Pause"
+          >
+            <svg width="32" height="32" viewBox="0 0 20 20" fill="white">
+              <rect x="4" y="3" width="4" height="14" rx="1" />
+              <rect x="12" y="3" width="4" height="14" rx="1" />
+            </svg>
+          </button>
+        )}
+
+        {/* Play button - visible when paused */}
         {!isPlaying && (
           <button
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[80px] h-[80px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
-            onClick={togglePlay}
+            onClick={(e) => { e.stopPropagation(); togglePlay(); }}
             aria-label="Play"
           >
             <svg width="32" height="32" viewBox="0 0 20 20" fill="white">
@@ -148,17 +156,17 @@ export default function TrailerPage() {
         {/* Sound toggle - always visible, aligned right with ME CONTACTER, bottom with pentagon */}
         <button
           onClick={toggleMute}
-          className="absolute right-4 md:right-[120px] bottom-8 md:bottom-[80px] z-20 w-[32px] h-[32px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+          className="absolute right-4 md:right-[120px] bottom-8 md:bottom-[80px] z-20 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
           aria-label={isMuted ? "Activer le son" : "Couper le son"}
         >
           {isMuted ? (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
               <line x1="23" y1="9" x2="17" y2="15" />
               <line x1="17" y1="9" x2="23" y2="15" />
             </svg>
           ) : (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
               <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
               <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
@@ -210,7 +218,7 @@ export default function TrailerPage() {
                   Trailer
                 </p>
                 <h1 className="font-[family-name:var(--font-heading)] text-[36px] md:text-[72px] leading-none tracking-[4px] md:tracking-[6.4px] uppercase">
-                  SPACE MARINE 2 - YEAR 2
+                  RESONANCE : A PLAGUE TALE LEGACY
                 </h1>
               </div>
               {/* CTA - Voir les screenshots */}
@@ -223,7 +231,7 @@ export default function TrailerPage() {
             </div>
 
             <div className="flex flex-wrap gap-3">
-              {["2025", "Jeu vidéo", "In-game video capture", "Motion design"].map((tag) => (
+              {["2026", "Jeu vidéo", "In-game video capture", "Gameplay"].map((tag) => (
                 <span
                   key={tag}
                   className="font-[family-name:var(--font-body)] text-[16px] md:text-[20px] tracking-[1.6px] border border-white rounded-full px-3 py-1"
@@ -306,7 +314,7 @@ export default function TrailerPage() {
           {/* Header */}
           <div className="flex items-center justify-between px-6 md:px-16 py-6">
             <h2 className="font-[family-name:var(--font-heading)] text-[32px] tracking-[2.56px] text-white">
-              SPACE MARINE 2 - YEAR 2
+              RESONANCE : A PLAGUE TALE LEGACY
             </h2>
             <button
               onClick={() => setVideoOverlayOpen(false)}
@@ -321,8 +329,8 @@ export default function TrailerPage() {
             <div className="w-full max-w-5xl aspect-video">
               <iframe
                 className="w-full h-full"
-                src="https://www.youtube.com/embed/CxtlJ06u_lc?autoplay=1&rel=0"
-                title="Space Marine 2 - Year 2 Trailer"
+                src="https://www.youtube.com/embed/ZPQFsx9XXoM?autoplay=1&rel=0"
+                title="Resonance : A Plague Tale Legacy"
                 allow="autoplay; encrypted-media; fullscreen"
                 allowFullScreen
                 style={{ border: 0 }}
