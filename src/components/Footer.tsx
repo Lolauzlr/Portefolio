@@ -38,7 +38,7 @@ export default function Footer() {
         <div className="flex flex-1 flex-col md:flex-row items-start md:items-start justify-between w-full">
           {/* Explore */}
           <div className="flex flex-col gap-4">
-            <div className="inline-block">
+            <div className="self-start">
               <h3 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
                 EXPLORE
               </h3>
@@ -59,7 +59,7 @@ export default function Footer() {
 
           {/* Contact */}
           <div className="flex flex-col gap-4 mt-6 md:mt-0 items-start md:items-end">
-            <div className="inline-block">
+            <div className="self-start md:self-end">
               <h3 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
                 CONTACT
               </h3>
