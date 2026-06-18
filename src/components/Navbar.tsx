@@ -1,10 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { asset } from "@/lib/asset";
 
 const navLinks = [
   { label: "HOME", href: "/" },
@@ -20,18 +18,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-[120px] pt-[32px] pb-[20px]">
-        {/* Logo */}
-        <Link href="/" className="shrink-0">
-          <Image
-            src={asset("/images/logo.png")}
-            alt="Logo"
-            width={164}
-            height={58}
-            priority
-          />
-        </Link>
-
+      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center px-6 md:px-[120px] pt-[32px] pb-[20px]">
         {/* Center nav pill */}
         <nav className="hidden lg:flex items-center gap-10 rounded-[40px] bg-black/40 backdrop-blur-[5px] px-[40px] pt-[32px] pb-[20px]">
           {navLinks.map((link) => {
@@ -51,26 +38,24 @@ export default function Navbar() {
           })}
         </nav>
 
-        {/* Contact button + hamburger */}
-        <div className="flex items-center gap-4">
-          <Link
-            href="/contact"
-            className="hidden lg:block font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-[#0fd1ea] border-2 border-[#0fd1ea] rounded-[40px] bg-black/40 backdrop-blur-[5px] px-[40px] py-[20px] hover:bg-[#0fd1ea]/10 transition-colors"
-          >
-            ME CONTACTER
-          </Link>
+        {/* Contact button - absolutely positioned right */}
+        <Link
+          href="/contact"
+          className="hidden lg:block absolute right-6 md:right-[120px] font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-[#0fd1ea] border-2 border-[#0fd1ea] rounded-[40px] bg-black/40 backdrop-blur-[5px] px-[40px] py-[20px] hover:bg-[#0fd1ea]/10 transition-colors"
+        >
+          ME CONTACTER
+        </Link>
 
-          {/* Hamburger */}
-          <button
-            className="lg:hidden flex flex-col gap-1.5 p-2"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Toggle menu"
-          >
-            <span className={`block w-7 h-0.5 bg-white transition-transform ${menuOpen ? "rotate-45 translate-y-2" : ""}`} />
-            <span className={`block w-7 h-0.5 bg-white transition-opacity ${menuOpen ? "opacity-0" : ""}`} />
-            <span className={`block w-7 h-0.5 bg-white transition-transform ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`} />
-          </button>
-        </div>
+        {/* Hamburger */}
+        <button
+          className="lg:hidden absolute right-6 flex flex-col gap-1.5 p-2"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
+        >
+          <span className={`block w-7 h-0.5 bg-white transition-transform ${menuOpen ? "rotate-45 translate-y-2" : ""}`} />
+          <span className={`block w-7 h-0.5 bg-white transition-opacity ${menuOpen ? "opacity-0" : ""}`} />
+          <span className={`block w-7 h-0.5 bg-white transition-transform ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`} />
+        </button>
       </header>
 
       {/* Mobile overlay */}
