@@ -56,9 +56,9 @@ export default function TrailerPage() {
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque. Vivamus dapibus semper justo, interdum tincidunt tellus placerat a. Quisque vel orci et nulla vestibulum interdum.";
 
   const recentTrailers = [
-    { videoId: "ZPQFsx9XXoM", title: "RESONANCE : A PLAGUE TALE LEGACY", description: "Long Gameplay • 2026" },
-    { videoId: "ewZufHtEl68", title: "YERBA BUENA", description: "Gameplay • 2026" },
-    { videoId: "cZgim-KYkZQ", title: "YERBA BUENA", description: "Reveal Trailer • 2026" },
+    { videoId: "ZPQFsx9XXoM", title: "RESONANCE : A PLAGUE TALE LEGACY • GAMEPLAY", description: "2026 • In-game video capture • Video editing • Sound editing" },
+    { videoId: "ewZufHtEl68", title: "YERBA BUENA • GAMEPLAY", description: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing" },
+    { videoId: "cZgim-KYkZQ", title: "YERBA BUENA • REVEAL TRAILER", description: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing" },
   ];
 
   const watchCards = [
