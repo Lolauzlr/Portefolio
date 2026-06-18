@@ -343,6 +343,12 @@ export default function TrailerPage() {
                 <p className="text-[16px] font-[family-name:var(--font-body)] tracking-[1.28px] text-white">
                   {card.description}
                 </p>
+                <button
+                  onClick={() => setScreenshotsOpen(true)}
+                  className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-start hover:opacity-80 transition-opacity cursor-pointer"
+                >
+                  VOIR LES SCREENSHOTS
+                </button>
               </div>
             </div>
           ))}
@@ -420,16 +426,24 @@ export default function TrailerPage() {
                       />
                     )}
                   </div>
-                  <div className="flex flex-col gap-6 p-6">
-                    <div>
-                      <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px]">
-                        {card.title}
-                      </h3>
-                      <div className="w-[80px] h-[4px] bg-white mt-1" />
+                  <div className="flex flex-col gap-6 p-6 justify-between">
+                    <div className="flex flex-col gap-6">
+                      <div>
+                        <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px]">
+                          {card.title}
+                        </h3>
+                        <div className="w-[80px] h-[4px] bg-white mt-1" />
+                      </div>
+                      <p className="text-[16px] font-[family-name:var(--font-body)] tracking-[1.28px] text-white">
+                        {card.description}
+                      </p>
                     </div>
-                    <p className="text-[16px] font-[family-name:var(--font-body)] tracking-[1.28px] text-white">
-                      {card.description}
-                    </p>
+                    <button
+                      onClick={() => setScreenshotsOpen(true)}
+                      className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-end hover:opacity-80 transition-opacity cursor-pointer"
+                    >
+                      VOIR LES SCREENSHOTS
+                    </button>
                   </div>
                 </div>
               </div>
