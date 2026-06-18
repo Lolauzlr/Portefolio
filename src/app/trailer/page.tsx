@@ -348,7 +348,7 @@ export default function TrailerPage() {
           {watchCards.map((card) => (
             <div
               key={card.videoId}
-              className="flex flex-col md:flex-row border border-[#797979]"
+              className="flex flex-col md:flex-row border border-[#797979] p-5"
             >
               <div
                 className="relative w-full md:w-[792px] flex-shrink-0 cursor-pointer overflow-hidden bg-black"
