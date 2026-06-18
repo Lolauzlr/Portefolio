@@ -42,7 +42,7 @@ export default function Footer() {
               <h3 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
                 EXPLORE
               </h3>
-              <div className="w-full h-[4px] bg-[#ddff6e] mt-2" />
+              <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-2" />
             </div>
             <div className="flex flex-wrap gap-6">
               {exploreLinks.map((link) => (
