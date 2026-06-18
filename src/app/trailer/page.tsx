@@ -119,51 +119,52 @@ export default function TrailerPage() {
           />
         </div>
 
-        {/* Click zone to open video overlay */}
+        {/* Click zone - pause if playing, open overlay if paused */}
         <button
           className="absolute inset-0 w-full h-full z-10 cursor-pointer"
-          onClick={() => setVideoOverlayOpen(true)}
-          aria-label="Ouvrir la vidéo"
+          onClick={() => {
+            if (isPlaying) {
+              togglePlay();
+            } else {
+              setVideoOverlayOpen(true);
+            }
+          }}
+          aria-label={isPlaying ? "Pause" : "Ouvrir la vidéo"}
         />
 
-        {/* Video controls - play/pause + mute/unmute */}
-        <div className="absolute top-[120px] right-4 md:right-[120px] z-20 flex items-center gap-3">
+        {/* Play button - only visible when paused */}
+        {!isPlaying && (
           <button
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[80px] h-[80px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
             onClick={togglePlay}
-            className="w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
-            aria-label={isPlaying ? "Pause" : "Play"}
+            aria-label="Play"
           >
-            {isPlaying ? (
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="white">
-                <rect x="4" y="3" width="4" height="14" rx="1" />
-                <rect x="12" y="3" width="4" height="14" rx="1" />
-              </svg>
-            ) : (
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="white">
-                <polygon points="5,3 17,10 5,17" />
-              </svg>
-            )}
+            <svg width="32" height="32" viewBox="0 0 20 20" fill="white">
+              <polygon points="6,3 17,10 6,17" />
+            </svg>
           </button>
-          <button
-            onClick={toggleMute}
-            className="w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
-            aria-label={isMuted ? "Activer le son" : "Couper le son"}
-          >
-            {isMuted ? (
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
-                <line x1="23" y1="9" x2="17" y2="15" />
-                <line x1="17" y1="9" x2="23" y2="15" />
-              </svg>
-            ) : (
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
-                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-                <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-              </svg>
-            )}
-          </button>
-        </div>
+        )}
+
+        {/* Sound toggle - always visible, aligned right with ME CONTACTER, bottom with pentagon */}
+        <button
+          onClick={toggleMute}
+          className="absolute right-4 md:right-[120px] bottom-8 md:bottom-[80px] z-20 w-[32px] h-[32px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+          aria-label={isMuted ? "Activer le son" : "Couper le son"}
+        >
+          {isMuted ? (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
+              <line x1="23" y1="9" x2="17" y2="15" />
+              <line x1="17" y1="9" x2="23" y2="15" />
+            </svg>
+          ) : (
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+            </svg>
+          )}
+        </button>
 
         {/* Pentagon cadre - small chamfer top-right corner */}
         <div
