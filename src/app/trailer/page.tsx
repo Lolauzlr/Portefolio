@@ -426,7 +426,7 @@ export default function TrailerPage() {
                       />
                     )}
                   </div>
-                  <div className="flex flex-col gap-6 p-6 justify-between flex-1">
+                  <div className="flex flex-col gap-6 pt-6 pl-6 justify-between flex-1">
                     <div className="flex flex-col gap-6">
                       <div>
                         <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px]">
