@@ -9,10 +9,22 @@ export default function TrailerPage() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [showPause, setShowPause] = useState(false);
+  const [cadreSize, setCadreSize] = useState({ w: 792, h: 201 });
   const playerRef = useRef<YT.Player | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
+  const cadreRef = useRef<HTMLDivElement>(null);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const el = cadreRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setCadreSize({ w: entry.contentRect.width, h: entry.contentRect.height });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     const hero = heroRef.current;
@@ -203,6 +215,7 @@ export default function TrailerPage() {
 
         {/* Pentagon cadre - small chamfer top-right corner */}
         <div
+          ref={cadreRef}
           className="absolute left-4 md:left-[120px] bottom-8 md:bottom-[80px] w-[calc(100%-2rem)] md:w-[792px] z-20 pointer-events-auto"
         >
           {/* Background with blur + pentagon clip */}
@@ -213,18 +226,29 @@ export default function TrailerPage() {
               clipPath: "polygon(0 0, calc(100% - 27px) 0, 100% 12px, 100% 100%, 0 100%)",
             }}
           />
-          {/* Gradient silver border - pentagon shape via outline trick */}
-          <div
-            className="absolute inset-0 z-10 pointer-events-none"
-            style={{
-              clipPath: "polygon(0 0, calc(100% - 27px) 0, 100% 12px, 100% 100%, 0 100%)",
-              background: "linear-gradient(135deg, rgba(255,255,255,0.9), rgba(200,200,200,0.5), rgba(255,255,255,0.7), rgba(180,180,180,0.4), rgba(220,220,220,0.6))",
-              mask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-              maskComposite: "exclude",
-              WebkitMaskComposite: "xor",
-              padding: "1px",
-            }}
-          />
+          {/* SVG gradient silver border - dynamic viewBox */}
+          <svg
+            className="absolute inset-0 w-full h-full z-10 pointer-events-none"
+            viewBox={`0 0 ${cadreSize.w} ${cadreSize.h}`}
+            preserveAspectRatio="none"
+            fill="none"
+          >
+            <defs>
+              <linearGradient id="silver-stroke" x1="0" y1="0" x2={cadreSize.w} y2={cadreSize.h} gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="rgba(255,255,255,0.9)" />
+                <stop offset="25%" stopColor="rgba(200,200,200,0.5)" />
+                <stop offset="50%" stopColor="rgba(255,255,255,0.7)" />
+                <stop offset="75%" stopColor="rgba(180,180,180,0.4)" />
+                <stop offset="100%" stopColor="rgba(220,220,220,0.6)" />
+              </linearGradient>
+            </defs>
+            <polygon
+              points={`0.5,0.5 ${cadreSize.w - 27},0.5 ${cadreSize.w - 0.5},12 ${cadreSize.w - 0.5},${cadreSize.h - 0.5} 0.5,${cadreSize.h - 0.5}`}
+              stroke="url(#silver-stroke)"
+              strokeWidth="1"
+              fill="none"
+            />
+          </svg>
 
           {/* Content */}
           <div className="relative z-10 p-6 md:p-8 flex flex-col gap-5">
