@@ -218,7 +218,7 @@ export default function TrailerPage() {
         {/* Pentagon cadre - small chamfer top-right corner */}
         <div
           ref={cadreRef}
-          className="absolute left-4 md:left-[120px] bottom-8 md:bottom-[80px] w-[calc(100%-2rem)] md:w-[792px] z-20 pointer-events-auto"
+          className="absolute left-4 md:left-[24px] bottom-8 md:bottom-[24px] w-[calc(100%-2rem)] md:w-[792px] z-20 pointer-events-auto"
         >
           {/* Background with blur + pentagon clip */}
           <div
