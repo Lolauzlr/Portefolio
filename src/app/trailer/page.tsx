@@ -344,11 +344,15 @@ export default function TrailerPage() {
           </h2>
           <div className="w-[80px] h-[4px] bg-[#ddff6e]" />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="flex flex-col gap-10">
           {watchCards.map((card) => (
-            <div key={card.videoId} className="flex flex-col gap-4">
+            <div
+              key={card.videoId}
+              className="flex flex-col md:flex-row border border-[#797979]"
+            >
               <div
-                className="relative w-full aspect-video cursor-pointer overflow-hidden bg-black"
+                className="relative w-full md:w-[792px] flex-shrink-0 cursor-pointer overflow-hidden bg-black"
+                style={{ aspectRatio: "16 / 9" }}
                 onMouseEnter={() => setHoveredWatch(card.videoId)}
                 onMouseLeave={() => setHoveredWatch(null)}
                 onClick={() => setWatchOverlay({ videoId: card.videoId, title: card.title })}
@@ -370,10 +374,13 @@ export default function TrailerPage() {
                   />
                 )}
               </div>
-              <div className="flex flex-col gap-3">
-                <p className="text-[24px] font-[family-name:var(--font-heading)] tracking-[1.92px]">
-                  {card.title}
-                </p>
+              <div className="flex flex-col gap-6 p-6">
+                <div>
+                  <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px]">
+                    {card.title}
+                  </h3>
+                  <div className="w-[80px] h-[4px] bg-white mt-1" />
+                </div>
                 <p className="text-[16px] font-[family-name:var(--font-body)] tracking-[1.28px] text-white">
                   {card.description}
                 </p>
