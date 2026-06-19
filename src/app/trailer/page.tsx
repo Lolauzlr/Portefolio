@@ -134,7 +134,12 @@ export default function TrailerPage() {
       ] },
     { videoId: "ETCpWo0A0i0", title: "MIO: Memories In Orbit • Gameplay Trailer", description: "2025 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "GAMEPLAY TRAILER · 2025", screenshotTitle: "MIO: MEMORIES IN ORBIT",
-      screenshots: [{ src: "/images/trailer_hero.png", tag: "SCÈNE 01", description: "Capture in-game" }] },
+      screenshots: [
+        { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_001.webp", tag: "SCÈNE 01", description: "In-game video capture" },
+        { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_002.webp", tag: "SCÈNE 02", description: "In-game video capture" },
+        { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_003.webp", tag: "SCÈNE 03", description: "In-game video capture" },
+        { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_004.webp", tag: "SCÈNE 04", description: "In-game video capture" },
+      ] },
     { videoId: "tSN6KhscgiE", title: "Chants of Sennaar • Gameplay Overview Trailer | Gamescom 2023", description: "2023 • In-game video capture • Camera Animation in Unity • Video editing • Sound editing",
       screenshotCategory: "GAMEPLAY OVERVIEW · 2023", screenshotTitle: "CHANTS OF SENNAAR",
       screenshots: [
