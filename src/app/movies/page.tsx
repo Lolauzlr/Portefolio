@@ -1,24 +1,92 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { asset } from "@/lib/asset";
 
 export default function MoviesPage() {
-  const loremIpsum =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula.";
+  const [videoModal, setVideoModal] = useState<{ url: string; title: string } | null>(null);
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && videoModal) setVideoModal(null);
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [videoModal]);
 
   const documentaries = [
     {
-      src: "/images/movies_louvre.png",
+      thumbnail: "/images/movies_louvre.png",
       title: "IL ETAIT UNE FOIS LE MUSEE DU LOUVRE",
+      embedUrl: "https://www.youtube.com/embed/M7PfKwiQL_w?autoplay=1&rel=0",
       reversed: false,
+      description: (
+        <>
+          Animator for the Documentary ONCE UPON A TIME THE LOUVRE
+          <br /><br />
+          By Frédéric Wilner
+          <br /><br />
+          Available here :{" "}
+          <a
+            href="https://boutique.arte.tv/detail/il-etait-une-fois-le-musee-du-louvre?srsltid=AfmBOooZ34h_giYoklDffDfl2tSpMlxCHtmTLamdWG-nuYmMuhDVnQAY"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#0fd1ea] hover:underline"
+          >
+            boutique.arte.tv
+          </a>
+        </>
+      ),
     },
     {
-      src: "/images/movies_jerry.png",
+      thumbnail: "/images/movies_jerry.png",
       title: "JERRY GRETZINGER",
+      externalUrl: "https://www.arte.tv/fr/videos/105628-041-A/gymnastique/",
       reversed: true,
+      description: (
+        <>
+          Motion Designer & Video editor for Gymnastique (ARTE).
+          <br />
+          HOW TO MAP YOUR IMAGINATION, A documentary by David Caillon that sheds light on the subject of cards in the real and imaginary world by questioning the unique and stunning work of Jerry Gretzinger.
+          <br /><br />
+          Available here :{" "}
+          <a
+            href="https://www.arte.tv/fr/videos/105628-041-A/gymnastique/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#0fd1ea] hover:underline"
+          >
+            arte.tv
+          </a>
+        </>
+      ),
     },
     {
-      src: "/images/movies_fauve.png",
+      thumbnail: "/images/movies_fauve.png",
       title: "FAUVE",
+      externalUrl: "https://vurchel.com/v/15616/beast-marie-chalandre",
       reversed: false,
+      description: (
+        <>
+          Film Director & animator for the short animated film BEAST.
+          <br /><br />
+          <span className="font-[family-name:var(--font-heading)] text-[16px] tracking-[1.28px]">FESTIVALS & REWARDS</span>
+          <br /><br />
+          - Kinolikbez 2021 (Russie) : Silver Jean-Luc Award for Best Film in the Category « merry science » for a clever cinema.
+          <br />
+          - 7th Insomnia International Open-air Animation Film Festival 2019 (Russia)
+          <br />
+          - 17th Tirana International Film Festival (TIFF) 2019 (Albania)
+          <br />
+          - 17th Bogotá Short Film Festival (BOGOSHORTS) 2019 (Colombia)
+          <br />
+          - Tonneins International Film Festival (IFFT) 2019 (France)
+          <br />
+          - Bronx Wolrd Film Inc, Winter Cycle 2019 (USA)
+          <br />
+          - Kinolikbez, animation vidéo art competition, 2021 (Russia)
+        </>
+      ),
     },
   ];
 
@@ -30,17 +98,29 @@ export default function MoviesPage() {
           FEATURES FILMS
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-10" />
-        <img
-          src={asset("/images/movies_saintex.png")}
-          alt="Saint Ex"
-          className="w-full h-[675px] object-cover"
-        />
+        <div
+          className="relative w-full aspect-video cursor-pointer group"
+          onClick={() => setVideoModal({ url: "https://www.youtube.com/embed/BFLlIR9A8DY?autoplay=1&rel=0", title: "SAINT EX" })}
+        >
+          <img
+            src={asset("/images/movies_saintex.png")}
+            alt="Saint Ex"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <svg className="w-16 h-16 text-white" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </div>
+        </div>
         <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px] mt-6 mb-2">
           SAINT EX
         </h3>
         <div className="w-[80px] h-[4px] bg-white mb-4" />
         <p className="text-base font-[family-name:var(--font-body)] tracking-[1.28px] max-w-3xl">
-          {loremIpsum}
+          Compositing Artist for SAINT EX, a film directed by Pablo Agüero.
+          <br /><br />
+          Cast: Vincent Cassel, Diane Kruger, Louis Garrel.
         </p>
       </section>
 
@@ -58,24 +138,68 @@ export default function MoviesPage() {
                 doc.reversed ? "md:flex-row-reverse" : ""
               }`}
             >
-              <img
-                src={asset(doc.src)}
-                alt={doc.title}
-                className="w-full md:w-[792px] h-auto object-cover flex-shrink-0"
-              />
+              <div
+                className="relative w-full md:w-[792px] aspect-video cursor-pointer group flex-shrink-0"
+                onClick={() => {
+                  if (doc.embedUrl) {
+                    setVideoModal({ url: doc.embedUrl, title: doc.title });
+                  } else if (doc.externalUrl) {
+                    window.open(doc.externalUrl, "_blank", "noopener,noreferrer");
+                  }
+                }}
+              >
+                <img
+                  src={asset(doc.thumbnail)}
+                  alt={doc.title}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <svg className="w-16 h-16 text-white" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </div>
+              </div>
               <div className="flex flex-col justify-center">
                 <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px] mb-2">
                   {doc.title}
                 </h3>
                 <div className="w-[80px] h-[4px] bg-white mb-4" />
                 <p className="text-base font-[family-name:var(--font-body)] tracking-[1.28px]">
-                  {loremIpsum}
+                  {doc.description}
                 </p>
               </div>
             </div>
           ))}
         </div>
       </section>
+
+      {/* Video Modal */}
+      {videoModal && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setVideoModal(null);
+          }}
+        >
+          <button
+            onClick={() => setVideoModal(null)}
+            className="absolute top-6 right-6 md:top-10 md:right-10 text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer z-10"
+            aria-label="Fermer"
+          >
+            ✕
+          </button>
+          <div className="w-full h-full max-w-[90vw] max-h-[90vh] md:max-w-[85vw] md:max-h-[85vh] aspect-video">
+            <iframe
+              className="w-full h-full"
+              src={videoModal.url}
+              title={videoModal.title}
+              allow="autoplay; encrypted-media; fullscreen"
+              allowFullScreen
+              style={{ border: 0 }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
