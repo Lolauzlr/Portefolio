@@ -176,7 +176,12 @@ export default function TrailerPage() {
       ] },
     { videoId: "MTskFVe8P3Q", title: "A Plague Tale: Requiem • The Game Awards 2022 Spotlight", description: "2022 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "SPOTLIGHT · 2022", screenshotTitle: "A PLAGUE TALE : REQUIEM",
-      screenshots: [{ src: "/images/trailer_hero.png", tag: "SCÈNE 01", description: "Capture in-game" }] },
+      screenshots: [
+        { src: "/images/plague-tale-requiem-2022/A-Plague-Tale-Requiem-2022-001.webp", tag: "SCÈNE 01", description: "In-game video capture" },
+        { src: "/images/plague-tale-requiem-2022/A-Plague-Tale-Requiem-2022-002.webp", tag: "SCÈNE 02", description: "In-game video capture" },
+        { src: "/images/plague-tale-requiem-2022/A-Plague-Tale-Requiem-2022-003.webp", tag: "SCÈNE 03", description: "In-game video capture" },
+        { src: "/images/plague-tale-requiem-2022/A-Plague-Tale-Requiem-2022-004.webp", tag: "SCÈNE 04", description: "In-game video capture" },
+      ] },
     { videoId: "3pEJJdJStiQ", title: "BLACKTAIL • 'The Forest Awaits' Gameplay Trailer | THE PARASIGHT", description: "2022 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "GAMEPLAY TRAILER · 2022", screenshotTitle: "BLACKTAIL",
       screenshots: [{ src: "/images/trailer_watch_blacktail.png", tag: "SCÈNE 01", description: "Capture in-game" }] },
