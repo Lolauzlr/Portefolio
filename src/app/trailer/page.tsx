@@ -170,7 +170,10 @@ export default function TrailerPage() {
       ] },
     { videoId: "EdGCL3cVGPo", title: "Hotel Renovator • Release Date Reveal Trailer", description: "2023 • Camera • Animation & Scene set up in Unreal Engine 4 • Video Editing • Sound Editing",
       screenshotCategory: "RELEASE DATE REVEAL · 2023", screenshotTitle: "HOTEL RENOVATOR",
-      screenshots: [{ src: "/images/trailer_watch_hotel.png", tag: "SCÈNE 01", description: "Animation & Scene set up in Unreal Engine 4" }] },
+      screenshots: [
+        { src: "/images/hotel-renovator-2023/Hotel-Renovator-2023-001.webp", tag: "SCÈNE 01", description: "Animation & Scene set up in Unreal Engine 4" },
+        { src: "/images/hotel-renovator-2023/Hotel-Renovator-2023-002.webp", tag: "SCÈNE 02", description: "Camera set up in Unreal Engine 4" },
+      ] },
     { videoId: "MTskFVe8P3Q", title: "A Plague Tale: Requiem • The Game Awards 2022 Spotlight", description: "2022 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "SPOTLIGHT · 2022", screenshotTitle: "A PLAGUE TALE : REQUIEM",
       screenshots: [{ src: "/images/trailer_hero.png", tag: "SCÈNE 01", description: "Capture in-game" }] },
