@@ -12,9 +12,9 @@ const exploreLinks = [
 ];
 
 const socials = [
-  { src: "/images/instagram.svg", alt: "Instagram", href: "https://www.instagram.com/m_chalandre/?hl=fr" },
-  { src: "/images/linkedin.svg", alt: "LinkedIn", href: "https://www.linkedin.com/in/marie-chalandre-076948103/" },
-  { src: "/images/artstation.svg", alt: "ArtStation", href: "https://www.artstation.com/mariechalandre" },
+  { src: "/images/logo-svg/instagram.svg", alt: "Instagram", href: "https://www.instagram.com/m_chalandre/?hl=fr" },
+  { src: "/images/logo-svg/linkedin.svg", alt: "LinkedIn", href: "https://www.linkedin.com/in/marie-chalandre-076948103/" },
+  { src: "/images/logo-svg/artstation.svg", alt: "ArtStation", href: "https://www.artstation.com/mariechalandre" },
 ];
 
 export default function Footer() {
@@ -24,7 +24,7 @@ export default function Footer() {
         {/* Left: Logo + STUDIO */}
         <div className="flex flex-col items-start pr-0 md:pr-[80px] md:border-r border-[#797979] shrink-0">
           <img
-            src={asset("/images/LogoMC.svg")}
+            src={asset("/images/logo-svg/LogoMC.svg")}
             alt="Marie Chalandre"
             width={162}
             height={47}

@@ -81,7 +81,11 @@ export default function TrailerPage() {
     { videoId: "ZPQFsx9XXoM", title: "RESONANCE : A PLAGUE TALE LEGACY • GAMEPLAY", description: "2026 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "GAMEPLAY · 2026", screenshotTitle: "RESONANCE : A PLAGUE TALE LEGACY",
       screenshots: [
-        { src: "/images/trailer_hero.png", tag: "SCÈNE 01", description: "Capture in-game" },
+        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_001.webp", tag: "SCÈNE 01", description: "In-game video capture" },
+        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_002.webp", tag: "SCÈNE 02", description: "In-game video capture" },
+        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_003.webp", tag: "SCÈNE 03", description: "In-game video capture" },
+        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_004.webp", tag: "SCÈNE 04", description: "In-game video capture" },
+        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_005.webp", tag: "SCÈNE 05", description: "In-game video capture" },
       ] },
     { videoId: "ewZufHtEl68", title: "YERBA BUENA • GAMEPLAY", description: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing",
       screenshotCategory: "GAMEPLAY · 2026", screenshotTitle: "YERBA BUENA",
@@ -138,7 +142,11 @@ export default function TrailerPage() {
     category: "GAMEPLAY · 2026",
     title: "RESONANCE : A PLAGUE TALE LEGACY",
     screenshots: [
-      { src: "/images/trailer_hero.png", tag: "SCÈNE 01", description: "Capture in-game" },
+      { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_001.webp", tag: "SCÈNE 01", description: "In-game video capture" },
+      { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_002.webp", tag: "SCÈNE 02", description: "In-game video capture" },
+      { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_003.webp", tag: "SCÈNE 03", description: "In-game video capture" },
+      { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_004.webp", tag: "SCÈNE 04", description: "In-game video capture" },
+      { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_005.webp", tag: "SCÈNE 05", description: "In-game video capture" },
     ],
   };
 

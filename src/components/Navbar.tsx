@@ -23,7 +23,7 @@ export default function Navbar() {
         {/* Logo - absolutely positioned left */}
         <Link href="/" className="absolute left-6 md:left-[120px] shrink-0">
           <img
-            src={asset("/images/LogoMC.svg")}
+            src={asset("/images/logo-svg/LogoMC.svg")}
             alt="Marie Chalandre"
             width={164}
             height={58}
