@@ -1,7 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { asset } from "@/lib/asset";
+
+function YouTubeThumbnail({ videoId, title }: { videoId: string; title: string }) {
+  const [src, setSrc] = useState(`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`);
+  return (
+    <img
+      src={src}
+      alt={title}
+      className="w-full h-full object-cover"
+      onError={() => setSrc(`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`)}
+    />
+  );
+}
 
 export default function MoviesPage() {
   const [videoModal, setVideoModal] = useState<{ url: string; title: string } | null>(null);
@@ -14,9 +25,16 @@ export default function MoviesPage() {
     return () => window.removeEventListener("keydown", handleEsc);
   }, [videoModal]);
 
-  const documentaries = [
+  const documentaries: {
+    youtubeId?: string;
+    title: string;
+    embedUrl?: string;
+    externalUrl?: string;
+    reversed: boolean;
+    description: React.ReactNode;
+  }[] = [
     {
-      thumbnail: "/images/movies_louvre.png",
+      youtubeId: "M7PfKwiQL_w",
       title: "IL ETAIT UNE FOIS LE MUSEE DU LOUVRE",
       embedUrl: "https://www.youtube.com/embed/M7PfKwiQL_w?autoplay=1&rel=0",
       reversed: false,
@@ -39,7 +57,6 @@ export default function MoviesPage() {
       ),
     },
     {
-      thumbnail: "/images/movies_jerry.png",
       title: "JERRY GRETZINGER",
       externalUrl: "https://www.arte.tv/fr/videos/105628-041-A/gymnastique/",
       reversed: true,
@@ -62,7 +79,6 @@ export default function MoviesPage() {
       ),
     },
     {
-      thumbnail: "/images/movies_fauve.png",
       title: "FAUVE",
       externalUrl: "https://vurchel.com/v/15616/beast-marie-chalandre",
       reversed: false,
@@ -99,16 +115,12 @@ export default function MoviesPage() {
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-10" />
         <div
-          className="relative w-full aspect-video cursor-pointer group"
+          className="relative w-full aspect-video cursor-pointer group overflow-hidden"
           onClick={() => setVideoModal({ url: "https://www.youtube.com/embed/BFLlIR9A8DY?autoplay=1&rel=0", title: "SAINT EX" })}
         >
-          <img
-            src={asset("/images/movies_saintex.png")}
-            alt="Saint Ex"
-            className="w-full h-full object-cover"
-          />
+          <YouTubeThumbnail videoId="BFLlIR9A8DY" title="Saint Ex" />
           <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <svg className="w-16 h-16 text-white" viewBox="0 0 24 24" fill="currentColor">
+            <svg className="w-20 h-20 text-white drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
               <path d="M8 5v14l11-7z" />
             </svg>
           </div>
@@ -139,7 +151,7 @@ export default function MoviesPage() {
               }`}
             >
               <div
-                className="relative w-full md:w-[792px] aspect-video cursor-pointer group flex-shrink-0"
+                className="relative w-full md:w-[792px] aspect-video cursor-pointer group flex-shrink-0 overflow-hidden"
                 onClick={() => {
                   if (doc.embedUrl) {
                     setVideoModal({ url: doc.embedUrl, title: doc.title });
@@ -148,13 +160,17 @@ export default function MoviesPage() {
                   }
                 }}
               >
-                <img
-                  src={asset(doc.thumbnail)}
-                  alt={doc.title}
-                  className="w-full h-full object-cover"
-                />
+                {doc.youtubeId ? (
+                  <YouTubeThumbnail videoId={doc.youtubeId} title={doc.title} />
+                ) : (
+                  <div className="w-full h-full bg-[#1a1a2e] flex items-center justify-center">
+                    <span className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-white/60">
+                      {doc.title}
+                    </span>
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <svg className="w-16 h-16 text-white" viewBox="0 0 24 24" fill="currentColor">
+                  <svg className="w-20 h-20 text-white drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M8 5v14l11-7z" />
                   </svg>
                 </div>
