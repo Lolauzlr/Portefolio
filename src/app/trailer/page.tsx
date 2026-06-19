@@ -155,7 +155,12 @@ export default function TrailerPage() {
       ] },
     { videoId: "_nFYp6BFviM", title: "My Time at Sandrock • \"Shape your future\" Release Date Reveal Trailer", description: "2023 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "RELEASE DATE REVEAL · 2023", screenshotTitle: "MY TIME AT SANDROCK",
-      screenshots: [{ src: "/images/trailer_watch_sandrock.png", tag: "SCÈNE 01", description: "Capture in-game" }] },
+      screenshots: [
+        { src: "/images/sandrock-2023/My-Time-at-Sandrock-2023-001.webp", tag: "SCÈNE 01", description: "In-game video capture" },
+        { src: "/images/sandrock-2023/My-Time-at-Sandrock-2023-002.webp", tag: "SCÈNE 02", description: "In-game video capture" },
+        { src: "/images/sandrock-2023/My-Time-at-Sandrock-2023-003.webp", tag: "SCÈNE 03", description: "In-game video capture" },
+        { src: "/images/sandrock-2023/My-Time-at-Sandrock-2023-004.webp", tag: "SCÈNE 04", description: "In-game video capture" },
+      ] },
     { videoId: "a1JhKnaLxN0", title: "Dordogne • Release Date Reveal Trailer", description: "2023 • Scene Set-up and Animation in Unity • In-game Video Capture • Motion Graphics • Video Editing • Sound Editing",
       screenshotCategory: "RELEASE DATE REVEAL · 2023", screenshotTitle: "DORDOGNE",
       screenshots: [{ src: "/images/trailer_dordogne.png", tag: "SCÈNE 01", description: "Scene set-up and animation in Unity" }] },
