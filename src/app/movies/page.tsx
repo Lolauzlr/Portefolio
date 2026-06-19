@@ -1,16 +1,73 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { asset } from "@/lib/asset";
 
-function YouTubeThumbnail({ videoId, title }: { videoId: string; title: string }) {
-  const [src, setSrc] = useState(`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`);
+function VideoCard({
+  youtubeId,
+  thumbnail,
+  title,
+  externalUrl,
+  onPlay,
+  className,
+}: {
+  youtubeId?: string;
+  thumbnail?: string;
+  title: string;
+  externalUrl?: string;
+  onPlay?: () => void;
+  className?: string;
+}) {
+  const [hovered, setHovered] = useState(false);
+
   return (
-    <img
-      src={src}
-      alt={title}
-      className="w-full h-full object-cover"
-      onError={() => setSrc(`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`)}
-    />
+    <div
+      className={`relative aspect-video cursor-pointer group overflow-hidden ${className || ""}`}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onClick={() => {
+        if (onPlay) onPlay();
+        else if (externalUrl) window.open(externalUrl, "_blank", "noopener,noreferrer");
+      }}
+    >
+      {youtubeId && hovered ? (
+        <iframe
+          className="w-full h-full pointer-events-none"
+          src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
+          title={title}
+          allow="autoplay; encrypted-media"
+          style={{ border: 0 }}
+        />
+      ) : (
+        <>
+          {youtubeId ? (
+            <img
+              src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`}
+              alt={title}
+              className="w-full h-full object-cover"
+              onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`; }}
+            />
+          ) : thumbnail ? (
+            <img
+              src={asset(thumbnail)}
+              alt={title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full bg-[#1a1a2e] flex items-center justify-center">
+              <span className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-white/60">
+                {title}
+              </span>
+            </div>
+          )}
+          <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <svg className="w-20 h-20 text-white drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+          </div>
+        </>
+      )}
+    </div>
   );
 }
 
@@ -27,6 +84,7 @@ export default function MoviesPage() {
 
   const documentaries: {
     youtubeId?: string;
+    thumbnail?: string;
     title: string;
     embedUrl?: string;
     externalUrl?: string;
@@ -57,6 +115,7 @@ export default function MoviesPage() {
       ),
     },
     {
+      thumbnail: "/images/arte-gymnastique.webp",
       title: "JERRY GRETZINGER",
       externalUrl: "https://www.arte.tv/fr/videos/105628-041-A/gymnastique/",
       reversed: true,
@@ -79,6 +138,7 @@ export default function MoviesPage() {
       ),
     },
     {
+      thumbnail: "/images/beast-film.webp",
       title: "FAUVE",
       externalUrl: "https://vurchel.com/v/15616/beast-marie-chalandre",
       reversed: false,
@@ -114,17 +174,12 @@ export default function MoviesPage() {
           FEATURES FILMS
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-10" />
-        <div
-          className="relative w-full aspect-video cursor-pointer group overflow-hidden"
-          onClick={() => setVideoModal({ url: "https://www.youtube.com/embed/BFLlIR9A8DY?autoplay=1&rel=0", title: "SAINT EX" })}
-        >
-          <YouTubeThumbnail videoId="BFLlIR9A8DY" title="Saint Ex" />
-          <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <svg className="w-20 h-20 text-white drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          </div>
-        </div>
+        <VideoCard
+          youtubeId="BFLlIR9A8DY"
+          title="SAINT EX"
+          className="w-full"
+          onPlay={() => setVideoModal({ url: "https://www.youtube.com/embed/BFLlIR9A8DY?autoplay=1&rel=0", title: "SAINT EX" })}
+        />
         <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px] mt-6 mb-2">
           SAINT EX
         </h3>
@@ -150,31 +205,14 @@ export default function MoviesPage() {
                 doc.reversed ? "md:flex-row-reverse" : ""
               }`}
             >
-              <div
-                className="relative w-full md:w-[792px] aspect-video cursor-pointer group flex-shrink-0 overflow-hidden"
-                onClick={() => {
-                  if (doc.embedUrl) {
-                    setVideoModal({ url: doc.embedUrl, title: doc.title });
-                  } else if (doc.externalUrl) {
-                    window.open(doc.externalUrl, "_blank", "noopener,noreferrer");
-                  }
-                }}
-              >
-                {doc.youtubeId ? (
-                  <YouTubeThumbnail videoId={doc.youtubeId} title={doc.title} />
-                ) : (
-                  <div className="w-full h-full bg-[#1a1a2e] flex items-center justify-center">
-                    <span className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-white/60">
-                      {doc.title}
-                    </span>
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <svg className="w-20 h-20 text-white drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </div>
-              </div>
+              <VideoCard
+                youtubeId={doc.youtubeId}
+                thumbnail={doc.thumbnail}
+                title={doc.title}
+                externalUrl={doc.externalUrl}
+                className="w-full md:w-[792px] flex-shrink-0"
+                onPlay={doc.embedUrl ? () => setVideoModal({ url: doc.embedUrl!, title: doc.title }) : undefined}
+              />
               <div className="flex flex-col justify-center">
                 <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px] mb-2">
                   {doc.title}
