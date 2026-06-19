@@ -618,43 +618,69 @@ export default function TrailerPage() {
         >
           <div className="w-full h-full flex flex-col md:flex-row">
             {/* Left: Carousel */}
-            <div className="relative flex-1 flex items-center justify-center bg-black/50 min-h-0">
-              {/* Counter */}
-              <span className="absolute top-6 left-6 font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white z-10">
-                {screenshotIndex + 1}/{screenshotsData.screenshots.length}
-              </span>
+            <div className="relative flex-1 flex flex-col min-h-0">
+              {/* Main image area */}
+              <div className="relative flex-1 flex items-center justify-center min-h-0">
+                {/* Counter */}
+                <span className="absolute top-6 left-6 font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white z-10">
+                  {screenshotIndex + 1}/{screenshotsData.screenshots.length}
+                </span>
 
-              {/* Previous */}
+                {/* Previous */}
+                {screenshotsData.screenshots.length > 1 && (
+                  <button
+                    onClick={() => setScreenshotIndex((screenshotIndex - 1 + screenshotsData.screenshots.length) % screenshotsData.screenshots.length)}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+                    aria-label="Précédent"
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="15,18 9,12 15,6" />
+                    </svg>
+                  </button>
+                )}
+
+                {/* Image */}
+                <img
+                  src={asset(screenshotsData.screenshots[screenshotIndex].src)}
+                  alt={screenshotsData.screenshots[screenshotIndex].tag}
+                  className="max-w-full max-h-full object-contain p-12"
+                />
+
+                {/* Next */}
+                {screenshotsData.screenshots.length > 1 && (
+                  <button
+                    onClick={() => setScreenshotIndex((screenshotIndex + 1) % screenshotsData.screenshots.length)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+                    aria-label="Suivant"
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="9,6 15,12 9,18" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+
+              {/* Thumbnails strip */}
               {screenshotsData.screenshots.length > 1 && (
-                <button
-                  onClick={() => setScreenshotIndex((screenshotIndex - 1 + screenshotsData.screenshots.length) % screenshotsData.screenshots.length)}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
-                  aria-label="Précédent"
-                >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="15,18 9,12 15,6" />
-                  </svg>
-                </button>
-              )}
-
-              {/* Image */}
-              <img
-                src={asset(screenshotsData.screenshots[screenshotIndex].src)}
-                alt={screenshotsData.screenshots[screenshotIndex].tag}
-                className="max-w-full max-h-full object-contain p-12"
-              />
-
-              {/* Next */}
-              {screenshotsData.screenshots.length > 1 && (
-                <button
-                  onClick={() => setScreenshotIndex((screenshotIndex + 1) % screenshotsData.screenshots.length)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
-                  aria-label="Suivant"
-                >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="9,6 15,12 9,18" />
-                  </svg>
-                </button>
+                <div className="bg-[#0d0d0d] px-4 py-3 overflow-x-auto">
+                  <div className="flex gap-2">
+                    {screenshotsData.screenshots.map((shot, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setScreenshotIndex(i)}
+                        className={`relative flex-shrink-0 w-[120px] h-[68px] overflow-hidden cursor-pointer transition-all ${
+                          i === screenshotIndex ? "ring-2 ring-[#ddff6e]" : "opacity-50 hover:opacity-80"
+                        }`}
+                      >
+                        <img
+                          src={asset(shot.src)}
+                          alt={shot.tag}
+                          className="w-full h-full object-cover"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
 
