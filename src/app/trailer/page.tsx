@@ -149,7 +149,10 @@ export default function TrailerPage() {
       ] },
     { videoId: "LpxuWSy8b9U", title: "Atlas Fallen • Gameplay Overview Trailer", description: "2023 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "GAMEPLAY OVERVIEW · 2023", screenshotTitle: "ATLAS FALLEN",
-      screenshots: [{ src: "/images/trailer_watch_atlas.png", tag: "SCÈNE 01", description: "Capture in-game" }] },
+      screenshots: [
+        { src: "/images/atlas-fallen-2023/Atlas-fallen-2023-001.webp", tag: "SCÈNE 01", description: "In-game video capture" },
+        { src: "/images/atlas-fallen-2023/Atlas-fallen-2023-002.webp", tag: "SCÈNE 02", description: "In-game video capture" },
+      ] },
     { videoId: "_nFYp6BFviM", title: "My Time at Sandrock • \"Shape your future\" Release Date Reveal Trailer", description: "2023 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "RELEASE DATE REVEAL · 2023", screenshotTitle: "MY TIME AT SANDROCK",
       screenshots: [{ src: "/images/trailer_watch_sandrock.png", tag: "SCÈNE 01", description: "Capture in-game" }] },
