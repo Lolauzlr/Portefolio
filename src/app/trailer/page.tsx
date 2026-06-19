@@ -10,11 +10,9 @@ export default function TrailerPage() {
     screenshots: { src: string; tag: string; description: string }[];
   } | null>(null);
   const [screenshotIndex, setScreenshotIndex] = useState(0);
-  const [videoOverlayOpen, setVideoOverlayOpen] = useState(false);
-  const [recentOverlay, setRecentOverlay] = useState<{ videoId: string; title: string } | null>(null);
+  const [videoModal, setVideoModal] = useState<{ videoId: string; title: string } | null>(null);
   const [hoveredRecent, setHoveredRecent] = useState<string | null>(null);
   const [hoveredWatch, setHoveredWatch] = useState<string | null>(null);
-  const [watchOverlay, setWatchOverlay] = useState<{ videoId: string; title: string } | null>(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [showPause, setShowPause] = useState(false);
@@ -71,6 +69,17 @@ export default function TrailerPage() {
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (videoModal) setVideoModal(null);
+        if (screenshotsData) setScreenshotsData(null);
+      }
+    };
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
+  }, [videoModal, screenshotsData]);
 
   const openScreenshots = (category: string, title: string, screenshots: { src: string; tag: string; description: string }[]) => {
     setScreenshotIndex(0);
@@ -294,7 +303,7 @@ export default function TrailerPage() {
         {/* Click zone - opens overlay, or pauses on hover-visible button */}
         <button
           className="absolute inset-0 w-full h-full z-10 cursor-pointer group"
-          onClick={() => setVideoOverlayOpen(true)}
+          onClick={() => setVideoModal({ videoId: "MOEbrOqLL2o", title: "RESONANCE : A PLAGUE TALE LEGACY • GAMEPLAY" })}
           aria-label="Ouvrir la vidéo"
         />
 
@@ -430,7 +439,7 @@ export default function TrailerPage() {
                 className="relative w-full aspect-video cursor-pointer overflow-hidden bg-black"
                 onMouseEnter={() => setHoveredRecent(card.videoId)}
                 onMouseLeave={() => setHoveredRecent(null)}
-                onClick={() => setRecentOverlay({ videoId: card.videoId, title: card.title })}
+                onClick={() => setVideoModal({ videoId: card.videoId, title: card.title })}
               >
                 {hoveredRecent === card.videoId ? (
                   <iframe
@@ -520,7 +529,7 @@ export default function TrailerPage() {
                     style={{ aspectRatio: "16 / 9" }}
                     onMouseEnter={() => setHoveredWatch(card.videoId)}
                     onMouseLeave={() => setHoveredWatch(null)}
-                    onClick={() => setWatchOverlay({ videoId: card.videoId, title: card.title })}
+                    onClick={() => setVideoModal({ videoId: card.videoId, title: card.title })}
                   >
                     {hoveredWatch === card.videoId ? (
                       <iframe
@@ -565,104 +574,30 @@ export default function TrailerPage() {
         </div>
       </section>
 
-      {/* Video Overlay */}
-      {videoOverlayOpen && (
-        <div className="fixed inset-0 z-[100] bg-black/95 flex flex-col">
-          {/* Header */}
-          <div className="flex items-center justify-between px-6 md:px-16 py-6">
-            <h2 className="font-[family-name:var(--font-heading)] text-[32px] tracking-[2.56px] text-white">
-              RESONANCE : A PLAGUE TALE LEGACY
-            </h2>
-            <button
-              onClick={() => setVideoOverlayOpen(false)}
-              className="text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
-              aria-label="Fermer"
-            >
-              ✕
-            </button>
-          </div>
-          {/* Video */}
-          <div className="flex-1 flex items-center justify-center px-6 md:px-16 pb-10">
-            <div className="w-full max-w-5xl aspect-video">
-              <iframe
-                className="w-full h-full"
-                src="https://www.youtube.com/embed/MOEbrOqLL2o?autoplay=1&rel=0"
-                title="Resonance : A Plague Tale Legacy"
-                allow="autoplay; encrypted-media; fullscreen"
-                allowFullScreen
-                style={{ border: 0 }}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Recent Video Overlay */}
-      {recentOverlay && (
+      {/* Video Modal */}
+      {videoModal && (
         <div
-          className="fixed inset-0 z-[100] bg-black/95 flex flex-col"
+          className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
           onClick={(e) => {
-            if (e.target === e.currentTarget) setRecentOverlay(null);
+            if (e.target === e.currentTarget) setVideoModal(null);
           }}
         >
-          <div className="flex items-center justify-between px-6 md:px-16 py-6">
-            <h2 className="font-[family-name:var(--font-heading)] text-[32px] tracking-[2.56px] text-white">
-              {recentOverlay.title}
-            </h2>
-            <button
-              onClick={() => setRecentOverlay(null)}
-              className="text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
-              aria-label="Fermer"
-            >
-              ✕
-            </button>
-          </div>
-          <div className="flex-1 flex items-center justify-center px-6 md:px-16 pb-10">
-            <div className="w-full max-w-5xl aspect-video">
-              <iframe
-                className="w-full h-full"
-                src={`https://www.youtube.com/embed/${recentOverlay.videoId}?autoplay=1&rel=0`}
-                title={recentOverlay.title}
-                allow="autoplay; encrypted-media; fullscreen"
-                allowFullScreen
-                style={{ border: 0 }}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Watch Video Overlay */}
-      {watchOverlay && (
-        <div
-          className="fixed inset-0 z-[100] bg-black/95 flex flex-col"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setWatchOverlay(null);
-          }}
-        >
-          <div className="flex items-center justify-between px-6 md:px-16 py-6">
-            <h2 className="font-[family-name:var(--font-heading)] text-[32px] tracking-[2.56px] text-white">
-              {watchOverlay.title}
-            </h2>
-            <button
-              onClick={() => setWatchOverlay(null)}
-              className="text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
-              aria-label="Fermer"
-            >
-              ✕
-            </button>
-          </div>
-          <div className="flex-1 flex items-center justify-center px-6 md:px-16 pb-10">
-            <div className="w-full max-w-5xl aspect-video">
-              <iframe
-                className="w-full h-full"
-                src={`https://www.youtube.com/embed/${watchOverlay.videoId}?autoplay=1&rel=0`}
-                title={watchOverlay.title}
-                allow="autoplay; encrypted-media; fullscreen"
-                allowFullScreen
-                style={{ border: 0 }}
-              />
-            </div>
+          <button
+            onClick={() => setVideoModal(null)}
+            className="absolute top-6 right-6 md:top-10 md:right-10 text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer z-10"
+            aria-label="Fermer"
+          >
+            ✕
+          </button>
+          <div className="w-full h-full max-w-[90vw] max-h-[90vh] md:max-w-[85vw] md:max-h-[85vh] aspect-video">
+            <iframe
+              className="w-full h-full"
+              src={`https://www.youtube.com/embed/${videoModal.videoId}?autoplay=1&rel=0`}
+              title={videoModal.title}
+              allow="autoplay; encrypted-media; fullscreen"
+              allowFullScreen
+              style={{ border: 0 }}
+            />
           </div>
         </div>
       )}
