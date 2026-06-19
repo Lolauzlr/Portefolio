@@ -90,7 +90,12 @@ export default function TrailerPage() {
     { videoId: "ewZufHtEl68", title: "YERBA BUENA • GAMEPLAY", description: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing",
       screenshotCategory: "GAMEPLAY · 2026", screenshotTitle: "YERBA BUENA",
       screenshots: [
-        { src: "/images/trailer_hero.png", tag: "SCÈNE 01", description: "Capture in-game" },
+        { src: "/images/yerba-buena-gameplay-2026/compo.webp", tag: "COMPOSITION", description: "Motion design rétro" },
+        { src: "/images/yerba-buena-gameplay-2026/F.webp", tag: "SCÈNE 01", description: "In-game video capture" },
+        { src: "/images/yerba-buena-gameplay-2026/G.webp", tag: "SCÈNE 02", description: "In-game video capture" },
+        { src: "/images/yerba-buena-gameplay-2026/I.webp", tag: "SCÈNE 03", description: "In-game video capture" },
+        { src: "/images/yerba-buena-gameplay-2026/J.webp", tag: "SCÈNE 04", description: "In-game video capture" },
+        { src: "/images/yerba-buena-gameplay-2026/K.webp", tag: "SCÈNE 05", description: "In-game video capture" },
       ] },
     { videoId: "cZgim-KYkZQ", title: "YERBA BUENA • REVEAL TRAILER", description: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing",
       screenshotCategory: "REVEAL TRAILER · 2026", screenshotTitle: "YERBA BUENA",
