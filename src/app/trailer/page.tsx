@@ -143,8 +143,9 @@ export default function TrailerPage() {
     { videoId: "tSN6KhscgiE", title: "Chants of Sennaar • Gameplay Overview Trailer | Gamescom 2023", description: "2023 • In-game video capture • Camera Animation in Unity • Video editing • Sound editing",
       screenshotCategory: "GAMEPLAY OVERVIEW · 2023", screenshotTitle: "CHANTS OF SENNAAR",
       screenshots: [
-        { src: "/images/trailer_watch_chants.png", tag: "SCÈNE 01", description: "Capture in-game" },
-        { src: "/images/trailer_chants.png", tag: "SCÈNE 02", description: "Camera animation in Unity" },
+        { src: "/images/chants-of-sennaar-2023/chants-1.webp", tag: "SCÈNE 01", description: "In-game video capture" },
+        { src: "/images/chants-of-sennaar-2023/chants-2.webp", tag: "SCÈNE 02", description: "Camera animation in Unity" },
+        { src: "/images/chants-of-sennaar-2023/chants-3.webp", tag: "SCÈNE 03", description: "In-game video capture" },
       ] },
     { videoId: "LpxuWSy8b9U", title: "Atlas Fallen • Gameplay Overview Trailer", description: "2023 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "GAMEPLAY OVERVIEW · 2023", screenshotTitle: "ATLAS FALLEN",
