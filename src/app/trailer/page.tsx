@@ -163,7 +163,11 @@ export default function TrailerPage() {
       ] },
     { videoId: "a1JhKnaLxN0", title: "Dordogne • Release Date Reveal Trailer", description: "2023 • Scene Set-up and Animation in Unity • In-game Video Capture • Motion Graphics • Video Editing • Sound Editing",
       screenshotCategory: "RELEASE DATE REVEAL · 2023", screenshotTitle: "DORDOGNE",
-      screenshots: [{ src: "/images/trailer_dordogne.png", tag: "SCÈNE 01", description: "Scene set-up and animation in Unity" }] },
+      screenshots: [
+        { src: "/images/dordogne-2023/Dordogne-2023-001.webp", tag: "SCÈNE 01", description: "Scene set-up and animation in Unity" },
+        { src: "/images/dordogne-2023/Dordogne-2023-002.webp", tag: "SCÈNE 02", description: "In-game video capture" },
+        { src: "/images/dordogne-2023/Dordogne-2023-003.webp", tag: "SCÈNE 03", description: "Motion graphics" },
+      ] },
     { videoId: "EdGCL3cVGPo", title: "Hotel Renovator • Release Date Reveal Trailer", description: "2023 • Camera • Animation & Scene set up in Unreal Engine 4 • Video Editing • Sound Editing",
       screenshotCategory: "RELEASE DATE REVEAL · 2023", screenshotTitle: "HOTEL RENOVATOR",
       screenshots: [{ src: "/images/trailer_watch_hotel.png", tag: "SCÈNE 01", description: "Animation & Scene set up in Unreal Engine 4" }] },
