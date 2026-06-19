@@ -191,7 +191,10 @@ export default function TrailerPage() {
       ] },
     { videoId: "U4XA_dhCx_M", title: "Warstride Challenges • Multiplayer Update Trailer", description: "2022 • Camera & Character Animation in Unreal Engine 4 • In-game Video Capture • Video Editing • Sound Editing",
       screenshotCategory: "MULTIPLAYER UPDATE · 2022", screenshotTitle: "WARSTRIDE CHALLENGES",
-      screenshots: [{ src: "/images/trailer_warstride.png", tag: "SCÈNE 01", description: "Character animation in Unreal Engine 4" }] },
+      screenshots: [
+        { src: "/images/warstride-2022/Warstride-Challenges-2022-001.webp", tag: "SCÈNE 01", description: "Camera & character animation in Unreal Engine 4" },
+        { src: "/images/warstride-2022/Warstride-Challenges-2022-002.webp", tag: "SCÈNE 02", description: "In-game video capture" },
+      ] },
   ];
 
   const heroScreenshots = {
