@@ -254,7 +254,9 @@ export default function Home() {
 
       {/* About Me */}
       <section className="px-4 md:px-[120px] py-[80px]">
-        <SectionTitle>ABOUT ME</SectionTitle>
+        <div className="-mb-10">
+          <SectionTitle>ABOUT ME</SectionTitle>
+        </div>
         <div className="flex flex-col md:flex-row gap-10 items-center">
           <div className="flex-1 flex flex-col justify-between">
             <div className="flex flex-col gap-10">
