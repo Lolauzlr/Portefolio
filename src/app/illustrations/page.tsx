@@ -188,10 +188,10 @@ export default function IllustrationsPage() {
             </div>
           </div>
 
-          {/* Row 11: 2 equal columns, object-contain */}
+          {/* Row 11: 2 equal columns */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-[40px]">
-            <img src={asset(i(19))} alt="" className="w-full h-[764px] object-contain" />
-            <img src={asset(i(17))} alt="" className="w-full h-[764px] object-contain" />
+            <img src={asset(i(19))} alt="" className="w-full h-[764px] object-cover" />
+            <img src={asset(i(17))} alt="" className="w-full h-[764px] object-cover" />
           </div>
 
           {/* Row 12: left image + right col (title/text top, image bottom) */}
