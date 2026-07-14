@@ -92,7 +92,7 @@ export default function IllustrationsPage() {
             <div className="w-full md:w-[44%] shrink-0">
               <img src={asset(i(35))} alt="" className="w-full h-[662px] object-cover" />
             </div>
-            <div className="flex-1 flex flex-col gap-6">
+            <div className="flex-1 flex flex-col gap-6 md:gap-0 md:justify-between md:self-stretch">
               <TitleBlock />
               <img src={asset(i(1))} alt="" className="w-full h-[322px] object-cover" />
             </div>
@@ -111,7 +111,7 @@ export default function IllustrationsPage() {
 
           {/* Row 3: left col (title/text top, 322px image bottom) + right image */}
           <div className="flex flex-col md:flex-row gap-[40px] items-start">
-            <div className="flex-1 flex flex-col gap-6">
+            <div className="flex-1 flex flex-col gap-6 md:gap-0 md:justify-between md:self-stretch">
               <TitleBlock />
               <img src={asset(i(6))} alt="" className="w-full h-[322px] object-cover" />
             </div>
@@ -141,7 +141,7 @@ export default function IllustrationsPage() {
             <div className="w-full md:w-[56%] shrink-0">
               <img src={asset(i(27))} alt="" className="w-full h-[930px] object-cover" />
             </div>
-            <div className="flex-1 flex flex-col gap-6">
+            <div className="flex-1 flex flex-col gap-6 md:gap-0 md:justify-between md:self-stretch">
               <TitleBlock />
               <img src={asset(i(14))} alt="" className="w-full aspect-[1548/1473] object-cover" />
             </div>
@@ -167,7 +167,7 @@ export default function IllustrationsPage() {
 
           {/* Row 9: left col (title/text top, image bottom) + right single image */}
           <div className="flex flex-col md:flex-row gap-[40px] items-start">
-            <div className="flex-1 flex flex-col gap-6">
+            <div className="flex-1 flex flex-col gap-6 md:gap-0 md:justify-between md:self-stretch">
               <TitleBlock />
               <img src={asset(i(5))} alt="" className="w-full h-[350px] object-cover" />
             </div>
@@ -199,7 +199,7 @@ export default function IllustrationsPage() {
             <div className="w-full md:w-[44%] shrink-0">
               <img src={asset(i(28))} alt="" className="w-full h-[662px] object-cover" />
             </div>
-            <div className="flex-1 flex flex-col gap-6">
+            <div className="flex-1 flex flex-col gap-6 md:gap-0 md:justify-between md:self-stretch">
               <TitleBlock />
               <img src={asset(i(21))} alt="" className="w-full h-[322px] object-cover" />
             </div>
@@ -216,7 +216,7 @@ export default function IllustrationsPage() {
             <div className="w-full md:w-[44%] shrink-0">
               <img src={asset(i(29))} alt="" className="w-full h-[572px] object-cover" />
             </div>
-            <div className="flex-1 flex flex-col gap-6">
+            <div className="flex-1 flex flex-col gap-6 md:gap-0 md:justify-between md:self-stretch">
               <TitleBlock />
               <img src={asset(i(7))} alt="" className="w-full h-[350px] object-cover" />
             </div>
