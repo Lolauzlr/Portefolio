@@ -10,9 +10,9 @@ const trailerProjects = [
 ];
 
 const illustrationCards = [
-  { img: "/images/illus_arcane.png", title: "ARCANE" },
-  { img: "/images/imgMonsterdrunk2.png", title: "MONSTER IN A BOTTLE" },
-  { img: "/images/imgImage5.png", title: "MAZOU BD" },
+  { img: "/images/illustrations/illus-36.webp", title: "ARCANE" },
+  { img: "/images/illustrations/illus-34.webp", title: "MONSTER IN A BOTTLE" },
+  { img: "/images/illustrations/illus-32.webp", title: "MAZOU BD" },
 ];
 
 const storyboardCards = [
@@ -145,7 +145,7 @@ export default function Home() {
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque.
                 </p>
               </div>
-              <img src={asset("/images/illus_dragon.png")} alt="" className="w-full h-[322px] object-cover mt-6" />
+              <img src={asset("/images/illustrations/illus-1.webp")} alt="" className="w-full h-[322px] object-cover mt-6" />
             </div>
           </div>
 
