@@ -149,7 +149,7 @@ export default function IllustrationsPage() {
 
           {/* Row 7: left col (2×322px) + right tall */}
           <div className="flex flex-col md:flex-row gap-[40px]">
-            <div className="w-full md:w-[44%] shrink-0 flex flex-col gap-[40px]">
+            <div className="w-full md:w-[44%] shrink-0 flex flex-col gap-[40px] md:justify-center">
               <img src={asset(i(4))} alt="" className="w-full h-[322px] object-cover" />
               <img src={asset(i(24))} alt="" className="w-full h-[322px] object-cover" />
             </div>
