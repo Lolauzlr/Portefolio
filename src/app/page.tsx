@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { asset } from "@/lib/asset";
+import HomeMoviesSection from "@/components/HomeMoviesSection";
 
 const trailerProjects = [
   { img: "/images/imgImage.png", title: "MIO : MEMORIES IN ORBIT", desc: "Cinematic trailer pour un jeu d'exploration spatiale." },
@@ -121,56 +122,7 @@ export default function Home() {
       </section>
 
       {/* Movies */}
-      <section className="py-[60px] bg-[#131313] px-4 md:px-[120px]">
-        <SectionTitle>MOVIES</SectionTitle>
-        <div className="flex flex-col gap-10">
-          {/* Featured: Saint Ex */}
-          <div className="border border-[#797979] p-5">
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="md:w-[792px] shrink-0">
-                <img
-                  src={asset("/images/movies_saintex.png")}
-                  alt="Saint Ex"
-                  className="w-full h-[300px] md:h-[446px] object-cover"
-                />
-              </div>
-              <div className="flex flex-col gap-6 flex-1">
-                <div>
-                  <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">SAINT EX</h3>
-                  <div className="w-[80px] h-[4px] bg-white mt-1" />
-                </div>
-                <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui.
-                </p>
-              </div>
-            </div>
-          </div>
-          {/* Secondary cards */}
-          <div className="flex flex-col md:flex-row gap-10">
-            <div className="border border-[#797979] p-5 flex-1 flex flex-col gap-6">
-              <img src={asset("/images/movies_fauve.png")} alt="Jerry Gretzinger" className="w-full h-[250px] md:h-[388px] object-cover" />
-              <div>
-                <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">JERRY GRETZINGER</h3>
-                <div className="w-[80px] h-[4px] bg-white mt-1" />
-              </div>
-              <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa.
-              </p>
-            </div>
-            <div className="border border-[#797979] p-5 flex-1 flex flex-col gap-6">
-              <img src={asset("/images/movies_jerry.png")} alt="Il était une fois le musée du Louvre" className="w-full h-[200px] md:h-[219px] object-cover" />
-              <div>
-                <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">IL ETAIT UNE FOIS LE MUSEE DU LOUVRE</h3>
-                <div className="w-[80px] h-[4px] bg-white mt-1" />
-              </div>
-              <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa.
-              </p>
-            </div>
-          </div>
-        </div>
-        <ToutVoirLink href="/movies" />
-      </section>
+      <HomeMoviesSection />
 
       {/* Illustrations */}
       <section className="py-[60px] px-4 md:px-[120px]">
