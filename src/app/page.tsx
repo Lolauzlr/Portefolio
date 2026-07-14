@@ -279,7 +279,7 @@ export default function Home() {
           </div>
           <div className="shrink-0">
             <img
-              src={asset("/images/imgElHOef5400X4001Photoroom1.png")}
+              src={asset("/images/home-page/profil2.webp")}
               alt="Marie Chalandre"
               className="w-[350px] md:w-[599px] h-auto object-cover"
             />
