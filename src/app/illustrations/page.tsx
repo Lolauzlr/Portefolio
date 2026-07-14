@@ -29,11 +29,11 @@ function TitleBlock() {
 
 export default function IllustrationsPage() {
   return (
-    <div className="pt-[95px] bg-[#15161b] text-white min-h-screen max-w-[1440px] mx-auto">
+    <div className="pt-[95px] bg-[#15161b] text-white min-h-screen">
 
       {/* ── LES PLUS RÉCENTES ── */}
       <section className="py-[60px]">
-        <div className="px-4 md:px-[120px] mb-[60px]">
+        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px] mb-[60px]">
           <h2 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[60px] tracking-[4.8px] uppercase text-white">
             LES PLUS RÉCENTES
           </h2>
@@ -41,7 +41,7 @@ export default function IllustrationsPage() {
         </div>
 
         {/* Horizontal scroll row — centered on desktop like Figma */}
-        <div className="flex gap-[24px] overflow-x-auto px-4 pb-4 items-start scrollbar-hide md:justify-center md:overflow-x-visible md:px-[120px]">
+        <div className="max-w-[1440px] mx-auto flex gap-[24px] overflow-x-auto px-4 pb-4 items-start scrollbar-hide md:justify-center md:overflow-x-visible md:px-[120px]">
           {/* ARCANE — title on top, image below */}
           <div className="flex-shrink-0 flex flex-col gap-[16px] w-[303px]">
             <div className="flex flex-col gap-[12px]">
@@ -79,14 +79,14 @@ export default function IllustrationsPage() {
 
       {/* ── VRIC À VRAC ── */}
       <section className="bg-[#131313] py-[60px]">
-        <div className="px-4 md:px-[120px] mb-[60px]">
+        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px] mb-[60px]">
           <h2 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[60px] tracking-[4.8px] uppercase text-white">
             VRIC À VRAC
           </h2>
           <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-[4px]" />
         </div>
 
-        <div className="flex flex-col gap-[40px] px-4 md:px-[120px]">
+        <div className="max-w-[1440px] mx-auto flex flex-col gap-[40px] px-4 md:px-[120px]">
 
           {/* Row 1: big left image + right col (title/text top, image bottom) */}
           <div className="flex flex-col md:flex-row gap-[40px] items-start">
