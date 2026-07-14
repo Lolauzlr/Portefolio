@@ -1,116 +1,229 @@
 import { asset } from "@/lib/asset";
 
+const i = (n: number) => `/images/illustrations/illus-${n}.webp`;
+
+const loremLong =
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque. Vivamus dapibus semper justo, interdum tincidunt tellus placerat a. Quisque vel orci et nulla vestibulum interdum.";
+
+function SubTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-[4px]">
+      <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px] text-white">
+        {children}
+      </h3>
+      <div className="w-[80px] h-[4px] bg-white" />
+    </div>
+  );
+}
+
+function TitleBlock() {
+  return (
+    <div className="flex flex-col gap-[24px]">
+      <SubTitle>UNE IDÉE DE TITRE</SubTitle>
+      <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
+        {loremLong}
+      </p>
+    </div>
+  );
+}
+
 export default function IllustrationsPage() {
-  const loremIpsum =
-    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula.";
-
-  const featured = [
-    { src: "/images/illus_arcane.png", title: "ARCANE", w: 303, h: 539 },
-    { src: "/images/illus_monster.png", title: "MONSTER IN A BOTTLE", w: 382, h: 679 },
-    { src: "/images/illus_mazou.png", title: "MAZOU BD", w: 303, h: 539 },
-  ];
-
-  const galleryRows: string[][] = [
-    ["/images/illus_01.png", "/images/illus_02.png", "/images/illus_03.png"],
-    ["/images/illus_04.png", "/images/illus_05.png"],
-    ["/images/illus_06.png", "/images/illus_07.png", "/images/illus_08.png"],
-    ["/images/illus_09.png", "/images/illus_10.png"],
-    ["/images/illus_11.png", "/images/illus_12.png", "/images/illus_13.png"],
-    ["/images/illus_14.png", "/images/illus_15.png"],
-    ["/images/illus_16.png", "/images/illus_17.png", "/images/illus_18.png"],
-    ["/images/illus_19.png", "/images/illus_20.png"],
-    ["/images/illus_21.png", "/images/illus_22.png", "/images/illus_23.png"],
-    ["/images/illus_24.png", "/images/illus_25.png", "/images/illus_26.png", "/images/illus_27.png"],
-  ];
-
   return (
     <div className="pt-[95px] bg-[#15161b] text-white min-h-screen">
-      {/* Les Plus Récentes */}
-      <section className="px-4 md:px-[120px] py-16">
-        <h2 className="text-[40px] md:text-[60px] font-[family-name:var(--font-heading)] tracking-[4.8px] mb-2">
-          LES PLUS RÉCENTES
-        </h2>
-        <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-10" />
-        <div className="flex flex-col md:flex-row justify-center items-end gap-6">
-          {featured.map((item) => (
-            <div key={item.title} className="flex flex-col items-center">
-              <img
-                src={asset(item.src)}
-                alt={item.title}
-                className="object-cover"
-                style={{ width: item.w, height: item.h }}
-              />
-              <p className="mt-3 text-[24px] font-[family-name:var(--font-heading)] tracking-[1.92px] text-center">
-                {item.title}
+
+      {/* ── LES PLUS RÉCENTES ── */}
+      <section className="py-[60px]">
+        <div className="px-4 md:px-[120px] mb-[60px]">
+          <h2 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[60px] tracking-[4.8px] uppercase text-white">
+            LES PLUS RÉCENTES
+          </h2>
+          <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-[4px]" />
+        </div>
+
+        {/* Horizontal scroll row */}
+        <div className="flex gap-[24px] overflow-x-auto px-4 md:px-[120px] pb-4 items-start scrollbar-hide">
+          {/* ARCANE — title on top, image below */}
+          <div className="flex-shrink-0 flex flex-col gap-[16px] w-[303px]">
+            <div className="flex flex-col gap-[12px]">
+              <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">ARCANE</p>
+              <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px]">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula.
               </p>
             </div>
-          ))}
+            <img src={asset(i(1))} alt="Arcane" className="w-full h-[539px] object-cover" />
+          </div>
+
+          {/* MONSTER IN A BOTTLE — image on top, title below */}
+          <div className="flex-shrink-0 flex flex-col gap-[16px] w-[382px]">
+            <img src={asset(i(2))} alt="Monster in a bottle" className="w-full h-[679px] object-cover" />
+            <div className="flex flex-col gap-[12px]">
+              <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">MONSTER IN A BOTTLE</p>
+              <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px]">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula.
+              </p>
+            </div>
+          </div>
+
+          {/* MAZOU BD — title on top, image below */}
+          <div className="flex-shrink-0 flex flex-col gap-[16px] w-[303px]">
+            <div className="flex flex-col gap-[12px]">
+              <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">MAZOU BD</p>
+              <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px]">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula.
+              </p>
+            </div>
+            <img src={asset(i(3))} alt="Mazou BD" className="w-full h-[539px] object-cover" />
+          </div>
         </div>
       </section>
 
-      {/* Vric à Vrac */}
-      <section className="bg-[#131313] px-4 md:px-[120px] py-16">
-        <h2 className="text-[40px] md:text-[60px] font-[family-name:var(--font-heading)] tracking-[4.8px] mb-2">
-          VRIC À VRAC
-        </h2>
-        <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-10" />
-
-        {/* Main feature row */}
-        <div className="flex flex-col md:flex-row gap-6 mb-10">
-          <img
-            src={asset("/images/illus_main.png")}
-            alt="Main illustration"
-            className="w-full md:w-1/2 h-auto object-cover"
-          />
-          <div className="flex flex-col justify-between md:w-1/2">
-            <div>
-              <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px] mb-2">
-                UNE IDÉE DE TITRE
-              </h3>
-              <div className="w-[80px] h-[4px] bg-white mb-4" />
-              <p className="text-base font-[family-name:var(--font-body)] tracking-[1.28px]">
-                {loremIpsum}
-              </p>
-            </div>
-            <img
-              src={asset("/images/illus_dragon.png")}
-              alt="Dragon illustration"
-              className="w-full h-auto object-cover mt-6"
-            />
-          </div>
+      {/* ── VRIC À VRAC ── */}
+      <section className="bg-[#131313] py-[60px]">
+        <div className="px-4 md:px-[120px] mb-[60px]">
+          <h2 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[60px] tracking-[4.8px] uppercase text-white">
+            VRIC À VRAC
+          </h2>
+          <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-[4px]" />
         </div>
 
-        {/* Gallery grid rows */}
-        {galleryRows.map((row, rowIdx) => (
-          <div key={rowIdx}>
-            {rowIdx === 3 || rowIdx === 7 ? (
-              <div className="my-8">
-                <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px] mb-2">
-                  UNE IDÉE DE TITRE
-                </h3>
-                <div className="w-[80px] h-[4px] bg-white mb-4" />
-              </div>
-            ) : null}
-            <div
-              className={`grid gap-4 mb-4 ${
-                row.length === 4
-                  ? "grid-cols-2 md:grid-cols-4"
-                  : row.length === 3
-                  ? "grid-cols-1 md:grid-cols-3"
-                  : "grid-cols-1 md:grid-cols-2"
-              }`}
-            >
-              {row.map((src) => (
-                <img
-                  key={src}
-                  src={asset(src)}
-                  alt=""
-                  className="w-full h-auto object-cover"
-                />
-              ))}
+        <div className="flex flex-col gap-[40px] px-4 md:px-[120px]">
+
+          {/* Row 1: big left image + right col (title/text top, image bottom) */}
+          <div className="flex flex-col md:flex-row gap-[40px] items-start">
+            <div className="w-full md:w-[587px] shrink-0">
+              <img src={asset(i(4))} alt="" className="w-full h-[662px] object-cover" />
+            </div>
+            <div className="flex-1 flex flex-col justify-between self-stretch">
+              <TitleBlock />
+              <img src={asset(i(5))} alt="" className="w-full h-[322px] object-cover mt-6 md:mt-0" />
             </div>
           </div>
-        ))}
+
+          {/* Row 2 inner (extra px-60): left col stacked (aspect + 322px) + right tall */}
+          <div className="flex flex-col md:flex-row gap-[40px] items-start md:px-[60px]">
+            <div className="w-full md:w-[470px] shrink-0 flex flex-col gap-[40px]">
+              <img src={asset(i(6))} alt="" className="w-full aspect-[1548/1473] object-cover" />
+              <img src={asset(i(7))} alt="" className="w-full h-[322px] object-cover" />
+            </div>
+            <div className="w-full md:w-[587px] shrink-0">
+              <img src={asset(i(8))} alt="" className="w-full h-[810px] object-cover" />
+            </div>
+          </div>
+
+          {/* Row 3: left col (title/text top, 322px image bottom) + right image */}
+          <div className="flex flex-col md:flex-row gap-[40px] items-start">
+            <div className="flex-1 flex flex-col justify-between self-stretch">
+              <TitleBlock />
+              <img src={asset(i(9))} alt="" className="w-full h-[322px] object-cover mt-6 md:mt-0" />
+            </div>
+            <div className="w-full md:w-[480px] shrink-0">
+              <img src={asset(i(10))} alt="" className="w-full h-[662px] object-cover" />
+            </div>
+          </div>
+
+          {/* Row 4: single full-width image */}
+          <div>
+            <img src={asset(i(11))} alt="" className="w-full h-[607px] object-cover" />
+          </div>
+
+          {/* Row 5 inner (extra px-60): left col stacked + right tall */}
+          <div className="flex flex-col md:flex-row gap-[40px] items-start md:px-[60px]">
+            <div className="w-full md:w-[470px] shrink-0 flex flex-col gap-[40px]">
+              <img src={asset(i(12))} alt="" className="w-full aspect-[1548/1473] object-cover" />
+              <img src={asset(i(13))} alt="" className="w-full h-[322px] object-cover" />
+            </div>
+            <div className="w-full md:w-[587px] shrink-0">
+              <img src={asset(i(14))} alt="" className="w-full h-[810px] object-cover" />
+            </div>
+          </div>
+
+          {/* Row 6: left tall image (674px) + right col (title/text top, aspect image bottom) */}
+          <div className="flex flex-col md:flex-row gap-[40px] items-start">
+            <div className="w-full md:w-[674px] shrink-0">
+              <img src={asset(i(15))} alt="" className="w-full h-[930px] object-cover" />
+            </div>
+            <div className="flex-1 flex flex-col justify-between self-stretch">
+              <TitleBlock />
+              <img src={asset(i(16))} alt="" className="w-full aspect-[1548/1473] object-cover mt-6 md:mt-0" />
+            </div>
+          </div>
+
+          {/* Row 7 inner (extra px-60): left col (2×322px) + right tall */}
+          <div className="flex flex-col md:flex-row gap-[40px] items-start md:px-[60px]">
+            <div className="w-full md:w-[470px] shrink-0 flex flex-col gap-[40px]">
+              <img src={asset(i(17))} alt="" className="w-full h-[322px] object-cover" />
+              <img src={asset(i(18))} alt="" className="w-full h-[322px] object-cover" />
+            </div>
+            <div className="w-full md:w-[587px] shrink-0">
+              <img src={asset(i(19))} alt="" className="w-full h-[810px] object-cover" />
+            </div>
+          </div>
+
+          {/* Row 8: 3 equal columns */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-[24px]">
+            <img src={asset(i(20))} alt="" className="w-full h-[682px] object-cover" />
+            <img src={asset(i(21))} alt="" className="w-full h-[682px] object-cover" />
+            <img src={asset(i(22))} alt="" className="w-full h-[682px] object-cover" />
+          </div>
+
+          {/* Row 9: left col (title/text top, 350px image bottom) + right col (2 stacked images) */}
+          <div className="flex flex-col md:flex-row gap-[40px] items-start">
+            <div className="flex-1 flex flex-col justify-between self-stretch">
+              <TitleBlock />
+              <img src={asset(i(23))} alt="" className="w-full h-[350px] object-cover mt-6 md:mt-0" />
+            </div>
+            <div className="w-full md:w-[572px] shrink-0 flex flex-col gap-[4px] h-[554px]">
+              <img src={asset(i(24))} alt="" className="w-full flex-1 object-cover" />
+              <img src={asset(i(25))} alt="" className="w-full flex-1 object-cover" />
+            </div>
+          </div>
+
+          {/* Row 10 inner (extra px-60): left col (3×264px) + right tall */}
+          <div className="flex flex-col md:flex-row gap-[40px] items-start md:px-[60px]">
+            <div className="w-full md:w-[470px] shrink-0 flex flex-col gap-[12px]">
+              <img src={asset(i(26))} alt="" className="w-full h-[264px] object-cover" />
+              <img src={asset(i(27))} alt="" className="w-full h-[264px] object-cover" />
+              <img src={asset(i(28))} alt="" className="w-full h-[264px] object-cover" />
+            </div>
+            <div className="w-full md:w-[587px] shrink-0">
+              <img src={asset(i(29))} alt="" className="w-full h-[810px] object-cover" />
+            </div>
+          </div>
+
+          {/* Row 11: 2 equal columns, object-contain */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-[40px]">
+            <img src={asset(i(30))} alt="" className="w-full h-[764px] object-contain" />
+            <img src={asset(i(31))} alt="" className="w-full h-[764px] object-contain" />
+          </div>
+
+          {/* Row 12 inner (extra px-60): left image + right col (title/text top, image bottom) */}
+          <div className="flex flex-col md:flex-row gap-[40px] items-start justify-center md:px-[60px]">
+            <div className="w-full md:w-[480px] shrink-0">
+              <img src={asset(i(32))} alt="" className="w-full h-[662px] object-cover" />
+            </div>
+            <div className="flex flex-col justify-between self-stretch w-full md:w-[524px] shrink-0">
+              <TitleBlock />
+              <img src={asset(i(33))} alt="" className="w-full h-[322px] object-cover mt-6 md:mt-0" />
+            </div>
+          </div>
+
+          {/* Row 13: 2 equal columns */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-[40px]">
+            <img src={asset(i(34))} alt="" className="w-full h-[1031px] object-cover" />
+            <img src={asset(i(35))} alt="" className="w-full h-[1031px] object-cover" />
+          </div>
+
+          {/* Row 14: left square image + right col (title/text top, image bottom) */}
+          <div className="flex flex-col md:flex-row gap-[40px] items-start">
+            <div className="w-full md:w-[572px] shrink-0">
+              <img src={asset(i(36))} alt="" className="w-full h-[572px] object-cover" />
+            </div>
+            <div className="flex-1 flex flex-col justify-between self-stretch">
+              <TitleBlock />
+            </div>
+          </div>
+
+        </div>
       </section>
     </div>
   );
