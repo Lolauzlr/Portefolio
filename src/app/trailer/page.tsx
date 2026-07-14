@@ -485,7 +485,7 @@ export default function TrailerPage() {
           </h2>
           <div className="w-[80px] h-[4px] bg-[#ddff6e]" />
         </div>
-        <div className="flex flex-col gap-10">
+        <div className="flex flex-col gap-[24px]">
           {watchCards.map((card) => {
             const s = watchSizes[card.videoId] || { w: 1200, h: 500 };
             return (

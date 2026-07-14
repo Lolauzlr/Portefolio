@@ -197,11 +197,11 @@ export default function MoviesPage() {
           DOCUMENTARY
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-10" />
-        <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-[24px]">
           {documentaries.map((doc) => (
             <div
               key={doc.title}
-              className={`flex flex-col md:flex-row gap-8 items-center ${
+              className={`flex flex-col md:flex-row gap-[24px] items-center ${
                 doc.reversed ? "md:flex-row-reverse" : ""
               }`}
             >

@@ -57,11 +57,11 @@ export default function StoryboardPage() {
           TOUS MES TRAVAUX
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-10" />
-        <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-[24px]">
           {projects.map((project) => (
             <div
               key={project.title}
-              className={`flex flex-col md:flex-row gap-8 items-start ${
+              className={`flex flex-col md:flex-row gap-[24px] items-start ${
                 project.reversed ? "md:flex-row-reverse" : ""
               }`}
             >

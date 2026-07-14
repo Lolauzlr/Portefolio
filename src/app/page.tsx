@@ -180,7 +180,7 @@ export default function Home() {
       {/* Storyboards */}
       <section className="py-[60px] bg-[#131313] px-4 md:px-[120px]">
         <SectionTitle>STORYBOARDS</SectionTitle>
-        <div className="flex flex-col gap-10">
+        <div className="flex flex-col gap-[24px]">
           {storyboardCards.map((c) => (
             <div key={c.title} className="flex flex-col md:flex-row gap-4">
               <img
