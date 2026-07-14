@@ -222,14 +222,10 @@ export default function IllustrationsPage() {
             </div>
           </div>
 
-          {/* Row 15: 2 equal columns, object-contain */}
+          {/* Row 15: 2 equal columns */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-[40px]">
-            <div className="w-full h-[764px] flex items-center justify-center">
-              <img src={asset(i(12))} alt="" className="w-full h-full object-contain" />
-            </div>
-            <div className="w-full h-[764px] flex items-center justify-center">
-              <img src={asset(i(30))} alt="" className="w-full h-full object-contain" />
-            </div>
+            <img src={asset(i(12))} alt="" className="w-full h-[764px] object-cover" />
+            <img src={asset(i(30))} alt="" className="w-full h-[764px] object-cover" />
           </div>
 
         </div>
