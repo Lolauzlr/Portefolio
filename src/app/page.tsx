@@ -131,9 +131,7 @@ export default function Home() {
           {/* Featured illustration */}
           <div className="flex flex-col md:flex-row gap-10">
             <div className="relative md:w-[587px] h-[500px] md:h-[662px] shrink-0">
-              <img src={asset("/images/imgSpace.png")} alt="SPACE" className="absolute top-0 left-[9%] right-[15%] h-[14%] object-contain" />
-              <img src={asset("/images/imgSkateRemovebg1.png")} alt="Skate" className="absolute top-[25%] left-[5%] right-[6%] h-[50%] object-contain" />
-              <img src={asset("/images/imgSeaAll.png")} alt="SEA ALL" className="absolute bottom-0 left-0 right-0 h-[14%] object-contain" />
+              <img src={asset("/images/illustrations/illus-35.webp")} alt="Illustration" className="absolute inset-0 w-full h-full object-cover" />
             </div>
             <div className="flex flex-col justify-between flex-1">
               <div className="flex flex-col gap-6">
