@@ -94,10 +94,10 @@ export default function Home() {
 
       {/* Trailer */}
       <section className="py-[60px]">
-        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
+        <div className="px-4 md:px-[120px]">
           <SectionTitle>TRAILER</SectionTitle>
         </div>
-        <div className="max-w-[1440px] mx-auto flex gap-6 overflow-x-auto px-4 md:px-[120px] pb-4 scrollbar-hide">
+        <div className="flex gap-6 overflow-x-auto px-4 md:px-[120px] pb-4 scrollbar-hide">
           {trailerProjects.map((p) => (
             <div key={p.title} className="flex-shrink-0 w-[300px] md:w-[382px]">
               <img
@@ -116,7 +116,7 @@ export default function Home() {
             </div>
           ))}
         </div>
-        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
+        <div className="px-4 md:px-[120px]">
           <ToutVoirLink href="/trailer" />
         </div>
       </section>
@@ -125,122 +125,116 @@ export default function Home() {
       <HomeMoviesSection />
 
       {/* Illustrations */}
-      <section className="py-[60px]">
-        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
-          <SectionTitle>ILLUSTRATIONS</SectionTitle>
-          <div className="flex flex-col gap-[100px]">
-            {/* Featured illustration */}
-            <div className="flex flex-col md:flex-row gap-10">
-              <div className="relative md:w-[587px] h-[500px] md:h-[662px] shrink-0">
-                <img src={asset("/images/illustrations/illus-35.webp")} alt="Illustration" className="absolute inset-0 w-full h-full object-cover" />
-              </div>
-              <div className="flex flex-col justify-between flex-1">
-                <div className="flex flex-col gap-6">
-                  <div>
-                    <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">UNE IDÉE DE TITRE</h3>
-                    <div className="w-[80px] h-[4px] bg-white mt-1" />
-                  </div>
-                  <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque.
-                  </p>
+      <section className="py-[60px] px-4 md:px-[120px]">
+        <SectionTitle>ILLUSTRATIONS</SectionTitle>
+        <div className="flex flex-col gap-[100px]">
+          {/* Featured illustration */}
+          <div className="flex flex-col md:flex-row gap-10">
+            <div className="relative md:w-[587px] h-[500px] md:h-[662px] shrink-0">
+              <img src={asset("/images/illustrations/illus-35.webp")} alt="Illustration" className="absolute inset-0 w-full h-full object-cover" />
+            </div>
+            <div className="flex flex-col justify-between flex-1">
+              <div className="flex flex-col gap-6">
+                <div>
+                  <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">UNE IDÉE DE TITRE</h3>
+                  <div className="w-[80px] h-[4px] bg-white mt-1" />
                 </div>
-                <img src={asset("/images/illustrations/illus-1.webp")} alt="" className="w-full h-[322px] object-cover mt-6" />
+                <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque.
+                </p>
               </div>
+              <img src={asset("/images/illustrations/illus-1.webp")} alt="" className="w-full h-[322px] object-cover mt-6" />
             </div>
+          </div>
 
-            {/* Sub-section title */}
-            <div>
-              <div className="mb-10">
-                <h3 className="font-[family-name:var(--font-heading)] text-[32px] tracking-[2.56px]">UNE IDÉE DE TITRE</h3>
-                <div className="w-[80px] h-[4px] bg-white mt-1" />
-              </div>
-              <div className="flex gap-6 overflow-x-auto pb-4">
-                {illustrationCards.map((c) => (
-                  <div key={c.title} className="flex-shrink-0 w-[382px]">
-                    <img
-                      src={asset(c.img)}
-                      alt={c.title}
-                      className="w-full h-[383px] object-cover"
-                    />
-                    <div className="flex flex-col gap-3 mt-4">
-                      <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">
-                        {c.title}
-                      </h3>
-                      <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula.
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <ToutVoirLink href="/illustrations" />
+          {/* Sub-section title */}
+          <div>
+            <div className="mb-10">
+              <h3 className="font-[family-name:var(--font-heading)] text-[32px] tracking-[2.56px]">UNE IDÉE DE TITRE</h3>
+              <div className="w-[80px] h-[4px] bg-white mt-1" />
             </div>
+            <div className="flex gap-6 overflow-x-auto pb-4">
+              {illustrationCards.map((c) => (
+                <div key={c.title} className="flex-shrink-0 w-[382px]">
+                  <img
+                    src={asset(c.img)}
+                    alt={c.title}
+                    className="w-full h-[383px] object-cover"
+                  />
+                  <div className="flex flex-col gap-3 mt-4">
+                    <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">
+                      {c.title}
+                    </h3>
+                    <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
+                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula.
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <ToutVoirLink href="/illustrations" />
           </div>
         </div>
       </section>
 
       {/* Storyboards */}
-      <section className="py-[60px] bg-[#131313]">
-        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
-          <SectionTitle>STORYBOARDS</SectionTitle>
-          <div className="flex flex-col gap-[24px]">
-            {storyboardCards.map((c) => (
-              <div key={c.title} className="flex flex-col md:flex-row gap-4">
-                <img
-                  src={asset(c.img)}
-                  alt={c.title}
-                  className="w-full md:w-[612px] h-[250px] md:h-[344px] object-cover shrink-0"
-                />
-                <div className="flex flex-col gap-3">
-                  <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">
-                    {c.title}
-                  </h3>
-                  <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
-                    {c.desc}
-                  </p>
-                </div>
+      <section className="py-[60px] bg-[#131313] px-4 md:px-[120px]">
+        <SectionTitle>STORYBOARDS</SectionTitle>
+        <div className="flex flex-col gap-[24px]">
+          {storyboardCards.map((c) => (
+            <div key={c.title} className="flex flex-col md:flex-row gap-4">
+              <img
+                src={asset(c.img)}
+                alt={c.title}
+                className="w-full md:w-[612px] h-[250px] md:h-[344px] object-cover shrink-0"
+              />
+              <div className="flex flex-col gap-3">
+                <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">
+                  {c.title}
+                </h3>
+                <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
+                  {c.desc}
+                </p>
               </div>
-            ))}
-          </div>
-          <ToutVoirLink href="/storyboard" />
+            </div>
+          ))}
         </div>
+        <ToutVoirLink href="/storyboard" />
       </section>
 
       {/* About Me */}
-      <section className="py-[80px]">
-        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
-          <div className="-mb-10">
-            <SectionTitle>ABOUT ME</SectionTitle>
-          </div>
-          <div className="flex flex-col md:flex-row gap-10 items-center">
-            <div className="flex-1 flex flex-col justify-between">
-              <div className="flex flex-col gap-10">
-                <div>
-                  <div className="font-[family-name:var(--font-heading)] text-white">
-                    <p className="text-[48px] md:text-[80px] tracking-[6.4px] leading-none">HELLO,</p>
-                    <p className="text-[32px] md:text-[52px] tracking-[4.16px] leading-none">I&apos;M MARIE CHALANDRE 👋</p>
-                  </div>
-                  <div className="w-[80px] h-[4px] bg-white mt-2" />
+      <section className="px-4 md:px-[120px] py-[80px]">
+        <div className="-mb-10">
+          <SectionTitle>ABOUT ME</SectionTitle>
+        </div>
+        <div className="flex flex-col md:flex-row gap-10 items-center">
+          <div className="flex-1 flex flex-col justify-between">
+            <div className="flex flex-col gap-10">
+              <div>
+                <div className="font-[family-name:var(--font-heading)] text-white">
+                  <p className="text-[48px] md:text-[80px] tracking-[6.4px] leading-none">HELLO,</p>
+                  <p className="text-[32px] md:text-[52px] tracking-[4.16px] leading-none">I&apos;M MARIE CHALANDRE 👋</p>
                 </div>
-                <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-[#ddff6e]">
-                  CINEMATIC ARTIST &bull; CONCEPT ARTIST &bull; STORYBOARDER
-                </p>
-                <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white leading-relaxed">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque.
-                </p>
+                <div className="w-[80px] h-[4px] bg-white mt-2" />
               </div>
-              <div className="flex items-center gap-3 mt-8">
-                <span className="font-[family-name:var(--font-heading)] text-[32px] text-[#0FD1EA] tracking-[2.56px]">VOIR MON CV</span>
-                <CaretCircleRight />
-              </div>
+              <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-[#ddff6e]">
+                CINEMATIC ARTIST &bull; CONCEPT ARTIST &bull; STORYBOARDER
+              </p>
+              <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white leading-relaxed">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque.
+              </p>
             </div>
-            <div className="shrink-0">
-              <img
-                src={asset("/images/home-page/profil2.webp")}
-                alt="Marie Chalandre"
-                className="w-[350px] md:w-[599px] h-auto object-cover"
-              />
+            <div className="flex items-center gap-3 mt-8">
+              <span className="font-[family-name:var(--font-heading)] text-[32px] text-[#0FD1EA] tracking-[2.56px]">VOIR MON CV</span>
+              <CaretCircleRight />
             </div>
+          </div>
+          <div className="shrink-0">
+            <img
+              src={asset("/images/home-page/profil2.webp")}
+              alt="Marie Chalandre"
+              className="w-[350px] md:w-[599px] h-auto object-cover"
+            />
           </div>
         </div>
       </section>
