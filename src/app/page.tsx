@@ -1,12 +1,15 @@
+"use client";
+
 import Link from "next/link";
 import { asset } from "@/lib/asset";
 import HomeMoviesSection from "@/components/HomeMoviesSection";
 
 const trailerProjects = [
-  { img: "/images/imgImage.png", title: "MIO : MEMORIES IN ORBIT", desc: "Cinematic trailer pour un jeu d'exploration spatiale." },
-  { img: "/images/imgImage1.png", title: "WARSTRIDE CHALLENGES", desc: "Trailer de gameplay pour un FPS rétro futuriste." },
-  { img: "/images/imgImage2.png", title: "DORDOGNE", desc: "Bande-annonce pour un jeu d'aventure en aquarelle." },
-  { img: "/images/imgImage3.png", title: "CHANTS OF SENNAAR", desc: "Trailer narratif pour un jeu de puzzle linguistique." },
+  { videoId: "ZPQFsx9XXoM", title: "RESONANCE : A PLAGUE TALE LEGACY • GAMEPLAY", desc: "2026 • In-game video capture • Video editing • Sound editing" },
+  { videoId: "ewZufHtEl68", title: "YERBA BUENA • GAMEPLAY", desc: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing" },
+  { videoId: "cZgim-KYkZQ", title: "YERBA BUENA • REVEAL TRAILER", desc: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing" },
+  { videoId: "QwxFR1g7Uy4", title: "JOHN CARPENTER'S TOXIC COMMANDO • GAMEPLAY OVERVIEW TRAILER", desc: "2026 • In-game video capture • Video editing • Sound editing" },
+  { videoId: "CxtlJ06u_lc", title: "SPACE MARINE 2 • YEAR 2 TRAILER", desc: "2025 • In-game video capture • Video editing • Sound editing" },
 ];
 
 const illustrationCards = [
@@ -101,9 +104,10 @@ export default function Home() {
           {trailerProjects.map((p) => (
             <div key={p.title} className="flex-shrink-0 w-[300px] md:w-[382px]">
               <img
-                src={asset(p.img)}
+                src={`https://img.youtube.com/vi/${p.videoId}/maxresdefault.jpg`}
                 alt={p.title}
                 className="w-full h-[170px] md:h-[215px] object-cover"
+                onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${p.videoId}/hqdefault.jpg`; }}
               />
               <div className="flex flex-col gap-3 mt-4">
                 <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">
