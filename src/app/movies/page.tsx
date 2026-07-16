@@ -169,8 +169,7 @@ export default function MoviesPage() {
   return (
     <div className="pt-[95px] bg-[#15161b] text-white min-h-screen">
       {/* Features Films */}
-      <section className="py-16">
-        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
+      <section className="px-4 md:px-[120px] py-16">
         <h2 className="text-[40px] md:text-[60px] font-[family-name:var(--font-heading)] tracking-[4.8px] mb-2">
           FEATURES FILMS
         </h2>
@@ -190,12 +189,10 @@ export default function MoviesPage() {
           <br /><br />
           Cast: Vincent Cassel, Diane Kruger, Louis Garrel.
         </p>
-        </div>
       </section>
 
       {/* Documentary */}
-      <section className="bg-[#131313] py-16">
-        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
+      <section className="bg-[#131313] px-4 md:px-[120px] py-16">
         <h2 className="text-[40px] md:text-[60px] font-[family-name:var(--font-heading)] tracking-[4.8px] mb-2">
           DOCUMENTARY
         </h2>
@@ -227,7 +224,6 @@ export default function MoviesPage() {
               </div>
             </div>
           ))}
-        </div>
         </div>
       </section>
 

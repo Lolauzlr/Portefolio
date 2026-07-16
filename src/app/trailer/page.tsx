@@ -425,8 +425,7 @@ export default function TrailerPage() {
       </section>
 
       {/* Les Plus Récents */}
-      <section className="py-[60px]">
-        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
+      <section className="px-4 md:px-[120px] py-[60px]">
         <div className="mb-10">
           <h2 className="text-[40px] font-[family-name:var(--font-heading)] tracking-[3.2px] mb-1">
             LES PLUS RÉCENTS
@@ -476,12 +475,10 @@ export default function TrailerPage() {
             </div>
           ))}
         </div>
-        </div>
       </section>
 
       {/* À Regarder */}
-      <section className="bg-[#131313] py-[60px]">
-        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
+      <section className="bg-[#131313] px-4 md:px-[120px] py-[60px]">
         <div className="mb-10">
           <h2 className="text-[40px] font-[family-name:var(--font-heading)] tracking-[3.2px] mb-1">
             À REGARDER
@@ -574,7 +571,6 @@ export default function TrailerPage() {
               </div>
             );
           })}
-        </div>
         </div>
       </section>
 
