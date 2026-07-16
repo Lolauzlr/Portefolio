@@ -70,7 +70,7 @@ export default function Home() {
           alt="A Plague Tale: Requiem"
           className="absolute inset-0 w-full h-full object-cover md:hidden"
         />
-        <div className="absolute left-4 md:left-[120px] bottom-8 md:top-[527px] backdrop-blur-[5px] py-5 max-w-[792px]">
+        <div className="absolute left-4 md:left-[120px] bottom-8 md:top-[527px] md:backdrop-blur-[5px] py-5 max-w-[792px]">
           <div className="px-4">
             <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-white uppercase">
               Trailer
