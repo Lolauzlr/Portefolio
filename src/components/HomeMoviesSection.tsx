@@ -87,7 +87,8 @@ export default function HomeMoviesSection() {
   }, [videoModal]);
 
   return (
-    <section className="py-[60px] bg-[#131313] px-4 md:px-[120px]">
+    <section className="py-[60px] bg-[#131313]">
+      <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
       <div className="mb-10">
         <h2 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[60px] tracking-[4.8px] uppercase text-white">
           MOVIES
@@ -195,7 +196,9 @@ export default function HomeMoviesSection() {
         </div>
       </div>
 
+      </div>
       {/* Tout voir */}
+      <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
       <div className="flex justify-end mt-8">
         <Link
           href="/movies"
@@ -204,6 +207,7 @@ export default function HomeMoviesSection() {
           TOUT VOIR
           <CaretCircleRight />
         </Link>
+      </div>
       </div>
 
       {/* Video Modal */}
