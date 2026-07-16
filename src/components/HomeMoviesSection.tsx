@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { asset } from "@/lib/asset";
 
@@ -75,6 +75,62 @@ function VideoCard({
   );
 }
 
+function PentagonCard({ children, className }: { children: React.ReactNode; className?: string }) {
+  const [size, setSize] = useState({ w: 800, h: 300 });
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => {
+      setSize({ w: entry.contentRect.width, h: entry.contentRect.height });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const chamfer = 27;
+  const cut = 12;
+
+  return (
+    <div ref={ref} className={`relative ${className || ""}`}>
+      {/* Background */}
+      <div
+        className="absolute inset-0"
+        style={{
+          clipPath: `polygon(0 0, calc(100% - ${chamfer}px) 0, 100% ${cut}px, 100% 100%, 0 100%)`,
+          background: "rgba(0,0,0,0.40)",
+        }}
+      />
+      {/* SVG gradient silver border */}
+      <svg
+        className="absolute inset-0 w-full h-full z-10 pointer-events-none"
+        viewBox={`0 0 ${size.w} ${size.h}`}
+        preserveAspectRatio="none"
+        fill="none"
+      >
+        <defs>
+          <linearGradient id="silver-card" x1="0" y1="0" x2={size.w} y2={size.h} gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stopColor="rgba(255,255,255,0.9)" />
+            <stop offset="25%" stopColor="rgba(200,200,200,0.5)" />
+            <stop offset="50%" stopColor="rgba(255,255,255,0.7)" />
+            <stop offset="75%" stopColor="rgba(180,180,180,0.4)" />
+            <stop offset="100%" stopColor="rgba(220,220,220,0.6)" />
+          </linearGradient>
+        </defs>
+        <polygon
+          points={`0.5,0.5 ${size.w - chamfer},0.5 ${size.w - 0.5},${cut} ${size.w - 0.5},${size.h - 0.5} 0.5,${size.h - 0.5}`}
+          stroke="url(#silver-card)"
+          strokeWidth="1"
+          fill="none"
+        />
+      </svg>
+      {/* Content */}
+      <div className="relative z-20 p-5">{children}</div>
+    </div>
+  );
+}
+
 export default function HomeMoviesSection() {
   const [videoModal, setVideoModal] = useState<{ url: string; title: string } | null>(null);
 
@@ -98,7 +154,7 @@ export default function HomeMoviesSection() {
 
       <div className="flex flex-col gap-10">
         {/* Featured: Saint Ex */}
-        <div className="border border-[#797979] p-5">
+        <PentagonCard>
           <div className="flex flex-col md:flex-row gap-6">
             <div className="md:w-[792px] shrink-0">
               <VideoCard
@@ -120,12 +176,12 @@ export default function HomeMoviesSection() {
               </p>
             </div>
           </div>
-        </div>
+        </PentagonCard>
 
         {/* Secondary cards */}
         <div className="flex flex-col md:flex-row gap-10">
           {/* Jerry Gretzinger */}
-          <div className="border border-[#797979] p-5 flex-1 flex flex-col gap-6">
+          <PentagonCard className="flex-1 flex flex-col gap-6">
             <VideoCard
               thumbnail="/images/arte-gymnastique.webp"
               title="JERRY GRETZINGER"
@@ -141,10 +197,10 @@ export default function HomeMoviesSection() {
               <br />
               HOW TO MAP YOUR IMAGINATION, A documentary by David Caillon.
             </p>
-          </div>
+          </PentagonCard>
 
           {/* Louvre */}
-          <div className="border border-[#797979] p-5 flex-1 flex flex-col gap-6">
+          <PentagonCard className="flex-1 flex flex-col gap-6">
             <VideoCard
               youtubeId="M7PfKwiQL_w"
               title="IL ETAIT UNE FOIS LE MUSEE DU LOUVRE"
@@ -160,11 +216,11 @@ export default function HomeMoviesSection() {
               <br /><br />
               By Frédéric Wilner
             </p>
-          </div>
+          </PentagonCard>
         </div>
 
         {/* Fauve */}
-        <div className="border border-[#797979] p-5">
+        <PentagonCard>
           <div className="flex flex-col md:flex-row gap-6">
             <div className="md:w-[792px] shrink-0">
               <VideoCard
@@ -193,7 +249,7 @@ export default function HomeMoviesSection() {
               </p>
             </div>
           </div>
-        </div>
+        </PentagonCard>
       </div>
 
       <div className="flex justify-end mt-8">
