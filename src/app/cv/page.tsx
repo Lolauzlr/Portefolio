@@ -141,7 +141,7 @@ export default function CVPage() {
       <div className="max-w-[1280px] mx-auto px-6">
         {/* Hero */}
         <section id="profil" className="py-[56px] pb-[40px] border-b border-white/10">
-          <p className="font-[family-name:var(--font-heading)] tracking-[0.16em] text-[24px] text-[#DDFF6E] uppercase">Curriculum vitae</p>
+          <p className="font-[family-name:var(--font-heading)] tracking-[0.16em] text-[24px] text-white uppercase">Curriculum vitae</p>
           <h1 className="font-[family-name:var(--font-heading)] text-[clamp(48px,8vw,84px)] leading-[0.94] mt-[8px] uppercase">MARIE CHALANDRE</h1>
           <p className="font-[family-name:var(--font-heading)] tracking-[1.92px] text-[32px] text-[#DDFF6E] mt-[4px] uppercase">Cinematic artist</p>
           <p className="font-[family-name:var(--font-body)] text-[24px] leading-[1.65] text-[#e0e0e0] max-w-[62ch] mt-[20px]">
