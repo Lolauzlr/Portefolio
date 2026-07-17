@@ -233,10 +233,10 @@ export default function Home() {
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque.
               </p>
             </div>
-            <div className="flex items-center gap-3 mt-8">
+            <Link href="/cv" className="flex items-center gap-3 mt-8 hover:opacity-80 transition-opacity">
               <span className="font-[family-name:var(--font-heading)] text-[32px] text-[#0FD1EA] tracking-[2.56px]">VOIR MON CV</span>
               <CaretCircleRight />
-            </div>
+            </Link>
           </div>
           <div className="shrink-0">
             <img
