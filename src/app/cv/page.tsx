@@ -59,7 +59,7 @@ const ANCHORS = [
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div className="mb-[22px]">
-      <h2 className="font-[family-name:var(--font-heading)] tracking-[0.06em] font-normal text-[30px] mb-[6px]">{children}</h2>
+      <h2 className="font-[family-name:var(--font-heading)] tracking-[1.92px] font-normal text-[30px] mb-[6px] uppercase">{children}</h2>
       <div className="w-[52px] h-[4px] bg-[#DDFF6E]" />
     </div>
   );
@@ -70,6 +70,24 @@ function Block({ children, className }: { children: React.ReactNode; className?:
     <div className={`bg-[#101116] border border-white/10 rounded-[6px] p-[22px] ${className || ""}`}>
       {children}
     </div>
+  );
+}
+
+function CaretCircleRight() {
+  return (
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+      <circle cx="20" cy="20" r="19" stroke="#0FD1EA" strokeWidth="2" />
+      <path d="M16 12l8 8-8 8" stroke="#0FD1EA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function CaretCircleLeft() {
+  return (
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+      <circle cx="20" cy="20" r="19" stroke="#0FD1EA" strokeWidth="2" />
+      <path d="M24 12l-8 8 8 8" stroke="#0FD1EA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }
 
@@ -85,9 +103,13 @@ export default function CVPage() {
       (entries) => {
         entries.forEach((en) => {
           if (en.isIntersecting) {
-            links.forEach((l) => l.classList.remove("bg-[#DDFF6E]", "text-[#0b0c0f]"));
+            links.forEach((l) => {
+              l.classList.remove("text-[#0b0c0f]", "bg-[#DDFF6E]");
+              l.classList.add("text-white");
+            });
             const idx = sections.indexOf(en.target as Element);
             if (idx > -1) {
+              links[idx].classList.remove("text-white");
               links[idx].classList.add("bg-[#DDFF6E]", "text-[#0b0c0f]");
             }
           }
@@ -100,15 +122,15 @@ export default function CVPage() {
   }, []);
 
   return (
-    <div className="pt-[66px] bg-[#15161b] text-white min-h-screen">
-      {/* Subnav */}
-      <div className="sticky top-[66px] z-[49] bg-[rgba(11,12,16,0.92)] backdrop-blur-[14px] border-b border-white/10 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div ref={subnavRef} className="max-w-[1280px] mx-auto px-6 flex gap-[6px] h-[48px] items-center w-max min-w-full">
+    <div className="pt-[95px] bg-[#15161b] text-white min-h-screen">
+      {/* Subnav — positioned right below the 95px fixed header */}
+      <div className="sticky top-[95px] z-[49] bg-[rgba(11,12,16,0.92)] backdrop-blur-[14px] border-b border-white/10 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div ref={subnavRef} className="max-w-[1280px] mx-auto px-6 flex gap-[6px] h-[60px] items-center w-max min-w-full">
           {ANCHORS.map((a) => (
             <a
               key={a.href}
               href={a.href}
-              className="font-[family-name:var(--font-heading)] tracking-[0.06em] text-[12px] md:text-[16px] text-[#9a9a9a] no-underline px-[14px] py-[8px] rounded-[20px] whitespace-nowrap transition-colors duration-200 hover:text-white"
+              className="font-[family-name:var(--font-heading)] tracking-[1.92px] text-[24px] uppercase text-white no-underline px-[14px] py-[6px] rounded-[20px] whitespace-nowrap transition-colors duration-200 hover:text-[#0FD1EA]"
             >
               {a.label}
             </a>
@@ -119,20 +141,20 @@ export default function CVPage() {
       <div className="max-w-[1280px] mx-auto px-6">
         {/* Hero */}
         <section id="profil" className="py-[56px] pb-[40px] border-b border-white/10">
-          <p className="font-[family-name:var(--font-heading)] tracking-[0.16em] text-[12px] md:text-[16px] text-[#0FD1EA]">Curriculum vitae</p>
-          <h1 className="font-[family-name:var(--font-heading)] text-[clamp(48px,8vw,84px)] leading-[0.94] mt-[8px]">MARIE CHALANDRE</h1>
-          <p className="font-[family-name:var(--font-heading)] tracking-[0.06em] text-[clamp(18px,2.4vw,24px)] text-[#DDFF6E] mt-[4px]">Cinematic artist</p>
-          <p className="font-[family-name:var(--font-body)] text-[16px] leading-[1.65] text-[#cfcfcf] max-w-[62ch] mt-[20px]">
+          <p className="font-[family-name:var(--font-heading)] tracking-[0.16em] text-[24px] text-[#DDFF6E] uppercase">Curriculum vitae</p>
+          <h1 className="font-[family-name:var(--font-heading)] text-[clamp(48px,8vw,84px)] leading-[0.94] mt-[8px] uppercase">MARIE CHALANDRE</h1>
+          <p className="font-[family-name:var(--font-heading)] tracking-[1.92px] text-[32px] text-[#DDFF6E] mt-[4px] uppercase">Cinematic artist</p>
+          <p className="font-[family-name:var(--font-body)] text-[24px] leading-[1.65] text-[#e0e0e0] max-w-[62ch] mt-[20px]">
             Artiste cinématique spécialisée dans la mise en scène de plans 3D pour le jeu vidéo et le cinéma — du storyboard au compositing final, en passant par le lighting, l'animation de caméra et le motion design.
           </p>
           <div className="flex flex-wrap gap-[10px] mt-[24px]">
             {["29 ans", "Paris", "Permis B"].map((t) => (
-              <span key={t} className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#e6e6e6] border border-white/28 rounded-[20px] px-[14px] py-[6px]">{t}</span>
+              <span key={t} className="font-[family-name:var(--font-body)] text-[16px] text-[#e6e6e6] border border-white/28 rounded-[20px] px-[14px] py-[6px]">{t}</span>
             ))}
-            <a href="mailto:marie.chalandre@hotmail.fr" className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#e6e6e6] border border-white/28 rounded-[20px] px-[14px] py-[6px] no-underline hover:border-[#0FD1EA] hover:text-[#0FD1EA] transition-colors">
+            <a href="mailto:marie.chalandre@hotmail.fr" className="font-[family-name:var(--font-body)] text-[16px] text-[#e6e6e6] border border-white/28 rounded-[20px] px-[14px] py-[6px] no-underline hover:border-[#0FD1EA] hover:text-[#0FD1EA] transition-colors">
               marie.chalandre@hotmail.fr
             </a>
-            <a href="https://www.linkedin.com/in/marie-chalandre-076948103/" target="_blank" rel="noopener noreferrer" className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#e6e6e6] border border-white/28 rounded-[20px] px-[14px] py-[6px] no-underline hover:border-[#0FD1EA] hover:text-[#0FD1EA] transition-colors">
+            <a href="https://www.linkedin.com/in/marie-chalandre-076948103/" target="_blank" rel="noopener noreferrer" className="font-[family-name:var(--font-body)] text-[16px] text-[#e6e6e6] border border-white/28 rounded-[20px] px-[14px] py-[6px] no-underline hover:border-[#0FD1EA] hover:text-[#0FD1EA] transition-colors">
               LinkedIn
             </a>
           </div>
@@ -147,30 +169,30 @@ export default function CVPage() {
               {EXPERIENCE.map((e, i) => (
                 <div key={i} className="relative pl-[26px] pb-[30px] last:pb-0 border-l border-white/10 last:border-transparent">
                   <span className="absolute left-[-5px] top-[4px] w-[9px] h-[9px] rounded-full bg-[#DDFF6E]" />
-                  <div className="font-mono text-[12px] md:text-[16px] tracking-[0.1em] text-[#8b8b8b] uppercase">{e.dates}</div>
-                  <div className="font-[family-name:var(--font-heading)] tracking-[0.03em] font-normal text-[22px] mt-[5px] leading-[1.05]">{e.title}</div>
-                  <div className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#0FD1EA] mt-[5px]">{e.org} <span className="text-[#8b8b8b]">· {e.loc}</span></div>
-                  <p className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] leading-[1.55] text-[#bdbdbd] mt-[8px]">{e.desc}</p>
+                  <div className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#c0c0c0] uppercase tracking-[0.1em]">{e.dates}</div>
+                  <div className="font-[family-name:var(--font-heading)] tracking-[0.03em] font-normal text-[24px] mt-[5px] leading-[1.05] uppercase">{e.title}</div>
+                  <div className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-white mt-[5px] font-medium">{e.org} <span className="text-[#c0c0c0] font-normal">· {e.loc}</span></div>
+                  <p className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] leading-[1.55] text-[#d5d5d5] mt-[8px]">{e.desc}</p>
                 </div>
               ))}
             </div>
           </section>
 
           {/* Sidebar */}
-          <aside className="flex flex-col gap-[40px] md:sticky md:top-[130px]">
+          <aside className="flex flex-col gap-[40px] md:sticky md:top-[170px]">
             {/* Compétences */}
             <section id="competences">
               <SectionTitle>Compétences</SectionTitle>
               <Block>
-                <div className="font-[family-name:var(--font-heading)] tracking-[0.1em] text-[12px] md:text-[16px] text-[#8b8b8b] mb-[16px]">LOGICIELS</div>
+                <div className="font-[family-name:var(--font-heading)] tracking-[0.1em] text-[24px] text-[#c0c0c0] mb-[16px] uppercase">Logiciels</div>
                 {SOFTWARES.map((g) => (
                   <div key={g.group} className="mb-[18px] last:mb-0">
-                    <div className="font-[family-name:var(--font-heading)] tracking-[0.1em] text-[12px] md:text-[16px] text-[#8b8b8b] mb-[10px]">{g.group}</div>
+                    <div className="font-[family-name:var(--font-heading)] tracking-[0.1em] text-[24px] text-[#c0c0c0] mb-[10px] uppercase">{g.group}</div>
                     <div className="flex flex-wrap gap-[8px]">
                       {g.items.map(([name, desc]) => (
-                        <span key={name} className="text-[#e6e6e6] border border-white/22 rounded-[5px] px-[10px] py-[6px] leading-[1.2]">
-                          <b className="font-[family-name:var(--font-heading)] tracking-[0.02em] font-normal text-[12px] md:text-[16px] block text-white">{name}</b>
-                          <span className="text-[#8b8b8b] text-[12px] md:text-[16px]">{desc}</span>
+                        <span key={name} className="text-[#e6e6e6] border border-white/22 rounded-[5px] px-[10px] py-[6px] leading-[1.3]">
+                          <span className="font-[family-name:var(--font-heading)] tracking-[0.02em] text-[24px] block text-white uppercase">{name}</span>
+                          <span className="font-[family-name:var(--font-body)] text-[#c0c0c0] text-[12px] md:text-[16px]">{desc}</span>
                         </span>
                       ))}
                     </div>
@@ -179,12 +201,12 @@ export default function CVPage() {
               </Block>
               <div className="h-[20px]" />
               <Block>
-                <div className="font-[family-name:var(--font-heading)] tracking-[0.1em] text-[12px] md:text-[16px] text-[#8b8b8b] mb-[4px]">LANGUES</div>
+                <div className="font-[family-name:var(--font-heading)] tracking-[0.1em] text-[24px] text-[#c0c0c0] mb-[4px] uppercase">Langues</div>
                 {LANGS.map(([name, level, dots]) => (
                   <div key={name} className="flex items-center justify-between py-[9px] border-b border-white/10 last:border-0">
                     <span className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-white">{name}</span>
                     <span className="flex items-center gap-[8px]">
-                      <span className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] tracking-[0.06em] uppercase text-[#8b8b8b]">{level}</span>
+                      <span className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] tracking-[0.06em] uppercase text-[#c0c0c0]">{level}</span>
                       <span className="flex gap-[4px]">
                         {[0, 1, 2, 3].map((i) => (
                           <span key={i} className={`w-[6px] h-[6px] rounded-full ${i < dots ? "bg-[#DDFF6E]" : "bg-white/18"}`} />
@@ -202,9 +224,9 @@ export default function CVPage() {
               <Block>
                 {EDU.map((e, i) => (
                   <div key={i} className="py-[14px] border-b border-white/10 last:border-0">
-                    <div className="font-[family-name:var(--font-heading)] tracking-[0.02em] font-normal text-[17px] leading-[1.15]">{e.title}</div>
-                    <div className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#0FD1EA] mt-[3px]">{e.org} <span className="text-[#8b8b8b]">· {e.loc}</span></div>
-                    {e.note && <div className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#8b8b8b] mt-[3px]">{e.note}</div>}
+                    <div className="font-[family-name:var(--font-heading)] tracking-[0.02em] font-normal text-[24px] leading-[1.15] uppercase">{e.title}</div>
+                    <div className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-white mt-[3px] font-medium">{e.org} <span className="text-[#c0c0c0] font-normal">· {e.loc}</span></div>
+                    {e.note && <div className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#c0c0c0] mt-[3px]">{e.note}</div>}
                   </div>
                 ))}
               </Block>
@@ -214,9 +236,9 @@ export default function CVPage() {
             <section id="recompenses">
               <SectionTitle>Récompenses</SectionTitle>
               <Block>
-                <div className="font-[family-name:var(--font-heading)] tracking-[0.02em] font-normal text-[19px]">Film de fin d'études « BEAST »</div>
-                <div className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#0FD1EA] mt-[4px]">Festival Kinolikbez 2021 (Russie)</div>
-                <p className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] leading-[1.6] text-[#bdbdbd] mt-[10px]">
+                <div className="font-[family-name:var(--font-heading)] tracking-[0.02em] font-normal text-[24px] uppercase">Film de fin d'études « BEAST »</div>
+                <div className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-white mt-[4px] font-medium">Festival Kinolikbez 2021 (Russie)</div>
+                <p className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] leading-[1.6] text-[#d5d5d5] mt-[10px]">
                   Prix « Silver Jean-Luc » du meilleur film dans la catégorie « Merry Science » pour un cinéma malin — ainsi que 5 sélections dans des festivals régionaux et internationaux.
                 </p>
               </Block>
@@ -228,10 +250,10 @@ export default function CVPage() {
               <Block>
                 {INTERESTS.map((g) => (
                   <div key={g.label} className="mb-[14px] last:mb-0">
-                    <div className="font-[family-name:var(--font-heading)] tracking-[0.08em] text-[12px] md:text-[16px] text-[#8b8b8b] mb-[8px]">{g.label.toUpperCase()}</div>
+                    <div className="font-[family-name:var(--font-heading)] tracking-[0.08em] text-[24px] text-[#c0c0c0] mb-[8px] uppercase">{g.label}</div>
                     <div className="flex flex-wrap gap-[6px]">
                       {g.tags.map((t) => (
-                        <span key={t} className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#d2d2d2] bg-white/6 rounded-[4px] px-[9px] py-[4px]">{t}</span>
+                        <span key={t} className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#e0e0e0] bg-white/6 rounded-[4px] px-[9px] py-[4px]">{t}</span>
                       ))}
                     </div>
                   </div>
@@ -244,28 +266,30 @@ export default function CVPage() {
 
       {/* Footer CV */}
       <div className="border-t border-white/10 bg-[#0b0c10] mt-[40px]">
-        <div className="max-w-[1280px] mx-auto px-6 py-[44px] pb-[30px] flex flex-wrap gap-[24px] items-center justify-between">
-          <p className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#9a9a9a] m-0">
+        <div className="max-w-[1280px] mx-auto px-6 py-[44px] pb-[40px] flex flex-wrap gap-[24px] items-center justify-between">
+          <p className="font-[family-name:var(--font-body)] text-[16px] text-[#c0c0c0] m-0">
             Cinematic artist — plans 3D pour le jeu vidéo &amp; le cinéma.
           </p>
-          <div className="flex gap-[14px] flex-wrap">
+          <div className="flex flex-wrap gap-[32px] items-center">
             <Link
               href="/"
-              className="font-[family-name:var(--font-heading)] tracking-[0.06em] text-[12px] md:text-[16px] text-[#e8e8e8] border border-white/28 rounded-[30px] px-[18px] py-[9px] no-underline hover:border-[#0FD1EA] hover:text-[#0FD1EA] transition-colors"
+              className="font-[family-name:var(--font-heading)] text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:opacity-80 tracking-[2.56px] uppercase transition-opacity"
             >
-              ← Retour au portfolio
+              <CaretCircleLeft />
+              RETOUR AU PORTFOLIO
             </Link>
             <a
               href={asset("/CV_MARIECHALANDRE.pdf")}
               download
-              className="font-[family-name:var(--font-heading)] tracking-[0.06em] text-[12px] md:text-[16px] text-[#0b0c0f] bg-[#DDFF6E] rounded-[30px] px-[18px] py-[9px] no-underline hover:brightness-105 transition-all"
+              className="font-[family-name:var(--font-heading)] text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:opacity-80 tracking-[2.56px] uppercase transition-opacity"
             >
-              Télécharger le PDF
+              TÉLÉCHARGER LE PDF
+              <CaretCircleRight />
             </a>
           </div>
         </div>
         <div className="max-w-[1280px] mx-auto px-6 pb-[30px] border-t border-white/6">
-          <p className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#6b6b6b] pt-[16px] m-0">© 2026 Marie Chalandre — Portfolio</p>
+          <p className="font-[family-name:var(--font-body)] text-[16px] text-[#999] pt-[16px] m-0">© 2026 Marie Chalandre — Portfolio</p>
         </div>
       </div>
     </div>
