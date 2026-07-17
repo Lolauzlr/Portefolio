@@ -75,7 +75,7 @@ function VideoCard({
   );
 }
 
-function PentagonCard({ children, className }: { children: React.ReactNode; className?: string }) {
+function PentagonCard({ children, className, contentClassName }: { children: React.ReactNode; className?: string; contentClassName?: string }) {
   const [size, setSize] = useState({ w: 800, h: 300 });
   const ref = useRef<HTMLDivElement>(null);
 
@@ -126,7 +126,7 @@ function PentagonCard({ children, className }: { children: React.ReactNode; clas
         />
       </svg>
       {/* Content */}
-      <div className="relative z-20 p-5">{children}</div>
+      <div className={`relative z-20 p-5 ${contentClassName || ""}`}>{children}</div>
     </div>
   );
 }
@@ -181,7 +181,7 @@ export default function HomeMoviesSection() {
         {/* Secondary cards */}
         <div className="flex flex-col md:flex-row gap-10">
           {/* Jerry Gretzinger */}
-          <PentagonCard className="flex-1 flex flex-col gap-6">
+          <PentagonCard className="flex-1" contentClassName="flex flex-col gap-6">
             <VideoCard
               thumbnail="/images/arte-gymnastique.webp"
               title="JERRY GRETZINGER"
@@ -200,7 +200,7 @@ export default function HomeMoviesSection() {
           </PentagonCard>
 
           {/* Louvre */}
-          <PentagonCard className="flex-1 flex flex-col gap-6">
+          <PentagonCard className="flex-1" contentClassName="flex flex-col gap-6">
             <VideoCard
               youtubeId="M7PfKwiQL_w"
               title="IL ETAIT UNE FOIS LE MUSEE DU LOUVRE"
