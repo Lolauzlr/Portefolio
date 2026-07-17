@@ -132,7 +132,7 @@ export default function Home() {
       <section className="py-[60px]">
         <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
         <SectionTitle>ILLUSTRATIONS</SectionTitle>
-        <div className="flex flex-col gap-[100px]">
+        <div className="flex flex-col gap-[40px]">
           {/* Featured illustration */}
           <div className="flex flex-col md:flex-row gap-10">
             <div className="relative md:w-[587px] h-[500px] md:h-[662px] shrink-0">
