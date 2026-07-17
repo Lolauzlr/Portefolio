@@ -59,7 +59,7 @@ const ANCHORS = [
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div className="mb-[22px]">
-      <h2 className="font-[family-name:var(--font-heading)] tracking-[1.92px] font-normal text-[30px] mb-[6px] uppercase">{children}</h2>
+      <h2 className="font-[family-name:var(--font-heading)] tracking-[1.92px] font-normal text-[24px] md:text-[30px] mb-[6px] uppercase">{children}</h2>
       <div className="w-[52px] h-[4px] bg-[#DDFF6E]" />
     </div>
   );
@@ -143,18 +143,18 @@ export default function CVPage() {
         <section id="profil" className="py-[56px] pb-[40px] border-b border-white/10">
           <p className="font-[family-name:var(--font-heading)] tracking-[0.16em] text-[24px] text-[#DDFF6E] uppercase">Curriculum vitae</p>
           <h1 className="font-[family-name:var(--font-heading)] text-[clamp(48px,8vw,84px)] leading-[0.94] mt-[8px] uppercase">MARIE CHALANDRE</h1>
-          <p className="font-[family-name:var(--font-heading)] tracking-[1.92px] text-[32px] text-[#DDFF6E] mt-[4px] uppercase">Cinematic artist</p>
-          <p className="font-[family-name:var(--font-body)] text-[24px] leading-[1.65] text-[#e0e0e0] max-w-[62ch] mt-[20px]">
+          <p className="font-[family-name:var(--font-heading)] tracking-[1.92px] text-[24px] md:text-[32px] text-[#DDFF6E] mt-[4px] uppercase">Cinematic artist</p>
+          <p className="font-[family-name:var(--font-body)] text-[18px] md:text-[24px] leading-[1.65] text-[#e0e0e0] max-w-[62ch] mt-[20px]">
             Artiste cinématique spécialisée dans la mise en scène de plans 3D pour le jeu vidéo et le cinéma — du storyboard au compositing final, en passant par le lighting, l'animation de caméra et le motion design.
           </p>
           <div className="flex flex-wrap gap-[10px] mt-[24px]">
             {["29 ans", "Paris", "Permis B"].map((t) => (
-              <span key={t} className="font-[family-name:var(--font-body)] text-[16px] text-[#e6e6e6] border border-white/28 rounded-[20px] px-[14px] py-[6px]">{t}</span>
+              <span key={t} className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#e6e6e6] border border-white/28 rounded-[20px] px-[14px] py-[6px]">{t}</span>
             ))}
-            <a href="mailto:marie.chalandre@hotmail.fr" className="font-[family-name:var(--font-body)] text-[16px] text-[#e6e6e6] border border-white/28 rounded-[20px] px-[14px] py-[6px] no-underline hover:border-[#0FD1EA] hover:text-[#0FD1EA] transition-colors">
+            <a href="mailto:marie.chalandre@hotmail.fr" className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#e6e6e6] border border-white/28 rounded-[20px] px-[14px] py-[6px] no-underline hover:border-[#0FD1EA] hover:text-[#0FD1EA] transition-colors">
               marie.chalandre@hotmail.fr
             </a>
-            <a href="https://www.linkedin.com/in/marie-chalandre-076948103/" target="_blank" rel="noopener noreferrer" className="font-[family-name:var(--font-body)] text-[16px] text-[#e6e6e6] border border-white/28 rounded-[20px] px-[14px] py-[6px] no-underline hover:border-[#0FD1EA] hover:text-[#0FD1EA] transition-colors">
+            <a href="https://www.linkedin.com/in/marie-chalandre-076948103/" target="_blank" rel="noopener noreferrer" className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#e6e6e6] border border-white/28 rounded-[20px] px-[14px] py-[6px] no-underline hover:border-[#0FD1EA] hover:text-[#0FD1EA] transition-colors">
               LinkedIn
             </a>
           </div>
@@ -267,13 +267,13 @@ export default function CVPage() {
       {/* Footer CV */}
       <div className="border-t border-white/10 bg-[#0b0c10] mt-[40px]">
         <div className="max-w-[1280px] mx-auto px-6 py-[44px] pb-[40px] flex flex-wrap gap-[24px] items-center justify-between">
-          <p className="font-[family-name:var(--font-body)] text-[16px] text-[#c0c0c0] m-0">
+          <p className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#c0c0c0] m-0">
             Cinematic artist — plans 3D pour le jeu vidéo &amp; le cinéma.
           </p>
           <div className="flex flex-wrap gap-[32px] items-center">
             <Link
               href="/"
-              className="font-[family-name:var(--font-heading)] text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:opacity-80 tracking-[2.56px] uppercase transition-opacity"
+              className="font-[family-name:var(--font-heading)] text-[24px] md:text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:opacity-80 tracking-[2.56px] uppercase transition-opacity"
             >
               <CaretCircleLeft />
               RETOUR AU PORTFOLIO
@@ -281,7 +281,7 @@ export default function CVPage() {
             <a
               href={asset("/CV_MARIECHALANDRE.pdf")}
               download
-              className="font-[family-name:var(--font-heading)] text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:opacity-80 tracking-[2.56px] uppercase transition-opacity"
+              className="font-[family-name:var(--font-heading)] text-[24px] md:text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:opacity-80 tracking-[2.56px] uppercase transition-opacity"
             >
               TÉLÉCHARGER LE PDF
               <CaretCircleRight />
@@ -289,7 +289,7 @@ export default function CVPage() {
           </div>
         </div>
         <div className="max-w-[1280px] mx-auto px-6 pb-[30px] border-t border-white/6">
-          <p className="font-[family-name:var(--font-body)] text-[16px] text-[#999] pt-[16px] m-0">© 2026 Marie Chalandre — Portfolio</p>
+          <p className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#999] pt-[16px] m-0">© 2026 Marie Chalandre — Portfolio</p>
         </div>
       </div>
     </div>
