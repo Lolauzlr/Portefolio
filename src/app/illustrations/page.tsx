@@ -99,7 +99,7 @@ export default function IllustrationsPage() {
               <img src={asset(i(26))} alt="" className="w-full h-[322px] object-cover" />
             </div>
             <div className="flex-1">
-              <img src={asset(i(31))} alt="" className="w-full h-full object-cover" />
+              <img src={asset(i(30))} alt="" className="w-full h-full object-cover" />
             </div>
           </div>
 
@@ -219,7 +219,7 @@ export default function IllustrationsPage() {
           {/* Row 15: 2 equal columns */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-[40px]">
             <img src={asset(i(12))} alt="" className="w-full h-[764px] object-cover" />
-            <img src={asset(i(30))} alt="" className="w-full h-[764px] object-cover" />
+            <img src={asset(i(31))} alt="" className="w-full h-[764px] object-cover" />
           </div>
 
         </div>
