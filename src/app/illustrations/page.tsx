@@ -33,12 +33,6 @@ export default function IllustrationsPage() {
 
       {/* ── LES PLUS RÉCENTES ── */}
       <section className="py-[60px]">
-        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px] mb-[60px]">
-          <h2 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[60px] tracking-[4.8px] uppercase text-white">
-            LES PLUS RÉCENTES
-          </h2>
-          <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-[4px]" />
-        </div>
 
         <div className="max-w-[1440px] mx-auto flex gap-[24px] overflow-x-auto px-4 pb-4 items-start scrollbar-hide md:justify-center md:overflow-x-visible md:px-[120px]">
           {/* ARCANE — title on top, image below */}
