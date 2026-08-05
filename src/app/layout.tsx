@@ -43,6 +43,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" className={`${bebasNeue.variable} ${roboto.variable}`}>
+      <head>
+        {/* GitHub Pages serves static files with no custom HTTP headers, so
+            X-Frame-Options, X-Content-Type-Options and Permissions-Policy
+            can't be set at all (browsers only honor those as real headers,
+            never via <meta>) — a reverse proxy (e.g. Cloudflare) or a host
+            with header support (Vercel/Netlify) is required for those. */}
+        <meta
+          httpEquiv="Content-Security-Policy"
+          content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://img.youtube.com https://i.ytimg.com; frame-src https://www.youtube.com; connect-src 'self'; object-src 'none'; base-uri 'self'"
+        />
+        <meta name="referrer" content="strict-origin-when-cross-origin" />
+      </head>
       <body className="min-h-screen antialiased">
         <Navbar />
         <main>{children}</main>
