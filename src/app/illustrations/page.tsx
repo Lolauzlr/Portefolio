@@ -110,7 +110,7 @@ export default function IllustrationsPage() {
               <img src={asset(i(6))} alt="" className="w-full h-[322px] object-cover" />
             </div>
             <div className="w-full md:w-[44%] shrink-0">
-              <img src={asset(i(15))} alt="" className="w-full h-[662px] object-cover" />
+              <img src={asset(i(33))} alt="" className="w-full h-[662px] object-cover" />
             </div>
           </div>
 
@@ -148,7 +148,7 @@ export default function IllustrationsPage() {
               <img src={asset(i(24))} alt="" className="w-full h-[322px] object-cover" />
             </div>
             <div className="flex-1">
-              <img src={asset(i(33))} alt="" className="w-full h-full object-cover" />
+              <img src={asset(i(15))} alt="" className="w-full h-full object-cover" />
             </div>
           </div>
 
