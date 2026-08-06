@@ -218,8 +218,8 @@ export default function IllustrationsPage() {
 
           {/* Row 15: 2 equal columns */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-[40px]">
-            <img src={asset(i(12))} alt="" className="w-full h-[764px] object-cover" />
-            <img src={asset(i(31))} alt="" className="w-full h-[764px] object-cover" />
+            <img src={asset(i(12))} alt="" className="w-full h-[960px] object-cover" />
+            <img src={asset(i(31))} alt="" className="w-full h-[960px] object-contain" />
           </div>
 
         </div>
