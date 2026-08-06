@@ -34,7 +34,7 @@ export default function IllustrationsPage() {
       {/* ── LES PLUS RÉCENTES ── */}
       <section className="py-[60px]">
 
-        <div className="flex gap-[24px] overflow-x-auto px-4 md:px-[120px] pb-4 items-start scrollbar-hide">
+        <div className="flex justify-center gap-[24px] overflow-x-auto px-4 md:px-[120px] pb-4 items-start scrollbar-hide">
           {/* ARCANE — title on top, image below */}
           <div className="flex-shrink-0 flex flex-col gap-[16px] w-[303px]">
             <div className="flex flex-col gap-[12px]">
