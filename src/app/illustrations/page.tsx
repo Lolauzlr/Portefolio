@@ -195,7 +195,7 @@ export default function IllustrationsPage() {
             </div>
             <div className="flex-1 flex flex-col gap-6 md:gap-0 md:justify-between md:self-stretch">
               <TitleBlock />
-              <img src={asset(i(21))} alt="" className="w-full h-[322px] object-cover" />
+              <img src={asset(i(21))} alt="" className="w-full h-[500px] object-cover" />
             </div>
           </div>
 
