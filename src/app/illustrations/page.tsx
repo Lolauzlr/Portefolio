@@ -120,12 +120,12 @@ export default function IllustrationsPage() {
           </div>
 
           {/* Row 5: left col stacked + right tall */}
-          <div className="flex flex-col md:flex-row gap-[40px]">
-            <div className="w-full md:w-[44%] shrink-0 flex flex-col gap-[40px]">
-              <img src={asset(i(23))} alt="" className="w-full aspect-[1548/1473] object-cover" />
+          <div className="flex flex-col md:flex-row gap-[40px] md:items-stretch">
+            <div className="w-full md:w-[44%] shrink-0 flex flex-col gap-[40px] md:self-stretch">
+              <img src={asset(i(23))} alt="" className="w-full flex-1 object-cover" />
               <img src={asset(i(13))} alt="" className="w-full h-[322px] object-cover" />
             </div>
-            <div className="flex-1">
+            <div className="flex-1 md:self-stretch">
               <img src={asset(i(17))} alt="" className="w-full h-full object-cover" />
             </div>
           </div>
