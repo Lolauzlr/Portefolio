@@ -190,7 +190,7 @@ export default function IllustrationsPage() {
 
           {/* Row 12: left image + right col (title/text top, image bottom) */}
           <div className="flex flex-col md:flex-row gap-[40px] items-start">
-            <div className="w-full md:w-[44%] shrink-0">
+            <div className="w-full md:w-[44%] shrink-0 md:self-stretch md:flex md:flex-col md:justify-end">
               <img src={asset(i(28))} alt="" className="w-full h-[662px] object-cover" />
             </div>
             <div className="flex-1 flex flex-col gap-6 md:gap-0 md:justify-between md:self-stretch">
