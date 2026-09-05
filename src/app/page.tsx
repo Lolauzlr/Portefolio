@@ -96,11 +96,9 @@ export default function Home() {
       </section>
 
       {/* Trailer */}
-      <section className="py-[60px]">
-        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
-          <SectionTitle>TRAILER</SectionTitle>
-        </div>
-        <div className="max-w-[1440px] mx-auto flex gap-6 overflow-x-auto px-4 md:px-[120px] pb-4 scrollbar-hide">
+      <section className="py-[60px] px-4 md:px-[120px]">
+        <SectionTitle>TRAILER</SectionTitle>
+        <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
           {trailerProjects.map((p) => (
             <div key={p.title} className="flex-shrink-0 w-[300px] md:w-[382px]">
               <img
@@ -120,17 +118,14 @@ export default function Home() {
             </div>
           ))}
         </div>
-        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
-          <ToutVoirLink href="/trailer" />
-        </div>
+        <ToutVoirLink href="/trailer" />
       </section>
 
       {/* Movies */}
       <HomeMoviesSection />
 
       {/* Illustrations */}
-      <section className="py-[60px]">
-        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
+      <section className="py-[60px] px-4 md:px-[120px]">
         <SectionTitle>ILLUSTRATIONS</SectionTitle>
         <div className="flex flex-col gap-[40px]">
           {/* Featured illustration */}
@@ -180,12 +175,10 @@ export default function Home() {
             <ToutVoirLink href="/illustrations" />
           </div>
         </div>
-        </div>
       </section>
 
       {/* Storyboards */}
-      <section className="py-[60px] bg-[#131313]">
-        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
+      <section className="py-[60px] bg-[#131313] px-4 md:px-[120px]">
         <SectionTitle>STORYBOARDS</SectionTitle>
         <div className="flex flex-col gap-[24px]">
           {storyboardCards.map((c) => (
@@ -207,12 +200,10 @@ export default function Home() {
           ))}
         </div>
         <ToutVoirLink href="/storyboard" />
-        </div>
       </section>
 
       {/* About Me */}
-      <section className="py-[80px]">
-        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
+      <section className="py-[80px] px-4 md:px-[120px]">
         <div className="-mb-10">
           <SectionTitle>ABOUT ME</SectionTitle>
         </div>
@@ -245,7 +236,6 @@ export default function Home() {
               className="w-[350px] md:w-[599px] h-auto object-cover"
             />
           </div>
-        </div>
         </div>
       </section>
     </div>
