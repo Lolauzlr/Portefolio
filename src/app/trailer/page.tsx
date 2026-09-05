@@ -236,12 +236,12 @@ export default function TrailerPage() {
 
     (window as unknown as Record<string, unknown>).onYouTubeIframeAPIReady = () => {
       playerRef.current = new YT.Player("yt-bg-player", {
-        videoId: "MOEbrOqLL2o",
+        videoId: "OLEZv_Qyb6Q",
         playerVars: {
           autoplay: 1,
           mute: 1,
           loop: 1,
-          playlist: "MOEbrOqLL2o",
+          playlist: "OLEZv_Qyb6Q",
           controls: 0,
           showinfo: 0,
           rel: 0,
@@ -303,7 +303,7 @@ export default function TrailerPage() {
         {/* Click zone - opens overlay, or pauses on hover-visible button */}
         <button
           className="absolute inset-0 w-full h-full z-10 cursor-pointer group"
-          onClick={() => setVideoModal({ videoId: "MOEbrOqLL2o", title: "RESONANCE : A PLAGUE TALE LEGACY • GAMEPLAY" })}
+          onClick={() => setVideoModal({ videoId: "OLEZv_Qyb6Q", title: "ELTA: DEFY ALL GODS • REVEAL TRAILER" })}
           aria-label="Ouvrir la vidéo"
         />
 
@@ -396,7 +396,7 @@ export default function TrailerPage() {
           <div className="relative z-10 p-4 flex flex-col gap-3">
             <div className="flex items-start justify-between">
               <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-white uppercase">
-                Trailer
+                Reveal Trailer
               </p>
               {/* CTA - Voir les screenshots */}
               <button
@@ -407,11 +407,11 @@ export default function TrailerPage() {
               </button>
             </div>
             <h1 className="font-[family-name:var(--font-heading)] text-[36px] md:text-[72px] leading-none tracking-[4px] md:tracking-[6.4px] uppercase w-full">
-              RESONANCE : A PLAGUE TALE LEGACY
+              Elta: Defy All Gods
             </h1>
 
             <div className="flex flex-wrap gap-3">
-              {["2026", "Jeu vidéo", "In-game video capture", "Gameplay"].map((tag) => (
+              {["Gamescom 2026", "Unreal", "3D animation", "Action cinematic"].map((tag) => (
                 <span
                   key={tag}
                   className="font-[family-name:var(--font-body)] text-[16px] md:text-[20px] tracking-[1.6px] border border-white rounded-full px-3 py-1"
