@@ -7,6 +7,9 @@ export default function TrailerPage() {
   const [screenshotsData, setScreenshotsData] = useState<{
     category: string;
     title: string;
+    role?: string;
+    responsibilities?: string;
+    credits?: { label: string; value: string }[];
     screenshots: { src: string; tag: string; description: string }[];
   } | null>(null);
   const [screenshotIndex, setScreenshotIndex] = useState(0);
@@ -81,9 +84,14 @@ export default function TrailerPage() {
     return () => window.removeEventListener("keydown", handleEsc);
   }, [videoModal, screenshotsData]);
 
-  const openScreenshots = (category: string, title: string, screenshots: { src: string; tag: string; description: string }[]) => {
+  const openScreenshots = (
+    category: string,
+    title: string,
+    screenshots: { src: string; tag: string; description: string }[],
+    extra?: { role: string; responsibilities: string; credits: { label: string; value: string }[] }
+  ) => {
     setScreenshotIndex(0);
-    setScreenshotsData({ category, title, screenshots });
+    setScreenshotsData({ category, title, screenshots, ...extra });
   };
 
   const recentTrailers = [
@@ -207,8 +215,15 @@ export default function TrailerPage() {
   ];
 
   const heroScreenshots = {
-    category: "GAMEPLAY · 2026",
-    title: "RESONANCE : A PLAGUE TALE LEGACY",
+    category: "REVEAL TRAILER • GAMESCOM 2026",
+    title: "Elta: Defy All Gods",
+    role: "Cinematic artist in charge of The Reveal Trailer of Elta: Defy All Gods",
+    responsibilities: "Camera animation, real-time combat VFX, cinematic lighting, animation polish",
+    credits: [
+      { label: "Developer", value: "Afterburner Studios" },
+      { label: "Publisher", value: "Focus Entertainment" },
+      { label: "Cinematic artist team credits", value: "Gaël Verbitzky, Michael Leroy" },
+    ],
     screenshots: [
       { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_001.webp", tag: "SCÈNE 01", description: "In-game video capture" },
       { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_002.webp", tag: "SCÈNE 02", description: "In-game video capture" },
@@ -400,7 +415,7 @@ export default function TrailerPage() {
               </p>
               {/* CTA - Voir les screenshots */}
               <button
-                onClick={(e) => { e.stopPropagation(); openScreenshots(heroScreenshots.category, heroScreenshots.title, heroScreenshots.screenshots); }}
+                onClick={(e) => { e.stopPropagation(); openScreenshots(heroScreenshots.category, heroScreenshots.title, heroScreenshots.screenshots, { role: heroScreenshots.role, responsibilities: heroScreenshots.responsibilities, credits: heroScreenshots.credits }); }}
                 className="font-[family-name:var(--font-heading)] text-[20px] md:text-[24px] tracking-[1.92px] text-[#0fd1ea] uppercase shrink-0 hover:opacity-80 transition-opacity cursor-pointer whitespace-nowrap"
               >
                 VOIR LES SCREENSHOTS
@@ -704,13 +719,28 @@ export default function TrailerPage() {
 
               {/* Tag */}
               <p className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white uppercase">
-                {screenshotsData.screenshots[screenshotIndex].tag}
+                {screenshotsData.role ?? screenshotsData.screenshots[screenshotIndex].tag}
               </p>
 
-              {/* Description */}
-              <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-[#b0b0b0]">
-                {screenshotsData.screenshots[screenshotIndex].description}
-              </p>
+              {screenshotsData.credits ? (
+                <>
+                  <p className="font-[family-name:var(--font-body)] text-[18px] tracking-[1.28px] text-white">
+                    Responsibilities : <span className="font-semibold">{screenshotsData.responsibilities}</span>
+                  </p>
+                  <div className="w-full h-px bg-white/20" />
+                  <div className="flex flex-col gap-3">
+                    {screenshotsData.credits.map((c) => (
+                      <p key={c.label} className="font-[family-name:var(--font-body)] text-[18px] tracking-[1.28px] text-white">
+                        {c.label} : <span className="font-semibold">{c.value}</span>
+                      </p>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-[#b0b0b0]">
+                  {screenshotsData.screenshots[screenshotIndex].description}
+                </p>
+              )}
             </div>
           </div>
         </div>
