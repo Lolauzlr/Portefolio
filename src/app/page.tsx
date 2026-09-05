@@ -153,9 +153,9 @@ export default function Home() {
               <h3 className="font-[family-name:var(--font-heading)] text-[32px] tracking-[2.56px]">UNE IDÉE DE TITRE</h3>
               <div className="w-[80px] h-[4px] bg-white mt-1" />
             </div>
-            <div className="flex flex-col gap-6 md:flex-row md:overflow-x-auto pb-4">
+            <div className="flex flex-col gap-6 md:grid md:grid-cols-3">
               {illustrationCards.map((c) => (
-                <div key={c.title} className="w-full md:flex-shrink-0 md:w-[382px]">
+                <div key={c.title} className="w-full">
                   <img
                     src={asset(c.img)}
                     alt={c.title}
