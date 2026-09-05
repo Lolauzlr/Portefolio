@@ -159,7 +159,7 @@ export default function Home() {
                   <img
                     src={asset(c.img)}
                     alt={c.title}
-                    className="w-full h-[300px] md:h-[383px] object-cover"
+                    className="w-full aspect-square object-cover"
                   />
                   <div className="flex flex-col gap-3 mt-4">
                     <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">
