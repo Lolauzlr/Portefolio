@@ -96,11 +96,9 @@ export default function Home() {
       </section>
 
       {/* Trailer */}
-      <section className="py-[60px]">
-        <div className="px-4 md:px-[120px]">
-          <SectionTitle>TRAILER</SectionTitle>
-        </div>
-        <div className="flex gap-6 overflow-x-auto px-4 md:px-[120px] pb-4 scrollbar-hide">
+      <section className="py-[60px] px-4 md:px-[120px]">
+        <SectionTitle>TRAILER</SectionTitle>
+        <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
           {trailerProjects.map((p) => (
             <div key={p.title} className="flex-shrink-0 w-[300px] md:w-[382px]">
               <img
@@ -120,9 +118,7 @@ export default function Home() {
             </div>
           ))}
         </div>
-        <div className="px-4 md:px-[120px]">
-          <ToutVoirLink href="/trailer" />
-        </div>
+        <ToutVoirLink href="/trailer" />
       </section>
 
       {/* Movies */}
