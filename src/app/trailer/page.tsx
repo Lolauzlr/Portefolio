@@ -211,6 +211,12 @@ export default function TrailerPage() {
       ] },
     { videoId: "LpxuWSy8b9U", title: "Atlas Fallen • Gameplay Overview Trailer", description: "2023 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "GAMEPLAY OVERVIEW · 2023", screenshotTitle: "ATLAS FALLEN",
+      screenshotRole: "Cinematic artist in charge of the Gameplay Overview trailer of Atlas Fallen",
+      screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
+      screenshotCredits: [
+        { label: "Developer", value: "Deck13" },
+        { label: "Publisher", value: "Focus Entertainment" },
+      ],
       screenshots: [
         { src: "/images/atlas-fallen-2023/Atlas-fallen-2023-001.webp", tag: "SCÈNE 01", description: "In-game video capture" },
         { src: "/images/atlas-fallen-2023/Atlas-fallen-2023-002.webp", tag: "SCÈNE 02", description: "In-game video capture" },
