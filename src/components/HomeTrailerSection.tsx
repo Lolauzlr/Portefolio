@@ -146,7 +146,7 @@ export default function HomeTrailerSection() {
       <div className="relative">
         <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
           {trailerCards.map((card) => (
-            <div key={card.title} className="flex-shrink-0 w-[300px] md:w-[382px] flex flex-col gap-4">
+            <div key={card.title} className="flex-shrink-0 w-[300px] md:w-[474px] flex flex-col gap-4">
               <div
                 className="relative w-full aspect-video cursor-pointer overflow-hidden bg-black"
                 onMouseEnter={() => setHoveredCard(card.videoId)}
