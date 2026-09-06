@@ -706,7 +706,7 @@ export default function TrailerPage() {
 
               <div className="flex flex-col gap-2">
                 {/* Category */}
-                <p className="font-[family-name:var(--font-heading)] text-[16px] tracking-[1.28px] text-[#DADADA] uppercase">
+                <p className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.28px] text-[#DADADA] uppercase">
                   {screenshotsData.category}
                 </p>
 
@@ -739,7 +739,7 @@ export default function TrailerPage() {
                   </div>
                 </>
               ) : (
-                <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-[#b0b0b0]">
+                <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
                   {screenshotsData.screenshots[screenshotIndex].description}
                 </p>
               )}
