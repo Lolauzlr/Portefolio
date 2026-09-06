@@ -277,13 +277,25 @@ export default function TrailerPage() {
       ] },
     { videoId: "3pEJJdJStiQ", title: "BLACKTAIL • 'The Forest Awaits' Gameplay Trailer | THE PARASIGHT", description: "2022 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "GAMEPLAY TRAILER · 2022", screenshotTitle: "BLACKTAIL",
+      screenshotRole: "Cinematic artist in charge of \"The Forest Awaits\" Gameplay trailer of BLACKTAIL",
+      screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
+      screenshotCredits: [
+        { label: "Developer", value: "The Parasight" },
+        { label: "Publisher", value: "Focus Entertainment" },
+      ],
       screenshots: [
         { src: "/images/blacktail-2022/blacktail-001.webp", tag: "SCÈNE 01", description: "In-game video capture" },
         { src: "/images/blacktail-2022/blacktail-002.webp", tag: "SCÈNE 02", description: "In-game video capture" },
         { src: "/images/blacktail-2022/blacktail-003.webp", tag: "SCÈNE 03", description: "In-game video capture" },
       ] },
     { videoId: "U4XA_dhCx_M", title: "Warstride Challenges • Multiplayer Update Trailer", description: "2022 • Camera & Character Animation in Unreal Engine 4 • In-game Video Capture • Video Editing • Sound Editing",
-      screenshotCategory: "MULTIPLAYER UPDATE · 2022", screenshotTitle: "WARSTRIDE CHALLENGES",
+      screenshotCategory: "MULTIPLAYER UPDATE TRAILER · 2022", screenshotTitle: "WARSTRIDE CHALLENGES",
+      screenshotRole: "Cinematic artist in charge of the Multiplayer Update trailer of Warstride Challenges",
+      screenshotResponsibilities: "Camera & Character Animation in Unreal Engine 4 / In-game Video Capture / Video Editing / Sound Editing",
+      screenshotCredits: [
+        { label: "Developer", value: "Dream Powered Games" },
+        { label: "Publisher", value: "Focus Entertainment" },
+      ],
       screenshots: [
         { src: "/images/warstride-2022/Warstride-Challenges-2022-001.webp", tag: "SCÈNE 01", description: "Camera & character animation in Unreal Engine 4" },
         { src: "/images/warstride-2022/Warstride-Challenges-2022-002.webp", tag: "SCÈNE 02", description: "In-game video capture" },
