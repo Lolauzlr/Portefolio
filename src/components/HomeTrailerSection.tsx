@@ -144,7 +144,7 @@ export default function HomeTrailerSection() {
       </div>
 
       <div className="relative">
-        <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
+        <div className="flex gap-6 overflow-x-auto pb-4 pr-4 md:pr-[120px] scrollbar-hide">
           {trailerCards.map((card) => (
             <div key={card.title} className="flex-shrink-0 w-[300px] md:w-[474px] flex flex-col gap-4">
               <div
