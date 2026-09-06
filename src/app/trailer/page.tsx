@@ -262,7 +262,13 @@ export default function TrailerPage() {
         { src: "/images/hotel-renovator-2023/Hotel-Renovator-2023-002.webp", tag: "SCÈNE 02", description: "Camera set up in Unreal Engine 4" },
       ] },
     { videoId: "MTskFVe8P3Q", title: "A Plague Tale: Requiem • The Game Awards 2022 Spotlight", description: "2022 • In-game video capture • Video editing • Sound editing",
-      screenshotCategory: "SPOTLIGHT · 2022", screenshotTitle: "A PLAGUE TALE : REQUIEM",
+      screenshotCategory: "Spotlight Trailer • The Game Awards 2022", screenshotTitle: "A PLAGUE TALE : REQUIEM",
+      screenshotRole: "Cinematic artist in charge of The Game Awards 2022 Spotlight of A Plague Tale: Requiem",
+      screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
+      screenshotCredits: [
+        { label: "Developer", value: "Asobo" },
+        { label: "Publisher", value: "Focus Entertainment" },
+      ],
       screenshots: [
         { src: "/images/plague-tale-requiem-2022/A-Plague-Tale-Requiem-2022-001.webp", tag: "SCÈNE 01", description: "In-game video capture" },
         { src: "/images/plague-tale-requiem-2022/A-Plague-Tale-Requiem-2022-002.webp", tag: "SCÈNE 02", description: "In-game video capture" },
