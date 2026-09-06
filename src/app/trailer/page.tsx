@@ -96,7 +96,7 @@ export default function TrailerPage() {
 
   const recentTrailers = [
     { videoId: "ZPQFsx9XXoM", title: "RESONANCE : A PLAGUE TALE LEGACY • GAMEPLAY", description: "2026 • In-game video capture • Video editing • Sound editing",
-      screenshotCategory: "Long Gameplay Trailer • 2026", screenshotTitle: "RESONANCE : A PLAGUE TALE LEGACY",
+      screenshotCategory: "2026 • Long Gameplay Trailer", screenshotTitle: "RESONANCE : A PLAGUE TALE LEGACY",
       screenshotRole: "Cinematic artist in charge of The Long Gameplay Trailer of Resonance: A Plague Tale Legacy",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
@@ -111,7 +111,7 @@ export default function TrailerPage() {
         { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_005.webp", tag: "SCÈNE 05", description: "In-game video capture" },
       ] },
     { videoId: "ewZufHtEl68", title: "YERBA BUENA • GAMEPLAY", description: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing",
-      screenshotCategory: "Gameplay Overview Trailer • 2026", screenshotTitle: "YERBA BUENA",
+      screenshotCategory: "2026 • Gameplay Overview Trailer", screenshotTitle: "YERBA BUENA",
       screenshotRole: "Cinematic artist in charge of The Overview Trailer of Yerba Buena",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
@@ -127,7 +127,7 @@ export default function TrailerPage() {
         { src: "/images/yerba-buena-gameplay-2026/K.webp", tag: "SCÈNE 05", description: "In-game video capture" },
       ] },
     { videoId: "cZgim-KYkZQ", title: "YERBA BUENA • REVEAL TRAILER", description: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing",
-      screenshotCategory: "REVEAL TRAILER · 2026", screenshotTitle: "YERBA BUENA",
+      screenshotCategory: "2026 · REVEAL TRAILER", screenshotTitle: "YERBA BUENA",
       screenshotRole: "Cinematic artist in charge of The Reveal Trailer of Yerba Buena",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
@@ -147,7 +147,7 @@ export default function TrailerPage() {
 
   const watchCards = [
     { videoId: "QwxFR1g7Uy4", title: "John Carpenter's Toxic Commando • Gameplay Overview Trailer", description: "2026 • In-game video capture • Video editing • Sound editing",
-      screenshotCategory: "GAMEPLAY OVERVIEW · 2026", screenshotTitle: "JOHN CARPENTER'S TOXIC COMMANDO",
+      screenshotCategory: "2026 · GAMEPLAY OVERVIEW", screenshotTitle: "JOHN CARPENTER'S TOXIC COMMANDO",
       screenshotRole: "Cinematic artist in charge of The Gameplay Overview Trailer of John Carpenter's Toxic Commando",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
@@ -167,7 +167,7 @@ export default function TrailerPage() {
         { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_008.webp", tag: "SCÈNE 08", description: "In-game video capture" },
       ] },
     { videoId: "CxtlJ06u_lc", title: "Space Marine 2 • Year 2 Trailer", description: "2025 • In-game video capture • Video editing • Sound editing",
-      screenshotCategory: "YEAR 2 TRAILER · 2025", screenshotTitle: "SPACE MARINE 2",
+      screenshotCategory: "2025 · YEAR 2 TRAILER", screenshotTitle: "SPACE MARINE 2",
       screenshotRole: "Cinematic artist in charge of The Space Marine 2 Year 2 Trailer",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
@@ -183,7 +183,7 @@ export default function TrailerPage() {
         { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_006.webp", tag: "SCÈNE 06", description: "In-game video capture" },
       ] },
     { videoId: "ETCpWo0A0i0", title: "MIO: Memories In Orbit • Gameplay Trailer", description: "2025 • In-game video capture • Video editing • Sound editing",
-      screenshotCategory: "GAMEPLAY TRAILER · 2025", screenshotTitle: "MIO: MEMORIES IN ORBIT",
+      screenshotCategory: "2025 · GAMEPLAY TRAILER", screenshotTitle: "MIO: MEMORIES IN ORBIT",
       screenshotRole: "Cinematic artist in charge of The MIO: Memories In Orbit - Gameplay Trailer",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
@@ -197,7 +197,7 @@ export default function TrailerPage() {
         { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_004.webp", tag: "SCÈNE 04", description: "In-game video capture" },
       ] },
     { videoId: "tSN6KhscgiE", title: "Chants of Sennaar • Gameplay Overview Trailer | Gamescom 2023", description: "2023 • In-game video capture • Camera Animation in Unity • Video editing • Sound editing",
-      screenshotCategory: "Gameplay Overview Trailer • Gamescom 2023", screenshotTitle: "CHANTS OF SENNAAR",
+      screenshotCategory: "Gamescom 2023 • Gameplay Overview Trailer", screenshotTitle: "CHANTS OF SENNAAR",
       screenshotRole: "Cinematic artist in charge of the Gameplay Overview Trailer of Chants of Sennaar for the Gamescom 2023",
       screenshotResponsibilities: "In-game Video Capture / Camera Animation in Unity / Video Editing / Sound Editing",
       screenshotCredits: [
@@ -210,7 +210,7 @@ export default function TrailerPage() {
         { src: "/images/chants-of-sennaar-2023/chants-3.webp", tag: "SCÈNE 03", description: "In-game video capture" },
       ] },
     { videoId: "LpxuWSy8b9U", title: "Atlas Fallen • Gameplay Overview Trailer", description: "2023 • In-game video capture • Video editing • Sound editing",
-      screenshotCategory: "GAMEPLAY OVERVIEW · 2023", screenshotTitle: "ATLAS FALLEN",
+      screenshotCategory: "2023 · GAMEPLAY OVERVIEW", screenshotTitle: "ATLAS FALLEN",
       screenshotRole: "Cinematic artist in charge of the Gameplay Overview trailer of Atlas Fallen",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
@@ -222,7 +222,7 @@ export default function TrailerPage() {
         { src: "/images/atlas-fallen-2023/Atlas-fallen-2023-002.webp", tag: "SCÈNE 02", description: "In-game video capture" },
       ] },
     { videoId: "_nFYp6BFviM", title: "My Time at Sandrock • \"Shape your future\" Release Date Reveal Trailer", description: "2023 • In-game video capture • Video editing • Sound editing",
-      screenshotCategory: "RELEASE DATE REVEAL · 2023", screenshotTitle: "MY TIME AT SANDROCK",
+      screenshotCategory: "2023 · RELEASE DATE REVEAL", screenshotTitle: "MY TIME AT SANDROCK",
       screenshotRole: "Cinematic artist in charge of the Release Date Reveal trailer of My Time at Sandrock",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
@@ -236,7 +236,7 @@ export default function TrailerPage() {
         { src: "/images/sandrock-2023/My-Time-at-Sandrock-2023-004.webp", tag: "SCÈNE 04", description: "In-game video capture" },
       ] },
     { videoId: "a1JhKnaLxN0", title: "Dordogne • Release Date Reveal Trailer", description: "2023 • Scene Set-up and Animation in Unity • In-game Video Capture • Motion Graphics • Video Editing • Sound Editing",
-      screenshotCategory: "RELEASE DATE REVEAL · 2023", screenshotTitle: "DORDOGNE",
+      screenshotCategory: "2023 · RELEASE DATE REVEAL", screenshotTitle: "DORDOGNE",
       screenshotRole: "Cinematic artist in charge of the Release Date Reveal trailer of Dordogne",
       screenshotResponsibilities: "Scene Set-up and Animation in Unity / In-game Video Capture / Motion Graphics / Video Editing / Sound Editing",
       screenshotCredits: [
@@ -249,7 +249,7 @@ export default function TrailerPage() {
         { src: "/images/dordogne-2023/Dordogne-2023-003.webp", tag: "SCÈNE 03", description: "Motion graphics" },
       ] },
     { videoId: "EdGCL3cVGPo", title: "Hotel Renovator • Release Date Reveal Trailer", description: "2023 • Camera • Animation & Scene set up in Unreal Engine 4 • Video Editing • Sound Editing",
-      screenshotCategory: "RELEASE DATE REVEAL · 2023", screenshotTitle: "HOTEL RENOVATOR",
+      screenshotCategory: "2023 · RELEASE DATE REVEAL", screenshotTitle: "HOTEL RENOVATOR",
       screenshotRole: "Cinematic artist in charge of the Release Date Reveal of Hotel Renovator",
       screenshotResponsibilities: "Camera, Animation & Scene set up in Unreal Engine 4 / Video Editing / Sound Editing",
       screenshotCredits: [
@@ -262,7 +262,7 @@ export default function TrailerPage() {
         { src: "/images/hotel-renovator-2023/Hotel-Renovator-2023-002.webp", tag: "SCÈNE 02", description: "Camera set up in Unreal Engine 4" },
       ] },
     { videoId: "MTskFVe8P3Q", title: "A Plague Tale: Requiem • The Game Awards 2022 Spotlight", description: "2022 • In-game video capture • Video editing • Sound editing",
-      screenshotCategory: "Spotlight Trailer • The Game Awards 2022", screenshotTitle: "A PLAGUE TALE : REQUIEM",
+      screenshotCategory: "The Game Awards 2022 • Spotlight Trailer", screenshotTitle: "A PLAGUE TALE : REQUIEM",
       screenshotRole: "Cinematic artist in charge of The Game Awards 2022 Spotlight of A Plague Tale: Requiem",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
@@ -276,7 +276,7 @@ export default function TrailerPage() {
         { src: "/images/plague-tale-requiem-2022/A-Plague-Tale-Requiem-2022-004.webp", tag: "SCÈNE 04", description: "In-game video capture" },
       ] },
     { videoId: "3pEJJdJStiQ", title: "BLACKTAIL • 'The Forest Awaits' Gameplay Trailer | THE PARASIGHT", description: "2022 • In-game video capture • Video editing • Sound editing",
-      screenshotCategory: "GAMEPLAY TRAILER · 2022", screenshotTitle: "BLACKTAIL",
+      screenshotCategory: "2022 · GAMEPLAY TRAILER", screenshotTitle: "BLACKTAIL",
       screenshotRole: "Cinematic artist in charge of \"The Forest Awaits\" Gameplay trailer of BLACKTAIL",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
@@ -289,7 +289,7 @@ export default function TrailerPage() {
         { src: "/images/blacktail-2022/blacktail-003.webp", tag: "SCÈNE 03", description: "In-game video capture" },
       ] },
     { videoId: "U4XA_dhCx_M", title: "Warstride Challenges • Multiplayer Update Trailer", description: "2022 • Camera & Character Animation in Unreal Engine 4 • In-game Video Capture • Video Editing • Sound Editing",
-      screenshotCategory: "MULTIPLAYER UPDATE TRAILER · 2022", screenshotTitle: "WARSTRIDE CHALLENGES",
+      screenshotCategory: "2022 · MULTIPLAYER UPDATE TRAILER", screenshotTitle: "WARSTRIDE CHALLENGES",
       screenshotRole: "Cinematic artist in charge of the Multiplayer Update trailer of Warstride Challenges",
       screenshotResponsibilities: "Camera & Character Animation in Unreal Engine 4 / In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
@@ -303,7 +303,7 @@ export default function TrailerPage() {
   ];
 
   const heroScreenshots = {
-    category: "REVEAL TRAILER • GAMESCOM 2026",
+    category: "GAMESCOM 2026 • REVEAL TRAILER",
     title: "Elta: Defy All Gods",
     role: "Cinematic artist in charge of The Reveal Trailer of Elta: Defy All Gods",
     responsibilities: "Camera animation, real-time combat VFX, cinematic lighting, animation polish",
@@ -807,17 +807,17 @@ export default function TrailerPage() {
               </button>
 
               <div className="flex flex-col mt-6">
-                {/* Category */}
-                <p className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.28px] text-[#8F8F8F] uppercase">
-                  {screenshotsData.category}
-                </p>
-
                 {/* Role kicker */}
                 {screenshotsData.role && (
-                  <p className="font-[family-name:var(--font-heading)] text-[28px] tracking-[1.6px] text-[#BCBCBC] uppercase mt-2">
+                  <p className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.28px] text-[#8F8F8F] uppercase">
                     Cinematic artist in charge of the
                   </p>
                 )}
+
+                {/* Category */}
+                <p className={`font-[family-name:var(--font-heading)] text-[28px] tracking-[1.6px] text-[#BCBCBC] uppercase ${screenshotsData.role ? "mt-2" : ""}`}>
+                  {screenshotsData.category}
+                </p>
 
                 {/* Title */}
                 <h2 className={`font-[family-name:var(--font-heading)] text-[32px] md:text-[40px] tracking-[3.2px] text-white leading-tight ${screenshotsData.role ? "" : "mt-2"}`}>
