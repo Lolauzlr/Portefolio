@@ -250,6 +250,13 @@ export default function TrailerPage() {
       ] },
     { videoId: "EdGCL3cVGPo", title: "Hotel Renovator • Release Date Reveal Trailer", description: "2023 • Camera • Animation & Scene set up in Unreal Engine 4 • Video Editing • Sound Editing",
       screenshotCategory: "RELEASE DATE REVEAL · 2023", screenshotTitle: "HOTEL RENOVATOR",
+      screenshotRole: "Cinematic artist in charge of the Release Date Reveal of Hotel Renovator",
+      screenshotResponsibilities: "Camera, Animation & Scene set up in Unreal Engine 4 / Video Editing / Sound Editing",
+      screenshotCredits: [
+        { label: "Developer", value: "Two Horizons, Dust" },
+        { label: "Publisher", value: "Focus Entertainment" },
+        { label: "Cinematic artists credits", value: "Alexis Sabalza, Emmanuel Bahu-Leyser, Alexa Marie-Jeanne" },
+      ],
       screenshots: [
         { src: "/images/hotel-renovator-2023/Hotel-Renovator-2023-001.webp", tag: "SCÈNE 01", description: "Animation & Scene set up in Unreal Engine 4" },
         { src: "/images/hotel-renovator-2023/Hotel-Renovator-2023-002.webp", tag: "SCÈNE 02", description: "Camera set up in Unreal Engine 4" },
