@@ -704,33 +704,35 @@ export default function TrailerPage() {
                 ✕
               </button>
 
-              {/* Category */}
-              <p className="font-[family-name:var(--font-heading)] text-[16px] tracking-[1.28px] text-[#797979] uppercase">
-                {screenshotsData.category}
-              </p>
+              <div className="flex flex-col gap-2">
+                {/* Category */}
+                <p className="font-[family-name:var(--font-heading)] text-[16px] tracking-[1.28px] text-[#DADADA] uppercase">
+                  {screenshotsData.category}
+                </p>
 
-              {/* Title */}
-              <h2 className="font-[family-name:var(--font-heading)] text-[32px] md:text-[40px] tracking-[3.2px] text-white leading-tight">
-                {screenshotsData.title}
-              </h2>
+                {/* Title */}
+                <h2 className="font-[family-name:var(--font-heading)] text-[32px] md:text-[40px] tracking-[3.2px] text-white leading-tight">
+                  {screenshotsData.title}
+                </h2>
 
-              {/* Separator */}
-              <div className="w-[80px] h-[4px] bg-[#ddff6e]" />
+                {/* Separator */}
+                <div className="w-[80px] h-[4px] bg-[#ddff6e]" />
+              </div>
 
               {/* Tag */}
-              <p className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white uppercase">
+              <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.6px] text-white uppercase">
                 {screenshotsData.role ?? screenshotsData.screenshots[screenshotIndex].tag}
               </p>
 
               {screenshotsData.credits ? (
                 <>
-                  <p className="font-[family-name:var(--font-body)] text-[18px] tracking-[1.28px] text-white">
+                  <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
                     Responsibilities : <span className="font-semibold">{screenshotsData.responsibilities}</span>
                   </p>
                   <div className="w-full h-px bg-white/20" />
                   <div className="flex flex-col gap-3">
                     {screenshotsData.credits.map((c) => (
-                      <p key={c.label} className="font-[family-name:var(--font-body)] text-[18px] tracking-[1.28px] text-white">
+                      <p key={c.label} className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
                         {c.label} : <span className="font-semibold">{c.value}</span>
                       </p>
                     ))}
