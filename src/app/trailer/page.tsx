@@ -111,7 +111,13 @@ export default function TrailerPage() {
         { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_005.webp", tag: "SCÈNE 05", description: "In-game video capture" },
       ] },
     { videoId: "ewZufHtEl68", title: "YERBA BUENA • GAMEPLAY", description: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing",
-      screenshotCategory: "GAMEPLAY · 2026", screenshotTitle: "YERBA BUENA",
+      screenshotCategory: "Gameplay Overview Trailer • 2026", screenshotTitle: "YERBA BUENA",
+      screenshotRole: "Cinematic artist in charge of The Overview Trailer of Yerba Buena",
+      screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
+      screenshotCredits: [
+        { label: "Developer", value: "Mad about Pandas" },
+        { label: "Publisher", value: "Focus Entertainment" },
+      ],
       screenshots: [
         { src: "/images/yerba-buena-gameplay-2026/compo.webp", tag: "COMPOSITION", description: "Motion design rétro" },
         { src: "/images/yerba-buena-gameplay-2026/F.webp", tag: "SCÈNE 01", description: "In-game video capture" },
