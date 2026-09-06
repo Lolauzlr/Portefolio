@@ -796,7 +796,7 @@ export default function TrailerPage() {
             </div>
 
             {/* Right: Info panel */}
-            <div className="w-full md:w-[400px] flex flex-col gap-6 p-8 md:p-10 bg-[#15161b] overflow-y-auto">
+            <div className="w-full md:w-[400px] flex flex-col p-8 md:p-10 bg-[#15161b] overflow-y-auto">
               {/* Close button */}
               <button
                 onClick={() => setScreenshotsData(null)}
@@ -806,45 +806,49 @@ export default function TrailerPage() {
                 ✕
               </button>
 
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col mt-6">
                 {/* Category */}
-                <p className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.28px] text-[#DADADA] uppercase">
+                <p className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.28px] text-[#8F8F8F] uppercase">
                   {screenshotsData.category}
                 </p>
 
+                {/* Role kicker */}
+                {screenshotsData.role && (
+                  <p className="font-[family-name:var(--font-heading)] text-[28px] tracking-[1.6px] text-[#BCBCBC] uppercase mt-2">
+                    Cinematic artist in charge of the
+                  </p>
+                )}
+
                 {/* Title */}
-                <h2 className="font-[family-name:var(--font-heading)] text-[32px] md:text-[40px] tracking-[3.2px] text-white leading-tight">
+                <h2 className={`font-[family-name:var(--font-heading)] text-[32px] md:text-[40px] tracking-[3.2px] text-white leading-tight ${screenshotsData.role ? "" : "mt-2"}`}>
                   {screenshotsData.title}
                 </h2>
 
                 {/* Separator */}
-                <div className="w-[80px] h-[4px] bg-[#ddff6e]" />
+                <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-2" />
               </div>
 
-              {/* Tag */}
-              <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.6px] text-white uppercase">
-                {screenshotsData.role ?? screenshotsData.screenshots[screenshotIndex].tag}
-              </p>
-
-              {screenshotsData.credits ? (
-                <>
+              <div className="flex flex-col mt-10">
+                {screenshotsData.credits ? (
+                  <>
+                    <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
+                      Responsibilities : <span className="font-semibold">{screenshotsData.responsibilities}</span>
+                    </p>
+                    <div className="w-full h-px bg-white/20 mt-6" />
+                    <div className="flex flex-col gap-3 mt-6">
+                      {screenshotsData.credits.map((c) => (
+                        <p key={c.label} className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
+                          {c.label} : <span className="font-semibold">{c.value}</span>
+                        </p>
+                      ))}
+                    </div>
+                  </>
+                ) : (
                   <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
-                    Responsibilities : <span className="font-semibold">{screenshotsData.responsibilities}</span>
+                    {screenshotsData.screenshots[screenshotIndex].description}
                   </p>
-                  <div className="w-full h-px bg-white/20" />
-                  <div className="flex flex-col gap-3">
-                    {screenshotsData.credits.map((c) => (
-                      <p key={c.label} className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
-                        {c.label} : <span className="font-semibold">{c.value}</span>
-                      </p>
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
-                  {screenshotsData.screenshots[screenshotIndex].description}
-                </p>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </div>
