@@ -751,13 +751,13 @@ export default function TrailerPage() {
                 )}
 
                 {/* Image + caption */}
-                <div className="flex flex-col items-center w-full h-full min-h-0 p-12">
+                <div className="flex flex-col items-start h-full min-h-0 p-12">
                   <img
                     src={asset(screenshotsData.screenshots[screenshotIndex].src)}
                     alt={screenshotsData.screenshots[screenshotIndex].tag}
                     className="flex-1 min-h-0 max-w-full object-contain"
                   />
-                  <p className="mt-3 font-[family-name:var(--font-body)] text-[16px] font-normal text-[#DADADA] text-center">
+                  <p className="mt-3 font-[family-name:var(--font-body)] text-[16px] font-normal text-[#8F8F8F]">
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
                   </p>
                 </div>
