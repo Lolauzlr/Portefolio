@@ -197,7 +197,13 @@ export default function TrailerPage() {
         { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_004.webp", tag: "SCÈNE 04", description: "In-game video capture" },
       ] },
     { videoId: "tSN6KhscgiE", title: "Chants of Sennaar • Gameplay Overview Trailer | Gamescom 2023", description: "2023 • In-game video capture • Camera Animation in Unity • Video editing • Sound editing",
-      screenshotCategory: "GAMEPLAY OVERVIEW · 2023", screenshotTitle: "CHANTS OF SENNAAR",
+      screenshotCategory: "Gameplay Overview Trailer • Gamescom 2023", screenshotTitle: "CHANTS OF SENNAAR",
+      screenshotRole: "Cinematic artist in charge of the Gameplay Overview Trailer of Chants of Sennaar for the Gamescom 2023",
+      screenshotResponsibilities: "In-game Video Capture / Camera Animation in Unity / Video Editing / Sound Editing",
+      screenshotCredits: [
+        { label: "Developer", value: "Rundisc" },
+        { label: "Publisher", value: "Focus Entertainment" },
+      ],
       screenshots: [
         { src: "/images/chants-of-sennaar-2023/chants-1.webp", tag: "SCÈNE 01", description: "In-game video capture" },
         { src: "/images/chants-of-sennaar-2023/chants-2.webp", tag: "SCÈNE 02", description: "Camera animation in Unity" },
