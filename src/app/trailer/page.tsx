@@ -96,7 +96,13 @@ export default function TrailerPage() {
 
   const recentTrailers = [
     { videoId: "ZPQFsx9XXoM", title: "RESONANCE : A PLAGUE TALE LEGACY • GAMEPLAY", description: "2026 • In-game video capture • Video editing • Sound editing",
-      screenshotCategory: "GAMEPLAY · 2026", screenshotTitle: "RESONANCE : A PLAGUE TALE LEGACY",
+      screenshotCategory: "Long Gameplay Trailer • 2026", screenshotTitle: "RESONANCE : A PLAGUE TALE LEGACY",
+      screenshotRole: "Cinematic artist in charge of The Long Gameplay Trailer of Resonance: A Plague Tale Legacy",
+      screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
+      screenshotCredits: [
+        { label: "Developer", value: "Asobo" },
+        { label: "Publisher", value: "Focus Entertainment" },
+      ],
       screenshots: [
         { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_001.webp", tag: "SCÈNE 01", description: "In-game video capture" },
         { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_002.webp", tag: "SCÈNE 02", description: "In-game video capture" },
@@ -481,7 +487,14 @@ export default function TrailerPage() {
                   {card.description}
                 </p>
                 <button
-                  onClick={() => openScreenshots(card.screenshotCategory, card.screenshotTitle, card.screenshots)}
+                  onClick={() => openScreenshots(
+                    card.screenshotCategory,
+                    card.screenshotTitle,
+                    card.screenshots,
+                    card.screenshotRole
+                      ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits! }
+                      : undefined
+                  )}
                   className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-start hover:opacity-80 transition-opacity cursor-pointer"
                 >
                   VOIR LES SCREENSHOTS
