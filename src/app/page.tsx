@@ -3,14 +3,7 @@
 import Link from "next/link";
 import { asset } from "@/lib/asset";
 import HomeMoviesSection from "@/components/HomeMoviesSection";
-
-const trailerProjects = [
-  { videoId: "ZPQFsx9XXoM", title: "RESONANCE : A PLAGUE TALE LEGACY • GAMEPLAY", desc: "2026 • In-game video capture • Video editing • Sound editing" },
-  { videoId: "ewZufHtEl68", title: "YERBA BUENA • GAMEPLAY", desc: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing" },
-  { videoId: "cZgim-KYkZQ", title: "YERBA BUENA • REVEAL TRAILER", desc: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing" },
-  { videoId: "QwxFR1g7Uy4", title: "JOHN CARPENTER'S TOXIC COMMANDO • GAMEPLAY OVERVIEW TRAILER", desc: "2026 • In-game video capture • Video editing • Sound editing" },
-  { videoId: "CxtlJ06u_lc", title: "SPACE MARINE 2 • YEAR 2 TRAILER", desc: "2025 • In-game video capture • Video editing • Sound editing" },
-];
+import HomeTrailerSection from "@/components/HomeTrailerSection";
 
 const illustrationCards = [
   { img: "/images/illustrations/illus-36.webp", title: "ARCANE" },
@@ -96,30 +89,7 @@ export default function Home() {
       </section>
 
       {/* Trailer */}
-      <section className="py-[60px] px-4 md:px-[120px]">
-        <SectionTitle>TRAILER</SectionTitle>
-        <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
-          {trailerProjects.map((p) => (
-            <div key={p.title} className="flex-shrink-0 w-[300px] md:w-[382px]">
-              <img
-                src={`https://img.youtube.com/vi/${p.videoId}/maxresdefault.jpg`}
-                alt={p.title}
-                className="w-full h-[170px] md:h-[215px] object-cover"
-                onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${p.videoId}/hqdefault.jpg`; }}
-              />
-              <div className="flex flex-col gap-3 mt-4">
-                <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">
-                  {p.title}
-                </h3>
-                <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
-                  {p.desc}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-        <ToutVoirLink href="/trailer" />
-      </section>
+      <HomeTrailerSection />
 
       {/* Movies */}
       <HomeMoviesSection />
