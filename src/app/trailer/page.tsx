@@ -223,6 +223,12 @@ export default function TrailerPage() {
       ] },
     { videoId: "_nFYp6BFviM", title: "My Time at Sandrock • \"Shape your future\" Release Date Reveal Trailer", description: "2023 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "RELEASE DATE REVEAL · 2023", screenshotTitle: "MY TIME AT SANDROCK",
+      screenshotRole: "Cinematic artist in charge of the Release Date Reveal trailer of My Time at Sandrock",
+      screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
+      screenshotCredits: [
+        { label: "Developer", value: "Pathea" },
+        { label: "Publisher", value: "Focus Entertainment" },
+      ],
       screenshots: [
         { src: "/images/sandrock-2023/My-Time-at-Sandrock-2023-001.webp", tag: "SCÈNE 01", description: "In-game video capture" },
         { src: "/images/sandrock-2023/My-Time-at-Sandrock-2023-002.webp", tag: "SCÈNE 02", description: "In-game video capture" },
@@ -231,6 +237,12 @@ export default function TrailerPage() {
       ] },
     { videoId: "a1JhKnaLxN0", title: "Dordogne • Release Date Reveal Trailer", description: "2023 • Scene Set-up and Animation in Unity • In-game Video Capture • Motion Graphics • Video Editing • Sound Editing",
       screenshotCategory: "RELEASE DATE REVEAL · 2023", screenshotTitle: "DORDOGNE",
+      screenshotRole: "Cinematic artist in charge of the Release Date Reveal trailer of Dordogne",
+      screenshotResponsibilities: "Scene Set-up and Animation in Unity / In-game Video Capture / Motion Graphics / Video Editing / Sound Editing",
+      screenshotCredits: [
+        { label: "Developer", value: "Umanimation" },
+        { label: "Publisher", value: "Focus Entertainment" },
+      ],
       screenshots: [
         { src: "/images/dordogne-2023/Dordogne-2023-001.webp", tag: "SCÈNE 01", description: "Scene set-up and animation in Unity" },
         { src: "/images/dordogne-2023/Dordogne-2023-002.webp", tag: "SCÈNE 02", description: "In-game video capture" },
