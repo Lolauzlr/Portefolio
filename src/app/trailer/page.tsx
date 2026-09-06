@@ -104,11 +104,11 @@ export default function TrailerPage() {
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_001.webp", tag: "SCÈNE 01", description: "In-game video capture" },
-        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_002.webp", tag: "SCÈNE 02", description: "In-game video capture" },
-        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_003.webp", tag: "SCÈNE 03", description: "In-game video capture" },
-        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_004.webp", tag: "SCÈNE 04", description: "In-game video capture" },
-        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_005.webp", tag: "SCÈNE 05", description: "In-game video capture" },
+        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Created in game with camera tools" },
+        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_003.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_004.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Created in game with camera tools" },
+        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_005.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Created in game with camera tools" },
       ] },
     { videoId: "ewZufHtEl68", title: "YERBA BUENA • GAMEPLAY", description: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing",
       screenshotCategory: "2026 • Gameplay Overview Trailer", screenshotTitle: "YERBA BUENA",
@@ -119,11 +119,11 @@ export default function TrailerPage() {
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/yerba-buena-gameplay-2026/compo.webp", tag: "COMPOSITION", description: "Motion design rétro" },
-        { src: "/images/yerba-buena-gameplay-2026/F.webp", tag: "SCÈNE 01", description: "In-game video capture" },
-        { src: "/images/yerba-buena-gameplay-2026/G.webp", tag: "SCÈNE 02", description: "In-game video capture" },
-        { src: "/images/yerba-buena-gameplay-2026/I.webp", tag: "SCÈNE 03", description: "In-game video capture" },
-        { src: "/images/yerba-buena-gameplay-2026/J.webp", tag: "SCÈNE 04", description: "In-game video capture" },
+        { src: "/images/yerba-buena-gameplay-2026/compo.webp", tag: "COMPOSITION", description: "Motion Graphics • Artistic Direction & Animation" },
+        { src: "/images/yerba-buena-gameplay-2026/F.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/yerba-buena-gameplay-2026/G.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Fully created in Unity" },
+        { src: "/images/yerba-buena-gameplay-2026/I.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Camera & Lighting Setup in Unity" },
+        { src: "/images/yerba-buena-gameplay-2026/J.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Fully created in Unity" },
         { src: "/images/yerba-buena-gameplay-2026/K.webp", tag: "SCÈNE 05", description: "In-game video capture" },
       ] },
     { videoId: "cZgim-KYkZQ", title: "YERBA BUENA • REVEAL TRAILER", description: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing",
@@ -136,12 +136,12 @@ export default function TrailerPage() {
         { label: "Cinematic artists credits", value: "Michael Leroy" },
       ],
       screenshots: [
-        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-1.webp", tag: "SCÈNE 01", description: "In-game video capture" },
-        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-2.webp", tag: "SCÈNE 02", description: "In-game video capture" },
-        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-3.webp", tag: "SCÈNE 03", description: "In-game video capture" },
-        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-4.webp", tag: "SCÈNE 04", description: "In-game video capture" },
-        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-5.webp", tag: "SCÈNE 05", description: "In-game video capture" },
-        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-6.webp", tag: "SCÈNE 06", description: "In-game video capture" },
+        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-1.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Camera & Lighting Setup in Unity • Other cinematic artist credit : Michael Leroy" },
+        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-2.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Camera & Lighting Setup in Unity" },
+        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-3.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-4.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Fully created in Unity" },
+        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-5.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Camera & Lighting Setup in Unity" },
+        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-6.webp", tag: "SCÈNE 06", description: "Screenshot from the trailer • Captured in game" },
       ] },
   ];
 
@@ -758,7 +758,7 @@ export default function TrailerPage() {
                     className="flex-1 min-h-0 max-w-full object-contain"
                   />
                   <p className="mt-3 font-[family-name:var(--font-body)] text-[16px] font-normal text-[#8F8F8F]">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                    {screenshotsData.screenshots[screenshotIndex].description}
                   </p>
                 </div>
 
