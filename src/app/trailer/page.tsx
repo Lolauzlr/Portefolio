@@ -148,6 +148,14 @@ export default function TrailerPage() {
   const watchCards = [
     { videoId: "QwxFR1g7Uy4", title: "John Carpenter's Toxic Commando • Gameplay Overview Trailer", description: "2026 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "GAMEPLAY OVERVIEW · 2026", screenshotTitle: "JOHN CARPENTER'S TOXIC COMMANDO",
+      screenshotRole: "Cinematic artist in charge of The Gameplay Overview Trailer of John Carpenter's Toxic Commando",
+      screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
+      screenshotCredits: [
+        { label: "Developer", value: "Saber Interactive" },
+        { label: "Publisher", value: "Focus Entertainment" },
+        { label: "Cinematic artists credits", value: "Emmanuel Bahu-Leyser, Clarisse Bresson-Cedrone" },
+        { label: "Additional Cinematic artist", value: "Perrine Soulas" },
+      ],
       screenshots: [
         { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_001.webp", tag: "SCÈNE 01", description: "In-game video capture" },
         { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_002.webp", tag: "SCÈNE 02", description: "In-game video capture" },
@@ -602,7 +610,14 @@ export default function TrailerPage() {
                       </p>
                     </div>
                     <button
-                      onClick={() => openScreenshots(card.screenshotCategory, card.screenshotTitle, card.screenshots)}
+                      onClick={() => openScreenshots(
+                        card.screenshotCategory,
+                        card.screenshotTitle,
+                        card.screenshots,
+                        card.screenshotRole
+                          ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits! }
+                          : undefined
+                      )}
                       className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-end hover:opacity-80 transition-opacity cursor-pointer"
                     >
                       VOIR LES SCREENSHOTS
