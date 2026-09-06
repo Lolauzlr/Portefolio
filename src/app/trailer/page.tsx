@@ -128,6 +128,13 @@ export default function TrailerPage() {
       ] },
     { videoId: "cZgim-KYkZQ", title: "YERBA BUENA • REVEAL TRAILER", description: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing",
       screenshotCategory: "REVEAL TRAILER · 2026", screenshotTitle: "YERBA BUENA",
+      screenshotRole: "Cinematic artist in charge of The Reveal Trailer of Yerba Buena",
+      screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
+      screenshotCredits: [
+        { label: "Developer", value: "Mad about Pandas" },
+        { label: "Publisher", value: "Focus Entertainment" },
+        { label: "Cinematic artists credits", value: "Michael Leroy" },
+      ],
       screenshots: [
         { src: "/images/yerba-buena-reveal-2026/yerba-reveal-1.webp", tag: "SCÈNE 01", description: "In-game video capture" },
         { src: "/images/yerba-buena-reveal-2026/yerba-reveal-2.webp", tag: "SCÈNE 02", description: "In-game video capture" },
