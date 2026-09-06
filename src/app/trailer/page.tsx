@@ -184,6 +184,12 @@ export default function TrailerPage() {
       ] },
     { videoId: "ETCpWo0A0i0", title: "MIO: Memories In Orbit • Gameplay Trailer", description: "2025 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "GAMEPLAY TRAILER · 2025", screenshotTitle: "MIO: MEMORIES IN ORBIT",
+      screenshotRole: "Cinematic artist in charge of The MIO: Memories In Orbit - Gameplay Trailer",
+      screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
+      screenshotCredits: [
+        { label: "Developer", value: "Douze Dixiemes" },
+        { label: "Publisher", value: "Focus Entertainment" },
+      ],
       screenshots: [
         { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_001.webp", tag: "SCÈNE 01", description: "In-game video capture" },
         { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_002.webp", tag: "SCÈNE 02", description: "In-game video capture" },
