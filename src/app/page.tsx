@@ -100,7 +100,7 @@ export default function Home() {
             <div className="flex flex-col justify-between flex-1">
               <div className="flex flex-col gap-6">
                 <div>
-                  <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">UNE IDÉE DE TITRE</h3>
+                  <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">MY JOURNEY IN ILLUSTRATION</h3>
                   <div className="w-[80px] h-[4px] bg-white mt-1" />
                 </div>
                 <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
