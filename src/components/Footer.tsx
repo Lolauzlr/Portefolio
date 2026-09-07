@@ -21,7 +21,7 @@ export default function Footer() {
   return (
     <footer className="backdrop-blur-[3.15px] bg-black/40 py-[40px] px-4 md:px-[120px]">
       <div className="flex flex-col md:flex-row items-center gap-10">
-        {/* Left: Logo + STUDIO */}
+        {/* Left: Logo */}
         <div className="flex flex-col items-start pr-0 md:pr-[80px] md:border-r border-[#797979] shrink-0">
           <img
             src={asset("/images/logo-svg/LogoMC.svg")}
@@ -29,9 +29,6 @@ export default function Footer() {
             width={162}
             height={47}
           />
-          <span className="font-[family-name:var(--font-heading)] text-white text-[12px] tracking-[0.96px] uppercase">
-            STUDIO
-          </span>
         </div>
 
         {/* Center + Right */}
@@ -65,22 +62,30 @@ export default function Footer() {
               </h3>
               <div className="w-full h-[4px] bg-[#ddff6e] mt-2" />
             </div>
-            <div className="flex items-center gap-4">
-              {socials.map((social) => (
-                <a
-                  key={social.alt}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Image
-                    src={asset(social.src)}
-                    alt={social.alt}
-                    width={24}
-                    height={24}
-                  />
-                </a>
-              ))}
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-4">
+                {socials.map((social) => (
+                  <a
+                    key={social.alt}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Image
+                      src={asset(social.src)}
+                      alt={social.alt}
+                      width={24}
+                      height={24}
+                    />
+                  </a>
+                ))}
+              </div>
+              <a
+                href="mailto:marie.chalandre@hotmail.fr"
+                className="font-[family-name:var(--font-body)] text-white text-[16px] tracking-[1.28px] hover:opacity-80 transition-opacity"
+              >
+                marie.chalandre@hotmail.fr
+              </a>
             </div>
           </div>
         </div>
