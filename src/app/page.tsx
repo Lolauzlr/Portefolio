@@ -5,12 +5,6 @@ import { asset } from "@/lib/asset";
 import HomeMoviesSection from "@/components/HomeMoviesSection";
 import HomeTrailerSection from "@/components/HomeTrailerSection";
 
-const illustrationCards = [
-  { img: "/images/illustrations/illus-36.webp", title: "ARCANE" },
-  { img: "/images/illustrations/illus-34.webp", title: "MONSTER IN A BOTTLE" },
-  { img: "/images/illustrations/illus-32.webp", title: "MAZOU BD" },
-];
-
 const storyboardCards = [
   { img: "/images/storyboard_scene.png", title: "SHORTFILM", desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula." },
   { img: "/images/storyboard_nabil.png", title: "MUSIC CLIP", desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula." },
@@ -117,33 +111,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Sub-section title */}
-          <div>
-            <div className="mb-10">
-              <h3 className="font-[family-name:var(--font-heading)] text-[32px] tracking-[2.56px]">UNE IDÉE DE TITRE</h3>
-              <div className="w-[80px] h-[4px] bg-white mt-1" />
-            </div>
-            <div className="flex flex-col gap-6 md:grid md:grid-cols-3">
-              {illustrationCards.map((c) => (
-                <div key={c.title} className="w-full">
-                  <img
-                    src={asset(c.img)}
-                    alt={c.title}
-                    className="w-full aspect-square object-cover"
-                  />
-                  <div className="flex flex-col gap-3 mt-4">
-                    <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">
-                      {c.title}
-                    </h3>
-                    <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula.
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <ToutVoirLink href="/illustrations" />
-          </div>
+          <ToutVoirLink href="/illustrations" />
         </div>
       </section>
 
