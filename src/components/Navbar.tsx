@@ -51,10 +51,10 @@ export default function Navbar() {
 
         {/* Contact button - absolutely positioned right */}
         <Link
-          href="/contact"
+          href="mailto:marie.chalandre@hotmail.fr"
           className="hidden lg:block absolute right-6 md:right-[120px] font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-[#0fd1ea] border-2 border-[#0fd1ea] rounded-[40px] bg-black/40 backdrop-blur-[5px] px-[40px] py-[20px] hover:bg-[#0fd1ea]/10 transition-colors"
         >
-          ME CONTACTER
+          CONTACT ME
         </Link>
 
         {/* Hamburger */}
@@ -88,11 +88,11 @@ export default function Navbar() {
             );
           })}
           <Link
-            href="/contact"
+            href="mailto:marie.chalandre@hotmail.fr"
             onClick={() => setMenuOpen(false)}
             className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-[#0fd1ea] border-2 border-[#0fd1ea] rounded-[40px] px-[40px] py-[20px] mt-4"
           >
-            ME CONTACTER
+            CONTACT ME
           </Link>
         </div>
       )}
