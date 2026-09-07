@@ -14,6 +14,27 @@ function CaretCircleRight() {
 }
 
 const trailerCards = [
+  { videoId: "OLEZv_Qyb6Q", title: "Elta : Defy All Gods • Reveal Trailer", description: "Gamescom 2026 • Unreal • Camera animation • Real-time combat VFX • Cinematic lighting",
+    screenshotCategory: "GAMESCOM 2026 • REVEAL TRAILER", screenshotTitle: "Elta: Defy All Gods",
+    screenshotRole: "Cinematic artist in charge of The Reveal Trailer of Elta: Defy All Gods",
+    screenshotResponsibilities: "Camera animation, real-time combat VFX, cinematic lighting, animation polish",
+    screenshotCredits: [
+      { label: "Developer", value: "Afterburner Studios" },
+      { label: "Publisher", value: "Focus Entertainment" },
+      { label: "Cinematic artist team credits", value: "Gaël Verbitzky, Michael Leroy" },
+    ],
+    screenshots: [
+      { src: "/images/Elta/Elta-2026-001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-003.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-004.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-005.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-006.webp", tag: "SCÈNE 06", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-007.webp", tag: "SCÈNE 07", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-008.webp", tag: "SCÈNE 08", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-009.webp", tag: "SCÈNE 09", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-010.webp", tag: "SCÈNE 10", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+    ] },
   { videoId: "ZPQFsx9XXoM", title: "RESONANCE : A PLAGUE TALE LEGACY • GAMEPLAY", description: "2026 • In-game video capture • Video editing • Sound editing",
     screenshotCategory: "2026 • Long Gameplay Trailer", screenshotTitle: "RESONANCE : A PLAGUE TALE LEGACY",
     screenshotRole: "Cinematic artist in charge of The Long Gameplay Trailer of Resonance: A Plague Tale Legacy",
