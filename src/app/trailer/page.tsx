@@ -313,11 +313,16 @@ export default function TrailerPage() {
       { label: "Cinematic artist team credits", value: "Gaël Verbitzky, Michael Leroy" },
     ],
     screenshots: [
-      { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_001.webp", tag: "SCÈNE 01", description: "In-game video capture" },
-      { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_002.webp", tag: "SCÈNE 02", description: "In-game video capture" },
-      { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_003.webp", tag: "SCÈNE 03", description: "In-game video capture" },
-      { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_004.webp", tag: "SCÈNE 04", description: "In-game video capture" },
-      { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_005.webp", tag: "SCÈNE 05", description: "In-game video capture" },
+      { src: "/images/Elta/Elta-2026-001.webp", tag: "SCÈNE 01", description: "In-game video capture" },
+      { src: "/images/Elta/Elta-2026-002.webp", tag: "SCÈNE 02", description: "In-game video capture" },
+      { src: "/images/Elta/Elta-2026-003.webp", tag: "SCÈNE 03", description: "In-game video capture" },
+      { src: "/images/Elta/Elta-2026-004.webp", tag: "SCÈNE 04", description: "In-game video capture" },
+      { src: "/images/Elta/Elta-2026-005.webp", tag: "SCÈNE 05", description: "In-game video capture" },
+      { src: "/images/Elta/Elta-2026-006.webp", tag: "SCÈNE 06", description: "In-game video capture" },
+      { src: "/images/Elta/Elta-2026-007.webp", tag: "SCÈNE 07", description: "In-game video capture" },
+      { src: "/images/Elta/Elta-2026-008.webp", tag: "SCÈNE 08", description: "In-game video capture" },
+      { src: "/images/Elta/Elta-2026-009.webp", tag: "SCÈNE 09", description: "In-game video capture" },
+      { src: "/images/Elta/Elta-2026-010.webp", tag: "SCÈNE 10", description: "In-game video capture" },
     ],
   };
 
