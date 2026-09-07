@@ -95,7 +95,7 @@ export default function Home() {
       <HomeMoviesSection />
 
       {/* Illustrations */}
-      <section className="py-[60px] px-4 md:px-[120px]">
+      <section className="px-4 md:px-[120px]">
         <SectionTitle>ILLUSTRATIONS</SectionTitle>
         <div className="flex flex-col gap-[40px]">
           {/* Featured illustration */}
