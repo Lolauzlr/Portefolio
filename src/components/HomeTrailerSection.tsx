@@ -156,7 +156,7 @@ export default function HomeTrailerSection() {
   };
 
   return (
-    <section className="py-[60px] pl-4 md:pl-[120px]">
+    <section className="pl-4 md:pl-[120px]">
       <div className="mb-10 pr-4 md:pr-[120px]">
         <h2 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[60px] tracking-[4.8px] uppercase text-white">
           TRAILER
