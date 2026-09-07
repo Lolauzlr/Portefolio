@@ -60,26 +60,6 @@ export default function Home() {
           alt="A Plague Tale: Requiem"
           className="absolute inset-0 w-full h-full object-cover md:hidden"
         />
-        <div className="absolute left-4 md:left-[120px] bottom-8 md:top-[527px] md:backdrop-blur-[5px] py-5 max-w-[792px]">
-          <div className="px-4">
-            <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-white uppercase">
-              Trailer
-            </p>
-            <h1 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[80px] leading-none tracking-[6.4px] uppercase">
-              A PLAGUE TALE : REQUIEM
-            </h1>
-          </div>
-          <div className="flex flex-wrap gap-3 mt-4 px-4">
-            {["2019", "Jeu vidéo", "Action aventure"].map((tag) => (
-              <span
-                key={tag}
-                className="font-[family-name:var(--font-body)] text-[20px] tracking-[1.6px] border border-white rounded-full px-3 py-1"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
       </section>
 
       {/* Trailer */}
