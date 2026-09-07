@@ -146,39 +146,32 @@ export default function HomeMoviesSection() {
     <section className="py-[60px] bg-[#131313] px-4 md:px-[120px]">
       <div className="mb-10">
         <h2 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[60px] tracking-[4.8px] uppercase text-white">
-          MOVIES
+          LATEST MOVIES
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-2" />
       </div>
 
       <div className="flex flex-col gap-10">
-        {/* Featured: Saint Ex */}
-        <PentagonCard>
-          <div className="flex flex-col md:flex-row gap-6">
-            <div className="md:w-[792px] shrink-0">
-              <VideoCard
-                youtubeId="BFLlIR9A8DY"
-                title="SAINT EX"
-                className="w-full"
-                onPlay={() => setVideoModal({ url: "https://www.youtube.com/embed/BFLlIR9A8DY?autoplay=1&rel=0", title: "SAINT EX" })}
-              />
-            </div>
-            <div className="flex flex-col gap-6 flex-1">
-              <div>
-                <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">SAINT EX</h3>
-                <div className="w-[80px] h-[4px] bg-white mt-1" />
-              </div>
-              <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
-                Compositing Artist for SAINT EX, a film directed by Pablo Agüero.
-                <br /><br />
-                Cast: Vincent Cassel, Diane Kruger, Louis Garrel.
-              </p>
-            </div>
-          </div>
-        </PentagonCard>
-
-        {/* Secondary cards */}
         <div className="flex flex-col md:flex-row gap-10">
+          {/* Saint Ex */}
+          <PentagonCard className="flex-1" contentClassName="flex flex-col gap-6">
+            <VideoCard
+              youtubeId="BFLlIR9A8DY"
+              title="SAINT EX"
+              className="w-full"
+              onPlay={() => setVideoModal({ url: "https://www.youtube.com/embed/BFLlIR9A8DY?autoplay=1&rel=0", title: "SAINT EX" })}
+            />
+            <div>
+              <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">SAINT EX</h3>
+              <div className="w-[80px] h-[4px] bg-white mt-1" />
+            </div>
+            <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
+              Compositing Artist for SAINT EX, a film directed by Pablo Agüero.
+              <br /><br />
+              Cast: Vincent Cassel, Diane Kruger, Louis Garrel.
+            </p>
+          </PentagonCard>
+
           {/* Jerry Gretzinger */}
           <PentagonCard className="flex-1" contentClassName="flex flex-col gap-6">
             <VideoCard
@@ -197,58 +190,7 @@ export default function HomeMoviesSection() {
               HOW TO MAP YOUR IMAGINATION, A documentary by David Caillon.
             </p>
           </PentagonCard>
-
-          {/* Louvre */}
-          <PentagonCard className="flex-1" contentClassName="flex flex-col gap-6">
-            <VideoCard
-              youtubeId="M7PfKwiQL_w"
-              title="IL ETAIT UNE FOIS LE MUSEE DU LOUVRE"
-              className="w-full"
-              onPlay={() => setVideoModal({ url: "https://www.youtube.com/embed/M7PfKwiQL_w?autoplay=1&rel=0", title: "IL ETAIT UNE FOIS LE MUSEE DU LOUVRE" })}
-            />
-            <div>
-              <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">IL ETAIT UNE FOIS LE MUSEE DU LOUVRE</h3>
-              <div className="w-[80px] h-[4px] bg-white mt-1" />
-            </div>
-            <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
-              Animator for the Documentary ONCE UPON A TIME THE LOUVRE
-              <br /><br />
-              By Frédéric Wilner
-            </p>
-          </PentagonCard>
         </div>
-
-        {/* Fauve */}
-        <PentagonCard>
-          <div className="flex flex-col md:flex-row gap-6">
-            <div className="md:w-[792px] shrink-0">
-              <VideoCard
-                thumbnail="/images/beast-film.webp"
-                title="FAUVE"
-                externalUrl="https://vurchel.com/v/15616/beast-marie-chalandre"
-                className="w-full"
-              />
-            </div>
-            <div className="flex flex-col gap-6 flex-1">
-              <div>
-                <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">FAUVE</h3>
-                <div className="w-[80px] h-[4px] bg-white mt-1" />
-              </div>
-              <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
-                Film Director &amp; animator for the short animated film BEAST.
-                <br /><br />
-                <span className="font-[family-name:var(--font-heading)] text-[16px] tracking-[1.28px]">FESTIVALS &amp; REWARDS</span>
-                <br /><br />
-                - Kinolikbez 2021 (Russie) : Silver Jean-Luc Award for Best Film<br />
-                - 7th Insomnia International Open-air Animation Film Festival 2019 (Russia)<br />
-                - 17th Tirana International Film Festival (TIFF) 2019 (Albania)<br />
-                - 17th Bogotá Short Film Festival (BOGOSHORTS) 2019 (Colombia)<br />
-                - Tonneins International Film Festival (IFFT) 2019 (France)<br />
-                - Bronx Wolrd Film Inc, Winter Cycle 2019 (USA)
-              </p>
-            </div>
-          </div>
-        </PentagonCard>
       </div>
 
       <div className="flex justify-end mt-8">
