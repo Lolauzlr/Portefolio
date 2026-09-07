@@ -191,7 +191,7 @@ export default function HomeTrailerSection() {
                   />
                 )}
               </div>
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-3 flex-1">
                 <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">
                   {card.title}
                 </h3>
@@ -205,7 +205,7 @@ export default function HomeTrailerSection() {
                     card.screenshots,
                     { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities, credits: card.screenshotCredits }
                   )}
-                  className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-start hover:opacity-80 transition-opacity cursor-pointer"
+                  className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-start hover:opacity-80 transition-opacity cursor-pointer mt-auto"
                 >
                   VOIR LES SCREENSHOTS
                 </button>
