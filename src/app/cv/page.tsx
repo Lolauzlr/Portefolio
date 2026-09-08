@@ -27,9 +27,35 @@ const EXPERIENCE: ExperienceItem[] = [
 ];
 
 const SOFTWARES = [
-  { group: "3D & animation", items: ["TVPaint Animation", "Blender", "Zbrush", "Unreal Engine", "Unity"] },
-  { group: "Motion & Compositing", items: ["After Effect", "Premiere Pro", "Avid Media Composer", "DaVinci Resolve"] },
-  { group: "Illustration & Edition", items: ["Photoshop", "Illustrator", "Indesign", "Clip Studio Paint", "Storyboarder"] },
+  {
+    group: "3D & animation",
+    items: [
+      { name: "TVPaint Animation", icon: "logo-tvpaint" },
+      { name: "Blender", icon: "logo-blender" },
+      { name: "Zbrush", icon: "logo-zbrush" },
+      { name: "Unreal Engine", icon: "logo-unreal" },
+      { name: "Unity", icon: "logo-unity" },
+    ],
+  },
+  {
+    group: "Motion & Compositing",
+    items: [
+      { name: "After Effect", icon: "logo-aftereffect" },
+      { name: "Premiere Pro", icon: "logo-premierepro" },
+      { name: "Avid Media Composer", icon: "logo-avidmedia" },
+      { name: "DaVinci Resolve", icon: "logo-davinci" },
+    ],
+  },
+  {
+    group: "Illustration & Edition",
+    items: [
+      { name: "Photoshop", icon: "logo-photoshop" },
+      { name: "Illustrator", icon: "logo-illustrator" },
+      { name: "Indesign", icon: "logo-indesign" },
+      { name: "Clip Studio Paint", icon: "logo-clipstudio" },
+      { name: "Storyboarder", icon: "logo-storyboader" },
+    ],
+  },
 ];
 
 const LANGS = [
@@ -66,9 +92,10 @@ const ANCHORS = [
   { id: "hobbies", label: "Hobbies" },
 ];
 
-function Tag({ children }: { children: React.ReactNode }) {
+function Tag({ children, icon }: { children: React.ReactNode; icon?: string }) {
   return (
-    <span className="font-[family-name:var(--font-body)] text-[16px] md:text-[20px] text-white tracking-[1.6px] border border-white rounded-[100px] px-[12px] py-[4px] whitespace-nowrap">
+    <span className="flex items-center gap-[8px] font-[family-name:var(--font-body)] text-[16px] md:text-[20px] text-white tracking-[1.6px] border border-white rounded-[100px] px-[12px] py-[4px] whitespace-nowrap">
+      {icon && <img src={asset(`/images/logo-svg/${icon}.svg`)} alt="" width={20} height={20} className="shrink-0" />}
       {children}
     </span>
   );
@@ -268,8 +295,8 @@ export default function CVPage() {
                     {g.group}
                   </h3>
                   <div className="flex flex-wrap gap-[12px] items-center w-full">
-                    {g.items.map((name) => (
-                      <Tag key={name}>{name}</Tag>
+                    {g.items.map((item) => (
+                      <Tag key={item.name} icon={item.icon}>{item.name}</Tag>
                     ))}
                   </div>
                 </div>
