@@ -147,21 +147,21 @@ export default function MoviesPage() {
         <>
           Film Director & Animator for the short animated film BEAST.
           <br /><br />
-          <span className="font-[family-name:var(--font-heading)] text-[16px] tracking-[1.28px]">SELECTIONS & REWARDS</span>
+          <span className="font-[family-name:var(--font-heading)] text-[20px] text-[#DDFF6E] tracking-[1.6px]">SELECTIONS & REWARDS</span>
           <br /><br />
-          • Kinolikbez 2021 (Russie) : Silver Jean-Luc Award for Best Film in the Category « merry science » for a clever cinema.
+          • <span className="font-semibold">Kinolikbez 2021</span> (Russie) : Silver Jean-Luc Award for Best Film in the Category « merry science » for a clever cinema.
           <br />
-          • 7th Insomnia International Open-air Animation Film Festival 2019 (Russia)
+          • <span className="font-semibold">7th Insomnia International Open-air Animation Film Festival</span> 2019 (Russia)
           <br />
-          • 17th Tirana International Film Festival (TIFF) 2019 (Albania)
+          • <span className="font-semibold">17th Tirana International Film Festival (TIFF)</span> 2019 (Albania)
           <br />
-          • 17th Bogotá Short Film Festival (BOGOSHORTS) 2019 (Colombia)
+          • <span className="font-semibold">17th Bogotá Short Film Festival (BOGOSHORTS)</span> 2019 (Colombia)
           <br />
-          • Tonneins International Film Festival (IFFT) 2019 (France)
+          • <span className="font-semibold">Tonneins International Film Festival (IFFT)</span> 2019 (France)
           <br />
-          • Bronx Wolrd Film Inc, Winter Cycle 2019 (USA)
+          • <span className="font-semibold">Bronx Wolrd Film Inc</span>, Winter Cycle 2019 (USA)
           <br />
-          • Kinolikbez, animation vidéo art competition, 2021 (Russia)
+          • <span className="font-semibold">Kinolikbez</span>, animation vidéo art competition, 2021 (Russia)
         </>
       ),
       belowImageText:
