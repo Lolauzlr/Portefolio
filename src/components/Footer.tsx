@@ -55,8 +55,8 @@ export default function Footer() {
           </div>
 
           {/* Contact */}
-          <div className="flex flex-col gap-4 mt-6 md:mt-0 items-start md:items-end">
-            <div className="self-start md:self-end">
+          <div className="flex flex-col gap-4 mt-6 md:mt-0 items-start">
+            <div className="self-start">
               <h3 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
                 CONTACT
               </h3>
