@@ -250,7 +250,7 @@ export default function CVPage() {
       </div>
 
       {/* Mobile subnav */}
-      <div className="md:hidden sticky top-[95px] z-[49] -mx-4 px-4 bg-[rgba(11,12,16,0.92)] backdrop-blur-[14px] border-y border-white/10 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="md:hidden sticky top-[108px] z-[49] -mx-4 px-4 bg-[rgba(11,12,16,0.92)] backdrop-blur-[14px] border-y border-white/10 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <div className="flex gap-[6px] h-[56px] items-center w-max min-w-full">
           {ANCHORS.map((a) => (
             <a
@@ -269,7 +269,7 @@ export default function CVPage() {
       {/* Body */}
       <div className="flex flex-col md:flex-row gap-[40px] items-start w-full">
         {/* Desktop sidebar nav */}
-        <div className="hidden md:flex flex-col items-start gap-[40px] border-r border-[#8f8f8f] pr-[20px] shrink-0 sticky top-[120px]">
+        <div className="hidden md:flex flex-col items-start gap-[40px] border-r border-[#8f8f8f] pr-[20px] shrink-0 sticky top-[192px]">
           {ANCHORS.map((a) => (
             <a key={a.id} href={`#${a.id}`} className="flex flex-col gap-[10px] items-start w-[160px]">
               <span className="font-[family-name:var(--font-heading)] text-[24px] text-white tracking-[1.92px] uppercase whitespace-nowrap">
