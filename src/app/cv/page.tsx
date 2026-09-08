@@ -269,9 +269,9 @@ export default function CVPage() {
       {/* Body */}
       <div className="flex flex-col md:flex-row gap-[40px] items-start w-full">
         {/* Desktop sidebar nav */}
-        <div className="hidden md:flex flex-col items-start gap-[40px] border-r border-[#8f8f8f] pr-[20px] shrink-0 sticky top-[192px]">
+        <div className="hidden md:flex flex-col items-end gap-[40px] border-r border-[#8f8f8f] pr-[20px] shrink-0 sticky top-[192px]">
           {ANCHORS.map((a) => (
-            <a key={a.id} href={`#${a.id}`} className="flex flex-col gap-[10px] items-start w-fit">
+            <a key={a.id} href={`#${a.id}`} className="flex flex-col gap-[10px] items-end w-fit">
               <span className="font-[family-name:var(--font-heading)] text-[24px] text-white tracking-[1.92px] uppercase whitespace-nowrap">
                 {a.label}
               </span>
