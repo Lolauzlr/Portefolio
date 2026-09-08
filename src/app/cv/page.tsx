@@ -208,7 +208,7 @@ export default function CVPage() {
             <a
               href={asset("/CV_MARIECHALANDRE.pdf")}
               download
-              className="backdrop-blur-[5px] bg-black/40 border-2 border-[#0fd1ea] rounded-[40px] px-[40px] py-[20px] shrink-0 font-[family-name:var(--font-heading)] text-[24px] text-[#0fd1ea] tracking-[1.92px] uppercase hover:bg-[#0fd1ea]/10 transition-colors"
+              className="backdrop-blur-[5px] bg-black/40 border-2 border-[#0fd1ea] rounded-[40px] px-[40px] py-[20px] shrink-0 font-[family-name:var(--font-heading)] text-[24px] text-[#0fd1ea] tracking-[1.92px] uppercase hover:text-[#7FECFB] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] focus:text-[#7FECFB] focus:border-[#7FECFB] focus:bg-[rgba(15,209,234,0.1)] active:text-[#0897A9] active:border-[#0897A9] active:bg-[rgba(8,151,169,0.1)] transition-colors"
             >
               Download
             </a>

@@ -509,7 +509,7 @@ export default function TrailerPage() {
               {/* CTA - Voir les screenshots */}
               <button
                 onClick={(e) => { e.stopPropagation(); openScreenshots(heroScreenshots.category, heroScreenshots.title, heroScreenshots.screenshots, { role: heroScreenshots.role, responsibilities: heroScreenshots.responsibilities, credits: heroScreenshots.credits }); }}
-                className="font-[family-name:var(--font-heading)] text-[20px] md:text-[24px] tracking-[1.92px] text-[#0fd1ea] uppercase shrink-0 hover:opacity-80 transition-opacity cursor-pointer whitespace-nowrap"
+                className="font-[family-name:var(--font-heading)] text-[20px] md:text-[24px] tracking-[1.92px] text-[#0fd1ea] uppercase shrink-0 hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer whitespace-nowrap"
               >
                 VOIR LES SCREENSHOTS
               </button>
@@ -582,7 +582,7 @@ export default function TrailerPage() {
                       ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits! }
                       : undefined
                   )}
-                  className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-start hover:opacity-80 transition-opacity cursor-pointer"
+                  className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-start hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer"
                 >
                   VOIR LES SCREENSHOTS
                 </button>
@@ -684,7 +684,7 @@ export default function TrailerPage() {
                           ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits! }
                           : undefined
                       )}
-                      className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-end hover:opacity-80 transition-opacity cursor-pointer"
+                      className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-end hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer"
                     >
                       VOIR LES SCREENSHOTS
                     </button>
