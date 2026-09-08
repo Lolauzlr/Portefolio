@@ -95,7 +95,7 @@ const ANCHORS = [
 function Tag({ children, icon }: { children: React.ReactNode; icon?: string }) {
   return (
     <span className="flex items-center gap-[8px] font-[family-name:var(--font-body)] text-[16px] md:text-[20px] text-white tracking-[1.6px] border border-white rounded-[100px] px-[12px] py-[4px] whitespace-nowrap">
-      {icon && <img src={asset(`/images/logo-svg/${icon}.svg`)} alt="" width={20} height={20} className="shrink-0" />}
+      {icon && <img src={asset(`/images/logo-svg/${icon}.svg`)} alt="" className="h-[20px] w-auto shrink-0" />}
       {children}
     </span>
   );
