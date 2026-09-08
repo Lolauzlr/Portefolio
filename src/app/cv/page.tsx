@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { asset } from "@/lib/asset";
+import { socialLinks } from "@/components/SocialIcons";
 
 type ExperienceItem = {
   dates: string;
@@ -148,16 +149,18 @@ const HOBBY_ICONS = {
 } as const;
 
 function SocialIcons() {
-  const socials = [
-    { src: "/images/logo-svg/instagram.svg", alt: "Instagram", href: "https://www.instagram.com/m_chalandre/?hl=fr" },
-    { src: "/images/logo-svg/linkedin.svg", alt: "LinkedIn", href: "https://www.linkedin.com/in/marie-chalandre-076948103/" },
-    { src: "/images/logo-svg/artstation.svg", alt: "ArtStation", href: "https://www.artstation.com/mariechalandre" },
-  ];
   return (
     <div className="flex items-center gap-[16px]">
-      {socials.map((s) => (
-        <a key={s.alt} href={s.href} target="_blank" rel="noopener noreferrer">
-          <img src={asset(s.src)} alt={s.alt} width={24} height={24} />
+      {socialLinks.map(({ Icon, alt, href }) => (
+        <a
+          key={alt}
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={alt}
+          className="text-[32px] text-[#0FD1EA] hover:text-[#0897A9] focus:text-[#0897A9] active:text-[#0897A9] transition-colors"
+        >
+          <Icon />
         </a>
       ))}
     </div>
