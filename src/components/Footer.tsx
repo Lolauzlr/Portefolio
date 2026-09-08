@@ -73,7 +73,7 @@ export default function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={alt}
-                    className="text-[24px] text-white hover:text-[#0FD1EA] focus:text-[#0FD1EA] active:text-[#0897A9] transition-colors"
+                    className="text-[24px] text-white hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors"
                   >
                     <Icon />
                   </a>
