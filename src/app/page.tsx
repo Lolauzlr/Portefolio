@@ -138,7 +138,13 @@ export default function Home() {
                 CINEMATIC ARTIST &bull; CONCEPT ARTIST &bull; STORYBOARDER
               </p>
               <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white leading-relaxed">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque.
+                I&apos;m a Cinematic Artist with a background in animation and a strong interest in filmmaking and visual direction.
+                <br /><br />
+                Outside of work, I&apos;m drawn to experiences that keep me moving and curious. I&apos;ve travelled extensively, practiced martial arts for many years, and music has always been part of my life.
+                <br /><br />
+                All of this feeds into the way I approach visual work. I&apos;m interested in movement, rhythm, composition and the way a scene can communicate.
+                <br /><br />
+                I&apos;m always experimenting, learning and looking for new ways to approach a project.
               </p>
             </div>
             <Link href="/cv" className="flex items-center gap-3 mt-8 text-[#0FD1EA] hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors">
