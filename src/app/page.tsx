@@ -127,16 +127,18 @@ export default function Home() {
         <div className="flex flex-col md:flex-row gap-10 items-center">
           <div className="flex-1 flex flex-col justify-between">
             <div className="flex flex-col gap-10">
-              <div>
-                <div className="font-[family-name:var(--font-heading)] text-white">
-                  <p className="text-[48px] md:text-[80px] tracking-[6.4px] leading-none">HELLO,</p>
-                  <p className="text-[32px] md:text-[52px] tracking-[4.16px] leading-none">I&apos;M MARIE CHALANDRE 👋</p>
+              <div className="flex flex-col gap-6">
+                <div>
+                  <div className="font-[family-name:var(--font-heading)] text-white">
+                    <p className="text-[48px] md:text-[80px] tracking-[6.4px] leading-none">HELLO,</p>
+                    <p className="text-[32px] md:text-[52px] tracking-[4.16px] leading-none">I&apos;M MARIE CHALANDRE 👋</p>
+                  </div>
+                  <div className="w-[80px] h-[4px] bg-white mt-2" />
                 </div>
-                <div className="w-[80px] h-[4px] bg-white mt-2" />
+                <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-[#ddff6e]">
+                  CINEMATIC ARTIST &bull; CONCEPT ARTIST &bull; STORYBOARDER
+                </p>
               </div>
-              <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-[#ddff6e]">
-                CINEMATIC ARTIST &bull; CONCEPT ARTIST &bull; STORYBOARDER
-              </p>
               <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white leading-relaxed">
                 I&apos;m a Cinematic Artist with a background in animation and a strong interest in filmmaking and visual direction. Outside of work, I&apos;m drawn to experiences that keep me moving and curious. I&apos;ve travelled extensively, practiced martial arts for many years, and music has always been part of my life.
                 <br /><br />
