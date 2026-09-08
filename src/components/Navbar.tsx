@@ -11,6 +11,7 @@ const navLinks = [
   { label: "MOVIES", href: "/movies" },
   { label: "ILLUSTRATIONS", href: "/illustrations" },
   { label: "STORYBOARD", href: "/storyboard" },
+  { label: "CV", href: "/cv" },
 ];
 
 export default function Navbar() {
