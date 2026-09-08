@@ -25,8 +25,8 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 function CaretCircleRight() {
   return (
     <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="20" cy="20" r="19" stroke="#0FD1EA" strokeWidth="2" />
-      <path d="M16 12l8 8-8 8" stroke="#0FD1EA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="20" cy="20" r="19" stroke="currentColor" strokeWidth="2" />
+      <path d="M16 12l8 8-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -36,7 +36,7 @@ function ToutVoirLink({ href }: { href: string }) {
     <div className="flex justify-end mt-8">
       <Link
         href={href}
-        className="font-[family-name:var(--font-heading)] text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:opacity-80 tracking-[2.56px] uppercase transition-opacity"
+        className="font-[family-name:var(--font-heading)] text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] tracking-[2.56px] uppercase transition-colors"
       >
         TOUT VOIR
         <CaretCircleRight />
@@ -139,8 +139,8 @@ export default function Home() {
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque.
               </p>
             </div>
-            <Link href="/cv" className="flex items-center gap-3 mt-8 hover:opacity-80 transition-opacity">
-              <span className="font-[family-name:var(--font-heading)] text-[32px] text-[#0FD1EA] tracking-[2.56px]">VOIR MON CV</span>
+            <Link href="/cv" className="flex items-center gap-3 mt-8 text-[#0FD1EA] hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors">
+              <span className="font-[family-name:var(--font-heading)] text-[32px] tracking-[2.56px]">VOIR MON CV</span>
               <CaretCircleRight />
             </Link>
           </div>
