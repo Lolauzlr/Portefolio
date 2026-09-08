@@ -8,6 +8,7 @@ type ExperienceItem = {
   dates: string;
   title: string;
   org: string;
+  orgSuffix?: string;
   meta?: string;
   desc: string;
 };
@@ -17,13 +18,13 @@ const EXPERIENCE: ExperienceItem[] = [
   { dates: "Dec. 24 - Mar. 25", title: "Video Editor & Illustrator Freelance", org: "Freelance", desc: "Illustration, Video Editing / Motion Design / Animation" },
   { dates: "Aug. 23 - Sep. 23", title: "Compositing artist", org: "SAINT EX feature film by Pablo Agüero", meta: "Paris", desc: "Compositing / Animation" },
   { dates: "Sep. 22 - Aug. 23", title: "Cinematic artist", org: "Focus Entertainment", meta: "CDI • Paris", desc: "Video & Sound Editing / Motion Design / Animation" },
-  { dates: "Jun. 22 - Jun. 22", title: "Video Editor & Motion designer", org: "ARTE, « Gymnastique »", meta: "Paris", desc: "Video & Sound Editing / Motion Design, 3D Cinematic / Animation & Camera Layout" },
+  { dates: "Jun. 22", title: "Video Editor & Motion designer", org: "ARTE, « Gymnastique »", meta: "Paris", desc: "Video & Sound Editing / Motion Design, 3D Cinematic / Animation & Camera Layout" },
   { dates: "Nov. 19 - Jun. 22", title: "Scenarist & Concept artist", org: "MANUEL CAM", meta: "Asnières", desc: "Scenario Development / Storyboarding / Concept art" },
   { dates: "Nov. 21 - Dec. 21", title: "Storyboarder", org: "Nabil Harlow", meta: "Clip video • Paris", desc: "Storyboarding" },
-  { dates: "Oct. 21 - Nov. 21", title: "Storyboarder", org: "TWINS Brothers", meta: "Clip video • Parternship with Henessy • Paris", desc: "Storyboarding" },
+  { dates: "Oct. 21 - Nov. 21", title: "Storyboarder", org: "TWINS Brothers, parternship with Henessy", meta: "Clip video • Paris", desc: "Storyboarding" },
   { dates: "Sep. 20 - Nov. 20", title: "Animator 2D", org: "MAC GUFF", meta: "Paris", desc: "2D Animation" },
   { dates: "Jul. 20 - Aug. 20", title: "Animator 2D", org: "Documentary LAONGO Jerôme Legrand", meta: "Paris", desc: "2D Animation / Rotoscoping / Video Editing" },
-  { dates: "May 19 - Jun. 19", title: "Video Editor & Motion designer", org: "ZENDCO - Exhibition", meta: "Museum « des Confluences » • Lyon", desc: "2D Animation / Illustration / Video Editing" },
+  { dates: "May 19 - Jun. 19", title: "Video Editor & Motion designer", org: "ZENDCO", orgSuffix: "Exhibition", meta: "Museum « des Confluences » • Lyon", desc: "2D Animation / Illustration / Video Editing" },
   { dates: "Dec. 16 - Jan. 17", title: "Internship Illustrator & Graphist", org: "MUZIKA", meta: "Tokyo, Japan", desc: "Graphic Design / Editorial Design / Illustration" },
 ];
 
@@ -82,7 +83,7 @@ const HOBBIES = [
   { icon: "boxing-glove", label: "Martial Arts & Sports", desc: "Shotokan Karate / Black Belt, 2nd Dan / Boxing / Hiking / Climbing / Running" },
   { icon: "palette", label: "Arts", desc: "Cinema / Animation / Photography / Literature / Philosophy / Comics / Manga / Video Games" },
   { icon: "headphones", label: "Music", desc: "Certificate of Musical Studies (DEM) • Piano & Music Theory / Fingerstyle Guitar" },
-  { icon: "airplane-tilt", label: "Travel", desc: "One-year backpacking world tour • Oct. 23 - Oct. 24 • East & Southeast Asia, Oceania, North & South America / Woofing experience & and 7-month stay in Japan • Jul. 16 - Feb. 17" },
+  { icon: "airplane-tilt", label: "Travel", desc: "One-year backpacking world tour • Oct. 23 - Oct. 24 • East & Southeast Asia, Oceania, North & South America\nWoofing experience & and 7-month stay in Japan • Jul. 16 - Feb. 17" },
 ] as const;
 
 const ANCHORS = [
@@ -129,6 +130,7 @@ function TimelineRow({ item, isLast }: { item: ExperienceItem; isLast?: boolean 
         </h3>
         <p className="font-[family-name:var(--font-body)] text-[16px] md:text-[20px] tracking-[1.6px]">
           <span className="text-[#ddff6e] font-semibold">{item.org}</span>
+          {item.orgSuffix && <span className="text-white font-normal"> • {item.orgSuffix}</span>}
           {item.meta && <span className="text-white"> • {item.meta}</span>}
         </p>
         {item.desc && (
@@ -395,7 +397,7 @@ export default function CVPage() {
                       {h.label}
                     </h3>
                   </div>
-                  <p className="font-[family-name:var(--font-body)] text-[16px] md:text-[20px] text-white tracking-[1.6px]">
+                  <p className="font-[family-name:var(--font-body)] text-[16px] md:text-[20px] text-white tracking-[1.6px] whitespace-pre-line">
                     {h.desc}
                   </p>
                 </div>
