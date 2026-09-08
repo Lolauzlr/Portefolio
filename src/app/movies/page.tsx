@@ -208,7 +208,7 @@ export default function MoviesPage() {
           {documentaries.map((doc) => (
             <div
               key={doc.title}
-              className={`flex flex-col md:flex-row gap-[24px] items-center ${
+              className={`flex flex-col md:flex-row gap-[24px] items-start ${
                 doc.reversed ? "md:flex-row-reverse" : ""
               }`}
             >
@@ -227,7 +227,7 @@ export default function MoviesPage() {
                   </p>
                 )}
               </div>
-              <div className="flex flex-col justify-center">
+              <div className="flex flex-col">
                 <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px] mb-2">
                   {doc.title}
                 </h3>
