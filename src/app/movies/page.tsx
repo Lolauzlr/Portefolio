@@ -222,7 +222,7 @@ export default function MoviesPage() {
                   onPlay={doc.embedUrl ? () => setVideoModal({ url: doc.embedUrl!, title: doc.title }) : undefined}
                 />
                 {doc.belowImageText && (
-                  <p className="text-[#DADADA] text-base font-[family-name:var(--font-body)] tracking-[1.28px]">
+                  <p className="text-[#DADADA] text-base font-[family-name:var(--font-body)] tracking-[1.28px] italic">
                     {doc.belowImageText}
                   </p>
                 )}
