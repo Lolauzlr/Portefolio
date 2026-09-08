@@ -48,7 +48,7 @@ export default function Footer() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="font-[family-name:var(--font-body)] text-white text-[16px] tracking-[1.28px] hover:opacity-80 transition-opacity"
+                  className="font-[family-name:var(--font-body)] text-white text-[16px] tracking-[1.28px] hover:text-[#0FD1EA] focus:text-[#0FD1EA] active:text-[#0897A9] transition-colors"
                 >
                   {link.label}
                 </Link>
@@ -67,7 +67,7 @@ export default function Footer() {
             <div className="flex flex-col gap-[12px] items-start">
               <a
                 href="mailto:marie.chalandre@hotmail.fr"
-                className="font-[family-name:var(--font-body)] text-white text-[16px] tracking-[1.28px] hover:opacity-80 transition-opacity"
+                className="font-[family-name:var(--font-body)] text-white text-[16px] tracking-[1.28px] hover:text-[#0FD1EA] focus:text-[#0FD1EA] active:text-[#0897A9] transition-colors"
               >
                 marie.chalandre@hotmail.fr
               </a>
