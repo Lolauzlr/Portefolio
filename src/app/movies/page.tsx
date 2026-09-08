@@ -90,6 +90,7 @@ export default function MoviesPage() {
     externalUrl?: string;
     reversed: boolean;
     description: React.ReactNode;
+    belowImageText?: string;
   }[] = [
     {
       youtubeId: "M7PfKwiQL_w",
@@ -139,30 +140,32 @@ export default function MoviesPage() {
     },
     {
       thumbnail: "/images/beast-film.webp",
-      title: "FAUVE",
+      title: "FAUVE (BEAST)",
       externalUrl: "https://vurchel.com/v/15616/beast-marie-chalandre",
       reversed: false,
       description: (
         <>
-          Film Director & animator for the short animated film BEAST.
+          Film Director & Animator for the short animated film BEAST.
           <br /><br />
-          <span className="font-[family-name:var(--font-heading)] text-[16px] tracking-[1.28px]">FESTIVALS & REWARDS</span>
+          <span className="font-[family-name:var(--font-heading)] text-[16px] tracking-[1.28px]">SELECTIONS & REWARDS</span>
           <br /><br />
-          - Kinolikbez 2021 (Russie) : Silver Jean-Luc Award for Best Film in the Category « merry science » for a clever cinema.
+          • Kinolikbez 2021 (Russie) : Silver Jean-Luc Award for Best Film in the Category « merry science » for a clever cinema.
           <br />
-          - 7th Insomnia International Open-air Animation Film Festival 2019 (Russia)
+          • 7th Insomnia International Open-air Animation Film Festival 2019 (Russia)
           <br />
-          - 17th Tirana International Film Festival (TIFF) 2019 (Albania)
+          • 17th Tirana International Film Festival (TIFF) 2019 (Albania)
           <br />
-          - 17th Bogotá Short Film Festival (BOGOSHORTS) 2019 (Colombia)
+          • 17th Bogotá Short Film Festival (BOGOSHORTS) 2019 (Colombia)
           <br />
-          - Tonneins International Film Festival (IFFT) 2019 (France)
+          • Tonneins International Film Festival (IFFT) 2019 (France)
           <br />
-          - Bronx Wolrd Film Inc, Winter Cycle 2019 (USA)
+          • Bronx Wolrd Film Inc, Winter Cycle 2019 (USA)
           <br />
-          - Kinolikbez, animation vidéo art competition, 2021 (Russia)
+          • Kinolikbez, animation vidéo art competition, 2021 (Russia)
         </>
       ),
+      belowImageText:
+        "A lonely fisherman's wait. Over the horizon against the expanse of the sea, time passes. Something gradually overwhelms the waiting man. We then discover that he's unstable, fragile and sadly violent. As he suffocates from within, colors appear on his skin. And then everything comes to a halt : a woman arrives like an apparition in the water.",
     },
   ];
 
@@ -185,7 +188,11 @@ export default function MoviesPage() {
         </h3>
         <div className="w-[80px] h-[4px] bg-white mb-4" />
         <p className="text-base font-[family-name:var(--font-body)] tracking-[1.28px] max-w-3xl">
-          Compositing Artist for SAINT EX, a film directed by Pablo Agüero.
+          Saint-Ex is a French-Belgian film directed by Pablo Agüero, released in 2024.
+          <br /><br />
+          The film follows Antoine de Saint-Exupéry during his time as a pilot for the Aéropostale in Argentina in 1930.
+          <br /><br />
+          I had the opportunity to work on the film as a VFX Previsualization Artist, creating video mock-ups combining blue-screen footage with environments shot on location in Argentina. These previsualizations were used to establish and refine the shots before being handed over to the VFX teams for final production.
           <br /><br />
           Cast: Vincent Cassel, Diane Kruger, Louis Garrel.
         </p>
@@ -205,14 +212,21 @@ export default function MoviesPage() {
                 doc.reversed ? "md:flex-row-reverse" : ""
               }`}
             >
-              <VideoCard
-                youtubeId={doc.youtubeId}
-                thumbnail={doc.thumbnail}
-                title={doc.title}
-                externalUrl={doc.externalUrl}
-                className="w-full md:w-[792px] flex-shrink-0"
-                onPlay={doc.embedUrl ? () => setVideoModal({ url: doc.embedUrl!, title: doc.title }) : undefined}
-              />
+              <div className="flex flex-col gap-3 w-full md:w-[792px] flex-shrink-0">
+                <VideoCard
+                  youtubeId={doc.youtubeId}
+                  thumbnail={doc.thumbnail}
+                  title={doc.title}
+                  externalUrl={doc.externalUrl}
+                  className="w-full"
+                  onPlay={doc.embedUrl ? () => setVideoModal({ url: doc.embedUrl!, title: doc.title }) : undefined}
+                />
+                {doc.belowImageText && (
+                  <p className="text-[#DADADA] text-base font-[family-name:var(--font-body)] tracking-[1.28px]">
+                    {doc.belowImageText}
+                  </p>
+                )}
+              </div>
               <div className="flex flex-col justify-center">
                 <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px] mb-2">
                   {doc.title}
