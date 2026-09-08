@@ -1,136 +1,264 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { asset } from "@/lib/asset";
 
-const EXPERIENCE = [
-  { dates: "12/2024 — 02/2025", title: "Video Editor & Illustrator", org: "Frenchy Kuma, « Escaping Ordinary »", loc: "Freelance · Remote", desc: "Illustration, montage vidéo, motion design et animation pour le projet « Escaping Ordinary »." },
-  { dates: "08/2023 — 09/2023", title: "Compositing artist", org: "Saint Ex", loc: "Long-métrage de Pablo Agüero · Paris", desc: "Compositing et animation sur le long-métrage." },
-  { dates: "09/2022 — 08/2023", title: "Cinematic artist", org: "Focus Entertainment", loc: "CDI · Paris", desc: "Montage vidéo et sonore sur les productions cinématiques du studio." },
-  { dates: "06/2022", title: "Video Editor & Motion designer", org: "ARTE, « Gymnastique »", loc: "Paris", desc: "Motion design et animation pour le programme « Gymnastique »." },
-  { dates: "11/2019 — 06/2022", title: "Scenarist & Concept artist", org: "Manuel Cam", loc: "Asnières", desc: "Scénario, storyboard, concept art et mise en scène." },
-  { dates: "11/2021 — 12/2021", title: "Storyboarder", org: "Nabil Harlow, Clip", loc: "Paris", desc: "Storyboard du clip musical." },
-  { dates: "10/2021 — 11/2021", title: "Storyboarder", org: "Twins Brothers, Clip", loc: "Partenariat Hennessy · Paris", desc: "Storyboard du clip musical." },
-  { dates: "09/2020 — 11/2020", title: "Animator 2D", org: "Mac Guff", loc: "Paris", desc: "Animation 2D." },
-  { dates: "07/2020 — 08/2020", title: "Animator 2D", org: "Documentaire, Jérôme Legrand — LAONGO", loc: "Paris", desc: "Animation 2D, rotoscopie et montage vidéo." },
-  { dates: "05/2019 — 06/2019", title: "Animator 2D", org: "ZENDCO, Exposition", loc: "Musée des Confluences · Lyon", desc: "Animation 2D, illustration et montage vidéo." },
-  { dates: "12/2016 — 01/2017", title: "Internship Illustrator & Graphist", org: "Muzika", loc: "Tokyo · Japon", desc: "Graphisme, édition et illustration." },
+type ExperienceItem = {
+  dates: string;
+  title: string;
+  org: string;
+  meta?: string;
+  desc: string;
+};
+
+const EXPERIENCE: ExperienceItem[] = [
+  { dates: "Apr. 25 - Now", title: "Cinematic artist", org: "Focus Entertainment", meta: "CDI • Paris", desc: "Video & Sound Editing / Motion Design, 3D Cinematic / Animation & Camera Layout" },
+  { dates: "Dec. 24 - Mar. 25", title: "Video Editor & Illustrator Freelance", org: "Freelance", desc: "Illustration, Video Editing / Motion Design / Animation" },
+  { dates: "Aug. 23 - Sep. 23", title: "Compositing artist", org: "SAINT EX feature film by Pablo Agüero", meta: "Paris", desc: "Compositing / Animation" },
+  { dates: "Sep. 22 - Aug. 23", title: "Cinematic artist", org: "Focus Entertainment", meta: "CDI • Paris", desc: "Video & Sound Editing / Motion Design / Animation" },
+  { dates: "Jun. 22 - Jun. 22", title: "Video Editor & Motion designer", org: "ARTE, « Gymnastique »", meta: "Paris", desc: "Video & Sound Editing / Motion Design, 3D Cinematic / Animation & Camera Layout" },
+  { dates: "Nov. 19 - Jun. 22", title: "Scenarist & Concept artist", org: "MANUEL CAM", meta: "Asnières", desc: "Scenario Development / Storyboarding / Concept art" },
+  { dates: "Nov. 21 - Dec. 21", title: "Storyboarder", org: "Nabil Harlow", meta: "Clip video • Paris", desc: "Storyboarding" },
+  { dates: "Oct. 21 - Nov. 21", title: "Storyboarder", org: "TWINS Brothers", meta: "Clip video • Parternship with Henessy • Paris", desc: "Storyboarding" },
+  { dates: "Sep. 20 - Nov. 20", title: "Animator 2D", org: "MAC GUFF", meta: "Paris", desc: "2D Animation" },
+  { dates: "Jul. 20 - Aug. 20", title: "Animator 2D", org: "Documentary LAONGO Jerôme Legrand", meta: "Paris", desc: "2D Animation / Rotoscoping / Video Editing" },
+  { dates: "May 19 - Jun. 19", title: "Video Editor & Motion designer", org: "ZENDCO - Exhibition", meta: "Museum « des Confluences » • Lyon", desc: "2D Animation / Illustration / Video Editing" },
+  { dates: "Dec. 16 - Jan. 17", title: "Internship Illustrator & Graphist", org: "MUZIKA", meta: "Tokyo, Japan", desc: "Graphic Design / Editorial Design / Illustration" },
 ];
 
 const SOFTWARES = [
-  { group: "3D & Animation", items: [["Blender", "3D modeling, texturing"], ["ZBrush", "Sculpting, 3D modeling"], ["Unreal Engine", "Caméra & animation perso."], ["Unity", "Animation caméra"], ["TvPaint", "Animation 2D"]] },
-  { group: "Motion & Compositing", items: [["After Effects", "Motion design, VFX"], ["Premiere Pro", "Montage vidéo & son"], ["Avid", "Montage vidéo & son"], ["DaVinci Resolve", "Étalonnage"]] },
-  { group: "Illustration & Édition", items: [["Photoshop", "Concept art, matte painting"], ["Illustrator", "Graphisme, illustration"], ["InDesign", "Graphisme, édition"], ["Clip Studio Paint", "Illustration"], ["Storyboarder", "Storyboard"]] },
+  { group: "3D & animation", items: ["TVPaint Animation", "Blender", "Zbrush", "Unreal Engine", "Unity"] },
+  { group: "Motion & Compositing", items: ["After Effect", "Premiere Pro", "Avid Media Composer", "DaVinci Resolve"] },
+  { group: "Illustration & Edition", items: ["Photoshop", "Illustrator", "Indesign", "Clip Studio Paint", "Storyboarder"] },
 ];
 
 const LANGS = [
-  ["Français", "Langue maternelle", 4],
-  ["Anglais", "Niveau professionnel", 3],
-  ["Japonais", "Courant", 3],
-  ["Italien", "Intermédiaire", 2],
-  ["Espagnol", "Intermédiaire", 2],
+  { name: "French", level: "Native language", dots: 5 },
+  { name: "English", level: "Professional proficiency", dots: 4 },
+  { name: "Japanese", level: "Fluent", dots: 4 },
+  { name: "Italian", level: "Intermediate", dots: 3 },
+  { name: "Spanish", level: "Intermediate", dots: 3 },
 ] as const;
 
-const EDU = [
-  { title: "Master en Animation", org: "ENSAD — École Nationale Supérieure des Arts Décoratifs", loc: "Paris · 09/2013 — 06/2018", note: "Mémoire félicité par le jury · Film de fin d'études avec mention" },
-  { title: "Échange international", org: "Asabi University", loc: "Tokyo, Japon · 09/2016 — 02/2017", note: "" },
-  { title: "Bac STD2A", org: "Lycée François Mansart", loc: "Saint-Maur-des-Fossés · 09/2010 — 06/2013", note: "Mention" },
-  { title: "Formation ZBrush", org: "Ziggourat Formation", loc: "03/2022", note: "" },
-  { title: "Formation Blender", org: "40e Rugissant", loc: "03/2022", note: "" },
+const EDUCATION: ExperienceItem[] = [
+  { dates: "Sep. 13 - Jun. 18", title: "Master's Degree in Animation", org: "École Nationale Supérieure des Arts Décoratifs of Paris", meta: "Paris", desc: "Master dissertation awarded Jury's Congratulations / Graduation film awarded Honors" },
+  { dates: "Sep. 16 - Feb. 17", title: "International Exchange Program (Japan)", org: "Asagaya College of Art & Design", meta: "Tokyo", desc: "" },
+  { dates: "Sep. 10 - Jul. 13", title: "Bachelor's Degree - STD2A (Applied Arts)", org: "Saint-Maur des Fossés", desc: "Graduated with Honors" },
 ];
 
-const INTERESTS = [
-  { label: "Arts martiaux & sport", tags: ["Karaté Shotokan — ceinture noire 2e Dan", "Muay Thaï", "Self-défense", "Randonnée", "Escalade", "Course à pied"] },
-  { label: "Arts", tags: ["Cinéma & animation", "Photographie argentique & numérique", "Littérature & philosophie", "Comics, mangas & jeux vidéo"] },
-  { label: "Musique", tags: ["DEM piano & solfège", "Guitare folk"] },
-  { label: "Voyage", tags: ["Tour du monde en sac à dos", "WWOOFing & 7 mois au Japon"] },
+const ADDITIONAL_TRAINING: ExperienceItem[] = [
+  { dates: "Mar. 22", title: "Z Brush Training", org: "Ziggourat Formation", desc: "" },
+  { dates: "Mar. 22", title: "Blender Training", org: "40e Rugissant", desc: "" },
 ];
+
+const HOBBIES = [
+  { icon: "boxing-glove", label: "Martial Arts & Sports", desc: "Shotokan Karate / Black Belt, 2nd Dan / Boxing / Hiking / Climbing / Running" },
+  { icon: "palette", label: "Arts", desc: "Cinema / Animation / Photography / Literature / Philosophy / Comics / Manga / Video Games" },
+  { icon: "headphones", label: "Music", desc: "Certificate of Musical Studies (DEM) • Piano & Music Theory / Fingerstyle Guitar" },
+  { icon: "airplane-tilt", label: "Travel", desc: "One-year backpacking world tour • Oct. 23 - Oct. 24 • East & Southeast Asia, Oceania, North & South America / Woofing experience & and 7-month stay in Japan • Jul. 16 - Feb. 17" },
+] as const;
 
 const ANCHORS = [
-  { href: "#profil", label: "Profil" },
-  { href: "#experience", label: "Expérience" },
-  { href: "#competences", label: "Compétences" },
-  { href: "#formation", label: "Formation" },
-  { href: "#recompenses", label: "Récompenses" },
-  { href: "#interets", label: "Centres d'intérêt" },
+  { id: "experiences", label: "Experiences" },
+  { id: "skills", label: "Skills" },
+  { id: "reward", label: "Reward" },
+  { id: "formation", label: "Formation" },
+  { id: "hobbies", label: "Hobbies" },
 ];
+
+function Tag({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="font-[family-name:var(--font-body)] text-[16px] md:text-[20px] text-white tracking-[1.6px] border border-white rounded-[100px] px-[12px] py-[4px] whitespace-nowrap">
+      {children}
+    </span>
+  );
+}
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mb-[22px]">
-      <h2 className="font-[family-name:var(--font-heading)] tracking-[1.92px] font-normal text-[24px] md:text-[30px] mb-[6px] uppercase">{children}</h2>
-      <div className="w-[52px] h-[4px] bg-[#DDFF6E]" />
+    <div className="flex flex-col gap-[4px] w-full">
+      <h2 className="font-[family-name:var(--font-heading)] text-[28px] md:text-[32px] tracking-[2.56px] text-white uppercase">
+        {children}
+      </h2>
+      <div className="w-[80px] h-[4px] bg-white" />
     </div>
   );
 }
 
-function Block({ children, className }: { children: React.ReactNode; className?: string }) {
+function TimelineRow({ item, isLast }: { item: ExperienceItem; isLast?: boolean }) {
   return (
-    <div className={`bg-[#101116] border border-white/10 rounded-[6px] p-[22px] ${className || ""}`}>
-      {children}
+    <div className="flex gap-[24px] md:gap-[40px] items-start w-full">
+      <div className="flex flex-col gap-[4px] items-center self-stretch shrink-0">
+        <span className="block size-[16px] rounded-full bg-[#ddff6e] shrink-0" />
+        {!isLast && <span className="w-[2px] flex-1 bg-[#8f8f8f]" />}
+      </div>
+      <div className="flex flex-col gap-[4px] items-start flex-1 min-w-0 pb-[24px]">
+        <p className="font-[family-name:var(--font-body)] text-[16px] md:text-[20px] text-[#dadada] tracking-[1.6px]">
+          {item.dates}
+        </p>
+        <h3 className="font-[family-name:var(--font-heading)] text-[24px] md:text-[32px] text-white tracking-[2.56px] uppercase leading-[1.05]">
+          {item.title}
+        </h3>
+        <p className="font-[family-name:var(--font-body)] text-[16px] md:text-[20px] tracking-[1.6px]">
+          <span className="text-[#ddff6e] font-semibold">{item.org}</span>
+          {item.meta && <span className="text-white"> • {item.meta}</span>}
+        </p>
+        {item.desc && (
+          <p className="font-[family-name:var(--font-body)] text-[16px] md:text-[20px] text-white tracking-[1.6px]">
+            {item.desc}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
 
-function CaretCircleRight() {
+function BoxingGloveIcon() {
   return (
-    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
-      <circle cx="20" cy="20" r="19" stroke="#0FD1EA" strokeWidth="2" />
-      <path d="M16 12l8 8-8 8" stroke="#0FD1EA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+      <rect x="9" y="6" width="14" height="16" rx="7" stroke="white" strokeWidth="1.7" />
+      <circle cx="8" cy="17" r="3.4" stroke="white" strokeWidth="1.7" />
+      <rect x="11" y="22" width="8" height="5" rx="2" stroke="white" strokeWidth="1.7" />
     </svg>
   );
 }
 
-function CaretCircleLeft() {
+function PaletteIcon() {
   return (
-    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
-      <circle cx="20" cy="20" r="19" stroke="#0FD1EA" strokeWidth="2" />
-      <path d="M24 12l-8 8 8 8" stroke="#0FD1EA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+      <ellipse cx="16" cy="15" rx="11" ry="9" stroke="white" strokeWidth="1.7" />
+      <circle cx="11" cy="12" r="1.5" fill="white" />
+      <circle cx="16" cy="9" r="1.5" fill="white" />
+      <circle cx="21" cy="12" r="1.5" fill="white" />
+      <circle cx="12" cy="19" r="1.5" fill="white" />
+      <circle cx="20" cy="19" r="1.5" fill="white" />
     </svg>
+  );
+}
+
+function HeadphonesIcon() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+      <path d="M6 20v-4a10 10 0 0120 0v4" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <rect x="4" y="18" width="5" height="8" rx="2.5" stroke="white" strokeWidth="1.6" />
+      <rect x="23" y="18" width="5" height="8" rx="2.5" stroke="white" strokeWidth="1.6" />
+    </svg>
+  );
+}
+
+function AirplaneTiltIcon() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+      <path d="M28 6L4 14.5l8.5 3 3 8.5L28 6z" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M15.5 17.5L28 6" stroke="white" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+const HOBBY_ICONS = {
+  "boxing-glove": BoxingGloveIcon,
+  palette: PaletteIcon,
+  headphones: HeadphonesIcon,
+  "airplane-tilt": AirplaneTiltIcon,
+} as const;
+
+function SocialIcons() {
+  const socials = [
+    { src: "/images/logo-svg/instagram.svg", alt: "Instagram", href: "https://www.instagram.com/m_chalandre/?hl=fr" },
+    { src: "/images/logo-svg/linkedin.svg", alt: "LinkedIn", href: "https://www.linkedin.com/in/marie-chalandre-076948103/" },
+    { src: "/images/logo-svg/artstation.svg", alt: "ArtStation", href: "https://www.artstation.com/mariechalandre" },
+  ];
+  return (
+    <div className="flex items-center gap-[16px]">
+      {socials.map((s) => (
+        <a key={s.alt} href={s.href} target="_blank" rel="noopener noreferrer">
+          <img src={asset(s.src)} alt={s.alt} width={24} height={24} />
+        </a>
+      ))}
+    </div>
   );
 }
 
 export default function CVPage() {
-  const subnavRef = useRef<HTMLDivElement>(null);
+  const [activeId, setActiveId] = useState("experiences");
+  const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
   useEffect(() => {
-    const links = subnavRef.current ? [...subnavRef.current.querySelectorAll<HTMLAnchorElement>("a")] : [];
-    const sections = links.map((a) => document.querySelector(a.getAttribute("href")!));
-    if (!links.length) return;
+    const sections = ANCHORS.map((a) => sectionRefs.current[a.id]).filter(Boolean) as HTMLElement[];
+    if (!sections.length) return;
 
     const io = new IntersectionObserver(
       (entries) => {
-        entries.forEach((en) => {
-          if (en.isIntersecting) {
-            links.forEach((l) => {
-              l.classList.remove("text-[#0b0c0f]", "bg-[#DDFF6E]");
-              l.classList.add("text-white");
-            });
-            const idx = sections.indexOf(en.target as Element);
-            if (idx > -1) {
-              links[idx].classList.remove("text-white");
-              links[idx].classList.add("bg-[#DDFF6E]", "text-[#0b0c0f]");
-            }
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = ANCHORS.find((a) => sectionRefs.current[a.id] === entry.target)?.id;
+            if (id) setActiveId(id);
           }
         });
       },
       { rootMargin: "-40% 0px -55% 0px" }
     );
-    sections.forEach((s) => s && io.observe(s));
+    sections.forEach((s) => io.observe(s));
     return () => io.disconnect();
   }, []);
 
   return (
-    <div className="pt-[95px] bg-[#15161b] text-white min-h-screen">
-      {/* Subnav — positioned right below the 95px fixed header */}
-      <div className="sticky top-[95px] z-[49] bg-[rgba(11,12,16,0.92)] backdrop-blur-[14px] border-b border-white/10 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div ref={subnavRef} className="max-w-[1280px] mx-auto px-6 flex gap-[6px] h-[60px] items-center w-max min-w-full">
+    <div className="bg-[#15161b] text-white flex flex-col gap-[60px] pt-[140px] md:pt-[175px] pb-[80px] px-4 md:px-[120px]">
+      {/* Hero */}
+      <div className="flex flex-col md:flex-row gap-[40px] items-center md:items-start w-full">
+        <div className="flex flex-col gap-[24px] items-start flex-1 w-full">
+          <div className="flex flex-col md:flex-row gap-[24px] items-start w-full">
+            <div className="flex flex-col gap-[4px] items-start flex-1 min-w-0">
+              <p className="font-[family-name:var(--font-heading)] text-[24px] text-white tracking-[1.92px] uppercase">
+                Curriculum vitae
+              </p>
+              <h1 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[52px] text-white tracking-[4.16px] uppercase leading-none">
+                marie chalandre
+              </h1>
+              <div className="w-[80px] h-[4px] bg-white mt-[4px]" />
+            </div>
+            <a
+              href={asset("/CV_MARIECHALANDRE.pdf")}
+              download
+              className="backdrop-blur-[5px] bg-black/40 border-2 border-[#0fd1ea] rounded-[40px] px-[40px] py-[20px] shrink-0 font-[family-name:var(--font-heading)] text-[24px] text-[#0fd1ea] tracking-[1.92px] uppercase hover:bg-[#0fd1ea]/10 transition-colors"
+            >
+              Download
+            </a>
+          </div>
+          <p className="font-[family-name:var(--font-heading)] text-[24px] text-[#ddff6e] tracking-[1.92px] uppercase w-full">
+            cinematic artist • concept artist • storyboarder
+          </p>
+          <p className="font-[family-name:var(--font-body)] text-[18px] md:text-[20px] text-white tracking-[1.6px] w-full leading-relaxed">
+            A cinematic artist specialising in the production of 3D shots for video games and film. From storyboarding to final compositing, including lighting, camera animation and motion design.
+          </p>
+          <div className="flex flex-wrap items-center justify-between gap-4 w-full">
+            <div className="flex flex-wrap gap-[12px] items-center">
+              <Tag>31 ans</Tag>
+              <Tag>Paris</Tag>
+              <Tag>Driving Licence</Tag>
+            </div>
+            <SocialIcons />
+          </div>
+        </div>
+        <div className="shrink-0 w-[260px] h-[260px] md:w-[384px] md:h-[384px] overflow-hidden rounded-full">
+          <img
+            src={asset("/images/home-page/profil2.webp")}
+            alt="Marie Chalandre"
+            className="w-full h-full object-cover object-[40%_42%]"
+          />
+        </div>
+      </div>
+
+      {/* Mobile subnav */}
+      <div className="md:hidden sticky top-[95px] z-[49] -mx-4 px-4 bg-[rgba(11,12,16,0.92)] backdrop-blur-[14px] border-y border-white/10 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex gap-[6px] h-[56px] items-center w-max min-w-full">
           {ANCHORS.map((a) => (
             <a
-              key={a.href}
-              href={a.href}
-              className="font-[family-name:var(--font-heading)] tracking-[1.92px] text-[24px] uppercase text-white no-underline px-[14px] py-[6px] rounded-[20px] whitespace-nowrap transition-colors duration-200 hover:text-[#0FD1EA]"
+              key={a.id}
+              href={`#${a.id}`}
+              className={`font-[family-name:var(--font-heading)] tracking-[1.6px] text-[18px] uppercase no-underline px-[14px] py-[6px] rounded-[20px] whitespace-nowrap transition-colors duration-200 ${
+                activeId === a.id ? "bg-[#ddff6e] text-[#0b0c0f]" : "text-white"
+              }`}
             >
               {a.label}
             </a>
@@ -138,158 +266,157 @@ export default function CVPage() {
         </div>
       </div>
 
-      <div className="max-w-[1280px] mx-auto px-6">
-        {/* Hero */}
-        <section id="profil" className="py-[56px] pb-[40px] border-b border-white/10">
-          <p className="font-[family-name:var(--font-heading)] tracking-[0.16em] text-[24px] text-white uppercase">Curriculum vitae</p>
-          <h1 className="font-[family-name:var(--font-heading)] text-[clamp(48px,8vw,84px)] leading-[0.94] mt-[8px] uppercase">MARIE CHALANDRE</h1>
-          <p className="font-[family-name:var(--font-heading)] tracking-[1.92px] text-[24px] md:text-[32px] text-[#DDFF6E] mt-[4px] uppercase">Cinematic artist</p>
-          <p className="font-[family-name:var(--font-body)] text-[18px] md:text-[24px] leading-[1.65] text-[#e0e0e0] max-w-[62ch] mt-[20px]">
-            Artiste cinématique spécialisée dans la mise en scène de plans 3D pour le jeu vidéo et le cinéma — du storyboard au compositing final, en passant par le lighting, l'animation de caméra et le motion design.
-          </p>
-          <div className="flex flex-wrap gap-[10px] mt-[24px]">
-            {["29 ans", "Paris", "Permis B"].map((t) => (
-              <span key={t} className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#e6e6e6] border border-white/28 rounded-[20px] px-[14px] py-[6px]">{t}</span>
-            ))}
-            <a href="mailto:marie.chalandre@hotmail.fr" className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#e6e6e6] border border-white/28 rounded-[20px] px-[14px] py-[6px] no-underline hover:border-[#0FD1EA] hover:text-[#0FD1EA] transition-colors">
-              marie.chalandre@hotmail.fr
+      {/* Body */}
+      <div className="flex flex-col md:flex-row gap-[40px] items-start w-full">
+        {/* Desktop sidebar nav */}
+        <div className="hidden md:flex flex-col items-start gap-[40px] border-r border-[#8f8f8f] pr-[20px] shrink-0 sticky top-[120px]">
+          {ANCHORS.map((a) => (
+            <a key={a.id} href={`#${a.id}`} className="flex flex-col gap-[10px] items-start w-[160px]">
+              <span className="font-[family-name:var(--font-heading)] text-[24px] text-white tracking-[1.92px] uppercase whitespace-nowrap">
+                {a.label}
+              </span>
+              <span className={`h-[4px] w-full bg-[#0fd1ea] transition-opacity ${activeId === a.id ? "opacity-100" : "opacity-0"}`} />
             </a>
-            <a href="https://www.linkedin.com/in/marie-chalandre-076948103/" target="_blank" rel="noopener noreferrer" className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#e6e6e6] border border-white/28 rounded-[20px] px-[14px] py-[6px] no-underline hover:border-[#0FD1EA] hover:text-[#0FD1EA] transition-colors">
-              LinkedIn
-            </a>
-          </div>
-        </section>
+          ))}
+        </div>
 
-        {/* Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-[1.55fr_1fr] gap-[56px] py-[56px] items-start">
-          {/* Experience */}
-          <section id="experience">
-            <SectionTitle>Expérience</SectionTitle>
-            <div className="flex flex-col">
-              {EXPERIENCE.map((e, i) => (
-                <div key={i} className="relative pl-[26px] pb-[30px] last:pb-0 border-l border-white/10 last:border-transparent">
-                  <span className="absolute left-[-5px] top-[4px] w-[9px] h-[9px] rounded-full bg-[#DDFF6E]" />
-                  <div className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#c0c0c0] uppercase tracking-[0.1em]">{e.dates}</div>
-                  <div className="font-[family-name:var(--font-heading)] tracking-[0.03em] font-normal text-[24px] mt-[5px] leading-[1.05] uppercase">{e.title}</div>
-                  <div className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-white mt-[5px] font-medium">{e.org} <span className="text-[#c0c0c0] font-normal">· {e.loc}</span></div>
-                  <p className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] leading-[1.55] text-[#d5d5d5] mt-[8px]">{e.desc}</p>
+        {/* Content */}
+        <div className="flex flex-col gap-[60px] items-start justify-center flex-1 w-full min-w-0">
+          {/* Experiences */}
+          <section
+            id="experiences"
+            ref={(el) => { sectionRefs.current.experiences = el; }}
+            className="flex flex-col gap-[40px] items-start justify-center w-full scroll-mt-[140px]"
+          >
+            <SectionTitle>Experiences</SectionTitle>
+            <div className="flex flex-col gap-[4px] items-start w-full">
+              {EXPERIENCE.map((item, i) => (
+                <TimelineRow key={i} item={item} isLast={i === EXPERIENCE.length - 1} />
+              ))}
+            </div>
+          </section>
+
+          {/* Skills */}
+          <section
+            id="skills"
+            ref={(el) => { sectionRefs.current.skills = el; }}
+            className="flex flex-col gap-[40px] items-start justify-center w-full scroll-mt-[140px]"
+          >
+            <SectionTitle>Skills</SectionTitle>
+            <div className="flex flex-col gap-[24px] items-start w-full">
+              {SOFTWARES.map((g) => (
+                <div key={g.group} className="flex flex-col gap-[16px] items-start w-full">
+                  <h3 className="font-[family-name:var(--font-heading)] text-[24px] text-white tracking-[1.92px] uppercase">
+                    {g.group}
+                  </h3>
+                  <div className="flex flex-wrap gap-[12px] items-center w-full">
+                    {g.items.map((name) => (
+                      <Tag key={name}>{name}</Tag>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="flex flex-col gap-[16px] items-start w-full">
+              <h3 className="font-[family-name:var(--font-heading)] text-[24px] text-white tracking-[1.92px] uppercase">
+                Languages
+              </h3>
+              {LANGS.map((l) => (
+                <div key={l.name} className="flex flex-col gap-[24px] items-start w-full border-b border-[#8f8f8f] pb-[24px] last:border-0 last:pb-0">
+                  <div className="flex flex-wrap gap-[6px] md:gap-[12px] items-center w-full">
+                    <span className="order-1 flex-1 min-w-[100px] font-[family-name:var(--font-body)] text-[16px] md:text-[20px] font-semibold text-white tracking-[1.6px]">
+                      {l.name}
+                    </span>
+                    <span className="order-3 w-full md:order-2 md:w-auto font-[family-name:var(--font-heading)] text-[18px] md:text-[24px] text-[#dadada] tracking-[1.92px] uppercase whitespace-nowrap">
+                      {l.level}
+                    </span>
+                    <span className="order-2 md:order-3 flex gap-[6px] shrink-0">
+                      {[0, 1, 2, 3, 4].map((i) => (
+                        <span key={i} className={`w-[10px] h-[10px] rounded-full ${i < l.dots ? "bg-[#ddff6e]" : "bg-white/15"}`} />
+                      ))}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
           </section>
 
-          {/* Sidebar */}
-          <aside className="flex flex-col gap-[40px] md:sticky md:top-[170px]">
-            {/* Compétences */}
-            <section id="competences">
-              <SectionTitle>Compétences</SectionTitle>
-              <Block>
-                <div className="font-[family-name:var(--font-heading)] tracking-[0.1em] text-[24px] text-[#c0c0c0] mb-[16px] uppercase">Logiciels</div>
-                {SOFTWARES.map((g) => (
-                  <div key={g.group} className="mb-[18px] last:mb-0">
-                    <div className="font-[family-name:var(--font-heading)] tracking-[0.1em] text-[24px] text-[#c0c0c0] mb-[10px] uppercase">{g.group}</div>
-                    <div className="flex flex-wrap gap-[8px]">
-                      {g.items.map(([name, desc]) => (
-                        <span key={name} className="text-[#e6e6e6] border border-white/22 rounded-[5px] px-[10px] py-[6px] leading-[1.3]">
-                          <span className="font-[family-name:var(--font-heading)] tracking-[0.02em] text-[24px] block text-white uppercase">{name}</span>
-                          <span className="font-[family-name:var(--font-body)] text-[#c0c0c0] text-[12px] md:text-[16px]">{desc}</span>
-                        </span>
-                      ))}
+          {/* Reward */}
+          <section
+            id="reward"
+            ref={(el) => { sectionRefs.current.reward = el; }}
+            className="flex flex-col gap-[40px] items-start justify-center w-full scroll-mt-[140px]"
+          >
+            <SectionTitle>Reward</SectionTitle>
+            <div className="flex flex-col gap-[4px] items-start w-full">
+              <h3 className="font-[family-name:var(--font-heading)] text-[24px] md:text-[32px] text-white tracking-[2.56px] uppercase">
+                Graduation film « BEAST »
+              </h3>
+              <p className="font-[family-name:var(--font-body)] text-[16px] md:text-[20px] tracking-[1.6px]">
+                <span className="text-[#ddff6e] font-semibold">Kinolikbez Festival (2021)</span>
+                <span className="text-[#dadada]"> • 2021</span>
+              </p>
+              <p className="font-[family-name:var(--font-body)] text-[16px] md:text-[20px] text-white tracking-[1.6px]">
+                Awarded Silver Jean-Luc Prize for Best Film in the category &ldquo;Merry Science&rdquo; (creative / experimental cinema) / Official selection in 5 regional and international film festivals
+              </p>
+            </div>
+          </section>
+
+          {/* Formation */}
+          <section
+            id="formation"
+            ref={(el) => { sectionRefs.current.formation = el; }}
+            className="flex flex-col gap-[40px] items-start justify-center w-full scroll-mt-[140px]"
+          >
+            <SectionTitle>Formation</SectionTitle>
+            <div className="flex flex-col gap-[16px] items-start w-full">
+              <h3 className="font-[family-name:var(--font-heading)] text-[24px] text-white tracking-[1.92px] uppercase">
+                Education
+              </h3>
+              <div className="flex flex-col gap-[4px] items-start w-full">
+                {EDUCATION.map((item, i) => (
+                  <TimelineRow key={i} item={item} isLast={i === EDUCATION.length - 1} />
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-col gap-[16px] items-start w-full">
+              <h3 className="font-[family-name:var(--font-heading)] text-[24px] text-white tracking-[1.92px] uppercase">
+                Additional training
+              </h3>
+              <div className="flex flex-col gap-[4px] items-start w-full">
+                {ADDITIONAL_TRAINING.map((item, i) => (
+                  <TimelineRow key={i} item={item} isLast={i === ADDITIONAL_TRAINING.length - 1} />
+                ))}
+              </div>
+            </div>
+          </section>
+
+          {/* Hobbies */}
+          <section
+            id="hobbies"
+            ref={(el) => { sectionRefs.current.hobbies = el; }}
+            className="flex flex-col gap-[40px] items-start justify-center w-full scroll-mt-[140px]"
+          >
+            <SectionTitle>Hobbies</SectionTitle>
+            <div className="flex flex-col gap-[32px] items-start w-full">
+              {HOBBIES.map((h) => {
+                const Icon = HOBBY_ICONS[h.icon];
+                return (
+                  <div key={h.label} className="flex flex-col gap-[4px] items-start w-full">
+                    <div className="flex gap-[12px] items-center">
+                      <Icon />
+                      <h3 className="font-[family-name:var(--font-heading)] text-[24px] md:text-[32px] text-white tracking-[2.56px] uppercase">
+                        {h.label}
+                      </h3>
                     </div>
+                    <p className="font-[family-name:var(--font-body)] text-[16px] md:text-[20px] text-white tracking-[1.6px]">
+                      {h.desc}
+                    </p>
                   </div>
-                ))}
-              </Block>
-              <div className="h-[20px]" />
-              <Block>
-                <div className="font-[family-name:var(--font-heading)] tracking-[0.1em] text-[24px] text-[#c0c0c0] mb-[4px] uppercase">Langues</div>
-                {LANGS.map(([name, level, dots]) => (
-                  <div key={name} className="flex items-center justify-between py-[9px] border-b border-white/10 last:border-0">
-                    <span className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-white">{name}</span>
-                    <span className="flex items-center gap-[8px]">
-                      <span className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] tracking-[0.06em] uppercase text-[#c0c0c0]">{level}</span>
-                      <span className="flex gap-[4px]">
-                        {[0, 1, 2, 3].map((i) => (
-                          <span key={i} className={`w-[6px] h-[6px] rounded-full ${i < dots ? "bg-[#DDFF6E]" : "bg-white/18"}`} />
-                        ))}
-                      </span>
-                    </span>
-                  </div>
-                ))}
-              </Block>
-            </section>
-
-            {/* Formation */}
-            <section id="formation">
-              <SectionTitle>Formation</SectionTitle>
-              <Block>
-                {EDU.map((e, i) => (
-                  <div key={i} className="py-[14px] border-b border-white/10 last:border-0">
-                    <div className="font-[family-name:var(--font-heading)] tracking-[0.02em] font-normal text-[24px] leading-[1.15] uppercase">{e.title}</div>
-                    <div className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-white mt-[3px] font-medium">{e.org} <span className="text-[#c0c0c0] font-normal">· {e.loc}</span></div>
-                    {e.note && <div className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#c0c0c0] mt-[3px]">{e.note}</div>}
-                  </div>
-                ))}
-              </Block>
-            </section>
-
-            {/* Récompenses */}
-            <section id="recompenses">
-              <SectionTitle>Récompenses</SectionTitle>
-              <Block>
-                <div className="font-[family-name:var(--font-heading)] tracking-[0.02em] font-normal text-[24px] uppercase">Film de fin d'études « BEAST »</div>
-                <div className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-white mt-[4px] font-medium">Festival Kinolikbez 2021 (Russie)</div>
-                <p className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] leading-[1.6] text-[#d5d5d5] mt-[10px]">
-                  Prix « Silver Jean-Luc » du meilleur film dans la catégorie « Merry Science » pour un cinéma malin — ainsi que 5 sélections dans des festivals régionaux et internationaux.
-                </p>
-              </Block>
-            </section>
-
-            {/* Centres d'intérêt */}
-            <section id="interets">
-              <SectionTitle>Centres d'intérêt</SectionTitle>
-              <Block>
-                {INTERESTS.map((g) => (
-                  <div key={g.label} className="mb-[14px] last:mb-0">
-                    <div className="font-[family-name:var(--font-heading)] tracking-[0.08em] text-[24px] text-[#c0c0c0] mb-[8px] uppercase">{g.label}</div>
-                    <div className="flex flex-wrap gap-[6px]">
-                      {g.tags.map((t) => (
-                        <span key={t} className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#e0e0e0] bg-white/6 rounded-[4px] px-[9px] py-[4px]">{t}</span>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </Block>
-            </section>
-          </aside>
-        </div>
-      </div>
-
-      {/* Footer CV */}
-      <div className="border-t border-white/10 bg-[#0b0c10] mt-[40px]">
-        <div className="max-w-[1280px] mx-auto px-6 py-[44px] pb-[40px] flex flex-wrap gap-[24px] items-center justify-between">
-          <p className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#c0c0c0] m-0">
-            Cinematic artist — plans 3D pour le jeu vidéo &amp; le cinéma.
-          </p>
-          <div className="flex flex-wrap gap-[32px] items-center">
-            <Link
-              href="/"
-              className="font-[family-name:var(--font-heading)] text-[24px] md:text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:opacity-80 tracking-[2.56px] uppercase transition-opacity"
-            >
-              <CaretCircleLeft />
-              RETOUR AU PORTFOLIO
-            </Link>
-            <a
-              href={asset("/CV_MARIECHALANDRE.pdf")}
-              download
-              className="font-[family-name:var(--font-heading)] text-[24px] md:text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:opacity-80 tracking-[2.56px] uppercase transition-opacity"
-            >
-              TÉLÉCHARGER LE PDF
-              <CaretCircleRight />
-            </a>
-          </div>
-        </div>
-        <div className="max-w-[1280px] mx-auto px-6 pb-[30px] border-t border-white/6">
-          <p className="font-[family-name:var(--font-body)] text-[12px] md:text-[16px] text-[#999] pt-[16px] m-0">© 2026 Marie Chalandre — Portfolio</p>
+                );
+              })}
+            </div>
+          </section>
         </div>
       </div>
     </div>
