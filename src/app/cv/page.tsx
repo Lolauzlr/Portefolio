@@ -158,7 +158,7 @@ function SocialIcons() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={alt}
-          className="text-[32px] text-[#0FD1EA] hover:text-[#0897A9] focus:text-[#0897A9] active:text-[#0897A9] transition-colors"
+          className="text-[32px] text-[#0FD1EA] hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors"
         >
           <Icon />
         </a>
