@@ -223,7 +223,7 @@ export default function CVPage() {
           </p>
           <div className="flex flex-wrap items-center justify-between gap-4 w-full">
             <div className="flex flex-wrap gap-[12px] items-center">
-              <Tag>31 ans</Tag>
+              <Tag>31 y/o</Tag>
               <Tag>Paris</Tag>
               <Tag>Driving Licence</Tag>
             </div>
