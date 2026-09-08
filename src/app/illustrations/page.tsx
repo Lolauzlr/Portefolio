@@ -40,7 +40,7 @@ export default function IllustrationsPage() {
             <div className="flex flex-col gap-[12px]">
               <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">ARCANE</p>
               <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px]">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula.
+                Digital Painting • Adobe Photoshop
               </p>
             </div>
             <img src={asset(i(36))} alt="Arcane" className="w-full h-[539px] object-cover" />
@@ -48,11 +48,11 @@ export default function IllustrationsPage() {
 
           {/* MONSTER IN A BOTTLE — image on top, title below */}
           <div className="flex-shrink-0 flex flex-col gap-[16px] w-[382px]">
-            <img src={asset(i(34))} alt="Monster in a bottle" className="w-full h-[679px] object-cover" />
+            <img src={asset(i(34))} alt="Drunked Monster" className="w-full h-[679px] object-cover" />
             <div className="flex flex-col gap-[12px]">
-              <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">MONSTER IN A BOTTLE</p>
+              <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">DRUNKED MONSTER</p>
               <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px]">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula.
+                Illustration : Cyril Mornet / Digital Painting : Marie Chalandre
               </p>
             </div>
           </div>
@@ -62,7 +62,9 @@ export default function IllustrationsPage() {
             <div className="flex flex-col gap-[12px]">
               <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">MAZOU BD</p>
               <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px]">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula.
+                Comic Book Project • A visual diary of a journey around the world
+                <br />
+                Pen drawing on paper, digitally colored in Adobe Photoshop
               </p>
             </div>
             <img src={asset(i(32))} alt="Mazou BD" className="w-full h-[539px] object-cover" />
