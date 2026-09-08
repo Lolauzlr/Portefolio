@@ -113,53 +113,11 @@ function TimelineRow({ item, isLast }: { item: ExperienceItem; isLast?: boolean 
   );
 }
 
-function BoxingGloveIcon() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
-      <rect x="9" y="6" width="14" height="16" rx="7" stroke="#ddff6e" strokeWidth="1.7" />
-      <circle cx="8" cy="17" r="3.4" stroke="#ddff6e" strokeWidth="1.7" />
-      <rect x="11" y="22" width="8" height="5" rx="2" stroke="#ddff6e" strokeWidth="1.7" />
-    </svg>
-  );
-}
-
-function PaletteIcon() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
-      <ellipse cx="16" cy="15" rx="11" ry="9" stroke="#ddff6e" strokeWidth="1.7" />
-      <circle cx="11" cy="12" r="1.5" fill="#ddff6e" />
-      <circle cx="16" cy="9" r="1.5" fill="#ddff6e" />
-      <circle cx="21" cy="12" r="1.5" fill="#ddff6e" />
-      <circle cx="12" cy="19" r="1.5" fill="#ddff6e" />
-      <circle cx="20" cy="19" r="1.5" fill="#ddff6e" />
-    </svg>
-  );
-}
-
-function HeadphonesIcon() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
-      <path d="M6 20v-4a10 10 0 0120 0v4" stroke="#ddff6e" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-      <rect x="4" y="18" width="5" height="8" rx="2.5" stroke="#ddff6e" strokeWidth="1.6" />
-      <rect x="23" y="18" width="5" height="8" rx="2.5" stroke="#ddff6e" strokeWidth="1.6" />
-    </svg>
-  );
-}
-
-function AirplaneTiltIcon() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
-      <path d="M28 6L4 14.5l8.5 3 3 8.5L28 6z" stroke="#ddff6e" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M15.5 17.5L28 6" stroke="#ddff6e" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
 const HOBBY_ICONS = {
-  "boxing-glove": BoxingGloveIcon,
-  palette: PaletteIcon,
-  headphones: HeadphonesIcon,
-  "airplane-tilt": AirplaneTiltIcon,
+  "boxing-glove": "/images/icon/boxing-glove.svg",
+  palette: "/images/icon/palette.svg",
+  headphones: "/images/icon/headphones.svg",
+  "airplane-tilt": "/images/icon/airplane-tilt.svg",
 } as const;
 
 function SocialIcons() {
@@ -401,22 +359,19 @@ export default function CVPage() {
           >
             <SectionTitle>Hobbies</SectionTitle>
             <div className="flex flex-col gap-[32px] items-start w-full">
-              {HOBBIES.map((h) => {
-                const Icon = HOBBY_ICONS[h.icon];
-                return (
-                  <div key={h.label} className="flex flex-col gap-[4px] items-start w-full">
-                    <div className="flex gap-[12px] items-center">
-                      <Icon />
-                      <h3 className="font-[family-name:var(--font-heading)] text-[24px] md:text-[32px] text-white tracking-[2.56px] uppercase">
-                        {h.label}
-                      </h3>
-                    </div>
-                    <p className="font-[family-name:var(--font-body)] text-[16px] md:text-[20px] text-white tracking-[1.6px]">
-                      {h.desc}
-                    </p>
+              {HOBBIES.map((h) => (
+                <div key={h.label} className="flex flex-col gap-[4px] items-start w-full">
+                  <div className="flex gap-[12px] items-center">
+                    <img src={asset(HOBBY_ICONS[h.icon])} alt="" width={32} height={32} className="shrink-0" />
+                    <h3 className="font-[family-name:var(--font-heading)] text-[24px] md:text-[32px] text-white tracking-[2.56px] uppercase">
+                      {h.label}
+                    </h3>
                   </div>
-                );
-              })}
+                  <p className="font-[family-name:var(--font-body)] text-[16px] md:text-[20px] text-white tracking-[1.6px]">
+                    {h.desc}
+                  </p>
+                </div>
+              ))}
             </div>
           </section>
         </div>
