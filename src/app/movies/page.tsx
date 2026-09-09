@@ -172,21 +172,21 @@ export default function MoviesPage() {
   return (
     <div className="pt-[95px] bg-[#15161b] text-white min-h-screen">
       {/* Features Films */}
-      <section className="px-4 md:px-[120px] py-16">
+      <section className="px-3 md:px-[120px] py-16">
         <h2 className="text-[40px] md:text-[60px] font-[family-name:var(--font-heading)] tracking-[4.8px] mb-2">
           FEATURES FILMS
         </h2>
-        <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-10" />
+        <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-6 md:mb-10" />
         <VideoCard
           youtubeId="BFLlIR9A8DY"
           title="SAINT EX"
           className="w-full"
           onPlay={() => setVideoModal({ url: "https://www.youtube.com/embed/BFLlIR9A8DY?autoplay=1&rel=0", title: "SAINT EX" })}
         />
-        <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px] mt-6 mb-2">
+        <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px] mt-4 md:mt-6 mb-2">
           SAINT EX
         </h3>
-        <div className="w-[80px] h-[4px] bg-white mb-4" />
+        <div className="w-[80px] h-[4px] bg-white mb-3 md:mb-4" />
         <p className="text-base font-[family-name:var(--font-body)] tracking-[1.28px] max-w-3xl">
           Saint-Ex is a French-Belgian film directed by Pablo Agüero, released in 2024.
           <br /><br />
@@ -199,16 +199,16 @@ export default function MoviesPage() {
       </section>
 
       {/* Documentary */}
-      <section className="bg-[#131313] px-4 md:px-[120px] py-16">
+      <section className="bg-[#131313] px-3 md:px-[120px] py-16">
         <h2 className="text-[40px] md:text-[60px] font-[family-name:var(--font-heading)] tracking-[4.8px] mb-2">
           DOCUMENTARY
         </h2>
-        <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-10" />
-        <div className="flex flex-col gap-[24px]">
+        <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-6 md:mb-10" />
+        <div className="flex flex-col gap-[16px] md:gap-[24px]">
           {documentaries.map((doc) => (
             <div
               key={doc.title}
-              className={`flex flex-col md:flex-row gap-[24px] items-start ${
+              className={`flex flex-col md:flex-row gap-[16px] md:gap-[24px] items-start ${
                 doc.reversed ? "md:flex-row-reverse" : ""
               }`}
             >
@@ -231,7 +231,7 @@ export default function MoviesPage() {
                 <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px] mb-2">
                   {doc.title}
                 </h3>
-                <div className="w-[80px] h-[4px] bg-white mb-4" />
+                <div className="w-[80px] h-[4px] bg-white mb-3 md:mb-4" />
                 <p className="text-base font-[family-name:var(--font-body)] tracking-[1.28px]">
                   {doc.description}
                 </p>

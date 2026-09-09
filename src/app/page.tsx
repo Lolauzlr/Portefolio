@@ -13,7 +13,7 @@ const storyboardCards = [
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mb-10">
+    <div className="mb-6 md:mb-10">
       <h2 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[60px] tracking-[4.8px] uppercase text-white">
         {children}
       </h2>
@@ -69,16 +69,16 @@ export default function Home() {
       <HomeMoviesSection />
 
       {/* Illustrations */}
-      <section className="px-4 md:px-[120px]">
+      <section className="px-3 md:px-[120px]">
         <SectionTitle>ILLUSTRATIONS</SectionTitle>
-        <div className="flex flex-col gap-[40px]">
+        <div className="flex flex-col gap-[24px] md:gap-[40px]">
           {/* Featured illustration */}
-          <div className="flex flex-col md:flex-row gap-10">
+          <div className="flex flex-col md:flex-row gap-6 md:gap-10">
             <div className="relative md:w-[587px] h-[500px] md:h-[662px] shrink-0">
               <img src={asset("/images/illustrations/illus-35.webp")} alt="Illustration" className="absolute inset-0 w-full h-full object-cover" />
             </div>
             <div className="flex flex-col justify-between flex-1">
-              <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-4 md:gap-6">
                 <div>
                   <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">MY JOURNEY IN ILLUSTRATION</h3>
                   <div className="w-[80px] h-[4px] bg-white mt-1" />
@@ -89,7 +89,7 @@ export default function Home() {
                   I don&apos;t have one fixed way of working. I choose the medium depending on what I want to express, whether it&apos;s a particular mood, texture, character or atmosphere. I enjoy moving from one technique to another, experimenting and sometimes combining them. I believe the visual style should grow naturally from the story.
                 </p>
               </div>
-              <img src={asset("/images/illustrations/illus-1.webp")} alt="" className="w-full h-[322px] object-cover mt-6" />
+              <img src={asset("/images/illustrations/illus-1.webp")} alt="" className="w-full h-[322px] object-cover mt-4 md:mt-6" />
             </div>
           </div>
 
@@ -98,11 +98,11 @@ export default function Home() {
       </section>
 
       {/* Storyboards */}
-      <section className="py-[60px] bg-[#131313] px-4 md:px-[120px]">
+      <section className="py-[60px] bg-[#131313] px-3 md:px-[120px]">
         <SectionTitle>STORYBOARDS</SectionTitle>
-        <div className="flex flex-col gap-[24px]">
+        <div className="flex flex-col gap-[16px] md:gap-[24px]">
           {storyboardCards.map((c) => (
-            <div key={c.title} className="flex flex-col md:flex-row gap-4">
+            <div key={c.title} className="flex flex-col md:flex-row gap-3 md:gap-4">
               <img
                 src={asset(c.img)}
                 alt={c.title}
@@ -123,11 +123,11 @@ export default function Home() {
       </section>
 
       {/* About Me */}
-      <section className="px-4 md:px-[120px]">
-        <div className="flex flex-col md:flex-row gap-10 items-center">
+      <section className="px-3 md:px-[120px]">
+        <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-center">
           <div className="flex-1 flex flex-col justify-between">
-            <div className="flex flex-col gap-10">
-              <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-6 md:gap-10">
+              <div className="flex flex-col gap-4 md:gap-6">
                 <div>
                   <div className="font-[family-name:var(--font-heading)] text-white">
                     <p className="text-[48px] md:text-[80px] tracking-[6.4px] leading-none">HELLO,</p>

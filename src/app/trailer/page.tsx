@@ -501,7 +501,7 @@ export default function TrailerPage() {
           </svg>
 
           {/* Content */}
-          <div className="relative z-10 p-4 flex flex-col gap-3">
+          <div className="relative z-10 p-3 md:p-4 flex flex-col gap-3">
             <div className="flex items-start justify-between">
               <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-white uppercase">
                 Reveal Trailer
@@ -533,16 +533,16 @@ export default function TrailerPage() {
       </section>
 
       {/* Les Plus Récents */}
-      <section className="px-4 md:px-[120px] py-[60px]">
-        <div className="mb-10">
+      <section className="px-3 md:px-[120px] py-[60px]">
+        <div className="mb-6 md:mb-10">
           <h2 className="text-[40px] font-[family-name:var(--font-heading)] tracking-[3.2px] mb-1">
             LES PLUS RÉCENTS
           </h2>
           <div className="w-[80px] h-[4px] bg-[#ddff6e]" />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           {recentTrailers.map((card) => (
-            <div key={card.title} className="flex flex-col gap-4">
+            <div key={card.title} className="flex flex-col gap-3 md:gap-4">
               <div
                 className="relative w-full aspect-video cursor-pointer overflow-hidden bg-black"
                 onMouseEnter={() => setHoveredRecent(card.videoId)}
@@ -593,14 +593,14 @@ export default function TrailerPage() {
       </section>
 
       {/* À Regarder */}
-      <section className="bg-[#131313] px-4 md:px-[120px] py-[60px]">
-        <div className="mb-10">
+      <section className="bg-[#131313] px-3 md:px-[120px] py-[60px]">
+        <div className="mb-6 md:mb-10">
           <h2 className="text-[40px] font-[family-name:var(--font-heading)] tracking-[3.2px] mb-1">
             À REGARDER
           </h2>
           <div className="w-[80px] h-[4px] bg-[#ddff6e]" />
         </div>
-        <div className="flex flex-col gap-[24px]">
+        <div className="flex flex-col gap-[16px] md:gap-[24px]">
           {watchCards.map((card) => {
             const s = watchSizes[card.videoId] || { w: 1200, h: 500 };
             return (
@@ -663,8 +663,8 @@ export default function TrailerPage() {
                       />
                     )}
                   </div>
-                  <div className="flex flex-col gap-6 pt-6 pl-6 justify-between flex-1">
-                    <div className="flex flex-col gap-6">
+                  <div className="flex flex-col gap-4 md:gap-6 pt-4 md:pt-6 pl-4 md:pl-6 justify-between flex-1">
+                    <div className="flex flex-col gap-4 md:gap-6">
                       <div>
                         <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px]">
                           {card.title}
@@ -783,7 +783,7 @@ export default function TrailerPage() {
 
               {/* Thumbnails strip */}
               {screenshotsData.screenshots.length > 1 && (
-                <div className="bg-[#0d0d0d] px-4 py-3 overflow-x-auto">
+                <div className="bg-[#0d0d0d] px-3 md:px-4 py-3 overflow-x-auto">
                   <div className="flex gap-2">
                     {screenshotsData.screenshots.map((shot, i) => (
                       <button
@@ -816,7 +816,7 @@ export default function TrailerPage() {
                 ✕
               </button>
 
-              <div className="flex flex-col mt-6">
+              <div className="flex flex-col mt-4 md:mt-6">
                 {/* Role kicker */}
                 {screenshotsData.role && (
                   <p className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.28px] text-[#8F8F8F] uppercase">
@@ -838,14 +838,14 @@ export default function TrailerPage() {
                 <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-2" />
               </div>
 
-              <div className="flex flex-col mt-10">
+              <div className="flex flex-col mt-6 md:mt-10">
                 {screenshotsData.credits ? (
                   <>
                     <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
                       Responsibilities : <span className="font-semibold">{screenshotsData.responsibilities}</span>
                     </p>
-                    <div className="w-full h-px bg-white/20 mt-6" />
-                    <div className="flex flex-col gap-3 mt-6">
+                    <div className="w-full h-px bg-white/20 mt-4 md:mt-6" />
+                    <div className="flex flex-col gap-3 mt-4 md:mt-6">
                       {screenshotsData.credits.map((c) => (
                         <p key={c.label} className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
                           {c.label} : <span className="font-semibold">{c.value}</span>
