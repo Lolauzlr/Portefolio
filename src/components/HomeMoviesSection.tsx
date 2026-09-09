@@ -143,7 +143,7 @@ export default function HomeMoviesSection() {
   }, [videoModal]);
 
   return (
-    <section className="py-[60px] bg-[#131313] px-3 md:px-[120px]">
+    <section className="py-6 md:py-[60px] bg-[#131313] px-3 md:px-[120px]">
       <div className="mb-6 md:mb-10">
         <h2 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[60px] tracking-[4.8px] uppercase text-white">
           LATEST MOVIES
