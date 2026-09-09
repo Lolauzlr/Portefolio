@@ -47,7 +47,7 @@ function ToutVoirLink({ href }: { href: string }) {
 
 export default function Home() {
   return (
-    <div className="flex flex-col gap-[60px] bg-[#15161b] text-white">
+    <div className="flex flex-col gap-6 md:gap-[60px] bg-[#15161b] text-white">
       {/* Hero */}
       <section className="relative h-[500px] md:h-[810px] bg-[#060000] overflow-hidden">
         <img
