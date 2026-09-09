@@ -3,20 +3,7 @@
 import Link from "next/link";
 import { asset } from "@/lib/asset";
 import HomeMoviesSection from "@/components/HomeMoviesSection";
-
-const trailerProjects = [
-  { videoId: "ZPQFsx9XXoM", title: "RESONANCE : A PLAGUE TALE LEGACY • GAMEPLAY", desc: "2026 • In-game video capture • Video editing • Sound editing" },
-  { videoId: "ewZufHtEl68", title: "YERBA BUENA • GAMEPLAY", desc: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing" },
-  { videoId: "cZgim-KYkZQ", title: "YERBA BUENA • REVEAL TRAILER", desc: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing" },
-  { videoId: "QwxFR1g7Uy4", title: "JOHN CARPENTER'S TOXIC COMMANDO • GAMEPLAY OVERVIEW TRAILER", desc: "2026 • In-game video capture • Video editing • Sound editing" },
-  { videoId: "CxtlJ06u_lc", title: "SPACE MARINE 2 • YEAR 2 TRAILER", desc: "2025 • In-game video capture • Video editing • Sound editing" },
-];
-
-const illustrationCards = [
-  { img: "/images/illustrations/illus-36.webp", title: "ARCANE" },
-  { img: "/images/illustrations/illus-34.webp", title: "MONSTER IN A BOTTLE" },
-  { img: "/images/illustrations/illus-32.webp", title: "MAZOU BD" },
-];
+import HomeTrailerSection from "@/components/HomeTrailerSection";
 
 const storyboardCards = [
   { img: "/images/storyboard_scene.png", title: "SHORTFILM", desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula." },
@@ -38,8 +25,8 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 function CaretCircleRight() {
   return (
     <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="20" cy="20" r="19" stroke="#0FD1EA" strokeWidth="2" />
-      <path d="M16 12l8 8-8 8" stroke="#0FD1EA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="20" cy="20" r="19" stroke="currentColor" strokeWidth="2" />
+      <path d="M16 12l8 8-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
@@ -49,7 +36,7 @@ function ToutVoirLink({ href }: { href: string }) {
     <div className="flex justify-end mt-8">
       <Link
         href={href}
-        className="font-[family-name:var(--font-heading)] text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:opacity-80 tracking-[2.56px] uppercase transition-opacity"
+        className="font-[family-name:var(--font-heading)] text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] tracking-[2.56px] uppercase transition-colors"
       >
         TOUT VOIR
         <CaretCircleRight />
@@ -73,64 +60,16 @@ export default function Home() {
           alt="A Plague Tale: Requiem"
           className="absolute inset-0 w-full h-full object-cover md:hidden"
         />
-        <div className="absolute left-4 md:left-[120px] bottom-8 md:top-[527px] md:backdrop-blur-[5px] py-5 max-w-[792px]">
-          <div className="px-4">
-            <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-white uppercase">
-              Trailer
-            </p>
-            <h1 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[80px] leading-none tracking-[6.4px] uppercase">
-              A PLAGUE TALE : REQUIEM
-            </h1>
-          </div>
-          <div className="flex flex-wrap gap-3 mt-4 px-4">
-            {["2019", "Jeu vidéo", "Action aventure"].map((tag) => (
-              <span
-                key={tag}
-                className="font-[family-name:var(--font-body)] text-[20px] tracking-[1.6px] border border-white rounded-full px-3 py-1"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
       </section>
 
       {/* Trailer */}
-      <section className="py-[60px]">
-        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
-          <SectionTitle>TRAILER</SectionTitle>
-        </div>
-        <div className="max-w-[1440px] mx-auto flex gap-6 overflow-x-auto px-4 md:px-[120px] pb-4 scrollbar-hide">
-          {trailerProjects.map((p) => (
-            <div key={p.title} className="flex-shrink-0 w-[300px] md:w-[382px]">
-              <img
-                src={`https://img.youtube.com/vi/${p.videoId}/maxresdefault.jpg`}
-                alt={p.title}
-                className="w-full h-[170px] md:h-[215px] object-cover"
-                onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${p.videoId}/hqdefault.jpg`; }}
-              />
-              <div className="flex flex-col gap-3 mt-4">
-                <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">
-                  {p.title}
-                </h3>
-                <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
-                  {p.desc}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
-          <ToutVoirLink href="/trailer" />
-        </div>
-      </section>
+      <HomeTrailerSection />
 
       {/* Movies */}
       <HomeMoviesSection />
 
       {/* Illustrations */}
-      <section className="py-[60px]">
-        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
+      <section className="px-4 md:px-[120px]">
         <SectionTitle>ILLUSTRATIONS</SectionTitle>
         <div className="flex flex-col gap-[40px]">
           {/* Featured illustration */}
@@ -141,51 +80,25 @@ export default function Home() {
             <div className="flex flex-col justify-between flex-1">
               <div className="flex flex-col gap-6">
                 <div>
-                  <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">UNE IDÉE DE TITRE</h3>
+                  <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">MY JOURNEY IN ILLUSTRATION</h3>
                   <div className="w-[80px] h-[4px] bg-white mt-1" />
                 </div>
                 <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque.
+                  I like to keep my approach to illustration open and varied. I work both traditionally and digitally, using Photoshop, digital painting, watercolor, ink, Chinese ink, pen, and whatever technique feels right for the project.
+                  <br /><br />
+                  I don&apos;t have one fixed way of working. I choose the medium depending on what I want to express, whether it&apos;s a particular mood, texture, character or atmosphere. I enjoy moving from one technique to another, experimenting and sometimes combining them. I believe the visual style should grow naturally from the story.
                 </p>
               </div>
               <img src={asset("/images/illustrations/illus-1.webp")} alt="" className="w-full h-[322px] object-cover mt-6" />
             </div>
           </div>
 
-          {/* Sub-section title */}
-          <div>
-            <div className="mb-10">
-              <h3 className="font-[family-name:var(--font-heading)] text-[32px] tracking-[2.56px]">UNE IDÉE DE TITRE</h3>
-              <div className="w-[80px] h-[4px] bg-white mt-1" />
-            </div>
-            <div className="flex flex-col gap-6 md:flex-row md:overflow-x-auto pb-4">
-              {illustrationCards.map((c) => (
-                <div key={c.title} className="w-full md:flex-shrink-0 md:w-[382px]">
-                  <img
-                    src={asset(c.img)}
-                    alt={c.title}
-                    className="w-full h-[300px] md:h-[383px] object-cover"
-                  />
-                  <div className="flex flex-col gap-3 mt-4">
-                    <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">
-                      {c.title}
-                    </h3>
-                    <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula.
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <ToutVoirLink href="/illustrations" />
-          </div>
-        </div>
+          <ToutVoirLink href="/illustrations" />
         </div>
       </section>
 
       {/* Storyboards */}
-      <section className="py-[60px] bg-[#131313]">
-        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
+      <section className="py-[60px] bg-[#131313] px-4 md:px-[120px]">
         <SectionTitle>STORYBOARDS</SectionTitle>
         <div className="flex flex-col gap-[24px]">
           {storyboardCards.map((c) => (
@@ -207,34 +120,35 @@ export default function Home() {
           ))}
         </div>
         <ToutVoirLink href="/storyboard" />
-        </div>
       </section>
 
       {/* About Me */}
-      <section className="py-[80px]">
-        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
-        <div className="-mb-10">
-          <SectionTitle>ABOUT ME</SectionTitle>
-        </div>
+      <section className="px-4 md:px-[120px]">
         <div className="flex flex-col md:flex-row gap-10 items-center">
           <div className="flex-1 flex flex-col justify-between">
             <div className="flex flex-col gap-10">
-              <div>
-                <div className="font-[family-name:var(--font-heading)] text-white">
-                  <p className="text-[48px] md:text-[80px] tracking-[6.4px] leading-none">HELLO,</p>
-                  <p className="text-[32px] md:text-[52px] tracking-[4.16px] leading-none">I&apos;M MARIE CHALANDRE 👋</p>
+              <div className="flex flex-col gap-6">
+                <div>
+                  <div className="font-[family-name:var(--font-heading)] text-white">
+                    <p className="text-[48px] md:text-[80px] tracking-[6.4px] leading-none">HELLO,</p>
+                    <p className="text-[32px] md:text-[52px] tracking-[4.16px] leading-none">I&apos;M MARIE CHALANDRE 👋</p>
+                  </div>
+                  <div className="w-[80px] h-[4px] bg-white mt-2" />
                 </div>
-                <div className="w-[80px] h-[4px] bg-white mt-2" />
+                <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-[#ddff6e]">
+                  CINEMATIC ARTIST &bull; CONCEPT ARTIST &bull; STORYBOARDER
+                </p>
               </div>
-              <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-[#ddff6e]">
-                CINEMATIC ARTIST &bull; CONCEPT ARTIST &bull; STORYBOARDER
-              </p>
               <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white leading-relaxed">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque.
+                I&apos;m a Cinematic Artist with a background in animation and a strong interest in filmmaking and visual direction. Outside of work, I&apos;m drawn to experiences that keep me moving and curious. I&apos;ve travelled extensively, practiced martial arts for many years, and music has always been part of my life.
+                <br /><br />
+                All of this feeds into the way I approach visual work. I&apos;m interested in movement, rhythm, composition and the way a scene can communicate.
+                <br /><br />
+                I&apos;m always experimenting, learning and looking for new ways to approach a project.
               </p>
             </div>
-            <Link href="/cv" className="flex items-center gap-3 mt-8 hover:opacity-80 transition-opacity">
-              <span className="font-[family-name:var(--font-heading)] text-[32px] text-[#0FD1EA] tracking-[2.56px]">VOIR MON CV</span>
+            <Link href="/cv" className="flex items-center gap-3 mt-8 text-[#0FD1EA] hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors">
+              <span className="font-[family-name:var(--font-heading)] text-[32px] tracking-[2.56px]">VOIR MON CV</span>
               <CaretCircleRight />
             </Link>
           </div>
@@ -245,7 +159,6 @@ export default function Home() {
               className="w-[350px] md:w-[599px] h-auto object-cover"
             />
           </div>
-        </div>
         </div>
       </section>
     </div>

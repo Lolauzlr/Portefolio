@@ -11,6 +11,7 @@ const navLinks = [
   { label: "MOVIES", href: "/movies" },
   { label: "ILLUSTRATIONS", href: "/illustrations" },
   { label: "STORYBOARD", href: "/storyboard" },
+  { label: "CV", href: "/cv" },
 ];
 
 export default function Navbar() {
@@ -51,10 +52,10 @@ export default function Navbar() {
 
         {/* Contact button - absolutely positioned right */}
         <Link
-          href="/contact"
-          className="hidden lg:block absolute right-6 md:right-[120px] font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-[#0fd1ea] border-2 border-[#0fd1ea] rounded-[40px] bg-black/40 backdrop-blur-[5px] px-[40px] py-[20px] hover:bg-[#0fd1ea]/10 transition-colors"
+          href="mailto:marie.chalandre@hotmail.fr"
+          className="hidden lg:block absolute right-6 md:right-[120px] font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-[#0fd1ea] border-2 border-[#0fd1ea] rounded-[40px] bg-black/40 backdrop-blur-[5px] px-[40px] py-[20px] hover:text-[#7FECFB] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] focus:text-[#7FECFB] focus:border-[#7FECFB] focus:bg-[rgba(15,209,234,0.1)] active:text-[#0897A9] active:border-[#0897A9] active:bg-[rgba(8,151,169,0.1)] transition-colors"
         >
-          ME CONTACTER
+          CONTACT ME
         </Link>
 
         {/* Hamburger */}
@@ -88,11 +89,11 @@ export default function Navbar() {
             );
           })}
           <Link
-            href="/contact"
+            href="mailto:marie.chalandre@hotmail.fr"
             onClick={() => setMenuOpen(false)}
-            className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-[#0fd1ea] border-2 border-[#0fd1ea] rounded-[40px] px-[40px] py-[20px] mt-4"
+            className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-[#0fd1ea] border-2 border-[#0fd1ea] rounded-[40px] px-[40px] py-[20px] mt-4 hover:text-[#7FECFB] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] focus:text-[#7FECFB] focus:border-[#7FECFB] focus:bg-[rgba(15,209,234,0.1)] active:text-[#0897A9] active:border-[#0897A9] active:bg-[rgba(8,151,169,0.1)] transition-colors"
           >
-            ME CONTACTER
+            CONTACT ME
           </Link>
         </div>
       )}

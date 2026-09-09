@@ -90,8 +90,7 @@ export default function StoryboardPage() {
   return (
     <div className="pt-[95px] bg-[#15161b] text-white min-h-screen">
       {/* Le Plus Récent */}
-      <section className="py-16">
-        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
+      <section className="py-16 px-4 md:px-[120px]">
         <h2 className="text-[40px] md:text-[60px] font-[family-name:var(--font-heading)] tracking-[4.8px] mb-2">
           LE PLUS RÉCENT
         </h2>
@@ -108,12 +107,10 @@ export default function StoryboardPage() {
         <p className="text-base font-[family-name:var(--font-body)] tracking-[1.28px] max-w-3xl">
           {loremIpsum}
         </p>
-        </div>
       </section>
 
       {/* Tous Mes Travaux */}
-      <section className="bg-[#131313] py-16">
-        <div className="max-w-[1440px] mx-auto px-4 md:px-[120px]">
+      <section className="bg-[#131313] py-16 px-4 md:px-[120px]">
         <h2 className="text-[40px] md:text-[60px] font-[family-name:var(--font-heading)] tracking-[4.8px] mb-2">
           TOUS MES TRAVAUX
         </h2>
@@ -160,7 +157,6 @@ export default function StoryboardPage() {
               </div>
             </div>
           ))}
-        </div>
         </div>
       </section>
 
