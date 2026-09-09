@@ -123,7 +123,7 @@ export default function Home() {
       </section>
 
       {/* About Me */}
-      <section className="px-3 md:px-[120px]">
+      <section className="px-3 md:px-[120px] pb-6 md:pb-0">
         <div className="flex flex-col md:flex-row gap-6 md:gap-10 items-center">
           <div className="flex-1 flex flex-col justify-between">
             <div className="flex flex-col gap-6 md:gap-10">
