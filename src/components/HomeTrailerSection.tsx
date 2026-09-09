@@ -207,7 +207,7 @@ export default function HomeTrailerSection() {
                   )}
                   className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-start hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer mt-auto"
                 >
-                  VOIR LES SCREENSHOTS
+                  VIEW SCREENSHOTS
                 </button>
               </div>
             </div>
@@ -222,7 +222,7 @@ export default function HomeTrailerSection() {
           href="/trailer"
           className="font-[family-name:var(--font-heading)] text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] tracking-[2.56px] uppercase transition-colors"
         >
-          TOUT VOIR
+          VIEW ALL
           <CaretCircleRight />
         </Link>
       </div>

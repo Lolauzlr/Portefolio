@@ -198,7 +198,7 @@ export default function HomeMoviesSection() {
           href="/movies"
           className="font-[family-name:var(--font-heading)] text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] tracking-[2.56px] uppercase transition-colors"
         >
-          TOUT VOIR
+          VIEW ALL
           <CaretCircleRight />
         </Link>
       </div>

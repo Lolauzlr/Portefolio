@@ -511,7 +511,7 @@ export default function TrailerPage() {
                 onClick={(e) => { e.stopPropagation(); openScreenshots(heroScreenshots.category, heroScreenshots.title, heroScreenshots.screenshots, { role: heroScreenshots.role, responsibilities: heroScreenshots.responsibilities, credits: heroScreenshots.credits }); }}
                 className="font-[family-name:var(--font-heading)] text-[20px] md:text-[24px] tracking-[1.92px] text-[#0fd1ea] uppercase shrink-0 hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer whitespace-nowrap"
               >
-                VOIR LES SCREENSHOTS
+                VIEW SCREENSHOTS
               </button>
             </div>
             <h1 className="font-[family-name:var(--font-heading)] text-[36px] md:text-[72px] leading-none tracking-[4px] md:tracking-[6.4px] uppercase w-full">
@@ -584,7 +584,7 @@ export default function TrailerPage() {
                   )}
                   className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-start hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer"
                 >
-                  VOIR LES SCREENSHOTS
+                  VIEW SCREENSHOTS
                 </button>
               </div>
             </div>
@@ -686,7 +686,7 @@ export default function TrailerPage() {
                       )}
                       className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-end hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer"
                     >
-                      VOIR LES SCREENSHOTS
+                      VIEW SCREENSHOTS
                     </button>
                   </div>
                 </div>
