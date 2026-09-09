@@ -90,36 +90,36 @@ export default function StoryboardPage() {
   return (
     <div className="pt-[95px] bg-[#15161b] text-white min-h-screen">
       {/* Le Plus Récent */}
-      <section className="py-16 px-4 md:px-[120px]">
+      <section className="py-16 px-3 md:px-[120px]">
         <h2 className="text-[40px] md:text-[60px] font-[family-name:var(--font-heading)] tracking-[4.8px] mb-2">
           LE PLUS RÉCENT
         </h2>
-        <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-10" />
+        <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-6 md:mb-10" />
         <img
           src={asset("/images/storyboard_recent.png")}
           alt="Musique Clip"
           className="w-full h-[675px] object-cover"
         />
-        <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px] mt-6 mb-2">
+        <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px] mt-4 md:mt-6 mb-2">
           MUSIQUE CLIP
         </h3>
-        <div className="w-[80px] h-[4px] bg-white mb-4" />
+        <div className="w-[80px] h-[4px] bg-white mb-3 md:mb-4" />
         <p className="text-base font-[family-name:var(--font-body)] tracking-[1.28px] max-w-3xl">
           {loremIpsum}
         </p>
       </section>
 
       {/* Tous Mes Travaux */}
-      <section className="bg-[#131313] py-16 px-4 md:px-[120px]">
+      <section className="bg-[#131313] py-16 px-3 md:px-[120px]">
         <h2 className="text-[40px] md:text-[60px] font-[family-name:var(--font-heading)] tracking-[4.8px] mb-2">
           TOUS MES TRAVAUX
         </h2>
-        <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-10" />
-        <div className="flex flex-col gap-[24px]">
+        <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-6 md:mb-10" />
+        <div className="flex flex-col gap-[16px] md:gap-[24px]">
           {projects.map((project) => (
             <div
               key={project.title}
-              className={`flex flex-col md:flex-row gap-[24px] items-start ${
+              className={`flex flex-col md:flex-row gap-[16px] md:gap-[24px] items-start ${
                 project.reversed ? "md:flex-row-reverse" : ""
               }`}
             >
@@ -143,7 +143,7 @@ export default function StoryboardPage() {
                 <h3 className="text-[24px] font-[family-name:var(--font-heading)] tracking-[1.92px] mb-2">
                   {project.title}
                 </h3>
-                <div className="w-[80px] h-[4px] bg-white mb-4" />
+                <div className="w-[80px] h-[4px] bg-white mb-3 md:mb-4" />
                 <p className="text-base font-[family-name:var(--font-body)] tracking-[1.28px]">
                   {loremIpsum}
                 </p>
@@ -151,7 +151,7 @@ export default function StoryboardPage() {
                   <img
                     src={asset(project.src2 as string)}
                     alt={`${project.title} additional`}
-                    className="w-full h-auto object-cover mt-6"
+                    className="w-full h-auto object-cover mt-4 md:mt-6"
                   />
                 )}
               </div>

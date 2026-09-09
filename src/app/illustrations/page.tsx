@@ -18,7 +18,7 @@ function SubTitle({ children }: { children: React.ReactNode }) {
 
 function TitleBlock() {
   return (
-    <div className="flex flex-col gap-[24px]">
+    <div className="flex flex-col gap-[16px] md:gap-[24px]">
       <SubTitle>UNE IDÉE DE TITRE</SubTitle>
       <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
         {loremLong}
@@ -34,9 +34,9 @@ export default function IllustrationsPage() {
       {/* ── LES PLUS RÉCENTES ── */}
       <section className="py-[60px]">
 
-        <div className="flex gap-[24px] overflow-x-auto pb-4 items-start scrollbar-hide mx-auto w-fit px-4 md:px-[120px]">
+        <div className="flex gap-[16px] md:gap-[24px] overflow-x-auto pb-3 md:pb-4 items-start scrollbar-hide mx-auto w-fit px-3 md:px-[120px]">
           {/* ARCANE — title on top, image below */}
-          <div className="flex-shrink-0 flex flex-col gap-[16px] w-[303px]">
+          <div className="flex-shrink-0 flex flex-col gap-[12px] md:gap-[16px] w-[303px]">
             <div className="flex flex-col gap-[12px]">
               <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">ARCANE</p>
               <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px]">
@@ -47,7 +47,7 @@ export default function IllustrationsPage() {
           </div>
 
           {/* MONSTER IN A BOTTLE — image on top, title below */}
-          <div className="flex-shrink-0 flex flex-col gap-[16px] w-[382px]">
+          <div className="flex-shrink-0 flex flex-col gap-[12px] md:gap-[16px] w-[382px]">
             <img src={asset(i(34))} alt="Drunked Monster" className="w-full h-[679px] object-cover" />
             <div className="flex flex-col gap-[12px]">
               <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">DRUNKED MONSTER</p>
@@ -58,7 +58,7 @@ export default function IllustrationsPage() {
           </div>
 
           {/* MAZOU BD — title on top, image below */}
-          <div className="flex-shrink-0 flex flex-col gap-[16px] w-[303px]">
+          <div className="flex-shrink-0 flex flex-col gap-[12px] md:gap-[16px] w-[303px]">
             <div className="flex flex-col gap-[12px]">
               <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">MAZOU BD</p>
               <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px]">
@@ -73,7 +73,7 @@ export default function IllustrationsPage() {
       </section>
 
       {/* ── VRIC À VRAC ── */}
-      <section className="bg-[#131313] py-[60px] px-4 md:px-[120px]">
+      <section className="bg-[#131313] py-[60px] px-3 md:px-[120px]">
         <div className="mb-[60px]">
           <h2 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[60px] tracking-[4.8px] uppercase text-white">
             VRIC À VRAC
@@ -81,10 +81,10 @@ export default function IllustrationsPage() {
           <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-[4px]" />
         </div>
 
-        <div className="flex flex-col gap-[40px]">
+        <div className="flex flex-col gap-[24px] md:gap-[40px]">
 
           {/* Row 1: big left image + right col (title/text top, image bottom) */}
-          <div className="flex flex-col md:flex-row gap-[40px] items-start">
+          <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] items-start">
             <div className="w-full md:w-[44%] shrink-0">
               <img src={asset(i(35))} alt="" className="w-full h-[662px] object-cover" />
             </div>
@@ -95,8 +95,8 @@ export default function IllustrationsPage() {
           </div>
 
           {/* Row 2: left col stacked (aspect + 322px) + right tall */}
-          <div className="flex flex-col md:flex-row gap-[40px]">
-            <div className="w-full md:w-[44%] shrink-0 flex flex-col gap-[40px]">
+          <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px]">
+            <div className="w-full md:w-[44%] shrink-0 flex flex-col gap-[24px] md:gap-[40px]">
               <img src={asset(i(16))} alt="" className="w-full aspect-[1548/1473] object-cover" />
               <img src={asset(i(26))} alt="" className="w-full h-[322px] object-cover" />
             </div>
@@ -106,7 +106,7 @@ export default function IllustrationsPage() {
           </div>
 
           {/* Row 3: left col (title/text top, 322px image bottom) + right image */}
-          <div className="flex flex-col md:flex-row gap-[40px] items-start">
+          <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] items-start">
             <div className="flex-1 flex flex-col gap-6 md:gap-0 md:justify-between md:self-stretch">
               <TitleBlock />
               <img src={asset(i(6))} alt="" className="w-full h-[322px] object-cover" />
@@ -122,8 +122,8 @@ export default function IllustrationsPage() {
           </div>
 
           {/* Row 5: left col stacked + right tall */}
-          <div className="flex flex-col md:flex-row gap-[40px] md:items-stretch">
-            <div className="w-full md:w-[44%] shrink-0 flex flex-col gap-[40px] md:self-stretch">
+          <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] md:items-stretch">
+            <div className="w-full md:w-[44%] shrink-0 flex flex-col gap-[24px] md:gap-[40px] md:self-stretch">
               <img src={asset(i(23))} alt="" className="w-full flex-1 object-cover" />
               <img src={asset(i(13))} alt="" className="w-full h-[322px] object-cover" />
             </div>
@@ -133,7 +133,7 @@ export default function IllustrationsPage() {
           </div>
 
           {/* Row 6: left tall image (930px) + right col (title/text top, aspect image bottom) */}
-          <div className="flex flex-col md:flex-row gap-[40px] items-start">
+          <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] items-start">
             <div className="w-full md:w-[56%] shrink-0">
               <img src={asset(i(27))} alt="" className="w-full h-[930px] object-cover" />
             </div>
@@ -144,8 +144,8 @@ export default function IllustrationsPage() {
           </div>
 
           {/* Row 7: left col (2×322px) + right tall */}
-          <div className="flex flex-col md:flex-row gap-[40px]">
-            <div className="w-full md:w-[44%] shrink-0 flex flex-col gap-[40px] md:justify-center">
+          <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px]">
+            <div className="w-full md:w-[44%] shrink-0 flex flex-col gap-[24px] md:gap-[40px] md:justify-center">
               <img src={asset(i(4))} alt="" className="w-full h-[322px] object-cover" />
               <img src={asset(i(24))} alt="" className="w-full h-[322px] object-cover" />
             </div>
@@ -155,14 +155,14 @@ export default function IllustrationsPage() {
           </div>
 
           {/* Row 8: 3 equal columns */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-[24px]">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-[16px] md:gap-[24px]">
             <img src={asset(i(18))} alt="" className="w-full h-[682px] object-cover" />
             <img src={asset(i(8))} alt="" className="w-full h-[682px] object-cover" />
             <img src={asset(i(3))} alt="" className="w-full h-[682px] object-cover" />
           </div>
 
           {/* Row 9: left col (title/text top, image bottom) + right single image */}
-          <div className="flex flex-col md:flex-row gap-[40px] items-start">
+          <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] items-start">
             <div className="flex-1 flex flex-col gap-6 md:gap-0 md:justify-between md:self-stretch">
               <TitleBlock />
               <img src={asset(i(5))} alt="" className="w-full h-[350px] object-cover" />
@@ -173,7 +173,7 @@ export default function IllustrationsPage() {
           </div>
 
           {/* Row 10: left col (3×264px) + right tall */}
-          <div className="flex flex-col md:flex-row gap-[40px]">
+          <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px]">
             <div className="w-full md:w-[44%] shrink-0 flex flex-col gap-[12px]">
               <img src={asset(i(22))} alt="" className="w-full h-[264px] object-cover" />
               <img src={asset(i(4))} alt="" className="w-full h-[264px] object-cover" />
@@ -185,13 +185,13 @@ export default function IllustrationsPage() {
           </div>
 
           {/* Row 11: 2 equal columns */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-[40px]">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] md:gap-[40px]">
             <img src={asset(i(19))} alt="" className="w-full h-[764px] object-cover" />
             <img src={asset(i(17))} alt="" className="w-full h-[764px] object-cover" />
           </div>
 
           {/* Row 12: left image + right col (title/text top, image bottom) */}
-          <div className="flex flex-col md:flex-row gap-[40px] items-start">
+          <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] items-start">
             <div className="w-full md:w-[44%] shrink-0 md:self-stretch">
               <img src={asset(i(28))} alt="" className="w-full h-[400px] md:h-full object-cover" />
             </div>
@@ -202,13 +202,13 @@ export default function IllustrationsPage() {
           </div>
 
           {/* Row 13: 2 equal columns */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-[40px]">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] md:gap-[40px]">
             <img src={asset(i(9))} alt="" className="w-full h-[1031px] object-cover" />
             <img src={asset(i(20))} alt="" className="w-full h-[1031px] object-cover" />
           </div>
 
           {/* Row 14: left square image + right col (title/text top, image bottom) */}
-          <div className="flex flex-col md:flex-row gap-[40px] items-start">
+          <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] items-start">
             <div className="w-full md:w-[44%] shrink-0">
               <img src={asset(i(29))} alt="" className="w-full h-[572px] object-cover" />
             </div>
@@ -219,7 +219,7 @@ export default function IllustrationsPage() {
           </div>
 
           {/* Row 15: 2 equal columns */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-[40px]">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] md:gap-[40px]">
             <img src={asset(i(12))} alt="" className="w-full h-[960px] object-cover" />
             <img src={asset(i(31))} alt="" className="w-full h-[960px] object-contain" />
           </div>

@@ -117,12 +117,12 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 
 function TimelineRow({ item, isLast }: { item: ExperienceItem; isLast?: boolean }) {
   return (
-    <div className="flex gap-[24px] md:gap-[40px] items-start w-full">
+    <div className="flex gap-[16px] md:gap-[40px] items-start w-full">
       <div className="flex flex-col gap-[4px] items-center self-stretch shrink-0">
         <span className="block size-[16px] rounded-full bg-[#ddff6e] shrink-0" />
         {!isLast && <span className="w-[2px] flex-1 bg-[#8f8f8f]" />}
       </div>
-      <div className="flex flex-col gap-[4px] items-start flex-1 min-w-0 pb-[24px]">
+      <div className="flex flex-col gap-[4px] items-start flex-1 min-w-0 pb-[16px] md:pb-[24px]">
         <p className="font-[family-name:var(--font-body)] text-[16px] md:text-[20px] text-[#dadada] tracking-[1.6px]">
           {item.dates}
         </p>
@@ -153,7 +153,7 @@ const HOBBY_ICONS = {
 
 function SocialIcons() {
   return (
-    <div className="flex items-center gap-[16px]">
+    <div className="flex items-center gap-[12px] md:gap-[16px]">
       {socialLinks.map(({ Icon, alt, href }) => (
         <a
           key={alt}
@@ -194,11 +194,11 @@ export default function CVPage() {
   }, []);
 
   return (
-    <div className="bg-[#15161b] text-white flex flex-col gap-[60px] pt-[140px] md:pt-[175px] pb-[80px] px-4 md:px-[120px]">
+    <div className="bg-[#15161b] text-white flex flex-col gap-[60px] pt-[140px] md:pt-[175px] pb-[80px] px-3 md:px-[120px]">
       {/* Hero */}
-      <div className="flex flex-col md:flex-row gap-[40px] items-center md:items-start w-full">
-        <div className="flex flex-col gap-[24px] items-start flex-1 w-full">
-          <div className="flex flex-col md:flex-row gap-[24px] items-start w-full">
+      <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] items-center md:items-start w-full">
+        <div className="flex flex-col gap-[16px] md:gap-[24px] items-start flex-1 w-full">
+          <div className="flex flex-col md:flex-row gap-[16px] md:gap-[24px] items-start w-full">
             <div className="flex flex-col gap-[4px] items-start flex-1 min-w-0">
               <p className="font-[family-name:var(--font-heading)] text-[24px] text-white tracking-[1.92px] uppercase">
                 Curriculum vitae
@@ -211,7 +211,7 @@ export default function CVPage() {
             <a
               href={asset("/CV/CV_MARIECHALANDRE_2026_NEW.pdf")}
               download
-              className="backdrop-blur-[5px] bg-black/40 border-2 border-[#0fd1ea] rounded-[40px] px-[40px] py-[20px] shrink-0 font-[family-name:var(--font-heading)] text-[24px] text-[#0fd1ea] tracking-[1.92px] uppercase hover:text-[#7FECFB] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] focus:text-[#7FECFB] focus:border-[#7FECFB] focus:bg-[rgba(15,209,234,0.1)] active:text-[#0897A9] active:border-[#0897A9] active:bg-[rgba(8,151,169,0.1)] transition-colors"
+              className="backdrop-blur-[5px] bg-black/40 border-2 border-[#0fd1ea] rounded-[40px] px-[24px] md:px-[40px] py-[20px] shrink-0 font-[family-name:var(--font-heading)] text-[24px] text-[#0fd1ea] tracking-[1.92px] uppercase hover:text-[#7FECFB] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] focus:text-[#7FECFB] focus:border-[#7FECFB] focus:bg-[rgba(15,209,234,0.1)] active:text-[#0897A9] active:border-[#0897A9] active:bg-[rgba(8,151,169,0.1)] transition-colors"
             >
               Download
             </a>
@@ -222,7 +222,7 @@ export default function CVPage() {
           <p className="font-[family-name:var(--font-body)] text-[18px] md:text-[20px] text-white tracking-[1.6px] w-full leading-relaxed">
             A cinematic artist specialising in the production of 3D shots for video games and film. From storyboarding to final compositing, including lighting, camera animation and motion design.
           </p>
-          <div className="flex flex-wrap items-center justify-between gap-4 w-full">
+          <div className="flex flex-wrap items-center justify-between gap-3 md:gap-4 w-full">
             <div className="flex flex-wrap gap-[12px] items-center">
               <Tag>31 y/o</Tag>
               <Tag>Paris</Tag>
@@ -250,7 +250,7 @@ export default function CVPage() {
       />
 
       {/* Body */}
-      <div className="flex flex-col md:flex-row gap-[40px] items-start w-full">
+      <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] items-start w-full">
         {/* Desktop sidebar nav */}
         <div className="hidden md:flex flex-col items-end gap-[40px] border-r border-[#8f8f8f] pr-[20px] shrink-0 sticky top-[192px] h-[calc(100vh-192px)]">
           {ANCHORS.map((a) => (
@@ -269,7 +269,7 @@ export default function CVPage() {
           <section
             id="experiences"
             ref={(el) => { sectionRefs.current.experiences = el; }}
-            className="flex flex-col gap-[40px] items-start justify-center w-full scroll-mt-[140px]"
+            className="flex flex-col gap-[24px] md:gap-[40px] items-start justify-center w-full scroll-mt-[140px]"
           >
             <SectionTitle>Experiences</SectionTitle>
             <div className="flex flex-col gap-[4px] items-start w-full">
@@ -283,12 +283,12 @@ export default function CVPage() {
           <section
             id="skills"
             ref={(el) => { sectionRefs.current.skills = el; }}
-            className="flex flex-col gap-[40px] items-start justify-center w-full scroll-mt-[140px]"
+            className="flex flex-col gap-[24px] md:gap-[40px] items-start justify-center w-full scroll-mt-[140px]"
           >
             <SectionTitle>Skills</SectionTitle>
-            <div className="flex flex-col gap-[24px] items-start w-full">
+            <div className="flex flex-col gap-[16px] md:gap-[24px] items-start w-full">
               {SOFTWARES.map((g) => (
-                <div key={g.group} className="flex flex-col gap-[16px] items-start w-full">
+                <div key={g.group} className="flex flex-col gap-[12px] md:gap-[16px] items-start w-full">
                   <h3 className="font-[family-name:var(--font-heading)] text-[24px] text-white tracking-[1.92px] uppercase">
                     {g.group}
                   </h3>
@@ -300,12 +300,12 @@ export default function CVPage() {
                 </div>
               ))}
             </div>
-            <div className="flex flex-col gap-[16px] items-start w-full">
+            <div className="flex flex-col gap-[12px] md:gap-[16px] items-start w-full">
               <h3 className="font-[family-name:var(--font-heading)] text-[24px] text-white tracking-[1.92px] uppercase">
                 Languages
               </h3>
               {LANGS.map((l) => (
-                <div key={l.name} className="flex flex-col gap-[24px] items-start w-full border-b border-[#8f8f8f] pb-[24px] last:border-0 last:pb-0">
+                <div key={l.name} className="flex flex-col gap-[16px] md:gap-[24px] items-start w-full border-b border-[#8f8f8f] pb-[16px] md:pb-[24px] last:border-0 last:pb-0">
                   <div className="flex flex-wrap gap-[6px] md:gap-[12px] items-center w-full">
                     <span className="order-1 flex-1 min-w-[100px] font-[family-name:var(--font-body)] text-[16px] md:text-[20px] font-semibold text-white tracking-[1.6px]">
                       {l.name}
@@ -328,7 +328,7 @@ export default function CVPage() {
           <section
             id="reward"
             ref={(el) => { sectionRefs.current.reward = el; }}
-            className="flex flex-col gap-[40px] items-start justify-center w-full scroll-mt-[140px]"
+            className="flex flex-col gap-[24px] md:gap-[40px] items-start justify-center w-full scroll-mt-[140px]"
           >
             <SectionTitle>Reward</SectionTitle>
             <div className="flex flex-col gap-[4px] items-start w-full">
@@ -349,10 +349,10 @@ export default function CVPage() {
           <section
             id="formation"
             ref={(el) => { sectionRefs.current.formation = el; }}
-            className="flex flex-col gap-[40px] items-start justify-center w-full scroll-mt-[140px]"
+            className="flex flex-col gap-[24px] md:gap-[40px] items-start justify-center w-full scroll-mt-[140px]"
           >
             <SectionTitle>Formation</SectionTitle>
-            <div className="flex flex-col gap-[16px] items-start w-full">
+            <div className="flex flex-col gap-[12px] md:gap-[16px] items-start w-full">
               <h3 className="font-[family-name:var(--font-heading)] text-[24px] text-white tracking-[1.92px] uppercase">
                 Education
               </h3>
@@ -362,7 +362,7 @@ export default function CVPage() {
                 ))}
               </div>
             </div>
-            <div className="flex flex-col gap-[16px] items-start w-full">
+            <div className="flex flex-col gap-[12px] md:gap-[16px] items-start w-full">
               <h3 className="font-[family-name:var(--font-heading)] text-[24px] text-white tracking-[1.92px] uppercase">
                 Additional training
               </h3>
@@ -378,7 +378,7 @@ export default function CVPage() {
           <section
             id="hobbies"
             ref={(el) => { sectionRefs.current.hobbies = el; }}
-            className="flex flex-col gap-[40px] items-start justify-center w-full scroll-mt-[140px]"
+            className="flex flex-col gap-[24px] md:gap-[40px] items-start justify-center w-full scroll-mt-[140px]"
           >
             <SectionTitle>Hobbies</SectionTitle>
             <div className="flex flex-col gap-[32px] items-start w-full">

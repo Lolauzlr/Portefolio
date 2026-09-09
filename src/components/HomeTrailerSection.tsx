@@ -156,8 +156,8 @@ export default function HomeTrailerSection() {
   };
 
   return (
-    <section className="pl-4 md:pl-[120px]">
-      <div className="mb-10 pr-4 md:pr-[120px]">
+    <section className="pl-3 md:pl-[120px]">
+      <div className="mb-6 md:mb-10 pr-3 md:pr-[120px]">
         <h2 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[60px] tracking-[4.8px] uppercase text-white">
           TRAILER
         </h2>
@@ -165,9 +165,9 @@ export default function HomeTrailerSection() {
       </div>
 
       <div className="relative">
-        <div className="flex gap-6 overflow-x-auto pb-4 pr-4 md:pr-[120px] scrollbar-hide">
+        <div className="flex gap-4 md:gap-6 overflow-x-auto pb-3 md:pb-4 pr-3 md:pr-[120px] scrollbar-hide">
           {trailerCards.map((card) => (
-            <div key={card.title} className="flex-shrink-0 w-[300px] md:w-[474px] flex flex-col gap-4">
+            <div key={card.title} className="flex-shrink-0 w-[300px] md:w-[474px] flex flex-col gap-3 md:gap-4">
               <div
                 className="relative w-full aspect-video cursor-pointer overflow-hidden bg-black"
                 onMouseEnter={() => setHoveredCard(card.videoId)}
@@ -217,7 +217,7 @@ export default function HomeTrailerSection() {
         <div className="pointer-events-none absolute inset-y-0 right-0 bottom-4 w-16 md:w-24 bg-[linear-gradient(to_left,#15161b_0%,rgba(21,22,27,0)_100%)]" />
       </div>
 
-      <div className="flex justify-end mt-8 pr-4 md:pr-[120px]">
+      <div className="flex justify-end mt-8 pr-3 md:pr-[120px]">
         <Link
           href="/trailer"
           className="font-[family-name:var(--font-heading)] text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] tracking-[2.56px] uppercase transition-colors"
@@ -304,7 +304,7 @@ export default function HomeTrailerSection() {
               </div>
 
               {screenshotsData.screenshots.length > 1 && (
-                <div className="bg-[#0d0d0d] px-4 py-3 overflow-x-auto">
+                <div className="bg-[#0d0d0d] px-3 md:px-4 py-3 overflow-x-auto">
                   <div className="flex gap-2">
                     {screenshotsData.screenshots.map((shot, i) => (
                       <button
@@ -336,7 +336,7 @@ export default function HomeTrailerSection() {
                 ✕
               </button>
 
-              <div className="flex flex-col mt-6">
+              <div className="flex flex-col mt-4 md:mt-6">
                 {screenshotsData.role && (
                   <p className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.28px] text-[#8F8F8F] uppercase">
                     Cinematic artist in charge of the
@@ -354,14 +354,14 @@ export default function HomeTrailerSection() {
                 <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-2" />
               </div>
 
-              <div className="flex flex-col mt-10">
+              <div className="flex flex-col mt-6 md:mt-10">
                 {screenshotsData.credits ? (
                   <>
                     <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
                       Responsibilities : <span className="font-semibold">{screenshotsData.responsibilities}</span>
                     </p>
-                    <div className="w-full h-px bg-white/20 mt-6" />
-                    <div className="flex flex-col gap-3 mt-6">
+                    <div className="w-full h-px bg-white/20 mt-4 md:mt-6" />
+                    <div className="flex flex-col gap-3 mt-4 md:mt-6">
                       {screenshotsData.credits.map((c) => (
                         <p key={c.label} className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
                           {c.label} : <span className="font-semibold">{c.value}</span>

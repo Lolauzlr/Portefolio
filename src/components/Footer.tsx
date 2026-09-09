@@ -13,8 +13,8 @@ const exploreLinks = [
 
 export default function Footer() {
   return (
-    <footer className="backdrop-blur-[3.15px] bg-black/40 py-[40px] px-4 md:px-[120px]">
-      <div className="flex flex-col md:flex-row md:items-center gap-10 md:gap-[40px]">
+    <footer className="backdrop-blur-[3.15px] bg-black/40 py-[24px] md:py-[40px] px-3 md:px-[120px]">
+      <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-[40px]">
         {/* Left: Logo */}
         <div className="flex flex-row md:self-stretch shrink-0">
           <div className="flex flex-col items-start justify-center pr-0 md:pr-[80px] md:border-r border-[#797979] md:h-full">
@@ -28,16 +28,16 @@ export default function Footer() {
         </div>
 
         {/* Center + Right */}
-        <div className="flex flex-1 flex-col md:flex-row items-start justify-between w-full gap-10 md:gap-[40px]">
+        <div className="flex flex-1 flex-col md:flex-row items-start justify-between w-full gap-6 md:gap-[40px]">
           {/* Explore */}
-          <div className="flex flex-col gap-[24px] items-start">
+          <div className="flex flex-col gap-[16px] md:gap-[24px] items-start">
             <div className="flex flex-col gap-[10px] items-start">
               <h3 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
                 EXPLORE
               </h3>
               <div className="w-full h-[4px] bg-[#ddff6e]" />
             </div>
-            <div className="flex flex-wrap gap-[16px]">
+            <div className="flex flex-wrap gap-[12px] md:gap-[16px]">
               {exploreLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -51,7 +51,7 @@ export default function Footer() {
           </div>
 
           {/* Contact */}
-          <div className="flex flex-col gap-[24px] items-start">
+          <div className="flex flex-col gap-[16px] md:gap-[24px] items-start">
             <div className="flex flex-col gap-[10px] items-start">
               <h3 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
                 CONTACT
@@ -65,7 +65,7 @@ export default function Footer() {
               >
                 marie.chalandre@hotmail.fr
               </a>
-              <div className="flex items-center gap-[16px]">
+              <div className="flex items-center gap-[12px] md:gap-[16px]">
                 {socialLinks.map(({ Icon, alt, href }) => (
                   <a
                     key={alt}

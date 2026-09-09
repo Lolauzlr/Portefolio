@@ -143,18 +143,18 @@ export default function HomeMoviesSection() {
   }, [videoModal]);
 
   return (
-    <section className="py-[60px] bg-[#131313] px-4 md:px-[120px]">
-      <div className="mb-10">
+    <section className="py-[60px] bg-[#131313] px-3 md:px-[120px]">
+      <div className="mb-6 md:mb-10">
         <h2 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[60px] tracking-[4.8px] uppercase text-white">
           LATEST MOVIES
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-2" />
       </div>
 
-      <div className="flex flex-col gap-10">
-        <div className="flex flex-col md:flex-row gap-10">
+      <div className="flex flex-col gap-6 md:gap-10">
+        <div className="flex flex-col md:flex-row gap-6 md:gap-10">
           {/* Saint Ex */}
-          <PentagonCard className="flex-1" contentClassName="flex flex-col gap-6">
+          <PentagonCard className="flex-1" contentClassName="flex flex-col gap-4 md:gap-6">
             <VideoCard
               youtubeId="BFLlIR9A8DY"
               title="SAINT EX"
@@ -173,7 +173,7 @@ export default function HomeMoviesSection() {
           </PentagonCard>
 
           {/* Jerry Gretzinger */}
-          <PentagonCard className="flex-1" contentClassName="flex flex-col gap-6">
+          <PentagonCard className="flex-1" contentClassName="flex flex-col gap-4 md:gap-6">
             <VideoCard
               thumbnail="/images/arte-gymnastique.webp"
               title="JERRY GRETZINGER"
