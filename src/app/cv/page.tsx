@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { asset } from "@/lib/asset";
+import MobileAnchorNav from "@/components/MobileAnchorNav";
 
 const EXPERIENCE = [
   { dates: "12/2024 — 02/2025", title: "Video Editor & Illustrator", org: "Frenchy Kuma, « Escaping Ordinary »", loc: "Freelance · Remote", desc: "Illustration, montage vidéo, motion design et animation pour le projet « Escaping Ordinary »." },
@@ -123,8 +124,9 @@ export default function CVPage() {
 
   return (
     <div className="pt-[95px] bg-[#15161b] text-white min-h-screen">
-      {/* Subnav — positioned right below the 95px fixed header */}
-      <div className="sticky top-[95px] z-[49] bg-[rgba(11,12,16,0.92)] backdrop-blur-[14px] border-b border-white/10 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {/* Subnav — positioned right below the 95px fixed header. Hidden on mobile
+          to save space; replaced there by the sticky press-and-drag button below. */}
+      <div className="hidden md:block sticky top-[95px] z-[49] bg-[rgba(11,12,16,0.92)] backdrop-blur-[14px] border-b border-white/10 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <div ref={subnavRef} className="max-w-[1280px] mx-auto px-6 flex gap-[6px] h-[60px] items-center w-max min-w-full">
           {ANCHORS.map((a) => (
             <a
@@ -137,6 +139,14 @@ export default function CVPage() {
           ))}
         </div>
       </div>
+
+      {/* Mobile-only sticky anchor button — starts at the "Expérience" section,
+          press and hold then drag to pick a section, release to jump there. */}
+      <MobileAnchorNav
+        anchors={ANCHORS.filter((a) => a.href !== "#profil")}
+        startSectionId="experience"
+        headerOffset={95}
+      />
 
       <div className="max-w-[1280px] mx-auto px-6">
         {/* Hero */}
