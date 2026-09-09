@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { asset } from "@/lib/asset";
 import { socialLinks } from "@/components/SocialIcons";
+import MobileAnchorNav from "@/components/MobileAnchorNav";
 
 type ExperienceItem = {
   dates: string;
@@ -239,22 +240,14 @@ export default function CVPage() {
         </div>
       </div>
 
-      {/* Mobile subnav */}
-      <div className="md:hidden sticky top-[108px] z-[49] -mx-4 px-4 bg-[rgba(11,12,16,0.92)] backdrop-blur-[14px] border-y border-white/10 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div className="flex gap-[6px] h-[56px] items-center w-max min-w-full">
-          {ANCHORS.map((a) => (
-            <a
-              key={a.id}
-              href={`#${a.id}`}
-              className={`font-[family-name:var(--font-heading)] tracking-[1.6px] text-[18px] uppercase no-underline px-[14px] py-[6px] rounded-[20px] whitespace-nowrap transition-colors duration-200 ${
-                activeId === a.id ? "bg-[#ddff6e] text-[#0b0c0f]" : "text-white"
-              }`}
-            >
-              {a.label}
-            </a>
-          ))}
-        </div>
-      </div>
+      {/* Mobile-only sticky anchor button — replaces the horizontal pill subnav to
+          save vertical space. Starts at "Experiences"; press and hold then drag to
+          pick a section, release to jump there. */}
+      <MobileAnchorNav
+        anchors={ANCHORS.map((a) => ({ href: `#${a.id}`, label: a.label }))}
+        startSectionId="experiences"
+        headerOffset={140}
+      />
 
       {/* Body */}
       <div className="flex flex-col md:flex-row gap-[40px] items-start w-full">

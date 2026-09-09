@@ -152,7 +152,7 @@ export default function Home() {
               <CaretCircleRight />
             </Link>
           </div>
-          <div className="shrink-0">
+          <div className="order-first md:order-none shrink-0">
             <img
               src={asset("/images/home-page/profil2.webp")}
               alt="Marie Chalandre"
