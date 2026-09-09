@@ -252,13 +252,20 @@ export default function CVPage() {
       {/* Body */}
       <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] items-start w-full">
         {/* Desktop sidebar nav */}
-        <div className="hidden md:flex flex-col items-end gap-[40px] border-r border-[#8f8f8f] pr-[20px] shrink-0 sticky top-[192px] h-[calc(100vh-192px)]">
+        <div className="hidden md:flex flex-col items-stretch gap-[4px] border-r border-[#8f8f8f] pr-[20px] shrink-0 sticky top-[192px] h-[calc(100vh-192px)]">
           {ANCHORS.map((a) => (
-            <a key={a.id} href={`#${a.id}`} className="flex flex-col gap-[10px] items-end w-fit">
+            <a
+              key={a.id}
+              href={`#${a.id}`}
+              className={`flex items-center border-l-[3px] px-[20px] py-[12px] transition-colors ${
+                activeId === a.id
+                  ? "bg-[#0FD1EA]/10 border-l-[#0fd1ea]"
+                  : "border-l-transparent"
+              }`}
+            >
               <span className="font-[family-name:var(--font-heading)] text-[24px] text-white tracking-[1.92px] uppercase whitespace-nowrap">
                 {a.label}
               </span>
-              <span className={`h-[4px] w-full bg-[#0fd1ea] transition-opacity ${activeId === a.id ? "opacity-100" : "opacity-0"}`} />
             </a>
           ))}
         </div>
