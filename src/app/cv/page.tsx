@@ -145,10 +145,10 @@ function TimelineRow({ item, isLast }: { item: ExperienceItem; isLast?: boolean 
 }
 
 const HOBBY_ICONS = {
-  "boxing-glove": "/images/icon/boxing-glove.svg",
-  palette: "/images/icon/palette.svg",
-  headphones: "/images/icon/headphones.svg",
-  "airplane-tilt": "/images/icon/airplane-tilt.svg",
+  "boxing-glove": "/images/icons/boxing-glove.svg",
+  palette: "/images/icons/palette.svg",
+  headphones: "/images/icons/headphones.svg",
+  "airplane-tilt": "/images/icons/airplane-tilt.svg",
 } as const;
 
 function SocialIcons() {
