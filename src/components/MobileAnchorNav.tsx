@@ -110,7 +110,11 @@ export default function MobileAnchorNav({
           below so its fixed positioning resolves against the viewport, not
           the wrapper's transform. */}
       {active && (
-        <div className="fixed inset-0 z-[54] select-none" style={{ touchAction: "none" }} aria-hidden="true" />
+        <div
+          className="fixed inset-0 z-[54] select-none"
+          style={{ touchAction: "none", WebkitTouchCallout: "none", WebkitUserSelect: "none" }}
+          aria-hidden="true"
+        />
       )}
 
       <div
@@ -121,8 +125,13 @@ export default function MobileAnchorNav({
         {active && (
           <div
             ref={listRef}
-            className="absolute right-[54px] top-1/2 -translate-y-1/2 flex flex-col items-end gap-[2px] py-[8px] pr-[8px] pl-[28px]"
-            style={{ background: "linear-gradient(to left, rgba(0,0,0,0.55), rgba(0,0,0,0) 100%)" }}
+            className="absolute right-[54px] top-1/2 -translate-y-1/2 flex flex-col items-end gap-[2px] py-[8px] pr-[8px] pl-[28px] select-none"
+            style={{
+              background: "linear-gradient(to left, rgba(0,0,0,0.55), rgba(0,0,0,0) 100%)",
+              touchAction: "none",
+              WebkitTouchCallout: "none",
+              WebkitUserSelect: "none",
+            }}
           >
             {anchors.map((a, i) => {
               const isSelected = i === index && !cancelled;
@@ -150,8 +159,8 @@ export default function MobileAnchorNav({
           onPointerMove={handlePointerMove}
           onPointerUp={() => finish(true)}
           onPointerCancel={() => finish(false)}
-          style={{ touchAction: "none" }}
-          className={`flex items-center justify-center w-[44px] h-[44px] rounded-full border shadow-[0_4px_12px_rgba(0,0,0,0.45)] transition-colors ${
+          style={{ touchAction: "none", WebkitTouchCallout: "none", WebkitUserSelect: "none" }}
+          className={`select-none flex items-center justify-center w-[44px] h-[44px] rounded-full border shadow-[0_4px_12px_rgba(0,0,0,0.45)] transition-colors ${
             active
               ? "bg-[rgba(11,12,16,0.92)] border-[#0FD1EA] text-[#0FD1EA]"
               : "bg-[rgba(11,12,16,0.92)] border-white/20 text-white"
