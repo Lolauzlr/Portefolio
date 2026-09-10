@@ -132,12 +132,15 @@ function MobileAnchorMenu({ anchors }: { anchors: { href: string; label: string 
   return (
     <div className="md:hidden">
       {open && (
-        <button
-          type="button"
-          aria-label="Fermer le menu d'ancrage"
-          onClick={() => setOpen(false)}
-          className="fixed inset-0 z-[55] bg-black/97 backdrop-blur-[14px]"
-        />
+        <div className="fixed inset-0 z-[55]">
+          <button
+            type="button"
+            aria-label="Fermer le menu d'ancrage"
+            onClick={() => setOpen(false)}
+            className="absolute inset-0 backdrop-blur-[14px]"
+          />
+          <div className="absolute inset-y-0 right-0 w-[55%] bg-black/80 pointer-events-none" />
+        </div>
       )}
 
       <div className="fixed right-[18px] top-1/2 -translate-y-1/2 z-[60] flex items-center gap-[16px]">
