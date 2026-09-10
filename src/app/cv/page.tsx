@@ -251,30 +251,32 @@ export default function CVPage() {
 
       {/* Body */}
       <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] w-full">
-        {/* Desktop sidebar nav — the outer column just provides the full-height
-            gray divider (border-r) matching the content column's height; the
-            inner wrapper is the one that's actually sticky. Sticky positioning
-            breaks in Chromium when the sticky element itself is stretched via
-            align-self AND contains a flex-1 filler child, so that filler lives
-            on this non-sticky outer column instead. */}
-        <div className="hidden md:flex flex-col shrink-0 self-stretch border-r-[3px] border-[#8f8f8f]">
-          <div className="flex flex-col items-stretch gap-0 sticky top-[192px]">
-            {ANCHORS.map((a) => (
-              <a
-                key={a.id}
-                href={`#${a.id}`}
-                className={`flex items-center border-r-[3px] -mr-[3px] px-[20px] py-[12px] transition-colors ${
-                  activeId === a.id
-                    ? "bg-[#0FD1EA]/10 border-r-[#0fd1ea]"
-                    : "border-r-transparent"
-                }`}
-              >
-                <span className="font-[family-name:var(--font-heading)] text-[24px] text-white tracking-[1.92px] uppercase whitespace-nowrap">
-                  {a.label}
-                </span>
-              </a>
-            ))}
-          </div>
+        {/* Desktop sidebar nav — height is viewport-relative (calc(100vh-192px)),
+            not stretched to match the content column. A sticky element whose
+            height comes from align-self:stretch (matching a tall sibling) and
+            that also contains a flex-1 filler child silently breaks sticky
+            positioning in Chromium; an explicit/calc height doesn't have that
+            problem. This also naturally keeps the gray divider from ever
+            appearing above the nav — it only ever fills downward from the
+            nav's current (possibly stuck) position to the bottom of the
+            viewport. */}
+        <div className="hidden md:flex flex-col items-stretch gap-0 shrink-0 sticky top-[192px] h-[calc(100vh-192px)]">
+          {ANCHORS.map((a) => (
+            <a
+              key={a.id}
+              href={`#${a.id}`}
+              className={`flex items-center border-r-[3px] px-[20px] py-[12px] transition-colors ${
+                activeId === a.id
+                  ? "bg-[#0FD1EA]/10 border-r-[#0fd1ea]"
+                  : "border-r-[#8f8f8f]"
+              }`}
+            >
+              <span className="font-[family-name:var(--font-heading)] text-[24px] text-white tracking-[1.92px] uppercase whitespace-nowrap">
+                {a.label}
+              </span>
+            </a>
+          ))}
+          <div className="flex-1 border-r-[3px] border-[#8f8f8f]" />
         </div>
 
         {/* Content */}
