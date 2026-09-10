@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 type Anchor = { href: string; label: string };
 
 const CANCEL_DRAG_X = 90;
+const OVERLAY_FADE_PX = 100;
 
 function CaretUpDownIcon() {
   return (
@@ -28,10 +29,22 @@ export default function MobileAnchorNav({
   const [active, setActive] = useState(false);
   const [index, setIndex] = useState<number | null>(null);
   const [cancelled, setCancelled] = useState(false);
+  const [menuEdgeFromRight, setMenuEdgeFromRight] = useState<number | null>(null);
 
   const listRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const lastPointRef = useRef({ x: 0, y: 0 });
+
+  // Anchors the overlay's shadow to where the menu panel actually starts
+  // (rather than an arbitrary viewport percentage) so it lines up with the
+  // list regardless of label width/viewport size.
+  useLayoutEffect(() => {
+    if (active && listRef.current) {
+      setMenuEdgeFromRight(window.innerWidth - listRef.current.getBoundingClientRect().left);
+    } else {
+      setMenuEdgeFromRight(null);
+    }
+  }, [active]);
 
   useEffect(() => {
     const target = document.getElementById(startSectionId);
@@ -116,7 +129,10 @@ export default function MobileAnchorNav({
         <div
           className="fixed inset-0 z-[54] select-none"
           style={{
-            background: "linear-gradient(to left, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0) 60%)",
+            background:
+              menuEdgeFromRight !== null
+                ? `linear-gradient(to left, rgba(0,0,0,0.4) 0px, rgba(0,0,0,0.4) ${menuEdgeFromRight}px, rgba(0,0,0,0) ${menuEdgeFromRight + OVERLAY_FADE_PX}px)`
+                : "linear-gradient(to left, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 60%)",
             touchAction: "none",
             WebkitTouchCallout: "none",
             WebkitUserSelect: "none",
