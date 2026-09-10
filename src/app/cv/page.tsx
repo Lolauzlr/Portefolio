@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { asset } from "@/lib/asset";
 
@@ -91,6 +91,89 @@ function CaretCircleLeft() {
   );
 }
 
+function ChevronsUpDown() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+      <path d="m7 15 5 5 5-5" stroke="#0FD1EA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="m7 9 5-5 5 5" stroke="#0FD1EA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function MobileAnchorMenu({ anchors }: { anchors: { href: string; label: string }[] }) {
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(anchors[0]?.href ?? "");
+
+  useEffect(() => {
+    const sections = anchors.map((a) => document.querySelector(a.href));
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((en) => {
+          if (en.isIntersecting) {
+            const idx = sections.indexOf(en.target as Element);
+            if (idx > -1) setActive(anchors[idx].href);
+          }
+        });
+      },
+      { rootMargin: "-40% 0px -55% 0px" }
+    );
+    sections.forEach((s) => s && io.observe(s));
+    return () => io.disconnect();
+  }, [anchors]);
+
+  useEffect(() => {
+    if (!open) return;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  return (
+    <div className="md:hidden">
+      {open && (
+        <button
+          type="button"
+          aria-label="Fermer le menu d'ancrage"
+          onClick={() => setOpen(false)}
+          className="fixed inset-0 z-[55] bg-black/70 backdrop-blur-[14px]"
+        />
+      )}
+
+      <div className="fixed right-[18px] top-1/2 -translate-y-1/2 z-[60] flex items-center gap-[16px]">
+        {open && (
+          <nav className="flex flex-col items-end gap-[22px]">
+            {anchors.map((a) => (
+              <a
+                key={a.href}
+                href={a.href}
+                onClick={() => setOpen(false)}
+                className={`font-[family-name:var(--font-heading)] tracking-[1.92px] text-[24px] uppercase whitespace-nowrap leading-none px-[10px] py-[6px] rounded-[4px] border transition-colors ${
+                  active === a.href
+                    ? "text-[#0FD1EA] bg-[#0FD1EA]/10 border-[#0FD1EA]"
+                    : "text-white border-transparent"
+                }`}
+              >
+                {a.label}
+              </a>
+            ))}
+          </nav>
+        )}
+
+        <button
+          type="button"
+          aria-label={open ? "Fermer le menu d'ancrage" : "Ouvrir le menu d'ancrage"}
+          aria-expanded={open}
+          onClick={() => setOpen((v) => !v)}
+          className="shrink-0 w-[44px] h-[44px] rounded-full border-2 border-[#0FD1EA] bg-[#101116] flex items-center justify-center shadow-[0_0_22px_rgba(15,209,234,0.45)]"
+        >
+          <ChevronsUpDown />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function CVPage() {
   const subnavRef = useRef<HTMLDivElement>(null);
 
@@ -123,8 +206,11 @@ export default function CVPage() {
 
   return (
     <div className="pt-[95px] bg-[#15161b] text-white min-h-screen">
+      {/* Mobile floating anchor menu — replaces the subnav below the sm breakpoint */}
+      <MobileAnchorMenu anchors={ANCHORS.slice(1)} />
+
       {/* Subnav — positioned right below the 95px fixed header */}
-      <div className="sticky top-[95px] z-[49] bg-[rgba(11,12,16,0.92)] backdrop-blur-[14px] border-b border-white/10 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="hidden md:block sticky top-[95px] z-[49] bg-[rgba(11,12,16,0.92)] backdrop-blur-[14px] border-b border-white/10 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <div ref={subnavRef} className="max-w-[1280px] mx-auto px-6 flex gap-[6px] h-[60px] items-center w-max min-w-full">
           {ANCHORS.map((a) => (
             <a
