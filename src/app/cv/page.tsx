@@ -136,7 +136,7 @@ function MobileAnchorMenu({ anchors }: { anchors: { href: string; label: string 
           type="button"
           aria-label="Fermer le menu d'ancrage"
           onClick={() => setOpen(false)}
-          className="fixed inset-0 z-[55] bg-black/90 backdrop-blur-[14px]"
+          className="fixed inset-0 z-[55] bg-black/97 backdrop-blur-[14px]"
         />
       )}
 
