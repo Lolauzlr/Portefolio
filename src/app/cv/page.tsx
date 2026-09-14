@@ -231,7 +231,7 @@ export default function CVPage() {
             <SocialIcons />
           </div>
         </div>
-        <div className="shrink-0 w-[260px] h-[260px] md:w-[384px] md:h-[384px] overflow-hidden rounded-full">
+        <div className="shrink-0 w-[260px] h-[260px] md:w-[282px] md:h-[282px] overflow-hidden rounded-full">
           <img
             src={asset("/images/CV/photo-profil.webp")}
             alt="Marie Chalandre"
