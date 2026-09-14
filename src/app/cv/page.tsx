@@ -233,9 +233,9 @@ export default function CVPage() {
         </div>
         <div className="shrink-0 w-[260px] h-[260px] md:w-[384px] md:h-[384px] overflow-hidden rounded-full">
           <img
-            src={asset("/images/home-page/profil2.webp")}
+            src={asset("/images/CV/photo-profil.webp")}
             alt="Marie Chalandre"
-            className="w-full h-full object-cover object-[40%_42%]"
+            className="w-full h-full object-cover"
           />
         </div>
       </div>
