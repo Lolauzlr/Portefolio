@@ -115,7 +115,7 @@ export default function MoviesPage() {
       ),
     },
     {
-      thumbnail: "/images/arte-gymnastique.webp",
+      thumbnail: "/images/films/arte-gymnastique.webp",
       title: "JERRY GRETZINGER",
       externalUrl: "https://www.arte.tv/fr/videos/105628-041-A/gymnastique/",
       reversed: true,
@@ -138,7 +138,7 @@ export default function MoviesPage() {
       ),
     },
     {
-      thumbnail: "/images/beast-film.webp",
+      thumbnail: "/images/films/beast-film.webp",
       title: "FAUVE",
       externalUrl: "https://vurchel.com/v/15616/beast-marie-chalandre",
       reversed: false,

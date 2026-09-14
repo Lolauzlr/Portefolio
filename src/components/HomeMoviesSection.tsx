@@ -183,7 +183,7 @@ export default function HomeMoviesSection() {
           {/* Jerry Gretzinger */}
           <PentagonCard className="flex-1" contentClassName="flex flex-col gap-6">
             <VideoCard
-              thumbnail="/images/arte-gymnastique.webp"
+              thumbnail="/images/films/arte-gymnastique.webp"
               title="JERRY GRETZINGER"
               externalUrl="https://www.arte.tv/fr/videos/105628-041-A/gymnastique/"
               className="w-full"
@@ -224,7 +224,7 @@ export default function HomeMoviesSection() {
           <div className="flex flex-col md:flex-row gap-6">
             <div className="md:w-[792px] shrink-0">
               <VideoCard
-                thumbnail="/images/beast-film.webp"
+                thumbnail="/images/films/beast-film.webp"
                 title="FAUVE"
                 externalUrl="https://vurchel.com/v/15616/beast-marie-chalandre"
                 className="w-full"
