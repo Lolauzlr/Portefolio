@@ -43,7 +43,7 @@ export default function IllustrationsPage() {
                 Digital Painting • Adobe Photoshop
               </p>
             </div>
-            <img src={asset(i(28))} alt="Arcane" className="w-full h-[539px] object-cover" />
+            <img src={asset(i(25))} alt="Arcane" className="w-full h-[539px] object-cover" />
           </div>
 
           {/* MONSTER IN A BOTTLE — image on top, title below */}
@@ -180,7 +180,7 @@ export default function IllustrationsPage() {
               <img src={asset(i(2))} alt="" className="w-full h-[264px] object-cover" />
             </div>
             <div className="flex-1">
-              <img src={asset(i(25))} alt="" className="w-full h-full object-cover" />
+              <img src={asset(i(28))} alt="" className="w-full h-full object-cover" />
             </div>
           </div>
 
