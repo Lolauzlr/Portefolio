@@ -10,7 +10,7 @@ const navLinks = [
   { label: "TRAILER", href: "/trailer" },
   { label: "MOVIES", href: "/movies" },
   { label: "ILLUSTRATIONS", href: "/illustrations" },
-  { label: "STORYBOARD", href: "/storyboard" },
+  { label: "STORYTELLING", href: "/storyboard" },
   { label: "CV", href: "/cv" },
 ];
 
