@@ -131,8 +131,8 @@ export default function MobileAnchorNav({
           style={{
             background:
               menuEdgeFromRight !== null
-                ? `linear-gradient(to left, rgba(0,0,0,0.4) 0px, rgba(0,0,0,0.4) ${menuEdgeFromRight}px, rgba(0,0,0,0) ${menuEdgeFromRight + OVERLAY_FADE_PX}px)`
-                : "linear-gradient(to left, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 60%)",
+                ? `linear-gradient(to left, rgba(0,0,0,1) 0px, rgba(0,0,0,0.7) ${menuEdgeFromRight}px, rgba(0,0,0,0) ${menuEdgeFromRight + OVERLAY_FADE_PX}px)`
+                : "linear-gradient(to left, rgba(0,0,0,1) 0%, rgba(0,0,0,0.7) 45%, rgba(0,0,0,0) 60%)",
             touchAction: "none",
             WebkitTouchCallout: "none",
             WebkitUserSelect: "none",
@@ -161,7 +161,7 @@ export default function MobileAnchorNav({
               return (
                 <div
                   key={a.href}
-                  className={`whitespace-nowrap uppercase font-[family-name:var(--font-body)] text-[16px] leading-normal rounded-[4px] border p-[4px] transition-colors duration-100 ${
+                  className={`whitespace-nowrap uppercase font-[family-name:var(--font-body)] font-semibold text-[32px] leading-normal rounded-[4px] border p-[4px] transition-colors duration-100 ${
                     isSelected
                       ? "text-[#0FD1EA] bg-[#0FD1EA]/10 border-[#0FD1EA]/20"
                       : "text-white border-transparent"
