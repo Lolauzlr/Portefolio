@@ -62,6 +62,14 @@ export default function MobileAnchorNav({
     };
   }, [startSectionId, headerOffset]);
 
+  const scrollToIndex = (idx: number, smooth: boolean) => {
+    const el = document.querySelector(anchors[idx].href);
+    if (el instanceof HTMLElement) {
+      const top = el.getBoundingClientRect().top + window.scrollY - headerOffset;
+      window.scrollTo({ top, behavior: smooth ? "smooth" : "instant" });
+    }
+  };
+
   const updateIndexFromPoint = (x: number, y: number) => {
     const list = listRef.current;
     const btn = buttonRef.current;
@@ -80,8 +88,14 @@ export default function MobileAnchorNav({
 
     setCancelled(false);
     setIndex((prev) => {
-      if (prev !== clamped && typeof navigator !== "undefined" && navigator.vibrate) {
-        navigator.vibrate(8);
+      if (prev !== clamped) {
+        if (typeof navigator !== "undefined" && navigator.vibrate) {
+          navigator.vibrate(8);
+        }
+        // Scrolls the page live as the selection changes, so the
+        // background content previews the section behind the overlay
+        // instead of only jumping there on release.
+        scrollToIndex(clamped, false);
       }
       return clamped;
     });
@@ -105,11 +119,7 @@ export default function MobileAnchorNav({
 
   const finish = (shouldNavigate: boolean) => {
     if (shouldNavigate && index !== null && !cancelled) {
-      const el = document.querySelector(anchors[index].href);
-      if (el instanceof HTMLElement) {
-        const top = el.getBoundingClientRect().top + window.scrollY - headerOffset;
-        window.scrollTo({ top, behavior: "smooth" });
-      }
+      scrollToIndex(index, true);
     }
     setActive(false);
     setIndex(null);
@@ -161,7 +171,7 @@ export default function MobileAnchorNav({
               return (
                 <div
                   key={a.href}
-                  className={`whitespace-nowrap uppercase font-[family-name:var(--font-body)] font-semibold text-[32px] leading-normal rounded-[4px] border p-[4px] transition-colors duration-100 ${
+                  className={`whitespace-nowrap uppercase font-[family-name:var(--font-body)] font-semibold text-[24px] leading-normal rounded-[4px] border p-[4px] transition-colors duration-100 ${
                     isSelected
                       ? "text-[#0FD1EA] bg-[#0FD1EA]/10 border-[#0FD1EA]/20"
                       : "text-white border-transparent"
