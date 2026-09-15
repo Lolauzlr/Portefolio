@@ -243,7 +243,7 @@ export default function CVPage() {
       </div>
 
       <div className="flex md:hidden flex-col gap-[24px] items-center w-full">
-        <div className="flex gap-[16px] items-center w-full">
+        <div className="flex gap-[8px] items-center w-full">
           <div className="shrink-0 w-[100px] h-[100px] overflow-hidden rounded-full">
             <img
               src={asset("/images/CV/photo-profil.webp")}
@@ -252,17 +252,17 @@ export default function CVPage() {
             />
           </div>
           <div className="flex flex-col gap-[4px] items-start flex-1 min-w-0">
-            <p className="font-[family-name:var(--font-heading)] text-[16px] text-white tracking-[1.28px] uppercase">
+            <p className="font-[family-name:var(--font-heading)] text-[20px] text-white tracking-[1.6px] uppercase">
               Curriculum vitae
             </p>
-            <h1 className="font-[family-name:var(--font-heading)] text-[28px] text-white tracking-[2.24px] uppercase leading-none">
+            <h1 className="font-[family-name:var(--font-heading)] text-[32px] text-white tracking-[2.56px] uppercase leading-none">
               marie chalandre
             </h1>
             <div className="w-[80px] h-[4px] bg-white mt-[4px]" />
           </div>
         </div>
         <div className="flex flex-col gap-[16px] items-start w-full">
-          <p className="font-[family-name:var(--font-heading)] text-[20px] text-[#ddff6e] tracking-[1.6px] uppercase w-full">
+          <p className="font-[family-name:var(--font-heading)] text-[24px] text-[#ddff6e] tracking-[1.92px] uppercase w-full">
             cinematic artist • concept artist • storyboarder
           </p>
           <p className="font-[family-name:var(--font-body)] text-[16px] text-white tracking-[1.28px] w-full leading-relaxed">
