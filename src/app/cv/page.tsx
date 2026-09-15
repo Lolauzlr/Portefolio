@@ -153,7 +153,7 @@ const HOBBY_ICONS = {
 
 function SocialIcons() {
   return (
-    <div className="flex items-center gap-[12px] md:gap-[16px]">
+    <div className="flex items-center gap-[16px]">
       {socialLinks.map(({ Icon, alt, href }) => (
         <a
           key={alt}
@@ -195,15 +195,17 @@ export default function CVPage() {
 
   return (
     <div className="bg-[#15161b] text-white flex flex-col gap-[60px] pt-[140px] md:pt-[175px] pb-[80px] px-3 md:px-[120px]">
-      {/* Hero */}
-      <div className="flex flex-col md:flex-row gap-[24px] md:gap-[100px] items-center md:items-start w-full">
-        <div className="flex flex-col gap-[16px] md:gap-[24px] items-start flex-1 w-full">
-          <div className="flex flex-col md:flex-row gap-[16px] md:gap-[24px] items-start w-full">
+      {/* Hero — desktop keeps the photo beside the whole content column;
+          mobile pairs the photo with the title only and moves Download
+          beside the social icons instead (Figma node 426-750). */}
+      <div className="hidden md:flex md:flex-row gap-[100px] items-start w-full">
+        <div className="flex flex-col gap-[24px] items-start flex-1 w-full">
+          <div className="flex flex-row gap-[24px] items-start w-full">
             <div className="flex flex-col gap-[4px] items-start flex-1 min-w-0">
               <p className="font-[family-name:var(--font-heading)] text-[24px] text-white tracking-[1.92px] uppercase">
                 Curriculum vitae
               </p>
-              <h1 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[52px] text-white tracking-[4.16px] uppercase leading-none">
+              <h1 className="font-[family-name:var(--font-heading)] text-[52px] text-white tracking-[4.16px] uppercase leading-none">
                 marie chalandre
               </h1>
               <div className="w-[80px] h-[4px] bg-white mt-[4px]" />
@@ -211,7 +213,7 @@ export default function CVPage() {
             <a
               href={asset("/CV/CV_MARIECHALANDRE_2026_NEW.pdf")}
               download
-              className="backdrop-blur-[5px] bg-black/40 border-2 border-[#0fd1ea] rounded-[40px] px-[24px] md:px-[40px] py-[20px] shrink-0 font-[family-name:var(--font-heading)] text-[24px] text-[#0fd1ea] tracking-[1.92px] uppercase hover:text-[#7FECFB] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] focus:text-[#7FECFB] focus:border-[#7FECFB] focus:bg-[rgba(15,209,234,0.1)] active:text-[#0897A9] active:border-[#0897A9] active:bg-[rgba(8,151,169,0.1)] transition-colors"
+              className="backdrop-blur-[5px] bg-black/40 border-2 border-[#0fd1ea] rounded-[40px] px-[40px] py-[20px] shrink-0 font-[family-name:var(--font-heading)] text-[24px] text-[#0fd1ea] tracking-[1.92px] uppercase hover:text-[#7FECFB] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] focus:text-[#7FECFB] focus:border-[#7FECFB] focus:bg-[rgba(15,209,234,0.1)] active:text-[#0897A9] active:border-[#0897A9] active:bg-[rgba(8,151,169,0.1)] transition-colors"
             >
               Download
             </a>
@@ -219,10 +221,10 @@ export default function CVPage() {
           <p className="font-[family-name:var(--font-heading)] text-[24px] text-[#ddff6e] tracking-[1.92px] uppercase w-full">
             cinematic artist • concept artist • storyboarder
           </p>
-          <p className="font-[family-name:var(--font-body)] text-[18px] md:text-[20px] text-white tracking-[1.6px] w-full leading-relaxed">
+          <p className="font-[family-name:var(--font-body)] text-[20px] text-white tracking-[1.6px] w-full leading-relaxed">
             A cinematic artist specialising in the production of 3D shots for video games and film. From storyboarding to final compositing, including lighting, camera animation and motion design.
           </p>
-          <div className="flex flex-wrap items-center justify-between gap-3 md:gap-4 w-full">
+          <div className="flex flex-wrap items-center justify-between gap-4 w-full">
             <div className="flex flex-wrap gap-[12px] items-center">
               <Tag>31 y/o</Tag>
               <Tag>Paris</Tag>
@@ -231,12 +233,58 @@ export default function CVPage() {
             <SocialIcons />
           </div>
         </div>
-        <div className="shrink-0 w-[260px] h-[260px] md:w-[282px] md:h-[282px] overflow-hidden rounded-full">
+        <div className="shrink-0 w-[282px] h-[282px] overflow-hidden rounded-full">
           <img
             src={asset("/images/CV/photo-profil.webp")}
             alt="Marie Chalandre"
             className="w-full h-full object-cover"
           />
+        </div>
+      </div>
+
+      <div className="flex md:hidden flex-col gap-[24px] items-center w-full">
+        <div className="flex gap-[16px] items-center w-full">
+          <div className="shrink-0 w-[100px] h-[100px] overflow-hidden rounded-full">
+            <img
+              src={asset("/images/CV/photo-profil.webp")}
+              alt="Marie Chalandre"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="flex flex-col gap-[4px] items-start flex-1 min-w-0">
+            <p className="font-[family-name:var(--font-heading)] text-[16px] text-white tracking-[1.28px] uppercase">
+              Curriculum vitae
+            </p>
+            <h1 className="font-[family-name:var(--font-heading)] text-[28px] text-white tracking-[2.24px] uppercase leading-none">
+              marie chalandre
+            </h1>
+            <div className="w-[80px] h-[4px] bg-white mt-[4px]" />
+          </div>
+        </div>
+        <div className="flex flex-col gap-[16px] items-start w-full">
+          <p className="font-[family-name:var(--font-heading)] text-[20px] text-[#ddff6e] tracking-[1.6px] uppercase w-full">
+            cinematic artist • concept artist • storyboarder
+          </p>
+          <p className="font-[family-name:var(--font-body)] text-[16px] text-white tracking-[1.28px] w-full leading-relaxed">
+            A cinematic artist specialising in the production of 3D shots for video games and film. From storyboarding to final compositing, including lighting, camera animation and motion design.
+          </p>
+          <div className="flex flex-wrap items-center justify-between gap-y-[12px] w-full">
+            <div className="flex flex-wrap gap-[8px] items-center">
+              <Tag>31 y/o</Tag>
+              <Tag>Paris</Tag>
+              <Tag>Driving Licence</Tag>
+            </div>
+            <div className="flex items-center justify-between w-full">
+              <SocialIcons />
+              <a
+                href={asset("/CV/CV_MARIECHALANDRE_2026_NEW.pdf")}
+                download
+                className="backdrop-blur-[5px] bg-black/40 border-2 border-[#0fd1ea] rounded-[40px] px-[20px] py-[10px] shrink-0 font-[family-name:var(--font-heading)] text-[20px] text-[#0fd1ea] tracking-[1.6px] uppercase hover:text-[#7FECFB] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] focus:text-[#7FECFB] focus:border-[#7FECFB] focus:bg-[rgba(15,209,234,0.1)] active:text-[#0897A9] active:border-[#0897A9] active:bg-[rgba(8,151,169,0.1)] transition-colors"
+              >
+                Download
+              </a>
+            </div>
+          </div>
         </div>
       </div>
 
