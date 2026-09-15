@@ -66,7 +66,7 @@ export default function Home() {
       <HomeTrailerSection />
 
       {/* Illustrations */}
-      <section className="bg-[#131313] px-3 md:px-[120px]">
+      <section className="py-6 md:py-[60px] bg-[#131313] px-3 md:px-[120px]">
         <SectionTitle>ILLUSTRATIONS</SectionTitle>
         <div className="flex flex-col gap-[24px] md:gap-[40px]">
           {/* Featured illustration */}
