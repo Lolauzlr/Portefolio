@@ -131,8 +131,8 @@ export default function MobileAnchorNav({
           style={{
             background:
               menuEdgeFromRight !== null
-                ? `linear-gradient(to left, rgba(0,0,0,0.4) 0px, rgba(0,0,0,0.4) ${menuEdgeFromRight}px, rgba(0,0,0,0) ${menuEdgeFromRight + OVERLAY_FADE_PX}px)`
-                : "linear-gradient(to left, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0) 60%)",
+                ? `linear-gradient(to left, rgba(0,0,0,0.8) 0px, rgba(0,0,0,0.8) ${menuEdgeFromRight}px, rgba(0,0,0,0) ${menuEdgeFromRight + OVERLAY_FADE_PX}px)`
+                : "linear-gradient(to left, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%)",
             touchAction: "none",
             WebkitTouchCallout: "none",
             WebkitUserSelect: "none",
