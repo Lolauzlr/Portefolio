@@ -196,7 +196,7 @@ export default function CVPage() {
   return (
     <div className="bg-[#15161b] text-white flex flex-col gap-[60px] pt-[140px] md:pt-[175px] pb-[80px] px-3 md:px-[120px]">
       {/* Hero */}
-      <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] items-center md:items-start w-full">
+      <div className="flex flex-col md:flex-row gap-[24px] md:gap-[100px] items-center md:items-start w-full">
         <div className="flex flex-col gap-[16px] md:gap-[24px] items-start flex-1 w-full">
           <div className="flex flex-col md:flex-row gap-[16px] md:gap-[24px] items-start w-full">
             <div className="flex flex-col gap-[4px] items-start flex-1 min-w-0">
