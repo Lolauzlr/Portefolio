@@ -65,11 +65,8 @@ export default function Home() {
       {/* Trailer */}
       <HomeTrailerSection />
 
-      {/* Movies */}
-      <HomeMoviesSection />
-
       {/* Illustrations */}
-      <section className="px-3 md:px-[120px]">
+      <section className="bg-[#131313] px-3 md:px-[120px]">
         <SectionTitle>ILLUSTRATIONS</SectionTitle>
         <div className="flex flex-col gap-[24px] md:gap-[40px]">
           {/* Featured illustration */}
@@ -96,6 +93,9 @@ export default function Home() {
           <ToutVoirLink href="/illustrations" />
         </div>
       </section>
+
+      {/* Movies */}
+      <HomeMoviesSection />
 
       {/* Storyboards */}
       <section className="py-6 md:py-[60px] bg-[#131313] px-3 md:px-[120px]">
