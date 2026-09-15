@@ -90,6 +90,7 @@ export default function MoviesPage() {
     externalUrl?: string;
     reversed: boolean;
     description: React.ReactNode;
+    belowImageText?: string;
   }[] = [
     {
       youtubeId: "M7PfKwiQL_w",
@@ -139,85 +140,98 @@ export default function MoviesPage() {
     },
     {
       thumbnail: "/images/beast-film.webp",
-      title: "FAUVE",
+      title: "FAUVE (BEAST)",
       externalUrl: "https://vurchel.com/v/15616/beast-marie-chalandre",
       reversed: false,
       description: (
         <>
-          Film Director & animator for the short animated film BEAST.
+          Film Director & Animator for the short animated film BEAST.
           <br /><br />
-          <span className="font-[family-name:var(--font-heading)] text-[16px] tracking-[1.28px]">FESTIVALS & REWARDS</span>
+          <span className="font-[family-name:var(--font-heading)] text-[20px] text-[#DDFF6E] tracking-[1.6px]">SELECTIONS & REWARDS</span>
           <br /><br />
-          - Kinolikbez 2021 (Russie) : Silver Jean-Luc Award for Best Film in the Category « merry science » for a clever cinema.
+          • <span className="font-semibold">Kinolikbez 2021</span> (Russie) : Silver Jean-Luc Award for Best Film in the Category « merry science » for a clever cinema.
           <br />
-          - 7th Insomnia International Open-air Animation Film Festival 2019 (Russia)
+          • <span className="font-semibold">7th Insomnia International Open-air Animation Film Festival</span> 2019 (Russia)
           <br />
-          - 17th Tirana International Film Festival (TIFF) 2019 (Albania)
+          • <span className="font-semibold">17th Tirana International Film Festival (TIFF)</span> 2019 (Albania)
           <br />
-          - 17th Bogotá Short Film Festival (BOGOSHORTS) 2019 (Colombia)
+          • <span className="font-semibold">17th Bogotá Short Film Festival (BOGOSHORTS)</span> 2019 (Colombia)
           <br />
-          - Tonneins International Film Festival (IFFT) 2019 (France)
+          • <span className="font-semibold">Tonneins International Film Festival (IFFT)</span> 2019 (France)
           <br />
-          - Bronx Wolrd Film Inc, Winter Cycle 2019 (USA)
+          • <span className="font-semibold">Bronx Wolrd Film Inc</span>, Winter Cycle 2019 (USA)
           <br />
-          - Kinolikbez, animation vidéo art competition, 2021 (Russia)
+          • <span className="font-semibold">Kinolikbez</span>, animation vidéo art competition, 2021 (Russia)
         </>
       ),
+      belowImageText:
+        "A lonely fisherman's wait. Over the horizon against the expanse of the sea, time passes. Something gradually overwhelms the waiting man. We then discover that he's unstable, fragile and sadly violent. As he suffocates from within, colors appear on his skin. And then everything comes to a halt : a woman arrives like an apparition in the water.",
     },
   ];
 
   return (
     <div className="pt-[95px] bg-[#15161b] text-white min-h-screen">
       {/* Features Films */}
-      <section className="px-4 md:px-[120px] py-16">
+      <section className="px-3 md:px-[120px] py-16">
         <h2 className="text-[40px] md:text-[60px] font-[family-name:var(--font-heading)] tracking-[4.8px] mb-2">
           FEATURES FILMS
         </h2>
-        <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-10" />
+        <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-6 md:mb-10" />
         <VideoCard
           youtubeId="BFLlIR9A8DY"
           title="SAINT EX"
           className="w-full"
           onPlay={() => setVideoModal({ url: "https://www.youtube.com/embed/BFLlIR9A8DY?autoplay=1&rel=0", title: "SAINT EX" })}
         />
-        <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px] mt-6 mb-2">
+        <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px] mt-4 md:mt-6 mb-2">
           SAINT EX
         </h3>
-        <div className="w-[80px] h-[4px] bg-white mb-4" />
+        <div className="w-[80px] h-[4px] bg-white mb-3 md:mb-4" />
         <p className="text-base font-[family-name:var(--font-body)] tracking-[1.28px] max-w-3xl">
-          Compositing Artist for SAINT EX, a film directed by Pablo Agüero.
+          Saint-Ex is a French-Belgian film directed by Pablo Agüero, released in 2024.
+          <br /><br />
+          The film follows Antoine de Saint-Exupéry during his time as a pilot for the Aéropostale in Argentina in 1930.
+          <br /><br />
+          I had the opportunity to work on the film as a VFX Previsualization Artist, creating video mock-ups combining blue-screen footage with environments shot on location in Argentina. These previsualizations were used to establish and refine the shots before being handed over to the VFX teams for final production.
           <br /><br />
           Cast: Vincent Cassel, Diane Kruger, Louis Garrel.
         </p>
       </section>
 
       {/* Documentary */}
-      <section className="bg-[#131313] px-4 md:px-[120px] py-16">
+      <section className="bg-[#131313] px-3 md:px-[120px] py-16">
         <h2 className="text-[40px] md:text-[60px] font-[family-name:var(--font-heading)] tracking-[4.8px] mb-2">
           DOCUMENTARY
         </h2>
-        <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-10" />
-        <div className="flex flex-col gap-[24px]">
+        <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-6 md:mb-10" />
+        <div className="flex flex-col gap-[16px] md:gap-[24px]">
           {documentaries.map((doc) => (
             <div
               key={doc.title}
-              className={`flex flex-col md:flex-row gap-[24px] items-center ${
+              className={`flex flex-col md:flex-row gap-[16px] md:gap-[24px] items-start ${
                 doc.reversed ? "md:flex-row-reverse" : ""
               }`}
             >
-              <VideoCard
-                youtubeId={doc.youtubeId}
-                thumbnail={doc.thumbnail}
-                title={doc.title}
-                externalUrl={doc.externalUrl}
-                className="w-full md:w-[792px] flex-shrink-0"
-                onPlay={doc.embedUrl ? () => setVideoModal({ url: doc.embedUrl!, title: doc.title }) : undefined}
-              />
-              <div className="flex flex-col justify-center">
+              <div className="flex flex-col gap-3 w-full md:w-[792px] flex-shrink-0">
+                <VideoCard
+                  youtubeId={doc.youtubeId}
+                  thumbnail={doc.thumbnail}
+                  title={doc.title}
+                  externalUrl={doc.externalUrl}
+                  className="w-full"
+                  onPlay={doc.embedUrl ? () => setVideoModal({ url: doc.embedUrl!, title: doc.title }) : undefined}
+                />
+                {doc.belowImageText && (
+                  <p className="text-[#DADADA] text-base font-[family-name:var(--font-body)] tracking-[1.28px] italic">
+                    {doc.belowImageText}
+                  </p>
+                )}
+              </div>
+              <div className="flex flex-col">
                 <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px] mb-2">
                   {doc.title}
                 </h3>
-                <div className="w-[80px] h-[4px] bg-white mb-4" />
+                <div className="w-[80px] h-[4px] bg-white mb-3 md:mb-4" />
                 <p className="text-base font-[family-name:var(--font-body)] tracking-[1.28px]">
                   {doc.description}
                 </p>
