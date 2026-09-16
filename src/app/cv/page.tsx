@@ -243,7 +243,7 @@ export default function CVPage() {
       </div>
 
       <div className="flex md:hidden flex-col gap-[24px] items-center w-full">
-        <div className="flex gap-[8px] items-center w-full">
+        <div className="flex gap-[12px] items-center w-full">
           <div className="shrink-0 w-[120px] h-[120px] overflow-hidden rounded-full">
             <img
               src={asset("/images/CV/photo-profil.webp")}
