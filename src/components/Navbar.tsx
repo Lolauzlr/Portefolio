@@ -20,7 +20,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center px-4 md:px-[120px] pt-[28px] pb-[20px]">
+      <header className="fixed top-0 left-0 right-0 z-[70] flex items-center justify-center px-4 md:px-[120px] pt-[28px] pb-[20px]">
         {/* Logo - absolutely positioned left */}
         <Link href="/" className="absolute left-6 md:left-[120px] shrink-0">
           <img
@@ -72,7 +72,7 @@ export default function Navbar() {
 
       {/* Mobile overlay */}
       {menuOpen && (
-        <div className="fixed inset-0 z-40 bg-[#15161b]/95 backdrop-blur-md flex flex-col items-center justify-center gap-8 lg:hidden">
+        <div className="fixed inset-0 z-[65] bg-[#15161b]/95 backdrop-blur-md flex flex-col items-center justify-center gap-8 lg:hidden">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
