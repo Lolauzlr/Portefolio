@@ -57,8 +57,8 @@ export default function HomeContactSection() {
   return (
     <section className="bg-[#0D0D10] backdrop-blur-[3.15px] pt-6 md:pt-[40px] pb-[40px] md:pb-[80px] px-3 md:px-[120px]">
       <div className="flex flex-col gap-6 md:gap-[24px]">
-        <h2 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[80px] tracking-[3.2px] md:tracking-[6.4px] leading-none text-white">
-          Contact me
+        <h2 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[80px] tracking-[3.2px] md:tracking-[6.4px] leading-none text-white uppercase">
+          Get in touch
         </h2>
 
         <div className="flex flex-col md:flex-row gap-6 md:justify-between">
@@ -94,11 +94,21 @@ export default function HomeContactSection() {
           {/* Right: form */}
           <form
             onSubmit={(e) => e.preventDefault()}
-            className="flex flex-col gap-6 md:gap-[24px] w-full md:w-[690px] md:shrink-0"
+            className="flex flex-col gap-[40px] w-full md:w-[690px] md:shrink-0"
           >
-            <FormField label="Name" name="name" />
-            <FormField label="Email" name="email" type="email" />
-            <FormTextArea label="How can I help you?" name="message" />
+            <div className="flex flex-col gap-6 md:gap-[24px]">
+              <FormField label="Name" name="name" />
+              <FormField label="Email" name="email" type="email" />
+              <FormTextArea label="How can I help you?" name="message" />
+            </div>
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-[#0FD1EA] border-2 border-[#0FD1EA] rounded-[40px] px-[40px] py-[20px] hover:text-[#7FECFB] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] focus:text-[#7FECFB] focus:border-[#7FECFB] focus:bg-[rgba(15,209,234,0.1)] active:text-[#0897A9] active:border-[#0897A9] active:bg-[rgba(8,151,169,0.1)] transition-colors"
+              >
+                Let&apos;s talk
+              </button>
+            </div>
           </form>
         </div>
       </div>
