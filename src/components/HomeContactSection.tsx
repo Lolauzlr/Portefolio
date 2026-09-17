@@ -2,6 +2,9 @@
 
 import { socialLinks } from "@/components/SocialIcons";
 
+const FLOATING_LABEL_CLASSES =
+  "absolute left-0 top-0 font-[family-name:var(--font-body)] font-semibold text-[12px] tracking-[0.96px] text-white transition-all duration-150 pointer-events-none peer-[:placeholder-shown:not(:focus)]:top-[18px] peer-[:placeholder-shown:not(:focus)]:text-[16px] peer-[:placeholder-shown:not(:focus)]:tracking-[1.28px]";
+
 function FormField({
   label,
   name,
@@ -13,13 +16,19 @@ function FormField({
 }) {
   return (
     <div className="w-full border-b border-[#8F8F8F] focus-within:border-[#0FD1EA] pb-4 md:pb-6 transition-colors">
-      <input
-        type={type}
-        name={name}
-        placeholder={label}
-        aria-label={label}
-        className="w-full bg-transparent font-[family-name:var(--font-body)] font-semibold text-[16px] tracking-[1.28px] text-white outline-none placeholder:text-[#8F8F8F] placeholder:font-semibold hover:placeholder:text-[#7FECFB] focus:placeholder:text-[#8F8F8F] active:placeholder:text-[#0FD1EA] transition-colors"
-      />
+      <div className="relative pt-[18px]">
+        <input
+          id={name}
+          type={type}
+          name={name}
+          placeholder=" "
+          aria-label={label}
+          className="peer w-full bg-transparent font-[family-name:var(--font-body)] font-semibold text-[16px] tracking-[1.28px] text-white outline-none"
+        />
+        <label htmlFor={name} className={FLOATING_LABEL_CLASSES}>
+          {label}
+        </label>
+      </div>
     </div>
   );
 }
@@ -27,13 +36,19 @@ function FormField({
 function FormTextArea({ label, name }: { label: string; name: string }) {
   return (
     <div className="w-full border-b border-[#8F8F8F] focus-within:border-[#0FD1EA] pb-4 md:pb-6 transition-colors">
-      <textarea
-        name={name}
-        placeholder={label}
-        aria-label={label}
-        rows={4}
-        className="w-full bg-transparent resize-none font-[family-name:var(--font-body)] font-semibold text-[16px] tracking-[1.28px] text-white outline-none placeholder:text-[#8F8F8F] placeholder:font-semibold hover:placeholder:text-[#7FECFB] focus:placeholder:text-[#8F8F8F] active:placeholder:text-[#0FD1EA] transition-colors"
-      />
+      <div className="relative pt-[18px]">
+        <textarea
+          id={name}
+          name={name}
+          placeholder=" "
+          aria-label={label}
+          rows={4}
+          className="peer w-full bg-transparent resize-none font-[family-name:var(--font-body)] font-semibold text-[16px] tracking-[1.28px] text-white outline-none"
+        />
+        <label htmlFor={name} className={FLOATING_LABEL_CLASSES}>
+          {label}
+        </label>
+      </div>
     </div>
   );
 }
@@ -48,12 +63,12 @@ export default function HomeContactSection() {
 
         <div className="flex flex-col md:flex-row gap-6 md:gap-[40px]">
           {/* Left: description + contact */}
-          <div className="flex flex-col gap-6 md:gap-[40px] flex-1">
+          <div className="flex flex-col gap-6 md:gap-[40px] w-full md:w-[470px] md:shrink-0">
             <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
               Interested in my work? Please feel free to get in touch or follow me on social media
             </p>
             <div className="flex flex-col gap-4 md:gap-6">
-              <div className="flex flex-col gap-[10px] items-start">
+              <div className="flex flex-col gap-[10px] items-start self-start">
                 <h3 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
                   CONTACT
                 </h3>
@@ -79,7 +94,7 @@ export default function HomeContactSection() {
           {/* Right: form */}
           <form
             onSubmit={(e) => e.preventDefault()}
-            className="flex flex-col gap-6 md:gap-[24px] flex-1"
+            className="flex flex-col gap-6 md:gap-[24px] w-full md:w-[690px] md:shrink-0"
           >
             <FormField label="Name" name="name" />
             <FormField label="Email" name="email" type="email" />
