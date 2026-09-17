@@ -3,7 +3,7 @@
 import { socialLinks } from "@/components/SocialIcons";
 
 const FLOATING_LABEL_CLASSES =
-  "absolute left-0 top-0 font-[family-name:var(--font-body)] font-semibold text-[12px] tracking-[0.96px] text-white transition-all duration-150 pointer-events-none peer-[:placeholder-shown:not(:focus)]:top-[18px] peer-[:placeholder-shown:not(:focus)]:text-[16px] peer-[:placeholder-shown:not(:focus)]:tracking-[1.28px]";
+  "absolute left-0 top-0 font-[family-name:var(--font-body)] font-semibold text-[12px] tracking-[0.96px] text-white transition-all duration-150 pointer-events-none group-hover:text-[#7FECFB] peer-focus:text-[#8F8F8F] peer-[:placeholder-shown:not(:focus)]:top-[18px] peer-[:placeholder-shown:not(:focus)]:text-[16px] peer-[:placeholder-shown:not(:focus)]:tracking-[1.28px]";
 
 function FormField({
   label,
@@ -16,7 +16,7 @@ function FormField({
 }) {
   return (
     <div className="w-full border-b border-[#8F8F8F] focus-within:border-[#0FD1EA] pb-4 md:pb-6 transition-colors">
-      <div className="relative pt-[18px]">
+      <div className="group relative pt-[18px]">
         <input
           id={name}
           type={type}
@@ -36,7 +36,7 @@ function FormField({
 function FormTextArea({ label, name }: { label: string; name: string }) {
   return (
     <div className="w-full border-b border-[#8F8F8F] focus-within:border-[#0FD1EA] pb-4 md:pb-6 transition-colors">
-      <div className="relative pt-[18px]">
+      <div className="group relative pt-[18px]">
         <textarea
           id={name}
           name={name}
@@ -61,7 +61,7 @@ export default function HomeContactSection() {
           Contact me
         </h2>
 
-        <div className="flex flex-col md:flex-row gap-6 md:gap-[40px]">
+        <div className="flex flex-col md:flex-row gap-6 md:justify-between">
           {/* Left: description + contact */}
           <div className="flex flex-col gap-6 md:gap-[40px] w-full md:w-[470px] md:shrink-0">
             <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
