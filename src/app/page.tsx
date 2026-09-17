@@ -4,6 +4,7 @@ import Link from "next/link";
 import { asset } from "@/lib/asset";
 import HomeMoviesSection from "@/components/HomeMoviesSection";
 import HomeTrailerSection from "@/components/HomeTrailerSection";
+import HomeContactSection from "@/components/HomeContactSection";
 
 const storyboardCards = [
   { img: "/images/storyboard_scene.png", title: "SHORTFILM", desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula." },
@@ -161,6 +162,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Contact */}
+      <HomeContactSection />
     </div>
   );
 }

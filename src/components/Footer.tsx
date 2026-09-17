@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { asset } from "@/lib/asset";
 import { socialLinks } from "@/components/SocialIcons";
 
@@ -12,6 +15,9 @@ const exploreLinks = [
 ];
 
 export default function Footer() {
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+
   return (
     <footer className="backdrop-blur-[3.15px] bg-black/40 py-[24px] md:py-[40px] px-3 md:px-[120px]">
       <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-[40px]">
@@ -28,7 +34,7 @@ export default function Footer() {
         </div>
 
         {/* Center + Right */}
-        <div className="flex flex-1 flex-col md:flex-row items-start justify-between w-full gap-6 md:gap-[40px]">
+        <div className={`flex flex-1 flex-col md:flex-row items-start w-full gap-6 md:gap-[40px] ${isHome ? "md:justify-end" : "justify-between"}`}>
           {/* Explore */}
           <div className="flex flex-col gap-[16px] md:gap-[24px] items-start">
             <div className="flex flex-col gap-[10px] items-start">
@@ -51,36 +57,38 @@ export default function Footer() {
           </div>
 
           {/* Contact */}
-          <div className="flex flex-col gap-[16px] md:gap-[24px] items-start">
-            <div className="flex flex-col gap-[10px] items-start">
-              <h3 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
-                CONTACT
-              </h3>
-              <div className="w-full h-[4px] bg-[#ddff6e]" />
-            </div>
-            <div className="flex flex-col gap-[12px] items-start">
-              <a
-                href="mailto:marie.chalandre@hotmail.fr"
-                className="font-[family-name:var(--font-body)] text-white text-[16px] tracking-[1.28px] hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors"
-              >
-                marie.chalandre@hotmail.fr
-              </a>
-              <div className="flex items-center gap-[12px] md:gap-[16px]">
-                {socialLinks.map(({ Icon, alt, href }) => (
-                  <a
-                    key={alt}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={alt}
-                    className="text-[24px] text-white hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors"
-                  >
-                    <Icon />
-                  </a>
-                ))}
+          {!isHome && (
+            <div className="flex flex-col gap-[16px] md:gap-[24px] items-start">
+              <div className="flex flex-col gap-[10px] items-start">
+                <h3 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
+                  CONTACT
+                </h3>
+                <div className="w-full h-[4px] bg-[#ddff6e]" />
+              </div>
+              <div className="flex flex-col gap-[12px] items-start">
+                <a
+                  href="mailto:marie.chalandre@hotmail.fr"
+                  className="font-[family-name:var(--font-body)] text-white text-[16px] tracking-[1.28px] hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors"
+                >
+                  marie.chalandre@hotmail.fr
+                </a>
+                <div className="flex items-center gap-[12px] md:gap-[16px]">
+                  {socialLinks.map(({ Icon, alt, href }) => (
+                    <a
+                      key={alt}
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={alt}
+                      className="text-[24px] text-white hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors"
+                    >
+                      <Icon />
+                    </a>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </footer>
