@@ -53,6 +53,25 @@ function FormTextArea({ label, name }: { label: string; name: string }) {
   );
 }
 
+function handleContactSubmit(e: React.FormEvent<HTMLFormElement>) {
+  e.preventDefault();
+  const formData = new FormData(e.currentTarget);
+  const name = (formData.get("name") as string)?.trim() ?? "";
+  const email = (formData.get("email") as string)?.trim() ?? "";
+  const message = (formData.get("message") as string)?.trim() ?? "";
+
+  const subject = "Prise de contact - Portefolio";
+  const body = `${message}\n\n${name}`;
+
+  const params = [
+    `subject=${encodeURIComponent(subject)}`,
+    `body=${encodeURIComponent(body)}`,
+  ];
+  if (email) params.push(`reply-to=${encodeURIComponent(email)}`);
+
+  window.location.href = `mailto:marie.chalandre@hotmail.fr?${params.join("&")}`;
+}
+
 export default function HomeContactSection() {
   return (
     <section className="bg-[#0D0D10] backdrop-blur-[3.15px] pt-6 md:pt-[40px] pb-[40px] md:pb-[80px] px-3 md:px-[120px]">
@@ -67,14 +86,20 @@ export default function HomeContactSection() {
             <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
               Interested in my work? Please feel free to get in touch or follow me on social media
             </p>
-            <div className="flex flex-col gap-4 md:gap-6">
+            <div className="flex flex-col">
               <div className="flex flex-col gap-[10px] items-start self-start">
                 <h3 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
                   CONTACT
                 </h3>
                 <div className="w-full h-[4px] bg-[#ddff6e]" />
               </div>
-              <div className="flex items-center gap-4">
+              <a
+                href="mailto:marie.chalandre@hotmail.fr"
+                className="mt-[24px] font-[family-name:var(--font-body)] text-white text-[16px] tracking-[1.28px] hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors"
+              >
+                marie.chalandre@hotmail.fr
+              </a>
+              <div className="mt-[12px] flex items-center gap-4">
                 {socialLinks.map(({ Icon, alt, href }) => (
                   <a
                     key={alt}
@@ -93,7 +118,7 @@ export default function HomeContactSection() {
 
           {/* Right: form */}
           <form
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={handleContactSubmit}
             className="flex flex-col gap-[40px] w-full md:w-[690px] md:shrink-0"
           >
             <div className="flex flex-col gap-6 md:gap-[24px]">
