@@ -117,21 +117,33 @@ function FormTextArea({
 }
 
 type SendStatus = "idle" | "sending";
-type SnackbarState = { icon: "success" | "error"; message: string } | null;
+type SnackbarState = { icon: "success" | "error"; message: string; oneLine?: boolean } | null;
 
-function Snackbar({ icon, message, onClose }: { icon: "success" | "error"; message: string; onClose: () => void }) {
+function Snackbar({
+  icon,
+  message,
+  oneLine,
+  onClose,
+}: {
+  icon: "success" | "error";
+  message: string;
+  oneLine?: boolean;
+  onClose: () => void;
+}) {
   return (
     <div
       role="status"
       aria-live="polite"
-      className="fixed bottom-4 left-4 right-4 z-50 flex items-start gap-3 rounded-[12px] border border-[#2E2F38] bg-[#1C1D24] px-5 py-4 shadow-lg shadow-black/40 md:left-auto md:right-6 md:bottom-6 md:max-w-[420px]"
+      className={`fixed bottom-4 left-4 right-4 z-50 flex gap-3 rounded-[12px] border border-[#2E2F38] bg-[#1C1D24] px-5 py-4 shadow-lg shadow-black/40 md:left-auto md:right-6 md:bottom-6 md:max-w-[420px] ${
+        oneLine ? "items-center" : "items-start"
+      }`}
     >
       <img
         src={asset(icon === "success" ? "/images/icons/smiley.svg" : "/images/icons/smiley-x-eyes.svg")}
         alt=""
         width={24}
         height={24}
-        className="mt-0.5 shrink-0"
+        className={`shrink-0 ${oneLine ? "" : "mt-0.5"}`}
       />
       <p className="flex-1 font-[family-name:var(--font-body)] text-[14px] tracking-[1.12px] text-white">
         {message}
@@ -140,7 +152,7 @@ function Snackbar({ icon, message, onClose }: { icon: "success" | "error"; messa
         type="button"
         onClick={onClose}
         aria-label="Close notification"
-        className="shrink-0 text-[#8F8F8F] hover:text-[#7FECFB] transition-colors"
+        className="self-center shrink-0 text-[#8F8F8F] hover:text-[#7FECFB] transition-colors"
       >
         <XCircleFillIcon className="w-5 h-5" />
       </button>
@@ -186,7 +198,7 @@ export default function HomeContactSection() {
   async function handleCopyEmail() {
     try {
       await navigator.clipboard.writeText(CONTACT_EMAIL);
-      showSnackbar({ icon: "success", message: "Copied!" });
+      showSnackbar({ icon: "success", message: "Copied!", oneLine: true });
     } catch {
       // clipboard access denied or unavailable - nothing to show, mailto link still works
     }
@@ -231,7 +243,10 @@ export default function HomeContactSection() {
   }
 
   return (
-    <section className="bg-[#0D0D10] backdrop-blur-[3.15px] pt-6 md:pt-[40px] pb-[40px] md:pb-[80px] px-3 md:px-[120px]">
+    <section
+      id="contact"
+      className="scroll-mt-[120px] bg-[#0D0D10] backdrop-blur-[3.15px] pt-6 md:pt-[40px] pb-[40px] md:pb-[80px] px-3 md:px-[120px]"
+    >
       <div className="flex flex-col gap-6 md:gap-[24px]">
         <h2 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[80px] tracking-[3.2px] md:tracking-[6.4px] leading-none text-white uppercase">
           Get in touch
@@ -241,7 +256,7 @@ export default function HomeContactSection() {
           {/* Left: description + contact */}
           <div className="flex flex-col gap-6 md:gap-[40px] w-full md:w-[470px] md:shrink-0">
             <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
-              Interested in my work? Please feel free to get in touch or follow me on social media
+              Interested in my work? Please feel free to get in touch or follow me on social media.
             </p>
             <div className="flex flex-col">
               <div className="flex flex-col gap-[10px] items-start self-start">
@@ -320,7 +335,12 @@ export default function HomeContactSection() {
       </div>
 
       {snackbar && (
-        <Snackbar icon={snackbar.icon} message={snackbar.message} onClose={closeSnackbar} />
+        <Snackbar
+          icon={snackbar.icon}
+          message={snackbar.message}
+          oneLine={snackbar.oneLine}
+          onClose={closeSnackbar}
+        />
       )}
     </section>
   );
