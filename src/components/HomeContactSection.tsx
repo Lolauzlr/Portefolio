@@ -1,24 +1,54 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { asset } from "@/lib/asset";
 import { socialLinks } from "@/components/SocialIcons";
 
 // Web3Forms access keys are public identifiers meant to be embedded in
 // client-side code (see https://docs.web3forms.com) - not a secret.
 const WEB3FORMS_ACCESS_KEY = "ef5961a2-2875-452c-9c35-88058bcf4540";
 const CONTACT_EMAIL = "marie.chalandre@hotmail.fr";
+const SNACKBAR_AUTO_DISMISS_MS = 5000;
+
+function XCircleFillIcon({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
+      <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm37.66,130.34a8,8,0,0,1-11.32,11.32L128,139.31l-26.34,26.35a8,8,0,0,1-11.32-11.32L116.69,128,90.34,101.66a8,8,0,0,1,11.32-11.32L128,116.69l26.34-26.35a8,8,0,0,1,11.32,11.32L139.31,128Z" />
+    </svg>
+  );
+}
 
 const FLOATING_LABEL_CLASSES =
   "absolute left-0 top-0 font-[family-name:var(--font-body)] font-semibold text-[12px] tracking-[0.96px] text-white transition-all duration-150 pointer-events-none group-hover:text-[#7FECFB] peer-focus:text-[#8F8F8F] peer-[:placeholder-shown:not(:focus)]:top-[18px] peer-[:placeholder-shown:not(:focus)]:text-[16px] peer-[:placeholder-shown:not(:focus)]:tracking-[1.28px]";
+
+function ClearFieldButton({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      tabIndex={-1}
+      className="absolute right-0 top-[18px] text-[#8F8F8F] hover:text-[#7FECFB] transition-colors"
+    >
+      <XCircleFillIcon className="w-5 h-5" />
+    </button>
+  );
+}
 
 function FormField({
   label,
   name,
   type = "text",
+  value,
+  onChange,
+  onClear,
 }: {
   label: string;
   name: string;
   type?: string;
+  value: string;
+  onChange: (value: string) => void;
+  onClear: () => void;
 }) {
   return (
     <div className="w-full border-b border-[#8F8F8F] focus-within:border-[#0FD1EA] pb-4 md:pb-6 transition-colors">
@@ -27,34 +57,86 @@ function FormField({
           id={name}
           type={type}
           name={name}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
           placeholder=" "
           aria-label={label}
-          className="peer w-full bg-transparent font-[family-name:var(--font-body)] font-semibold text-[16px] tracking-[1.28px] text-white outline-none"
+          className="peer w-full bg-transparent pr-8 font-[family-name:var(--font-body)] font-semibold text-[16px] tracking-[1.28px] text-white outline-none"
         />
         <label htmlFor={name} className={FLOATING_LABEL_CLASSES}>
           {label}
         </label>
+        {value && <ClearFieldButton label={`Clear ${label}`} onClick={onClear} />}
       </div>
     </div>
   );
 }
 
-function FormTextArea({ label, name }: { label: string; name: string }) {
+function FormTextArea({
+  label,
+  name,
+  value,
+  onChange,
+  onClear,
+}: {
+  label: string;
+  name: string;
+  value: string;
+  onChange: (value: string) => void;
+  onClear: () => void;
+}) {
   return (
     <div className="w-full border-b border-[#8F8F8F] focus-within:border-[#0FD1EA] pb-4 md:pb-6 transition-colors">
       <div className="group relative pt-[18px]">
         <textarea
           id={name}
           name={name}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
           placeholder=" "
           aria-label={label}
           rows={4}
-          className="peer w-full bg-transparent resize-none font-[family-name:var(--font-body)] font-semibold text-[16px] tracking-[1.28px] text-white outline-none"
+          className="peer w-full bg-transparent resize-none pr-8 font-[family-name:var(--font-body)] font-semibold text-[16px] tracking-[1.28px] text-white outline-none"
         />
         <label htmlFor={name} className={FLOATING_LABEL_CLASSES}>
           {label}
         </label>
+        {value && <ClearFieldButton label={`Clear ${label}`} onClick={onClear} />}
       </div>
+    </div>
+  );
+}
+
+type SubmitStatus = "idle" | "sending" | "success" | "error";
+
+function Snackbar({ status, onClose }: { status: "success" | "error"; onClose: () => void }) {
+  const isSuccess = status === "success";
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className="fixed bottom-4 left-4 right-4 z-50 flex items-start gap-3 rounded-[12px] border border-[#2E2F38] bg-[#1C1D24] px-5 py-4 shadow-lg shadow-black/40 md:left-auto md:right-6 md:bottom-6 md:max-w-[420px]"
+    >
+      <img
+        src={asset(isSuccess ? "/images/icons/smiley.svg" : "/images/icons/smiley-x-eyes.svg")}
+        alt=""
+        width={24}
+        height={24}
+        className="mt-0.5 shrink-0"
+      />
+      <p className="flex-1 font-[family-name:var(--font-body)] text-[14px] tracking-[1.12px] text-white">
+        {isSuccess
+          ? "Message sent, thank you! I'll get back to you as soon as possible."
+          : "Oh no, I didn't receive your message! Please try again or reach out to me on social media."}
+      </p>
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Close notification"
+        className="shrink-0 text-[#8F8F8F] hover:text-[#7FECFB] transition-colors"
+      >
+        <XCircleFillIcon className="w-5 h-5" />
+      </button>
     </div>
   );
 }
@@ -68,21 +150,31 @@ function openMailtoFallback(subject: string, body: string, email: string) {
   window.location.href = `mailto:${CONTACT_EMAIL}?${params.join("&")}`;
 }
 
-type SubmitStatus = "idle" | "sending" | "success" | "error";
-
 export default function HomeContactSection() {
   const [status, setStatus] = useState<SubmitStatus>("idle");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const dismissTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (status !== "success" && status !== "error") return;
+    dismissTimer.current = setTimeout(() => setStatus("idle"), SNACKBAR_AUTO_DISMISS_MS);
+    return () => {
+      if (dismissTimer.current) clearTimeout(dismissTimer.current);
+    };
+  }, [status]);
+
+  function closeSnackbar() {
+    if (dismissTimer.current) clearTimeout(dismissTimer.current);
+    setStatus("idle");
+  }
 
   async function handleContactSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-    const name = (formData.get("name") as string)?.trim() ?? "";
-    const email = (formData.get("email") as string)?.trim() ?? "";
-    const message = (formData.get("message") as string)?.trim() ?? "";
 
     const subject = "Prise de contact - Portefolio";
-    const body = `${message}\n\n${name}`;
+    const body = `${message.trim()}\n\n${name.trim()}`;
 
     setStatus("sending");
 
@@ -93,8 +185,7 @@ export default function HomeContactSection() {
         body: JSON.stringify({
           access_key: WEB3FORMS_ACCESS_KEY,
           subject,
-          name,
-          email,
+          email: email.trim(),
           message: body,
         }),
       });
@@ -103,10 +194,12 @@ export default function HomeContactSection() {
         throw new Error(result.message || "Web3Forms request failed");
       }
       setStatus("success");
-      form.reset();
+      setName("");
+      setEmail("");
+      setMessage("");
     } catch {
       setStatus("error");
-      openMailtoFallback(subject, body, email);
+      openMailtoFallback(subject, body, email.trim());
     }
   }
 
@@ -159,11 +252,24 @@ export default function HomeContactSection() {
             className="flex flex-col gap-[40px] w-full md:w-[690px] md:shrink-0"
           >
             <div className="flex flex-col gap-6 md:gap-[24px]">
-              <FormField label="Name" name="name" />
-              <FormField label="Email" name="email" type="email" />
-              <FormTextArea label="How can I help you?" name="message" />
+              <FormField label="Name" name="name" value={name} onChange={setName} onClear={() => setName("")} />
+              <FormField
+                label="Email"
+                name="email"
+                type="email"
+                value={email}
+                onChange={setEmail}
+                onClear={() => setEmail("")}
+              />
+              <FormTextArea
+                label="How can I help you?"
+                name="message"
+                value={message}
+                onChange={setMessage}
+                onClear={() => setMessage("")}
+              />
             </div>
-            <div className="flex flex-col items-end gap-3">
+            <div className="flex justify-end">
               <button
                 type="submit"
                 disabled={status === "sending"}
@@ -171,20 +277,14 @@ export default function HomeContactSection() {
               >
                 {status === "sending" ? "Sending..." : "Let's talk"}
               </button>
-              {status === "success" && (
-                <p className="font-[family-name:var(--font-body)] text-[14px] text-[#7FECFB]">
-                  Message sent, thank you!
-                </p>
-              )}
-              {status === "error" && (
-                <p className="font-[family-name:var(--font-body)] text-[14px] text-[#8F8F8F]">
-                  Couldn&apos;t send automatically, opening your mail app instead.
-                </p>
-              )}
             </div>
           </form>
         </div>
       </div>
+
+      {(status === "success" || status === "error") && (
+        <Snackbar status={status} onClose={closeSnackbar} />
+      )}
     </section>
   );
 }
