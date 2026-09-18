@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { asset } from "@/lib/asset";
 import { socialLinks } from "@/components/SocialIcons";
 
@@ -134,7 +135,7 @@ function Snackbar({
     <div
       role="status"
       aria-live="polite"
-      className={`fixed bottom-4 left-4 right-4 z-50 flex gap-3 rounded-[12px] border border-[#2E2F38] bg-[#1C1D24] px-5 py-4 shadow-lg shadow-black/40 md:left-auto md:right-6 md:bottom-6 md:max-w-[420px] ${
+      className={`fixed bottom-[calc(env(safe-area-inset-bottom)+84px)] left-4 right-4 z-50 flex gap-3 rounded-[12px] border border-[#2E2F38] bg-[#1C1D24] px-5 py-4 shadow-lg shadow-black/40 md:left-auto md:right-6 md:bottom-6 md:max-w-[420px] ${
         oneLine ? "items-center" : "items-start"
       }`}
     >
@@ -334,14 +335,20 @@ export default function HomeContactSection() {
         </div>
       </div>
 
-      {snackbar && (
-        <Snackbar
-          icon={snackbar.icon}
-          message={snackbar.message}
-          oneLine={snackbar.oneLine}
-          onClose={closeSnackbar}
-        />
-      )}
+      {snackbar &&
+        // Portaled to document.body: this section's backdrop-blur (like
+        // `filter`) establishes a new containing block for `position:
+        // fixed` descendants, which would otherwise pin the snackbar to
+        // the bottom of the section instead of the viewport.
+        createPortal(
+          <Snackbar
+            icon={snackbar.icon}
+            message={snackbar.message}
+            oneLine={snackbar.oneLine}
+            onClose={closeSnackbar}
+          />,
+          document.body
+        )}
     </section>
   );
 }
