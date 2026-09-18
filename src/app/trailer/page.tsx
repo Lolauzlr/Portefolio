@@ -389,88 +389,84 @@ export default function TrailerPage() {
   return (
     <div className="bg-[#15161b] text-white min-h-screen">
       {/* Hero Section - no top padding, video bleeds under navbar */}
-      {/* Mobile: video sits right under the header at its own 16:9 ratio
-          (no full-screen letterboxing), and the caption card follows it
-          in normal flow instead of overlaying - a shorter video area
-          doesn't leave room to overlay it without covering the header.
-          Desktop: unchanged - video and card both absolutely fill/overlay
-          the fixed 810px section as before. */}
-      <section ref={heroRef} className="relative w-full overflow-hidden md:h-[810px]">
-        {/* Video + its overlay controls */}
-        <div className="relative w-full aspect-video md:absolute md:inset-0 md:aspect-auto">
-          {/* YouTube video background via API */}
+      {/* Mobile: section is a 9:16 portrait frame (not the full 100vh) so
+          the video crop is less extreme, and the video covers it fully
+          (percentage-based, since the frame's height is derived from its
+          width via aspect-ratio rather than the viewport) - same idea as
+          desktop's cover-fill, just scoped to a shorter box. The caption
+          card overlays its bottom edge, same as desktop; 9:16 leaves
+          enough room for that without reaching the header. */}
+      <section ref={heroRef} className="relative aspect-[9/16] md:aspect-auto md:h-[810px] w-full overflow-hidden">
+        {/* YouTube video background via API */}
+        <div
+          ref={containerRef}
+          className="absolute inset-0 overflow-hidden pointer-events-none"
+        >
           <div
-            ref={containerRef}
-            className="absolute inset-0 overflow-hidden pointer-events-none"
-          >
-            <div
-              id="yt-bg-player"
-              className="absolute inset-0 w-full h-full md:inset-auto md:top-1/2 md:left-1/2 md:w-[177.78vh] md:h-[100vh] md:min-w-full md:min-h-full md:-translate-x-1/2 md:-translate-y-1/2"
-            />
-          </div>
-
-          {/* Click zone - opens overlay, or pauses on hover-visible button */}
-          <button
-            className="absolute inset-0 w-full h-full z-10 cursor-pointer group"
-            onClick={() => setVideoModal({ videoId: "OLEZv_Qyb6Q", title: "ELTA: DEFY ALL GODS • REVEAL TRAILER" })}
-            aria-label="Ouvrir la vidéo"
+            id="yt-bg-player"
+            className="absolute top-1/2 left-1/2 w-[316.05%] h-full -translate-x-1/2 -translate-y-1/2 md:w-[177.78vh] md:h-[100vh] md:min-w-full md:min-h-full"
           />
-
-          {/* Pause button - visible on mouse move, hides after 5s idle */}
-          {isPlaying && showPause && (
-            <button
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[80px] h-[80px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-opacity duration-300 cursor-pointer"
-              onClick={(e) => { e.stopPropagation(); togglePlay(); }}
-              aria-label="Pause"
-            >
-              <svg width="32" height="32" viewBox="0 0 20 20" fill="white">
-                <rect x="4" y="3" width="4" height="14" rx="1" />
-                <rect x="12" y="3" width="4" height="14" rx="1" />
-              </svg>
-            </button>
-          )}
-
-          {/* Play button - visible when paused */}
-          {!isPlaying && (
-            <button
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[80px] h-[80px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
-              onClick={(e) => { e.stopPropagation(); togglePlay(); }}
-              aria-label="Play"
-            >
-              <svg width="32" height="32" viewBox="0 0 20 20" fill="white">
-                <polygon points="6,3 17,10 6,17" />
-              </svg>
-            </button>
-          )}
-
-          {/* Sound toggle - always visible, aligned right with ME CONTACTER, bottom with pentagon on desktop */}
-          <button
-            onClick={toggleMute}
-            className="absolute right-4 md:right-[24px] bottom-4 md:bottom-[24px] z-20 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
-            aria-label={isMuted ? "Activer le son" : "Couper le son"}
-          >
-            {isMuted ? (
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
-                <line x1="23" y1="9" x2="17" y2="15" />
-                <line x1="17" y1="9" x2="23" y2="15" />
-              </svg>
-            ) : (
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
-                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-                <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-              </svg>
-            )}
-          </button>
         </div>
 
-        {/* Pentagon cadre - small chamfer top-right corner. Mobile: in
-            normal flow right below the video. Desktop: absolutely
-            overlaid at the section's bottom, unchanged. */}
+        {/* Click zone - opens overlay, or pauses on hover-visible button */}
+        <button
+          className="absolute inset-0 w-full h-full z-10 cursor-pointer group"
+          onClick={() => setVideoModal({ videoId: "OLEZv_Qyb6Q", title: "ELTA: DEFY ALL GODS • REVEAL TRAILER" })}
+          aria-label="Ouvrir la vidéo"
+        />
+
+        {/* Pause button - visible on mouse move, hides after 5s idle */}
+        {isPlaying && showPause && (
+          <button
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[80px] h-[80px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-opacity duration-300 cursor-pointer"
+            onClick={(e) => { e.stopPropagation(); togglePlay(); }}
+            aria-label="Pause"
+          >
+            <svg width="32" height="32" viewBox="0 0 20 20" fill="white">
+              <rect x="4" y="3" width="4" height="14" rx="1" />
+              <rect x="12" y="3" width="4" height="14" rx="1" />
+            </svg>
+          </button>
+        )}
+
+        {/* Play button - visible when paused */}
+        {!isPlaying && (
+          <button
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[80px] h-[80px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+            onClick={(e) => { e.stopPropagation(); togglePlay(); }}
+            aria-label="Play"
+          >
+            <svg width="32" height="32" viewBox="0 0 20 20" fill="white">
+              <polygon points="6,3 17,10 6,17" />
+            </svg>
+          </button>
+        )}
+
+        {/* Sound toggle - always visible, aligned right with ME CONTACTER, bottom with pentagon */}
+        <button
+          onClick={toggleMute}
+          className="absolute right-4 md:right-[24px] bottom-8 md:bottom-[24px] z-20 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+          aria-label={isMuted ? "Activer le son" : "Couper le son"}
+        >
+          {isMuted ? (
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
+              <line x1="23" y1="9" x2="17" y2="15" />
+              <line x1="17" y1="9" x2="23" y2="15" />
+            </svg>
+          ) : (
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+            </svg>
+          )}
+        </button>
+
+        {/* Pentagon cadre - small chamfer top-right corner */}
         <div
           ref={cadreRef}
-          className="relative w-auto mx-4 mt-4 md:absolute md:mx-0 md:mt-0 md:left-[24px] md:bottom-[24px] md:w-[792px] z-20 pointer-events-auto"
+          className="absolute left-4 md:left-[24px] bottom-8 md:bottom-[24px] w-[calc(100%-2rem)] md:w-[792px] z-20 pointer-events-auto"
         >
           {/* Background with blur + pentagon clip */}
           <div
@@ -731,7 +727,7 @@ export default function TrailerPage() {
       {/* Screenshots Carousel Overlay */}
       {screenshotsData && (
         <div
-          className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center overflow-y-auto md:overflow-hidden"
+          className="fixed inset-0 z-[100] bg-black/95 flex items-start md:items-center justify-center overflow-y-auto md:overflow-hidden"
           onClick={(e) => {
             if (e.target === e.currentTarget) setScreenshotsData(null);
           }}
@@ -749,10 +745,11 @@ export default function TrailerPage() {
           <div className="w-full min-h-full md:h-full flex flex-col md:flex-row">
             {/* Left: Carousel */}
             <div className="relative w-full flex flex-col md:flex-1 md:min-h-0">
-              {/* Main image area - fixed 16:9 on mobile so the screenshot
-                  shows full-frame instead of being squeezed by the info
-                  panel below; desktop keeps its original flexible height. */}
-              <div className="relative w-full aspect-video md:aspect-auto md:flex-1 flex items-center justify-center min-h-0">
+              {/* Main image area - mobile: fixed 9:16 portrait frame, fully
+                  filled (object-cover, no letterboxing) instead of being
+                  squeezed by the info panel below; desktop keeps its
+                  original flexible-height, letterboxed layout. */}
+              <div className="relative w-full aspect-[9/16] md:aspect-auto md:flex-1 flex items-center justify-center min-h-0">
                 {/* Counter */}
                 <span className="absolute top-4 left-4 md:top-6 md:left-6 font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white z-10">
                   {screenshotIndex + 1}/{screenshotsData.screenshots.length}
@@ -771,14 +768,21 @@ export default function TrailerPage() {
                   </button>
                 )}
 
-                {/* Image + caption */}
-                <div className="flex flex-col items-start w-full h-full min-h-0 p-3 md:p-12">
+                {/* Image - mobile: fills the 9:16 frame edge-to-edge
+                    (object-cover, cropped); desktop: unchanged letterboxed
+                    image + caption inside a padded box. */}
+                <img
+                  src={asset(screenshotsData.screenshots[screenshotIndex].src)}
+                  alt={screenshotsData.screenshots[screenshotIndex].tag}
+                  className="absolute inset-0 w-full h-full object-cover md:hidden"
+                />
+                <div className="hidden md:flex md:flex-col md:items-start md:h-full md:min-h-0 md:p-12">
                   <img
                     src={asset(screenshotsData.screenshots[screenshotIndex].src)}
                     alt={screenshotsData.screenshots[screenshotIndex].tag}
-                    className="flex-1 min-h-0 max-w-full object-contain"
+                    className="md:flex-1 md:min-h-0 md:max-w-full object-contain"
                   />
-                  <p className="mt-1 md:mt-3 font-[family-name:var(--font-body)] text-[12px] md:text-[16px] font-normal text-[#8F8F8F]">
+                  <p className="mt-3 font-[family-name:var(--font-body)] text-[16px] font-normal text-[#8F8F8F]">
                     {screenshotsData.screenshots[screenshotIndex].description}
                   </p>
                 </div>
@@ -796,6 +800,11 @@ export default function TrailerPage() {
                   </button>
                 )}
               </div>
+
+              {/* Mobile-only caption, below the filled image */}
+              <p className="md:hidden px-3 pt-2 font-[family-name:var(--font-body)] text-[12px] font-normal text-[#8F8F8F]">
+                {screenshotsData.screenshots[screenshotIndex].description}
+              </p>
 
               {/* Thumbnails strip */}
               {screenshotsData.screenshots.length > 1 && (
