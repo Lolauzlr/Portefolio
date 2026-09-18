@@ -389,81 +389,88 @@ export default function TrailerPage() {
   return (
     <div className="bg-[#15161b] text-white min-h-screen">
       {/* Hero Section - no top padding, video bleeds under navbar */}
-      <section ref={heroRef} className="relative h-[100vh] md:h-[810px] w-full overflow-hidden">
-        {/* YouTube video background via API */}
-        <div
-          ref={containerRef}
-          className="absolute inset-0 overflow-hidden pointer-events-none"
-        >
-          {/* Mobile: full-width 16:9 video, vertically centered and
-              letterboxed within the 100vh section instead of being
-              cropped to cover it. Desktop: unchanged cover-fill via the
-              vh-based width/height. */}
+      {/* Mobile: video sits right under the header at its own 16:9 ratio
+          (no full-screen letterboxing), and the caption card follows it
+          in normal flow instead of overlaying - a shorter video area
+          doesn't leave room to overlay it without covering the header.
+          Desktop: unchanged - video and card both absolutely fill/overlay
+          the fixed 810px section as before. */}
+      <section ref={heroRef} className="relative w-full overflow-hidden md:h-[810px]">
+        {/* Video + its overlay controls */}
+        <div className="relative w-full aspect-video md:absolute md:inset-0 md:aspect-auto">
+          {/* YouTube video background via API */}
           <div
-            id="yt-bg-player"
-            className="absolute top-1/2 left-0 w-full aspect-video -translate-y-1/2 md:left-1/2 md:aspect-auto md:w-[177.78vh] md:h-[100vh] md:min-w-full md:min-h-full md:-translate-x-1/2"
+            ref={containerRef}
+            className="absolute inset-0 overflow-hidden pointer-events-none"
+          >
+            <div
+              id="yt-bg-player"
+              className="absolute inset-0 w-full h-full md:inset-auto md:top-1/2 md:left-1/2 md:w-[177.78vh] md:h-[100vh] md:min-w-full md:min-h-full md:-translate-x-1/2 md:-translate-y-1/2"
+            />
+          </div>
+
+          {/* Click zone - opens overlay, or pauses on hover-visible button */}
+          <button
+            className="absolute inset-0 w-full h-full z-10 cursor-pointer group"
+            onClick={() => setVideoModal({ videoId: "OLEZv_Qyb6Q", title: "ELTA: DEFY ALL GODS • REVEAL TRAILER" })}
+            aria-label="Ouvrir la vidéo"
           />
+
+          {/* Pause button - visible on mouse move, hides after 5s idle */}
+          {isPlaying && showPause && (
+            <button
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[80px] h-[80px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-opacity duration-300 cursor-pointer"
+              onClick={(e) => { e.stopPropagation(); togglePlay(); }}
+              aria-label="Pause"
+            >
+              <svg width="32" height="32" viewBox="0 0 20 20" fill="white">
+                <rect x="4" y="3" width="4" height="14" rx="1" />
+                <rect x="12" y="3" width="4" height="14" rx="1" />
+              </svg>
+            </button>
+          )}
+
+          {/* Play button - visible when paused */}
+          {!isPlaying && (
+            <button
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[80px] h-[80px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+              onClick={(e) => { e.stopPropagation(); togglePlay(); }}
+              aria-label="Play"
+            >
+              <svg width="32" height="32" viewBox="0 0 20 20" fill="white">
+                <polygon points="6,3 17,10 6,17" />
+              </svg>
+            </button>
+          )}
+
+          {/* Sound toggle - always visible, aligned right with ME CONTACTER, bottom with pentagon on desktop */}
+          <button
+            onClick={toggleMute}
+            className="absolute right-4 md:right-[24px] bottom-4 md:bottom-[24px] z-20 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+            aria-label={isMuted ? "Activer le son" : "Couper le son"}
+          >
+            {isMuted ? (
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
+                <line x1="23" y1="9" x2="17" y2="15" />
+                <line x1="17" y1="9" x2="23" y2="15" />
+              </svg>
+            ) : (
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+              </svg>
+            )}
+          </button>
         </div>
 
-        {/* Click zone - opens overlay, or pauses on hover-visible button */}
-        <button
-          className="absolute inset-0 w-full h-full z-10 cursor-pointer group"
-          onClick={() => setVideoModal({ videoId: "OLEZv_Qyb6Q", title: "ELTA: DEFY ALL GODS • REVEAL TRAILER" })}
-          aria-label="Ouvrir la vidéo"
-        />
-
-        {/* Pause button - visible on mouse move, hides after 5s idle */}
-        {isPlaying && showPause && (
-          <button
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[80px] h-[80px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-opacity duration-300 cursor-pointer"
-            onClick={(e) => { e.stopPropagation(); togglePlay(); }}
-            aria-label="Pause"
-          >
-            <svg width="32" height="32" viewBox="0 0 20 20" fill="white">
-              <rect x="4" y="3" width="4" height="14" rx="1" />
-              <rect x="12" y="3" width="4" height="14" rx="1" />
-            </svg>
-          </button>
-        )}
-
-        {/* Play button - visible when paused */}
-        {!isPlaying && (
-          <button
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[80px] h-[80px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
-            onClick={(e) => { e.stopPropagation(); togglePlay(); }}
-            aria-label="Play"
-          >
-            <svg width="32" height="32" viewBox="0 0 20 20" fill="white">
-              <polygon points="6,3 17,10 6,17" />
-            </svg>
-          </button>
-        )}
-
-        {/* Sound toggle - always visible, aligned right with ME CONTACTER, bottom with pentagon */}
-        <button
-          onClick={toggleMute}
-          className="absolute right-4 md:right-[24px] bottom-8 md:bottom-[24px] z-20 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
-          aria-label={isMuted ? "Activer le son" : "Couper le son"}
-        >
-          {isMuted ? (
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
-              <line x1="23" y1="9" x2="17" y2="15" />
-              <line x1="17" y1="9" x2="23" y2="15" />
-            </svg>
-          ) : (
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
-              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-              <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-            </svg>
-          )}
-        </button>
-
-        {/* Pentagon cadre - small chamfer top-right corner */}
+        {/* Pentagon cadre - small chamfer top-right corner. Mobile: in
+            normal flow right below the video. Desktop: absolutely
+            overlaid at the section's bottom, unchanged. */}
         <div
           ref={cadreRef}
-          className="absolute left-4 md:left-[24px] bottom-8 md:bottom-[24px] w-[calc(100%-2rem)] md:w-[792px] z-20 pointer-events-auto"
+          className="relative w-auto mx-4 mt-4 md:absolute md:mx-0 md:mt-0 md:left-[24px] md:bottom-[24px] md:w-[792px] z-20 pointer-events-auto"
         >
           {/* Background with blur + pentagon clip */}
           <div
