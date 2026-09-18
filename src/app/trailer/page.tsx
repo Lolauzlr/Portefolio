@@ -395,16 +395,13 @@ export default function TrailerPage() {
           ref={containerRef}
           className="absolute inset-0 overflow-hidden pointer-events-none"
         >
+          {/* Mobile: full-width 16:9 video, vertically centered and
+              letterboxed within the 100vh section instead of being
+              cropped to cover it. Desktop: unchanged cover-fill via the
+              vh-based width/height. */}
           <div
             id="yt-bg-player"
-            className="absolute top-1/2 left-1/2"
-            style={{
-              width: "177.78vh",
-              height: "100vh",
-              minWidth: "100%",
-              minHeight: "100%",
-              transform: "translate(-50%, -50%)",
-            }}
+            className="absolute top-1/2 left-0 w-full aspect-video -translate-y-1/2 md:left-1/2 md:aspect-auto md:w-[177.78vh] md:h-[100vh] md:min-w-full md:min-h-full md:-translate-x-1/2"
           />
         </div>
 
@@ -727,18 +724,30 @@ export default function TrailerPage() {
       {/* Screenshots Carousel Overlay */}
       {screenshotsData && (
         <div
-          className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
+          className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center overflow-y-auto md:overflow-hidden"
           onClick={(e) => {
             if (e.target === e.currentTarget) setScreenshotsData(null);
           }}
         >
-          <div className="w-full h-full flex flex-col md:flex-row">
+          {/* Mobile-only close button, always reachable without scrolling
+              past the image/thumbnails/info panel below. */}
+          <button
+            onClick={() => setScreenshotsData(null)}
+            className="md:hidden fixed top-4 right-4 z-20 text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
+            aria-label="Fermer"
+          >
+            ✕
+          </button>
+
+          <div className="w-full min-h-full md:h-full flex flex-col md:flex-row">
             {/* Left: Carousel */}
-            <div className="relative flex-1 flex flex-col min-h-0">
-              {/* Main image area */}
-              <div className="relative flex-1 flex items-center justify-center min-h-0">
+            <div className="relative w-full flex flex-col md:flex-1 md:min-h-0">
+              {/* Main image area - fixed 16:9 on mobile so the screenshot
+                  shows full-frame instead of being squeezed by the info
+                  panel below; desktop keeps its original flexible height. */}
+              <div className="relative w-full aspect-video md:aspect-auto md:flex-1 flex items-center justify-center min-h-0">
                 {/* Counter */}
-                <span className="absolute top-6 left-6 font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white z-10">
+                <span className="absolute top-4 left-4 md:top-6 md:left-6 font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white z-10">
                   {screenshotIndex + 1}/{screenshotsData.screenshots.length}
                 </span>
 
@@ -756,13 +765,13 @@ export default function TrailerPage() {
                 )}
 
                 {/* Image + caption */}
-                <div className="flex flex-col items-start h-full min-h-0 p-12">
+                <div className="flex flex-col items-start w-full h-full min-h-0 p-3 md:p-12">
                   <img
                     src={asset(screenshotsData.screenshots[screenshotIndex].src)}
                     alt={screenshotsData.screenshots[screenshotIndex].tag}
                     className="flex-1 min-h-0 max-w-full object-contain"
                   />
-                  <p className="mt-3 font-[family-name:var(--font-body)] text-[16px] font-normal text-[#8F8F8F]">
+                  <p className="mt-1 md:mt-3 font-[family-name:var(--font-body)] text-[12px] md:text-[16px] font-normal text-[#8F8F8F]">
                     {screenshotsData.screenshots[screenshotIndex].description}
                   </p>
                 </div>
@@ -807,10 +816,10 @@ export default function TrailerPage() {
 
             {/* Right: Info panel */}
             <div className="w-full md:w-[400px] flex flex-col p-8 md:p-10 bg-[#15161b] overflow-y-auto">
-              {/* Close button */}
+              {/* Close button - hidden on mobile in favor of the fixed one above */}
               <button
                 onClick={() => setScreenshotsData(null)}
-                className="self-end text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
+                className="hidden md:block self-end text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
                 aria-label="Fermer"
               >
                 ✕
