@@ -33,10 +33,13 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Center + Right */}
-        <div className={`flex flex-1 flex-col md:flex-row items-start w-full gap-6 md:gap-[40px] ${isHome ? "md:justify-end" : "justify-between"}`}>
+        {/* Center + Right. `contents` on mobile lets Explore and Contact
+            join the outer flex-col directly under the logo, so Contact
+            can be reordered above Explore via order-*; md: restores this
+            as its own flex-row group. */}
+        <div className={`contents md:flex md:flex-1 md:flex-row md:items-start md:w-full md:gap-[40px] ${isHome ? "md:justify-end" : "md:justify-between"}`}>
           {/* Explore */}
-          <div className="flex flex-col gap-[16px] md:gap-[24px] items-start">
+          <div className="order-2 md:order-none flex flex-col gap-[16px] md:gap-[24px] items-start">
             <div className="flex flex-col gap-[10px] items-start">
               <h3 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
                 EXPLORE
@@ -56,39 +59,38 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Contact */}
-          {!isHome && (
-            <div className="flex flex-col gap-[16px] md:gap-[24px] items-start">
-              <div className="flex flex-col gap-[10px] items-start">
-                <h3 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
-                  CONTACT
-                </h3>
-                <div className="w-full h-[4px] bg-[#ddff6e]" />
-              </div>
-              <div className="flex flex-col gap-[12px] items-start">
-                <a
-                  href="mailto:marie.chalandre@hotmail.fr"
-                  className="font-[family-name:var(--font-body)] text-white text-[16px] tracking-[1.28px] hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors"
-                >
-                  marie.chalandre@hotmail.fr
-                </a>
-                <div className="flex items-center gap-[12px] md:gap-[16px]">
-                  {socialLinks.map(({ Icon, alt, href }) => (
-                    <a
-                      key={alt}
-                      href={href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={alt}
-                      className="text-[24px] text-white hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors"
-                    >
-                      <Icon />
-                    </a>
-                  ))}
-                </div>
+          {/* Contact - always under the logo on mobile; on desktop, hidden
+              on the home page (its own contact form covers this already). */}
+          <div className={`order-1 md:order-none flex-col gap-[16px] md:gap-[24px] items-start ${isHome ? "flex md:hidden" : "flex"}`}>
+            <div className="flex flex-col gap-[10px] items-start">
+              <h3 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
+                CONTACT
+              </h3>
+              <div className="w-full h-[4px] bg-[#ddff6e]" />
+            </div>
+            <div className="flex flex-col gap-[12px] items-start">
+              <a
+                href="mailto:marie.chalandre@hotmail.fr"
+                className="font-[family-name:var(--font-body)] text-white text-[16px] tracking-[1.28px] hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors"
+              >
+                marie.chalandre@hotmail.fr
+              </a>
+              <div className="flex items-center gap-[12px] md:gap-[16px]">
+                {socialLinks.map(({ Icon, alt, href }) => (
+                  <a
+                    key={alt}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={alt}
+                    className="text-[24px] text-white hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors"
+                  >
+                    <Icon />
+                  </a>
+                ))}
               </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </footer>

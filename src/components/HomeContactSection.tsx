@@ -262,7 +262,9 @@ export default function HomeContactSection() {
             <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
               Interested in my work? Please feel free to get in touch or follow me on social media.
             </p>
-            <div className="order-3 md:order-none flex flex-col">
+            {/* Hidden on mobile: the footer now shows this contact info
+                under the logo instead. */}
+            <div className="hidden md:flex md:flex-col">
               <div className="flex flex-col gap-[10px] items-start self-start">
                 <h3 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
                   CONTACT
