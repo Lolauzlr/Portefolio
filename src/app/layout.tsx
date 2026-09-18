@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bebas_Neue, Roboto } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -34,6 +34,13 @@ export const metadata: Metadata = {
       "Cinematic Artist, Concept Artist & Storyboarder",
     type: "website",
   },
+};
+
+// viewport-fit: cover is required for env(safe-area-inset-*) to resolve to
+// non-zero values instead of 0 - used to keep fixed elements (like the
+// contact form snackbar) clear of iOS Safari's floating bottom bar.
+export const viewport: Viewport = {
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
