@@ -16,7 +16,11 @@ const SPINE_DEPTH = 48;
 // Resting angle is steep enough that the inactive book projects to
 // roughly the Figma spec's 117px peek sliver (350 * cos(70deg) =~ 120px).
 const BASE_TILT_DEG = 70;
-const HOVER_TILT_DEG = 40;
+// Forward pop (translateZ) applied to the active book and to a hovered
+// inactive book, so both read at the same "brought forward" depth level
+// while the inactive one keeps its spine closed (angle never changes on
+// hover — only depth does).
+const ACTIVE_Z = 90;
 const TRANSITION = "transform 550ms cubic-bezier(0.22, 1, 0.36, 1)";
 
 function BookSlider({
@@ -68,9 +72,9 @@ function BookCover({
   onHover: () => void;
   onHoverEnd: () => void;
 }) {
-  const restAngle = isHovered ? HOVER_TILT_DEG : BASE_TILT_DEG;
-  const angle = isActive ? 0 : restAngle;
+  const angle = isActive ? 0 : BASE_TILT_DEG;
   const signedAngle = slot === "left" ? angle : -angle;
+  const z = isActive || isHovered ? ACTIVE_Z : 0;
   // The hinge (rotation origin) sits at the inner edge, facing the other
   // book; the spine face is built on the opposite (outer) edge.
   const hingeSide = slot === "left" ? "right" : "left";
@@ -99,7 +103,7 @@ function BookCover({
         className="absolute inset-0"
         style={{
           transformStyle: "preserve-3d",
-          transform: `rotateY(${signedAngle}deg)`,
+          transform: `translateZ(${z}px) rotateY(${signedAngle}deg)`,
           transformOrigin: `${hingeSide} center`,
           transition: TRANSITION,
         }}
