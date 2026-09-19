@@ -7,9 +7,12 @@ import ExpandableText from "@/components/ExpandableText";
 const loremIpsum =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque. Vivamus dapibus semper justo, interdum tincidunt tellus placerat a. Quisque vel orci et nulla vestibulum interdum.";
 
+const bookDescription =
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque. Vivamus dapibus semper justo, interdum tincidunt tellus placerat a. Quisque vel orci et nulla vestibulum interdum.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in";
+
 const books: Book[] = [
-  { title: "No Finder", description: loremIpsum.repeat(3), href: "#" },
-  { title: "Old Knight", description: loremIpsum.repeat(3), href: "#" },
+  { title: "No Finder", description: bookDescription, href: "#" },
+  { title: "Old Knight", description: bookDescription, href: "#" },
 ];
 
 const placeholderSlides = (count: number): CarouselSlide[] =>
