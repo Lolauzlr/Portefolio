@@ -8,6 +8,8 @@ export type Book = {
   title: string;
   description: string;
   href: string;
+  coverImg: string; // used for both the full Cover and the CoverPeek sliver
+  spineImg: string;
 };
 
 // ---------------------------------------------------------------------
@@ -136,6 +138,15 @@ function BookSlot({
   const hingeOrigin = `${mirrorShape ? "left" : "right"} center`;
   const coverScale = isActive ? 1 : TURN_SCALE;
   const peekScale = isActive ? TURN_SCALE : 1;
+  // Peek/connector/spine are always laid out spine-at-right internally
+  // (mirroring happens once, below, on the whole group) so their own
+  // squeeze always hinges at "right" — never combine this with the
+  // mirror's scaleX(-1) on the same element: a negative scale anchored
+  // at an edge (not the center) shifts the whole box sideways by its own
+  // width instead of just flipping its content, pushing it outside the
+  // button's overflow-hidden bounds (found by comparing this group's
+  // getBoundingClientRect against the button's — it landed one full
+  // width to the left, clipped away entirely).
 
   return (
     <button
@@ -162,51 +173,62 @@ function BookSlot({
           nothing drifts apart or re-flows mid-transition. */}
       {/* Cover */}
       <div
-        className="absolute inset-y-0 flex items-center justify-center bg-white px-6"
+        className="absolute inset-y-0 bg-white bg-cover bg-center"
         style={{
           [mirrorShape ? "left" : "right"]: 0,
           width: dims.bookW,
+          backgroundImage: `url(${book.coverImg})`,
           transformOrigin: hingeOrigin,
           transform: `scaleX(${coverScale})`,
           ...fade(isActive),
         }}
-      >
-        <span className="font-[family-name:var(--font-heading)] text-[16px] md:text-[24px] tracking-[1.76px] text-[#15161b] text-center uppercase">
-          {book.title}
-        </span>
-      </div>
+      />
       {/* CoverPeek + Spine — two adjacent, non-overlapping shapes (0 gap
           between their boxes) whose own cut edges don't quite meet; the
           connector plugs exactly that leftover gap so the two read as one
-          continuous silhouette instead of two separate tiles. */}
+          continuous silhouette instead of two separate tiles. The mirror
+          (outer, center-origin) and the squeeze (inner, right-edge-origin)
+          are two separate elements so their transforms never share an
+          origin (see the note above); each shape's own image gets a
+          counter scaleX(-1) so the artwork it shows never mirrors. */}
       <div
         className="absolute inset-y-0"
         style={{
           [mirrorShape ? "left" : "right"]: 0,
           width: dims.peekW + dims.spineW,
-          transformOrigin: hingeOrigin,
-          transform: `scaleX(${mirrorShape ? -peekScale : peekScale})`,
+          transform: mirrorShape ? "scaleX(-1)" : undefined,
           ...fade(!isActive),
         }}
       >
         <div
-          className="absolute inset-y-0 left-0 bg-white"
-          style={{ width: dims.peekW, clipPath: COVER_PEEK_CLIP }}
-        />
-        <div
-          className="absolute inset-y-0 bg-white"
-          style={{ left: connector.left, width: connector.width, clipPath: connector.clipPath }}
-        />
-        <div
-          className="absolute inset-y-0 right-0 flex items-center justify-center overflow-hidden bg-[#f2efe9]"
-          style={{ width: dims.spineW, clipPath: SPINE_CLIP }}
+          className="absolute inset-0"
+          style={{
+            transformOrigin: "right center",
+            transform: `scaleX(${peekScale})`,
+            transition: `transform ${TRANSITION_MS}ms ${EASE}`,
+          }}
         >
-          <span
-            className="font-[family-name:var(--font-heading)] text-[11px] md:text-[15px] tracking-[1.04px] text-[#15161b] uppercase whitespace-nowrap"
-            style={{ writingMode: "vertical-rl", transform: mirrorShape ? "scaleX(-1)" : undefined }}
+          <div className="absolute inset-y-0 left-0" style={{ width: dims.peekW, clipPath: COVER_PEEK_CLIP }}>
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${book.coverImg})`, transform: mirrorShape ? "scaleX(-1)" : undefined }}
+            />
+          </div>
+          <div
+            className="absolute inset-y-0"
+            style={{ left: connector.left, width: connector.width, clipPath: connector.clipPath }}
           >
-            {book.title}
-          </span>
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${book.coverImg})`, transform: mirrorShape ? "scaleX(-1)" : undefined }}
+            />
+          </div>
+          <div className="absolute inset-y-0 right-0" style={{ width: dims.spineW, clipPath: SPINE_CLIP }}>
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${book.spineImg})`, transform: mirrorShape ? "scaleX(-1)" : undefined }}
+            />
+          </div>
         </div>
       </div>
     </button>
