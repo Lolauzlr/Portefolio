@@ -48,6 +48,7 @@ const DESKTOP: Dims = dimsFor(385, 535, 130, 1800, 12);
 const MOBILE: Dims = dimsFor(208, 289, 68, 1100, 8);
 
 const ACTIVE_Z = 50; // slight forward pop when facing the viewer
+const INACTIVE_LEAN_DEG = 5; // slight in-plane tilt toward the active book
 const TRANSITION_MS = 650;
 const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 const TRANSITION = `transform ${TRANSITION_MS}ms ${EASE}`;
@@ -87,6 +88,9 @@ function BookBox({
   const hingeSide = slot === "left" ? "right" : "left";
   const spineSide = slot === "left" ? "left" : "right";
   const z = isActive ? ACTIVE_Z : 0;
+  // Lean the inactive book's top edge toward whichever side the active
+  // book is on (left slot leans right, right slot leans left).
+  const leanZ = isActive ? 0 : slot === "left" ? -INACTIVE_LEAN_DEG : INACTIVE_LEAN_DEG;
   const outerW = isActive ? dims.bookW : dims.spineVisible;
   const widthTransition = `width ${TRANSITION_MS}ms ${EASE}`;
 
@@ -119,7 +123,7 @@ function BookBox({
           height: dims.bookH,
           ...(hingeSide === "right" ? { right: 0 } : { left: 0 }),
           transformStyle: "preserve-3d",
-          transform: `translateZ(${z}px) rotateY(${signedAngle}deg)`,
+          transform: `rotateZ(${leanZ}deg) translateZ(${z}px) rotateY(${signedAngle}deg)`,
           transformOrigin: `${hingeSide} center`,
           transition: TRANSITION,
         }}
