@@ -122,10 +122,17 @@ function BookSlot({
       className={`relative shrink-0 overflow-hidden ${isActive ? "cursor-default" : "cursor-pointer"}`}
       style={{ width: outerW, height: dims.bookH, transition: `width ${TRANSITION_MS}ms ${EASE}` }}
     >
+      {/* Cover and the CoverPeek+Spine group are both fixed-size, anchored
+          to the slot's outer edge (the edge the spine sits against — left
+          for the left book, right for the right book) instead of
+          stretching to the button's own animating width. That keeps every
+          piece rigidly glued to its neighbors — only how much of each is
+          revealed by the button's overflow-hidden clip changes — so
+          nothing drifts apart or re-flows mid-transition. */}
       {/* Cover */}
       <div
-        className="absolute inset-0 flex items-center justify-center bg-white px-6"
-        style={fade(isActive)}
+        className="absolute inset-y-0 flex items-center justify-center bg-white px-6"
+        style={{ [mirrorShape ? "left" : "right"]: 0, width: dims.bookW, ...fade(isActive) }}
       >
         <span className="font-[family-name:var(--font-heading)] text-[16px] md:text-[24px] tracking-[1.76px] text-[#15161b] text-center uppercase">
           {book.title}
@@ -136,8 +143,13 @@ function BookSlot({
           connector plugs exactly that leftover gap so the two read as one
           continuous silhouette instead of two separate tiles. */}
       <div
-        className="absolute inset-0"
-        style={{ ...fade(!isActive), transform: mirrorShape ? "scaleX(-1)" : undefined }}
+        className="absolute inset-y-0"
+        style={{
+          [mirrorShape ? "left" : "right"]: 0,
+          width: dims.peekW + dims.spineW,
+          transform: mirrorShape ? "scaleX(-1)" : undefined,
+          ...fade(!isActive),
+        }}
       >
         <div
           className="absolute inset-y-0 left-0 bg-white"
