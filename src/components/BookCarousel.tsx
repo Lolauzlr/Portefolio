@@ -48,7 +48,15 @@ const DESKTOP: Dims = dimsFor(385, 535, 130, 1800, 12);
 const MOBILE: Dims = dimsFor(208, 289, 68, 1100, 8);
 
 const ACTIVE_Z = 50; // slight forward pop when facing the viewer
-const INACTIVE_LEAN_DEG = 5; // slight in-plane tilt toward the active book
+// The inactive book's top tips toward the viewer (rotateX, a genuine
+// depth rotation — top and bottom end up at different Z, unlike rotateZ
+// which leaves Z untouched and so can only ever look like a flat image
+// spinning in place). Combined with perspectiveOrigin already sitting at
+// the hinge edge (the neighbor's side), that forward-tipped top gets
+// pulled toward the vanishing point during projection, which is what
+// reads as "leaning toward the selected book" — real parallax, not a
+// simulated 2D tilt.
+const INACTIVE_LEAN_DEG = 10;
 const TRANSITION_MS = 650;
 const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 const TRANSITION = `transform ${TRANSITION_MS}ms ${EASE}`;
@@ -88,11 +96,20 @@ function BookBox({
   const hingeSide = slot === "left" ? "right" : "left";
   const spineSide = slot === "left" ? "left" : "right";
   const z = isActive ? ACTIVE_Z : 0;
-  // Lean the inactive book's top edge toward whichever side the active
-  // book is on (left slot leans right, right slot leans left).
-  const leanZ = isActive ? 0 : slot === "left" ? -INACTIVE_LEAN_DEG : INACTIVE_LEAN_DEG;
+  // Same sign for both slots: the lean's direction toward the neighbor
+  // comes from the outer perspective-origin (offset per hinge side, see
+  // below), not from flipping this angle per slot.
+  const leanX = isActive ? 0 : INACTIVE_LEAN_DEG;
   const outerW = isActive ? dims.bookW : dims.spineVisible;
   const widthTransition = `width ${TRANSITION_MS}ms ${EASE}`;
+  // The visible spine sits right at the hinge edge — if the lean's own
+  // vanishing point sat there too, tipping it in Z would produce zero
+  // horizontal parallax (a point at the vanishing point's own X never
+  // moves sideways, however much its depth changes). Push this
+  // perspective's origin well past the far edge instead, in a fixed
+  // pixel offset (not the shrinking outer width) so it stays put
+  // through the width transition between cover and spine.
+  const leanOriginPx = dims.bookW * 1.2;
 
   return (
     <button
@@ -106,16 +123,22 @@ function BookBox({
         width: outerW,
         height: dims.bookH,
         perspective: dims.perspective,
-        // Keep the vanishing point aligned with the hinge edge so the box
-        // rotates cleanly in place instead of skewing diagonally.
-        perspectiveOrigin: hingeSide === "right" ? "100% 50%" : "0% 50%",
+        perspectiveOrigin: `${hingeSide === "left" ? leanOriginPx : -leanOriginPx}px 50%`,
         transition: widthTransition,
       }}
     >
       {/* Fixed at the book's true cover width so the 3D rotation/
           foreshortening math is always correct; anchored to the hinge
           edge so as the outer clip box above shrinks to spineVisible,
-          it's the hinge-adjacent slice (the spine) that stays visible. */}
+          it's the hinge-adjacent slice (the spine) that stays visible.
+          This layer owns the lean (rotateX, pivoting from its base) in
+          world space, so it composes independently of the hinge-open
+          rotation the inner box owns below — the two rotations pivot
+          around different points (bottom vs. side edge) and can't share
+          a single transform-origin. It also hosts its own perspective
+          for the hinge box below (perspective only reaches an element's
+          *direct* children), aligned with the hinge edge so that
+          rotation stays clean instead of skewing diagonally. */}
       <div
         className="absolute top-0"
         style={{
@@ -123,37 +146,51 @@ function BookBox({
           height: dims.bookH,
           ...(hingeSide === "right" ? { right: 0 } : { left: 0 }),
           transformStyle: "preserve-3d",
-          transform: `rotateZ(${leanZ}deg) translateZ(${z}px) rotateY(${signedAngle}deg)`,
-          transformOrigin: `${hingeSide} center`,
+          transform: `rotateX(${leanX}deg)`,
+          transformOrigin: "50% 100%",
           transition: TRANSITION,
+          perspective: dims.perspective,
+          perspectiveOrigin: hingeSide === "right" ? "100% 50%" : "0% 50%",
         }}
       >
-        {/* Front cover */}
+        {/* Hinge box: opens/closes cover<->spine by rotating around the
+            edge facing the other book's slot. */}
         <div
-          className="absolute inset-0 flex items-center justify-center bg-white px-6"
-          style={{ backfaceVisibility: "hidden" }}
-        >
-          <span className="font-[family-name:var(--font-heading)] text-[16px] md:text-[24px] tracking-[1.76px] text-[#15161b] text-center uppercase">
-            {book.title}
-          </span>
-        </div>
-        {/* Spine */}
-        <div
-          className="absolute top-0 bottom-0 flex items-center justify-center overflow-hidden bg-[#f2efe9]"
+          className="absolute inset-0"
           style={{
-            width: dims.spineDepth,
-            ...(spineSide === "left" ? { right: "100%" } : { left: "100%" }),
-            transformOrigin: spineSide === "left" ? "right center" : "left center",
-            transform: `rotateY(${spineSide === "left" ? -90 : 90}deg)`,
-            backfaceVisibility: "hidden",
+            transformStyle: "preserve-3d",
+            transform: `translateZ(${z}px) rotateY(${signedAngle}deg)`,
+            transformOrigin: `${hingeSide} center`,
+            transition: TRANSITION,
           }}
         >
-          <span
-            className="font-[family-name:var(--font-heading)] text-[11px] md:text-[15px] tracking-[1.04px] text-[#15161b] uppercase whitespace-nowrap"
-            style={{ writingMode: "vertical-rl" }}
+          {/* Front cover */}
+          <div
+            className="absolute inset-0 flex items-center justify-center bg-white px-6"
+            style={{ backfaceVisibility: "hidden" }}
           >
-            {book.title}
-          </span>
+            <span className="font-[family-name:var(--font-heading)] text-[16px] md:text-[24px] tracking-[1.76px] text-[#15161b] text-center uppercase">
+              {book.title}
+            </span>
+          </div>
+          {/* Spine */}
+          <div
+            className="absolute top-0 bottom-0 flex items-center justify-center overflow-hidden bg-[#f2efe9]"
+            style={{
+              width: dims.spineDepth,
+              ...(spineSide === "left" ? { right: "100%" } : { left: "100%" }),
+              transformOrigin: spineSide === "left" ? "right center" : "left center",
+              transform: `rotateY(${spineSide === "left" ? -90 : 90}deg)`,
+              backfaceVisibility: "hidden",
+            }}
+          >
+            <span
+              className="font-[family-name:var(--font-heading)] text-[11px] md:text-[15px] tracking-[1.04px] text-[#15161b] uppercase whitespace-nowrap"
+              style={{ writingMode: "vertical-rl" }}
+            >
+              {book.title}
+            </span>
+          </div>
         </div>
       </div>
     </button>
