@@ -32,8 +32,10 @@ type Dims = {
 
 // Chamfer traced from the reference cutout (frame 177): the cover's own
 // top-right corner stays a sharp point while the whole top edge collapses
-// into one diagonal down to the left edge; mirrored at the bottom-left.
-const COVER_PEEK_CLIP = "polygon(87% 0%, 96% 98%, 33% 99%, 18% 94%, 11% 5%)";
+// into one diagonal down to the left edge; the bottom-left corner is cut
+// the same way, but the bottom itself stays a plain flat edge (no matching
+// point on the bottom-right — only the top comes to a point).
+const COVER_PEEK_CLIP = "polygon(87% 0%, 96% 100%, 34% 100%, 18% 94%, 11% 5%)";
 
 const DESKTOP: Dims = { bookW: 385, bookH: 535, peekW: 32, spineW: 98, gap: 12 };
 const MOBILE: Dims = { bookW: 208, bookH: 289, peekW: 17, spineW: 51, gap: 8 };
@@ -95,10 +97,15 @@ function BookSlot({
           {book.title}
         </span>
       </div>
-      {/* CoverPeek + Spine */}
-      <div className="absolute inset-0 flex" style={fade(!isActive)}>
-        <div className="h-full shrink-0 bg-white" style={{ width: dims.peekW, clipPath: COVER_PEEK_CLIP }} />
-        <div className="h-full flex-1 flex items-center justify-center overflow-hidden bg-[#f2efe9]">
+      {/* CoverPeek + Spine — the spine's cream fills the whole slot behind
+          the peek, so the peek's chamfered-away corners show spine color,
+          never a gap. */}
+      <div className="absolute inset-0 bg-[#f2efe9]" style={fade(!isActive)}>
+        <div className="absolute inset-y-0 left-0 bg-white" style={{ width: dims.peekW, clipPath: COVER_PEEK_CLIP }} />
+        <div
+          className="absolute inset-y-0 right-0 flex items-center justify-center overflow-hidden"
+          style={{ width: dims.spineW }}
+        >
           <span
             className="font-[family-name:var(--font-heading)] text-[11px] md:text-[15px] tracking-[1.04px] text-[#15161b] uppercase whitespace-nowrap"
             style={{ writingMode: "vertical-rl" }}
