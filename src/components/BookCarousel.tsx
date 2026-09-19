@@ -43,6 +43,25 @@ const COVER_PEEK_CLIP = "polygon(53% 0%, 78% 100%, 39% 95%, 20% 4%)";
 // butting against a straight-edged box.
 const SPINE_CLIP = "polygon(0% 0%, 86% 0%, 99% 100%, 13% 100%)";
 
+// CoverPeek's right edge and Spine's left edge don't meet — traced
+// independently, they leave a gap that shows the page behind between
+// them instead of one continuous silhouette. A small connector piece,
+// positioned to exactly span from one edge to the other, plugs that gap.
+// (Derived from COVER_PEEK_CLIP's right edge — 53%/78% — and SPINE_CLIP's
+// left edge — 0%/13% — expressed as fractions of peekW/spineW.)
+function connectorGeometry(peekW: number, spineW: number) {
+  const peekRightTop = 0.53 * peekW;
+  const peekRightBottom = 0.78 * peekW;
+  const spineLeftTop = peekW;
+  const spineLeftBottom = peekW + 0.13 * spineW;
+  const left = Math.min(peekRightTop, spineLeftTop);
+  const right = Math.max(peekRightBottom, spineLeftBottom);
+  const width = right - left;
+  const pct = (v: number) => `${((v - left) / width) * 100}%`;
+  const clipPath = `polygon(${pct(peekRightTop)} 0%, ${pct(spineLeftTop)} 0%, ${pct(spineLeftBottom)} 100%, ${pct(peekRightBottom)} 100%)`;
+  return { left, width, clipPath };
+}
+
 const DESKTOP: Dims = { bookW: 385, bookH: 535, peekW: 24, spineW: 72, gap: 12 };
 const MOBILE: Dims = { bookW: 208, bookH: 289, peekW: 13, spineW: 39, gap: 8 };
 
@@ -83,6 +102,7 @@ function BookSlot({
     opacity: visible ? 1 : 0,
     transition: `opacity ${TRANSITION_MS}ms ${EASE}`,
   });
+  const connector = connectorGeometry(dims.peekW, dims.spineW);
 
   return (
     <button
@@ -103,15 +123,22 @@ function BookSlot({
           {book.title}
         </span>
       </div>
-      {/* CoverPeek + Spine — two adjacent, non-overlapping boxes (flush,
-          0 gap). Neither has a filler backing behind its own clipped
-          shape, so both cut edges reveal the page behind — together they
-          read as one continuous silhouette instead of two separate tiles. */}
-      <div className="absolute inset-0 flex" style={fade(!isActive)}>
-        <div className="relative h-full shrink-0 bg-white" style={{ width: dims.peekW, clipPath: COVER_PEEK_CLIP }} />
+      {/* CoverPeek + Spine — two adjacent, non-overlapping shapes (0 gap
+          between their boxes) whose own cut edges don't quite meet; the
+          connector plugs exactly that leftover gap so the two read as one
+          continuous silhouette instead of two separate tiles. */}
+      <div className="absolute inset-0" style={fade(!isActive)}>
         <div
-          className="relative h-full flex-1 flex items-center justify-center overflow-hidden bg-[#f2efe9]"
-          style={{ clipPath: SPINE_CLIP }}
+          className="absolute inset-y-0 left-0 bg-white"
+          style={{ width: dims.peekW, clipPath: COVER_PEEK_CLIP }}
+        />
+        <div
+          className="absolute inset-y-0 bg-white"
+          style={{ left: connector.left, width: connector.width, clipPath: connector.clipPath }}
+        />
+        <div
+          className="absolute inset-y-0 right-0 flex items-center justify-center overflow-hidden bg-[#f2efe9]"
+          style={{ width: dims.spineW, clipPath: SPINE_CLIP }}
         >
           <span
             className="font-[family-name:var(--font-heading)] text-[11px] md:text-[15px] tracking-[1.04px] text-[#15161b] uppercase whitespace-nowrap"
