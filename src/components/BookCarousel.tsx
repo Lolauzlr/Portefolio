@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { PointerEvent as ReactPointerEvent } from "react";
 import ExpandableText from "@/components/ExpandableText";
 import PentagonCard from "@/components/PentagonCard";
 
@@ -12,116 +11,47 @@ export type Book = {
 };
 
 // ---------------------------------------------------------------------
-// This is a book DISPLAY, not a row of equal-sized cards: the active
-// book is one physical object — a large front cover with its own spine
-// attached directly to its right — and every other story is reduced to
-// just its spine, subordinate, flanking that active pair. Every book's
-// geometry (cover width, spine width, rotation, depth, scale, opacity,
-// horizontal position) is a continuous function of its signed distance
-// from the active index, so click / drag / prev-next / looping all
-// animate through the same interpolation without special-casing any
-// transition. The info panel on the right is a separate, structurally
-// fixed element outside this positioning system — only its content
-// crossfades; it is never part of the carousel's own transform.
+// Exactly two physical books, each in its own fixed screen slot (index 0
+// always left, index 1 always right) — not a generic N-item carousel.
+// Each book is a single real 3D object (front cover + spine, two faces
+// of one hinged box) that rotates around its vertical axis in place:
+// facing the viewer (cover, rotateY 0deg) when it's the active book,
+// turned away (spine, rotateY ~80deg) when it isn't. Selecting the
+// other book doesn't slide anything across the screen — the currently
+// active book simply rotates cover->spine while the other rotates
+// spine->cover, simultaneously, each staying in its own slot.
 // ---------------------------------------------------------------------
 
 type Dims = {
-  coverW: number;
-  coverH: number;
-  spineW: number;
-  gapCS: number; // gap between the active cover and its own attached spine
-  slotGap: number; // gap between distinct book groups
-  originX: number; // fixed x of the active cover's center — the slot that never moves
-  viewportW: number;
+  bookW: number;
+  bookH: number;
+  spineVisible: number; // outer box width when inactive (its layout
+  // footprint, not just how it looks) — without this the inactive book
+  // would still reserve its full cover width in the flex row, and two
+  // full-width books side by side overflow a narrow viewport.
+  spineDepth: number; // physical side-face width, tuned so the rotated
+  // face reads at spineVisible width once foreshortened (see below)
   perspective: number;
+  gap: number; // between the two book slots
 };
 
-const DESKTOP: Dims = {
-  coverW: 385,
-  coverH: 535,
-  spineW: 130,
-  gapCS: 36,
-  slotGap: 20,
-  originX: 260,
-  viewportW: 660,
-  perspective: 1800,
-};
-const MOBILE: Dims = {
-  coverW: 208,
-  coverH: 289,
-  spineW: 68,
-  gapCS: 18,
-  slotGap: 12,
-  originX: 130,
-  viewportW: 380,
-  perspective: 1100,
-};
+const BASE_TILT_DEG = 87; // resting rotation for the inactive book — close to
+// edge-on so its cover face's residual foreshortened sliver stays negligible
+// and it reads as a clean spine, not a compressed second cover.
+const SIN_TILT = Math.sin((BASE_TILT_DEG * Math.PI) / 180);
 
-const VISIBLE_RANGE = 3; // beyond this distance a spine is fully hidden
+function dimsFor(bookW: number, bookH: number, spineVisible: number, perspective: number, gap: number): Dims {
+  return { bookW, bookH, spineVisible, spineDepth: spineVisible / SIN_TILT, perspective, gap };
+}
+
+const DESKTOP: Dims = dimsFor(385, 535, 130, 1800, 12);
+const MOBILE: Dims = dimsFor(208, 289, 68, 1100, 8);
+
+const ACTIVE_Z = 50; // slight forward pop when facing the viewer
 const TRANSITION_MS = 650;
 const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
-const DRAG_CLICK_THRESHOLD = 6; // px of movement before a drag suppresses the click
-
-// Cover shrinks to nothing by |d| = 1 (a book stops showing any cover
-// once it's a full step from active); the attached gap shrinks with it
-// so there's never a dangling gap once the cover is gone.
-function coverWidthFor(adAbs: number, dims: Dims) {
-  return dims.coverW * Math.max(0, 1 - adAbs);
-}
-function gapFor(adAbs: number, dims: Dims) {
-  return dims.gapCS * Math.max(0, 1 - adAbs);
-}
-function coverAngleFor(adAbs: number) {
-  return Math.min(adAbs, 1) * 42; // flat when active, tilts away as it collapses
-}
-// The spine's own width is constant (only the active book's cover makes
-// it read as "attached to something big"); distance is conveyed through
-// scale/opacity/depth instead, so neighboring spines don't get visually
-// competitive with the active pair.
-function spineAngleFor(adAbs: number) {
-  return 10 + Math.min(adAbs, VISIBLE_RANGE) * 6; // slight, per the Figma spine
-}
-function scaleFor(adAbs: number) {
-  return Math.max(0.82, 1 - adAbs * 0.07);
-}
-function zFor(adAbs: number) {
-  return adAbs === 0 ? 60 : -adAbs * 24;
-}
-function opacityFor(adAbs: number) {
-  if (adAbs <= VISIBLE_RANGE - 1) return 1;
-  return Math.max(0, VISIBLE_RANGE - adAbs);
-}
-
-// Left edge of a book's group (cover-if-present + gap + spine), as a
-// function of its own signed distance from active. The active slot
-// (|d| = 0) is pinned at dims.originX; groups on either side stack
-// outward from the active pair's actual footprint, and settle into a
-// constant per-step spacing once a book is a full step or more away.
-function groupLeftEdge(d: number, dims: Dims) {
-  const activeLeft = dims.originX - dims.coverW / 2;
-  if (d === 0) return activeLeft;
-  const sign = Math.sign(d);
-  const adAbs = Math.abs(d);
-  const step = dims.spineW + dims.slotGap;
-  if (sign > 0) {
-    const next1Left = dims.originX + dims.coverW / 2 + dims.gapCS + dims.spineW + dims.slotGap;
-    if (adAbs <= 1) return activeLeft + (next1Left - activeLeft) * adAbs;
-    return next1Left + (adAbs - 1) * step;
-  }
-  const prev1Left = activeLeft - dims.slotGap - dims.spineW;
-  if (adAbs <= 1) return activeLeft + (prev1Left - activeLeft) * adAbs;
-  return prev1Left - (adAbs - 1) * step;
-}
-
-// Shortest signed distance from index i to a (possibly fractional) active
-// position, wrapping around the row so the carousel loops in both
-// directions without a discontinuity at the seam.
-function circDist(i: number, a: number, n: number) {
-  if (n <= 1) return 0;
-  let d = i - a;
-  d = (((d + n / 2) % n) + n) % n - n / 2;
-  return d;
-}
+const TRANSITION = `transform ${TRANSITION_MS}ms ${EASE}`;
+const DRAG_THRESHOLD = 60; // px of swipe before it toggles the active book
 
 function useDims(): Dims {
   const [dims, setDims] = useState<Dims>(DESKTOP);
@@ -135,91 +65,83 @@ function useDims(): Dims {
   return dims;
 }
 
-function BookGroup({
+// Renders one book as a real two-faced 3D box (front cover + spine,
+// sharing an edge) that hinges open/closed with a single rotateY. The
+// hinge sits on the edge facing the OTHER book's slot, so it "opens"
+// toward the center; the spine face is built on the outer edge.
+function BookBox({
   book,
-  d,
+  isActive,
+  slot,
   dims,
-  dragging,
   onSelect,
 }: {
   book: Book;
-  d: number;
+  isActive: boolean;
+  slot: "left" | "right";
   dims: Dims;
-  dragging: boolean;
   onSelect: () => void;
 }) {
-  const adAbs = Math.abs(d);
-  const isActive = adAbs < 0.001;
-  const hidden = adAbs > VISIBLE_RANGE;
-  const coverW = coverWidthFor(adAbs, dims);
-  const gap = gapFor(adAbs, dims);
-  const coverAngle = coverAngleFor(adAbs);
-  const spineAngle = Math.sign(d) < 0 ? -spineAngleFor(adAbs) : spineAngleFor(adAbs);
-  const scale = scaleFor(adAbs);
-  const z = zFor(adAbs);
-  const opacity = opacityFor(adAbs);
-  const left = groupLeftEdge(d, dims);
-  const transition = dragging
-    ? "none"
-    : `left ${TRANSITION_MS}ms ${EASE}, transform ${TRANSITION_MS}ms ${EASE}, opacity ${TRANSITION_MS}ms ${EASE}, width ${TRANSITION_MS}ms ${EASE}`;
+  const angle = isActive ? 0 : BASE_TILT_DEG;
+  const signedAngle = slot === "left" ? angle : -angle;
+  const hingeSide = slot === "left" ? "right" : "left";
+  const spineSide = slot === "left" ? "left" : "right";
+  const z = isActive ? ACTIVE_Z : 0;
+  const outerW = isActive ? dims.bookW : dims.spineVisible;
+  const widthTransition = `width ${TRANSITION_MS}ms ${EASE}`;
 
   return (
     <button
       type="button"
-      onClick={onSelect}
-      disabled={isActive}
+      onClick={isActive ? undefined : onSelect}
+      aria-disabled={isActive}
       aria-label={`Show ${book.title}`}
       aria-current={isActive}
-      aria-hidden={hidden}
-      tabIndex={hidden ? -1 : 0}
-      className="absolute top-0 flex cursor-pointer items-stretch disabled:cursor-default"
+      className={`relative shrink-0 overflow-hidden ${isActive ? "cursor-default" : "cursor-pointer"}`}
       style={{
-        left,
-        height: dims.coverH,
-        transform: `translateZ(${z}px) scale(${scale})`,
-        transformOrigin: "left center",
-        transition,
-        opacity,
-        zIndex: Math.round(1000 - adAbs * 10),
-        pointerEvents: hidden ? "none" : "auto",
+        width: outerW,
+        height: dims.bookH,
         perspective: dims.perspective,
+        // Keep the vanishing point aligned with the hinge edge so the box
+        // rotates cleanly in place instead of skewing diagonally.
+        perspectiveOrigin: hingeSide === "right" ? "100% 50%" : "0% 50%",
+        transition: widthTransition,
       }}
     >
-      {/* Cover */}
-      {coverW > 0.5 && (
-        <div
-          className="relative shrink-0 overflow-hidden bg-white shadow-[0_20px_50px_rgba(0,0,0,0.45)]"
-          style={{
-            width: coverW,
-            marginRight: gap,
-            transition,
-          }}
-        >
-          <div
-            className="absolute inset-0 flex items-center justify-center px-6"
-            style={{
-              transform: `rotateY(${coverAngle}deg)`,
-              transformOrigin: "left center",
-              transition,
-            }}
-          >
-            <span className="font-[family-name:var(--font-heading)] text-[16px] md:text-[24px] tracking-[1.76px] text-[#15161b] text-center uppercase">
-              {book.title}
-            </span>
-          </div>
-        </div>
-      )}
-      {/* Spine */}
+      {/* Fixed at the book's true cover width so the 3D rotation/
+          foreshortening math is always correct; anchored to the hinge
+          edge so as the outer clip box above shrinks to spineVisible,
+          it's the hinge-adjacent slice (the spine) that stays visible. */}
       <div
-        className="relative shrink-0 overflow-hidden bg-[#f2efe9] shadow-[0_16px_40px_rgba(0,0,0,0.4)]"
-        style={{ width: dims.spineW, transition }}
+        className="absolute top-0"
+        style={{
+          width: dims.bookW,
+          height: dims.bookH,
+          ...(hingeSide === "right" ? { right: 0 } : { left: 0 }),
+          transformStyle: "preserve-3d",
+          transform: `translateZ(${z}px) rotateY(${signedAngle}deg)`,
+          transformOrigin: `${hingeSide} center`,
+          transition: TRANSITION,
+        }}
       >
+        {/* Front cover */}
         <div
-          className="absolute inset-0 flex items-center justify-center overflow-hidden"
+          className="absolute inset-0 flex items-center justify-center bg-white px-6"
+          style={{ backfaceVisibility: "hidden" }}
+        >
+          <span className="font-[family-name:var(--font-heading)] text-[16px] md:text-[24px] tracking-[1.76px] text-[#15161b] text-center uppercase">
+            {book.title}
+          </span>
+        </div>
+        {/* Spine */}
+        <div
+          className="absolute top-0 bottom-0 flex items-center justify-center overflow-hidden bg-[#f2efe9]"
           style={{
-            transform: `rotateY(${spineAngle}deg)`,
-            transformOrigin: spineAngle < 0 ? "right center" : "left center",
-            transition,
+            width: dims.spineDepth,
+            ...(spineSide === "left" ? { right: "100%" } : { left: "100%" }),
+            transformOrigin: spineSide === "left" ? "right center" : "left center",
+            transform: `rotateY(${spineSide === "left" ? -90 : 90}deg)`,
+            backfaceVisibility: "hidden",
           }}
         >
           <span
@@ -234,152 +156,95 @@ function BookGroup({
   );
 }
 
-function ChevronIcon({ flip }: { flip?: boolean }) {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      style={{ transform: flip ? "scaleX(-1)" : undefined }}
-    >
-      <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function CarouselControls({
+function BookSlider({
   books,
   active,
   onSelect,
-  onPrev,
-  onNext,
 }: {
   books: Book[];
   active: number;
   onSelect: (i: number) => void;
-  onPrev: () => void;
-  onNext: () => void;
 }) {
   return (
-    <div className="flex items-center gap-4">
-      <button
-        type="button"
-        onClick={onPrev}
-        aria-label="Previous story"
-        className="flex h-8 w-8 items-center justify-center rounded-full border border-[#555] text-white cursor-pointer hover:border-[#0fd1ea] hover:text-[#0fd1ea] transition-colors"
-      >
-        <ChevronIcon flip />
-      </button>
-      <div className="flex h-[8px] w-[96px] items-center overflow-hidden rounded-full">
-        {books.map((b, i) => (
-          <button
-            key={b.title}
-            type="button"
-            onClick={() => onSelect(i)}
-            aria-label={`Show ${b.title}`}
-            aria-current={i === active}
-            className={`h-full flex-1 cursor-pointer transition-colors ${
-              i === active ? "bg-[#0fd1ea]" : "bg-[#555] hover:bg-[#8F8F8F]"
-            }`}
-          />
-        ))}
-      </div>
-      <button
-        type="button"
-        onClick={onNext}
-        aria-label="Next story"
-        className="flex h-8 w-8 items-center justify-center rounded-full border border-[#555] text-white cursor-pointer hover:border-[#0fd1ea] hover:text-[#0fd1ea] transition-colors"
-      >
-        <ChevronIcon />
-      </button>
+    <div className="flex h-[8px] w-[96px] items-center overflow-hidden rounded-full">
+      {books.map((b, i) => (
+        <button
+          key={b.title}
+          type="button"
+          onClick={() => onSelect(i)}
+          aria-label={`Show ${b.title}`}
+          aria-current={i === active}
+          className={`h-full flex-1 cursor-pointer transition-colors ${
+            i === active ? "bg-[#0fd1ea]" : "bg-[#555] hover:bg-[#8F8F8F]"
+          }`}
+        />
+      ))}
     </div>
   );
 }
 
 export default function BookCarousel({ books }: { books: Book[] }) {
   const [active, setActive] = useState(0);
-  const [dragOffsetPx, setDragOffsetPx] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
   const dims = useDims();
-  const n = books.length;
 
-  const draggingRef = useRef(false);
-  const startXRef = useRef(0);
-  const startOffsetRef = useRef(0);
-  const dragDistRef = useRef(0);
+  // A drag that ends up toggling `active` also re-renders the book the
+  // pointer is still resting on into a newly-clickable state; the browser's
+  // trailing `click` event (fired after `pointerup`) then lands on it and
+  // would immediately revert the toggle. Suppress the next click whenever
+  // the pointer actually moved, so a drag and a click can't both fire.
+  const suppressClickRef = useRef(false);
+  const goTo = useCallback((i: number) => {
+    if (suppressClickRef.current) {
+      suppressClickRef.current = false;
+      return;
+    }
+    setActive(i);
+  }, []);
+  const toggle = useCallback(() => setActive((a) => 1 - a), []);
 
-  const goTo = useCallback(
-    (i: number) => {
-      setActive(((i % n) + n) % n);
-    },
-    [n]
-  );
-  const prev = useCallback(() => goTo(active - 1), [goTo, active]);
-  const next = useCallback(() => goTo(active + 1), [goTo, active]);
-
-  // Drag tracking lives on `window` (not pointer capture) once a drag
-  // starts: pointer capture on the stage was redirecting the synthesized
-  // click event away from the book buttons, breaking plain clicks.
-  const dragOffsetRef = useRef(0);
-  const activeRef = useRef(active);
-  const dimsRef = useRef(dims);
-  useEffect(() => {
-    activeRef.current = active;
-    dimsRef.current = dims;
-  }, [active, dims]);
-
-  const handlePointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
-    draggingRef.current = true;
-    dragDistRef.current = 0;
-    setIsDragging(true);
-    startXRef.current = e.clientX;
-    startOffsetRef.current = dragOffsetRef.current;
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      e.preventDefault();
+      toggle();
+    }
   };
 
+  // Swipe: a simple threshold toggle (only two books, no continuous
+  // interpolation needed) tracked on window once a drag starts, so it
+  // isn't lost if the pointer leaves the row before releasing.
+  const draggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const handlePointerDown = (e: React.PointerEvent) => {
+    // Reset any suppression left over from a previous drag that ended
+    // without a trailing click ever consuming it (e.g. touch), so it
+    // can't silently swallow the next legitimate click.
+    suppressClickRef.current = false;
+    draggingRef.current = true;
+    startXRef.current = e.clientX;
+    setIsDragging(true);
+  };
   useEffect(() => {
     if (!isDragging) return;
-    const onMove = (e: PointerEvent) => {
-      if (!draggingRef.current) return;
-      const dx = e.clientX - startXRef.current;
-      dragDistRef.current = Math.abs(dx);
-      dragOffsetRef.current = startOffsetRef.current + dx;
-      setDragOffsetPx(dragOffsetRef.current);
-    };
-    const onUp = () => {
+    const onUp = (e: PointerEvent) => {
       if (!draggingRef.current) return;
       draggingRef.current = false;
       setIsDragging(false);
-      const step = dimsRef.current.spineW + dimsRef.current.slotGap;
-      const deltaSlots = dragOffsetRef.current / step;
-      const activeFloat = activeRef.current - deltaSlots;
-      goTo(Math.round(activeFloat));
-      dragOffsetRef.current = 0;
-      setDragOffsetPx(0);
+      const dx = e.clientX - startXRef.current;
+      if (Math.abs(dx) > 5) suppressClickRef.current = true;
+      if (Math.abs(dx) > DRAG_THRESHOLD) toggle();
     };
-    window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
     window.addEventListener("pointercancel", onUp);
     return () => {
-      window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
       window.removeEventListener("pointercancel", onUp);
     };
-  }, [isDragging, goTo]);
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "ArrowLeft") { e.preventDefault(); prev(); }
-    else if (e.key === "ArrowRight") { e.preventDefault(); next(); }
-  };
-
-  const dragSlots = dragOffsetPx / (dims.spineW + dims.slotGap);
-  const activeFloat = active - dragSlots;
+  }, [isDragging, toggle]);
 
   // Crossfade the info panel instead of snapping it with the book swap:
-  // panelIndex trails `active` by one timeout tick, so the content only
-  // swaps once it has faded out (panelVisible derives from the two being
-  // out of sync, no separate "visible" state to keep in lockstep). The
-  // panel itself never moves — only this content fades/slides in place.
+  // panelIndex trails `active` by one transition tick, so the content
+  // only swaps once it has faded out. The panel itself never moves.
   const [panelIndex, setPanelIndex] = useState(active);
   const panelTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
@@ -397,48 +262,28 @@ export default function BookCarousel({ books }: { books: Book[] }) {
     transition: "opacity 220ms ease, transform 220ms ease",
   };
 
-  const carousel = (
+  const pair = (
     <div
-      className="relative select-none overflow-hidden"
-      style={{ width: dims.viewportW, height: dims.coverH, touchAction: "pan-y", cursor: isDragging ? "grabbing" : "grab" }}
+      className="flex items-center"
+      style={{ gap: dims.gap, touchAction: "pan-y" }}
       onPointerDown={handlePointerDown}
       onKeyDown={handleKeyDown}
       role="group"
       aria-label="Pick a story"
       tabIndex={0}
     >
-      {books.map((b, i) => (
-        <BookGroup
-          key={b.title}
-          book={b}
-          d={circDist(i, activeFloat, n)}
-          dims={dims}
-          dragging={isDragging}
-          onSelect={() => {
-            if (dragDistRef.current > DRAG_CLICK_THRESHOLD) {
-              dragDistRef.current = 0;
-              return;
-            }
-            goTo(i);
-          }}
-        />
-      ))}
+      <BookBox book={books[0]} isActive={active === 0} slot="left" dims={dims} onSelect={() => goTo(0)} />
+      <BookBox book={books[1]} isActive={active === 1} slot="right" dims={dims} onSelect={() => goTo(1)} />
     </div>
   );
 
   return (
     <div className="w-full flex flex-col items-center">
-      {/* Desktop: carousel viewport + fixed info panel side by side, each
-          with its own coordinate system — the panel never joins the 3D
-          transform, only its content crossfades. */}
+      {/* Desktop: the two-book pair + fixed info panel side by side */}
       <div className="hidden md:flex gap-[40px] items-start justify-center w-full">
-        <div className="flex flex-col gap-[16px]" style={{ width: dims.viewportW }}>
-          {carousel}
-          {books.length > 1 && (
-            <div style={{ marginLeft: dims.originX - dims.coverW / 2, width: dims.coverW }} className="flex justify-center">
-              <CarouselControls books={books} active={active} onSelect={goTo} onPrev={prev} onNext={next} />
-            </div>
-          )}
+        <div className="flex flex-col gap-[16px] items-center">
+          {pair}
+          <BookSlider books={books} active={active} onSelect={goTo} />
         </div>
 
         <PentagonCard
@@ -466,13 +311,11 @@ export default function BookCarousel({ books }: { books: Book[] }) {
         </PentagonCard>
       </div>
 
-      {/* Mobile/tablet: same carousel model (smaller), info panel stacked below */}
+      {/* Mobile/tablet: same two-book exchange (smaller), info panel below */}
       <div className="flex md:hidden flex-col items-center gap-6 w-full">
         <div className="flex flex-col items-center gap-[12px]">
-          {carousel}
-          {books.length > 1 && (
-            <CarouselControls books={books} active={active} onSelect={goTo} onPrev={prev} onNext={next} />
-          )}
+          {pair}
+          <BookSlider books={books} active={active} onSelect={goTo} />
         </div>
 
         <div className="flex flex-col items-start gap-4 w-full" style={panelStyle}>
