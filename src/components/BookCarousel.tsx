@@ -36,8 +36,8 @@ type Dims = {
 // to the long, nearly-straight left/right edges.
 const COVER_PEEK_CLIP = "polygon(87% 0%, 96% 98%, 33% 99%, 18% 94%, 11% 5%)";
 
-const DESKTOP: Dims = { bookW: 385, bookH: 535, peekW: 32, spineW: 98, gap: 12 };
-const MOBILE: Dims = { bookW: 208, bookH: 289, peekW: 17, spineW: 51, gap: 8 };
+const DESKTOP: Dims = { bookW: 385, bookH: 535, peekW: 24, spineW: 72, gap: 12 };
+const MOBILE: Dims = { bookW: 208, bookH: 289, peekW: 13, spineW: 39, gap: 8 };
 
 const TRANSITION_MS = 650;
 const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
