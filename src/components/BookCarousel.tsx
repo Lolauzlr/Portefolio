@@ -69,6 +69,23 @@ const TRANSITION_MS = 650;
 const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 const DRAG_THRESHOLD = 60; // px of swipe before it toggles the active book
 
+// The "turn" is a 2D scaleX squeeze toward the hinge edge, not a real
+// rotateY: a `perspective`/3D-transformed element on this page combined
+// with the info panel's `backdrop-blur` triggers a Chromium compositing
+// bug that flashes the entire page dark mid-transition. scaleX gives a
+// similar "swinging shut/open" read without ever creating a 3D context.
+const TURN_SCALE = 0.88; // both settle back to 1 at rest, so the at-rest
+// look (and every clip-path traced against it) is completely unaffected.
+
+// Depth: the active book sits a bit closer — lifted with a soft ambient
+// glow; an inactive book rises to that same lift on hover. A dark drop
+// shadow is invisible against this page's own near-black background, so
+// depth reads through position (translateY) plus a light-colored glow
+// instead. Literal Tailwind arbitrary-value classes (not composed from
+// JS strings) so the compiler can see them.
+const NEAR_CLASS = "-translate-y-1.5 shadow-[0_28px_44px_-18px_rgba(255,255,255,0.28)]";
+const FAR_CLASS = "translate-y-0 shadow-[0_10px_18px_-14px_rgba(255,255,255,0.1)] hover:-translate-y-1.5 hover:shadow-[0_28px_44px_-18px_rgba(255,255,255,0.28)]";
+
 function useDims(): Dims {
   const [dims, setDims] = useState<Dims>(DESKTOP);
   useEffect(() => {
@@ -108,9 +125,17 @@ function BookSlot({
   const outerW = isActive ? dims.bookW : dims.peekW + dims.spineW;
   const fade = (visible: boolean) => ({
     opacity: visible ? 1 : 0,
-    transition: `opacity ${TRANSITION_MS}ms ${EASE}`,
+    transition: `opacity ${TRANSITION_MS}ms ${EASE}, transform ${TRANSITION_MS}ms ${EASE}`,
   });
   const connector = connectorGeometry(dims.peekW, dims.spineW);
+  // Both layers squeeze toward the slot's outer edge (where the spine
+  // sits) and settle at full scale once fully active/inactive — the
+  // squeeze only exists while opacity is also mid-fade, as a transient
+  // flourish layered on top of the existing crossfade, never a change to
+  // either shape's resting geometry.
+  const hingeOrigin = `${mirrorShape ? "left" : "right"} center`;
+  const coverScale = isActive ? 1 : TURN_SCALE;
+  const peekScale = isActive ? TURN_SCALE : 1;
 
   return (
     <button
@@ -119,8 +144,14 @@ function BookSlot({
       aria-disabled={isActive}
       aria-label={`Show ${book.title}`}
       aria-current={isActive}
-      className={`relative shrink-0 overflow-hidden ${isActive ? "cursor-default" : "cursor-pointer"}`}
-      style={{ width: outerW, height: dims.bookH, transition: `width ${TRANSITION_MS}ms ${EASE}` }}
+      className={`relative shrink-0 overflow-hidden ${
+        isActive ? `cursor-default ${NEAR_CLASS}` : `cursor-pointer ${FAR_CLASS}`
+      }`}
+      style={{
+        width: outerW,
+        height: dims.bookH,
+        transition: `width ${TRANSITION_MS}ms ${EASE}, transform 400ms ${EASE}, box-shadow 400ms ${EASE}`,
+      }}
     >
       {/* Cover and the CoverPeek+Spine group are both fixed-size, anchored
           to the slot's outer edge (the edge the spine sits against — left
@@ -132,7 +163,13 @@ function BookSlot({
       {/* Cover */}
       <div
         className="absolute inset-y-0 flex items-center justify-center bg-white px-6"
-        style={{ [mirrorShape ? "left" : "right"]: 0, width: dims.bookW, ...fade(isActive) }}
+        style={{
+          [mirrorShape ? "left" : "right"]: 0,
+          width: dims.bookW,
+          transformOrigin: hingeOrigin,
+          transform: `scaleX(${coverScale})`,
+          ...fade(isActive),
+        }}
       >
         <span className="font-[family-name:var(--font-heading)] text-[16px] md:text-[24px] tracking-[1.76px] text-[#15161b] text-center uppercase">
           {book.title}
@@ -147,7 +184,8 @@ function BookSlot({
         style={{
           [mirrorShape ? "left" : "right"]: 0,
           width: dims.peekW + dims.spineW,
-          transform: mirrorShape ? "scaleX(-1)" : undefined,
+          transformOrigin: hingeOrigin,
+          transform: `scaleX(${mirrorShape ? -peekScale : peekScale})`,
           ...fade(!isActive),
         }}
       >
