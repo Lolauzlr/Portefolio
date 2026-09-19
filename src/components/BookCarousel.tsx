@@ -13,44 +13,60 @@ export type Book = {
 // ---------------------------------------------------------------------
 // Exactly two physical books, each in its own fixed screen slot (index 0
 // always left, index 1 always right) — not a generic N-item carousel.
-// Each book is a single real 3D object (front cover + spine, two faces
-// of one hinged box) that rotates around its vertical axis in place:
-// facing the viewer (cover, rotateY 0deg) when it's the active book,
-// turned away (spine, rotateY ~80deg) when it isn't. Selecting the
-// other book doesn't slide anything across the screen — the currently
-// active book simply rotates cover->spine while the other rotates
-// spine->cover, simultaneously, each staying in its own slot.
+// Cover and spine are two independent, separately-shaped elements — never
+// two faces of one rotating/hinged object — so each can later take its
+// own artwork without being constrained by a shared transform. The active
+// book renders as its plain Cover; the inactive book renders as its
+// CoverPeek (a thin edge-on sliver of the cover, chamfered per the Figma
+// "perspective view" cutout) sitting flush against its Spine (a plain
+// closed rectangle). Only the slot's width animates between the two.
 // ---------------------------------------------------------------------
 
 type Dims = {
   bookW: number;
   bookH: number;
-  spineVisible: number; // outer box width when inactive (its layout
-  // footprint, not just how it looks) — without this the inactive book
-  // would still reserve its full cover width in the flex row, and two
-  // full-width books side by side overflow a narrow viewport.
-  spineDepth: number; // physical side-face width, tuned so the rotated
-  // face reads at spineVisible width once foreshortened (see below)
-  perspective: number;
+  peekW: number; // CoverPeek width when inactive
+  spineW: number; // Spine width when inactive
   gap: number; // between the two book slots
 };
 
-const BASE_TILT_DEG = 87; // resting rotation for the inactive book — close to
-// edge-on so its cover face's residual foreshortened sliver stays negligible
-// and it reads as a clean spine, not a compressed second cover.
-const SIN_TILT = Math.sin((BASE_TILT_DEG * Math.PI) / 180);
+// Slanted quadrilateral traced from the reference cutout (frame 177): a
+// simple 4-corner shape, not a pointed chamfer. The right edge is one
+// straight line spanning the full height; the left edge is inset at both
+// ends — its top corner sits lower than the top-right corner, its bottom
+// corner sits higher than the bottom-right corner.
+const COVER_PEEK_CLIP = "polygon(53% 0%, 78% 100%, 39% 95%, 20% 4%)";
 
-function dimsFor(bookW: number, bookH: number, spineVisible: number, perspective: number, gap: number): Dims {
-  return { bookW, bookH, spineVisible, spineDepth: spineVisible / SIN_TILT, perspective, gap };
+// Spine (frame 178) is a parallelogram too, not an axis-aligned rectangle
+// — both edges share the same rightward slant as the cover, so the two
+// read as one continuous slanted surface instead of a slanted cover
+// butting against a straight-edged box.
+const SPINE_CLIP = "polygon(0% 0%, 86% 0%, 99% 100%, 13% 100%)";
+
+// CoverPeek's right edge and Spine's left edge don't meet — traced
+// independently, they leave a gap that shows the page behind between
+// them instead of one continuous silhouette. A small connector piece,
+// positioned to exactly span from one edge to the other, plugs that gap.
+// (Derived from COVER_PEEK_CLIP's right edge — 53%/78% — and SPINE_CLIP's
+// left edge — 0%/13% — expressed as fractions of peekW/spineW.)
+function connectorGeometry(peekW: number, spineW: number) {
+  const peekRightTop = 0.53 * peekW;
+  const peekRightBottom = 0.78 * peekW;
+  const spineLeftTop = peekW;
+  const spineLeftBottom = peekW + 0.13 * spineW;
+  const left = Math.min(peekRightTop, spineLeftTop);
+  const right = Math.max(peekRightBottom, spineLeftBottom);
+  const width = right - left;
+  const pct = (v: number) => `${((v - left) / width) * 100}%`;
+  const clipPath = `polygon(${pct(peekRightTop)} 0%, ${pct(spineLeftTop)} 0%, ${pct(spineLeftBottom)} 100%, ${pct(peekRightBottom)} 100%)`;
+  return { left, width, clipPath };
 }
 
-const DESKTOP: Dims = dimsFor(385, 535, 130, 1800, 12);
-const MOBILE: Dims = dimsFor(208, 289, 68, 1100, 8);
+const DESKTOP: Dims = { bookW: 385, bookH: 535, peekW: 24, spineW: 72, gap: 12 };
+const MOBILE: Dims = { bookW: 208, bookH: 289, peekW: 13, spineW: 39, gap: 8 };
 
-const ACTIVE_Z = 50; // slight forward pop when facing the viewer
 const TRANSITION_MS = 650;
 const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
-const TRANSITION = `transform ${TRANSITION_MS}ms ${EASE}`;
 const DRAG_THRESHOLD = 60; // px of swipe before it toggles the active book
 
 function useDims(): Dims {
@@ -65,30 +81,28 @@ function useDims(): Dims {
   return dims;
 }
 
-// Renders one book as a real two-faced 3D box (front cover + spine,
-// sharing an edge) that hinges open/closed with a single rotateY. The
-// hinge sits on the edge facing the OTHER book's slot, so it "opens"
-// toward the center; the spine face is built on the outer edge.
-function BookBox({
+// Renders one book slot. The active book shows its plain Cover; the
+// inactive book shows its CoverPeek (chamfered sliver) flush against its
+// Spine (plain rectangle) — two independent elements, not two faces of a
+// shared 3D box, so each can take its own artwork later without being
+// coupled to the other's shape or transform.
+function BookSlot({
   book,
   isActive,
-  slot,
   dims,
   onSelect,
 }: {
   book: Book;
   isActive: boolean;
-  slot: "left" | "right";
   dims: Dims;
   onSelect: () => void;
 }) {
-  const angle = isActive ? 0 : BASE_TILT_DEG;
-  const signedAngle = slot === "left" ? angle : -angle;
-  const hingeSide = slot === "left" ? "right" : "left";
-  const spineSide = slot === "left" ? "left" : "right";
-  const z = isActive ? ACTIVE_Z : 0;
-  const outerW = isActive ? dims.bookW : dims.spineVisible;
-  const widthTransition = `width ${TRANSITION_MS}ms ${EASE}`;
+  const outerW = isActive ? dims.bookW : dims.peekW + dims.spineW;
+  const fade = (visible: boolean) => ({
+    opacity: visible ? 1 : 0,
+    transition: `opacity ${TRANSITION_MS}ms ${EASE}`,
+  });
+  const connector = connectorGeometry(dims.peekW, dims.spineW);
 
   return (
     <button
@@ -98,51 +112,33 @@ function BookBox({
       aria-label={`Show ${book.title}`}
       aria-current={isActive}
       className={`relative shrink-0 overflow-hidden ${isActive ? "cursor-default" : "cursor-pointer"}`}
-      style={{
-        width: outerW,
-        height: dims.bookH,
-        perspective: dims.perspective,
-        // Keep the vanishing point aligned with the hinge edge so the box
-        // rotates cleanly in place instead of skewing diagonally.
-        perspectiveOrigin: hingeSide === "right" ? "100% 50%" : "0% 50%",
-        transition: widthTransition,
-      }}
+      style={{ width: outerW, height: dims.bookH, transition: `width ${TRANSITION_MS}ms ${EASE}` }}
     >
-      {/* Fixed at the book's true cover width so the 3D rotation/
-          foreshortening math is always correct; anchored to the hinge
-          edge so as the outer clip box above shrinks to spineVisible,
-          it's the hinge-adjacent slice (the spine) that stays visible. */}
+      {/* Cover */}
       <div
-        className="absolute top-0"
-        style={{
-          width: dims.bookW,
-          height: dims.bookH,
-          ...(hingeSide === "right" ? { right: 0 } : { left: 0 }),
-          transformStyle: "preserve-3d",
-          transform: `translateZ(${z}px) rotateY(${signedAngle}deg)`,
-          transformOrigin: `${hingeSide} center`,
-          transition: TRANSITION,
-        }}
+        className="absolute inset-0 flex items-center justify-center bg-white px-6"
+        style={fade(isActive)}
       >
-        {/* Front cover */}
+        <span className="font-[family-name:var(--font-heading)] text-[16px] md:text-[24px] tracking-[1.76px] text-[#15161b] text-center uppercase">
+          {book.title}
+        </span>
+      </div>
+      {/* CoverPeek + Spine — two adjacent, non-overlapping shapes (0 gap
+          between their boxes) whose own cut edges don't quite meet; the
+          connector plugs exactly that leftover gap so the two read as one
+          continuous silhouette instead of two separate tiles. */}
+      <div className="absolute inset-0" style={fade(!isActive)}>
         <div
-          className="absolute inset-0 flex items-center justify-center bg-white px-6"
-          style={{ backfaceVisibility: "hidden" }}
-        >
-          <span className="font-[family-name:var(--font-heading)] text-[16px] md:text-[24px] tracking-[1.76px] text-[#15161b] text-center uppercase">
-            {book.title}
-          </span>
-        </div>
-        {/* Spine */}
+          className="absolute inset-y-0 left-0 bg-white"
+          style={{ width: dims.peekW, clipPath: COVER_PEEK_CLIP }}
+        />
         <div
-          className="absolute top-0 bottom-0 flex items-center justify-center overflow-hidden bg-[#f2efe9]"
-          style={{
-            width: dims.spineDepth,
-            ...(spineSide === "left" ? { right: "100%" } : { left: "100%" }),
-            transformOrigin: spineSide === "left" ? "right center" : "left center",
-            transform: `rotateY(${spineSide === "left" ? -90 : 90}deg)`,
-            backfaceVisibility: "hidden",
-          }}
+          className="absolute inset-y-0 bg-white"
+          style={{ left: connector.left, width: connector.width, clipPath: connector.clipPath }}
+        />
+        <div
+          className="absolute inset-y-0 right-0 flex items-center justify-center overflow-hidden bg-[#f2efe9]"
+          style={{ width: dims.spineW, clipPath: SPINE_CLIP }}
         >
           <span
             className="font-[family-name:var(--font-heading)] text-[11px] md:text-[15px] tracking-[1.04px] text-[#15161b] uppercase whitespace-nowrap"
@@ -272,8 +268,8 @@ export default function BookCarousel({ books }: { books: Book[] }) {
       aria-label="Pick a story"
       tabIndex={0}
     >
-      <BookBox book={books[0]} isActive={active === 0} slot="left" dims={dims} onSelect={() => goTo(0)} />
-      <BookBox book={books[1]} isActive={active === 1} slot="right" dims={dims} onSelect={() => goTo(1)} />
+      <BookSlot book={books[0]} isActive={active === 0} dims={dims} onSelect={() => goTo(0)} />
+      <BookSlot book={books[1]} isActive={active === 1} dims={dims} onSelect={() => goTo(1)} />
     </div>
   );
 
