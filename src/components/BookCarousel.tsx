@@ -166,7 +166,7 @@ function BookSlider({
   onSelect: (i: number) => void;
 }) {
   return (
-    <div className="flex h-[8px] w-[96px] items-center overflow-hidden rounded-full">
+    <div className="flex h-[8px] w-[96px] items-center gap-[4px]">
       {books.map((b, i) => (
         <button
           key={b.title}
