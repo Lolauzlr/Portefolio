@@ -91,11 +91,19 @@ function BookSlot({
   isActive,
   dims,
   onSelect,
+  mirrorShape,
 }: {
   book: Book;
   isActive: boolean;
   dims: Dims;
   onSelect: () => void;
+  // The left book's spine must sit on its outer (left) edge with the
+  // cover peeking in on the inner (right) edge — the mirror image of the
+  // right book's arrangement — since each book "opens" toward the center.
+  // Flipping the whole shape group horizontally gets the geometry for
+  // free without re-deriving mirrored clip-paths; the title text inside
+  // gets a counter flip so it keeps reading normally.
+  mirrorShape: boolean;
 }) {
   const outerW = isActive ? dims.bookW : dims.peekW + dims.spineW;
   const fade = (visible: boolean) => ({
@@ -114,10 +122,17 @@ function BookSlot({
       className={`relative shrink-0 overflow-hidden ${isActive ? "cursor-default" : "cursor-pointer"}`}
       style={{ width: outerW, height: dims.bookH, transition: `width ${TRANSITION_MS}ms ${EASE}` }}
     >
+      {/* Cover and the CoverPeek+Spine group are both fixed-size, anchored
+          to the slot's outer edge (the edge the spine sits against — left
+          for the left book, right for the right book) instead of
+          stretching to the button's own animating width. That keeps every
+          piece rigidly glued to its neighbors — only how much of each is
+          revealed by the button's overflow-hidden clip changes — so
+          nothing drifts apart or re-flows mid-transition. */}
       {/* Cover */}
       <div
-        className="absolute inset-0 flex items-center justify-center bg-white px-6"
-        style={fade(isActive)}
+        className="absolute inset-y-0 flex items-center justify-center bg-white px-6"
+        style={{ [mirrorShape ? "left" : "right"]: 0, width: dims.bookW, ...fade(isActive) }}
       >
         <span className="font-[family-name:var(--font-heading)] text-[16px] md:text-[24px] tracking-[1.76px] text-[#15161b] text-center uppercase">
           {book.title}
@@ -127,7 +142,15 @@ function BookSlot({
           between their boxes) whose own cut edges don't quite meet; the
           connector plugs exactly that leftover gap so the two read as one
           continuous silhouette instead of two separate tiles. */}
-      <div className="absolute inset-0" style={fade(!isActive)}>
+      <div
+        className="absolute inset-y-0"
+        style={{
+          [mirrorShape ? "left" : "right"]: 0,
+          width: dims.peekW + dims.spineW,
+          transform: mirrorShape ? "scaleX(-1)" : undefined,
+          ...fade(!isActive),
+        }}
+      >
         <div
           className="absolute inset-y-0 left-0 bg-white"
           style={{ width: dims.peekW, clipPath: COVER_PEEK_CLIP }}
@@ -142,7 +165,7 @@ function BookSlot({
         >
           <span
             className="font-[family-name:var(--font-heading)] text-[11px] md:text-[15px] tracking-[1.04px] text-[#15161b] uppercase whitespace-nowrap"
-            style={{ writingMode: "vertical-rl" }}
+            style={{ writingMode: "vertical-rl", transform: mirrorShape ? "scaleX(-1)" : undefined }}
           >
             {book.title}
           </span>
@@ -268,8 +291,8 @@ export default function BookCarousel({ books }: { books: Book[] }) {
       aria-label="Pick a story"
       tabIndex={0}
     >
-      <BookSlot book={books[0]} isActive={active === 0} dims={dims} onSelect={() => goTo(0)} />
-      <BookSlot book={books[1]} isActive={active === 1} dims={dims} onSelect={() => goTo(1)} />
+      <BookSlot book={books[0]} isActive={active === 0} dims={dims} onSelect={() => goTo(0)} mirrorShape />
+      <BookSlot book={books[1]} isActive={active === 1} dims={dims} onSelect={() => goTo(1)} mirrorShape={false} />
     </div>
   );
 
