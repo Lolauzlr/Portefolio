@@ -37,6 +37,12 @@ type Dims = {
 // corner sits higher than the bottom-right corner.
 const COVER_PEEK_CLIP = "polygon(53% 0%, 78% 100%, 39% 95%, 20% 4%)";
 
+// Spine (frame 178) is a parallelogram too, not an axis-aligned rectangle
+// — both edges share the same rightward slant as the cover, so the two
+// read as one continuous slanted surface instead of a slanted cover
+// butting against a straight-edged box.
+const SPINE_CLIP = "polygon(0% 0%, 86% 0%, 99% 100%, 13% 100%)";
+
 const DESKTOP: Dims = { bookW: 385, bookH: 535, peekW: 24, spineW: 72, gap: 12 };
 const MOBILE: Dims = { bookW: 208, bookH: 289, peekW: 13, spineW: 39, gap: 8 };
 
@@ -106,7 +112,10 @@ function BookSlot({
         <div className="relative h-full shrink-0 bg-[#f2efe9]" style={{ width: dims.peekW }}>
           <div className="absolute inset-0 bg-white" style={{ clipPath: COVER_PEEK_CLIP }} />
         </div>
-        <div className="h-full flex-1 flex items-center justify-center overflow-hidden bg-[#f2efe9]">
+        <div
+          className="relative h-full flex-1 flex items-center justify-center overflow-hidden bg-[#f2efe9]"
+          style={{ clipPath: SPINE_CLIP }}
+        >
           <span
             className="font-[family-name:var(--font-heading)] text-[11px] md:text-[15px] tracking-[1.04px] text-[#15161b] uppercase whitespace-nowrap"
             style={{ writingMode: "vertical-rl" }}
