@@ -10,11 +10,13 @@ export type Book = {
   href: string;
 };
 
-const BOOK_W = 280;
-const BOOK_H = 390;
-const SPINE_DEPTH = 42;
-const BASE_TILT_DEG = 58;
-const HOVER_TILT_DEG = 26;
+const BOOK_W = 350;
+const BOOK_H = 486;
+const SPINE_DEPTH = 48;
+// Resting angle is steep enough that the inactive book projects to
+// roughly the Figma spec's 117px peek sliver (350 * cos(70deg) =~ 120px).
+const BASE_TILT_DEG = 70;
+const HOVER_TILT_DEG = 40;
 const TRANSITION = "transform 550ms cubic-bezier(0.22, 1, 0.36, 1)";
 
 function BookSlider({
@@ -46,7 +48,9 @@ function BookSlider({
 
 // Renders a book as a real 3D box: a front cover face and a spine (side)
 // face joined at their shared edge, so rotating it away from the viewer
-// reveals the spine instead of just a foreshortened cover.
+// reveals the spine instead of just a foreshortened cover. The whole box
+// hinges at its inner edge (the one nearest the other book) so it "opens"
+// toward the center when selected, like a book on a shelf.
 function BookCover({
   book,
   isActive,
@@ -67,8 +71,10 @@ function BookCover({
   const restAngle = isHovered ? HOVER_TILT_DEG : BASE_TILT_DEG;
   const angle = isActive ? 0 : restAngle;
   const signedAngle = slot === "left" ? angle : -angle;
-  const hingeOrigin = slot === "left" ? "right center" : "left center";
-  const spineOnLeft = slot === "left";
+  // The hinge (rotation origin) sits at the inner edge, facing the other
+  // book; the spine face is built on the opposite (outer) edge.
+  const hingeSide = slot === "left" ? "right" : "left";
+  const spineSide = slot === "left" ? "left" : "right";
 
   return (
     <button
@@ -80,14 +86,21 @@ function BookCover({
       aria-current={isActive}
       disabled={isActive}
       className="relative shrink-0 cursor-pointer disabled:cursor-default"
-      style={{ width: BOOK_W, height: BOOK_H, perspective: "1400px" }}
+      style={{
+        width: BOOK_W,
+        height: BOOK_H,
+        perspective: "1400px",
+        // Keep the vanishing point aligned with the hinge edge so the box
+        // rotates cleanly in place instead of skewing diagonally.
+        perspectiveOrigin: hingeSide === "right" ? "100% 50%" : "0% 50%",
+      }}
     >
       <div
         className="absolute inset-0"
         style={{
           transformStyle: "preserve-3d",
           transform: `rotateY(${signedAngle}deg)`,
-          transformOrigin: hingeOrigin,
+          transformOrigin: `${hingeSide} center`,
           transition: TRANSITION,
         }}
       >
@@ -105,9 +118,9 @@ function BookCover({
           className="absolute top-0 bottom-0 flex items-center justify-center overflow-hidden bg-[#8F8F8F]"
           style={{
             width: SPINE_DEPTH,
-            ...(spineOnLeft ? { right: "100%" } : { left: "100%" }),
-            transformOrigin: spineOnLeft ? "right center" : "left center",
-            transform: `rotateY(${spineOnLeft ? -90 : 90}deg)`,
+            ...(spineSide === "left" ? { right: "100%" } : { left: "100%" }),
+            transformOrigin: spineSide === "left" ? "right center" : "left center",
+            transform: `rotateY(${spineSide === "left" ? -90 : 90}deg)`,
             backfaceVisibility: "hidden",
           }}
         >
@@ -132,8 +145,8 @@ export default function BookCarousel({ books }: { books: Book[] }) {
     <div className="w-full flex flex-col items-center">
       {/* Desktop: fixed-position 3D book covers + info panel side by side */}
       <div className="hidden md:flex gap-[40px] items-center justify-center w-full">
-        <div className="flex flex-col gap-[16px] items-center">
-          <div className="flex gap-[24px] items-center">
+        <div className="flex flex-col gap-[12px] items-center">
+          <div className="flex gap-[12px] items-center">
             {books.map((b, i) => (
               <BookCover
                 key={b.title}
