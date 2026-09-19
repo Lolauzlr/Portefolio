@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import ExpandableText from "@/components/ExpandableText";
+import PentagonCard from "@/components/PentagonCard";
 
 export type Book = {
   title: string;
@@ -61,16 +62,19 @@ export default function BookCarousel({ books }: { books: Book[] }) {
           )}
         </div>
 
-        <div className="backdrop-blur-[5px] bg-black/40 flex flex-col gap-[20px] h-[486px] items-start py-[20px] w-[462px] shrink-0">
-          <div className="flex flex-col flex-1 gap-[12px] items-start min-h-0 px-[24px] w-full overflow-y-auto">
-            <h3 className="font-[family-name:var(--font-heading)] text-[40px] tracking-[3.2px] text-white w-full shrink-0">
+        <PentagonCard
+          className="h-[486px] w-[462px] shrink-0 backdrop-blur-[5px]"
+          contentClassName="!p-0 flex flex-col gap-[20px] h-full items-start py-[20px]"
+        >
+          <div className="flex flex-col gap-[12px] items-start px-[24px] w-full">
+            <h3 className="font-[family-name:var(--font-heading)] text-[40px] tracking-[3.2px] text-white w-full">
               {book.title}
             </h3>
             <p className="font-[family-name:var(--font-body)] text-[14px] tracking-[2.24px] text-white w-full">
               {book.description}
             </p>
           </div>
-          <div className="flex flex-col items-start px-[24px] w-full shrink-0">
+          <div className="flex flex-col items-start px-[24px] w-full">
             <a
               href={book.href}
               className="backdrop-blur-[5px] bg-black/40 border-2 border-[#0fd1ea] flex items-center px-[40px] py-[20px] rounded-[40px] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] transition-colors"
@@ -80,7 +84,7 @@ export default function BookCarousel({ books }: { books: Book[] }) {
               </span>
             </a>
           </div>
-        </div>
+        </PentagonCard>
       </div>
 
       {/* Mobile: vertical stack */}
