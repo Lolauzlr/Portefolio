@@ -104,14 +104,11 @@ function BookSlot({
         </span>
       </div>
       {/* CoverPeek + Spine — two adjacent, non-overlapping boxes (flush,
-          0 gap), each carrying its own backing color. The peek's own box
-          is cream underneath the white chamfered shape, so its cut-away
-          corners read as its own color rather than the spine's — the
-          spine never extends behind the cover. */}
+          0 gap). Neither has a filler backing behind its own clipped
+          shape, so both cut edges reveal the page behind — together they
+          read as one continuous silhouette instead of two separate tiles. */}
       <div className="absolute inset-0 flex" style={fade(!isActive)}>
-        <div className="relative h-full shrink-0 bg-[#f2efe9]" style={{ width: dims.peekW }}>
-          <div className="absolute inset-0 bg-white" style={{ clipPath: COVER_PEEK_CLIP }} />
-        </div>
+        <div className="relative h-full shrink-0 bg-white" style={{ width: dims.peekW, clipPath: COVER_PEEK_CLIP }} />
         <div
           className="relative h-full flex-1 flex items-center justify-center overflow-hidden bg-[#f2efe9]"
           style={{ clipPath: SPINE_CLIP }}
