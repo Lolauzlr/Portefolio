@@ -96,15 +96,16 @@ function BookSlot({
           {book.title}
         </span>
       </div>
-      {/* CoverPeek + Spine — the spine's cream fills the whole slot behind
-          the peek, so the peek's chamfered-away corners show spine color,
-          never a gap. */}
-      <div className="absolute inset-0 bg-[#f2efe9]" style={fade(!isActive)}>
-        <div className="absolute inset-y-0 left-0 bg-white" style={{ width: dims.peekW, clipPath: COVER_PEEK_CLIP }} />
-        <div
-          className="absolute inset-y-0 right-0 flex items-center justify-center overflow-hidden"
-          style={{ width: dims.spineW }}
-        >
+      {/* CoverPeek + Spine — two adjacent, non-overlapping boxes (flush,
+          0 gap), each carrying its own backing color. The peek's own box
+          is cream underneath the white chamfered shape, so its cut-away
+          corners read as its own color rather than the spine's — the
+          spine never extends behind the cover. */}
+      <div className="absolute inset-0 flex" style={fade(!isActive)}>
+        <div className="relative h-full shrink-0 bg-[#f2efe9]" style={{ width: dims.peekW }}>
+          <div className="absolute inset-0 bg-white" style={{ clipPath: COVER_PEEK_CLIP }} />
+        </div>
+        <div className="h-full flex-1 flex items-center justify-center overflow-hidden bg-[#f2efe9]">
           <span
             className="font-[family-name:var(--font-heading)] text-[11px] md:text-[15px] tracking-[1.04px] text-[#15161b] uppercase whitespace-nowrap"
             style={{ writingMode: "vertical-rl" }}
