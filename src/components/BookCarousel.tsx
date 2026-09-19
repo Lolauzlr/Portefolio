@@ -10,10 +10,12 @@ export type Book = {
   href: string;
 };
 
-const BASE_TILT_DEG = 32;
-const HOVER_TILT_DEG = 14;
-const INACTIVE_SCALE = 0.88;
-const HOVER_SCALE = 0.94;
+const BOOK_W = 280;
+const BOOK_H = 390;
+const SPINE_DEPTH = 42;
+const BASE_TILT_DEG = 58;
+const HOVER_TILT_DEG = 26;
+const TRANSITION = "transform 550ms cubic-bezier(0.22, 1, 0.36, 1)";
 
 function BookSlider({
   books,
@@ -42,12 +44,14 @@ function BookSlider({
   );
 }
 
+// Renders a book as a real 3D box: a front cover face and a spine (side)
+// face joined at their shared edge, so rotating it away from the viewer
+// reveals the spine instead of just a foreshortened cover.
 function BookCover({
   book,
   isActive,
   isHovered,
-  origin,
-  direction,
+  slot,
   onSelect,
   onHover,
   onHoverEnd,
@@ -55,14 +59,16 @@ function BookCover({
   book: Book;
   isActive: boolean;
   isHovered: boolean;
-  origin: "left" | "right";
-  direction: 1 | -1;
+  slot: "left" | "right";
   onSelect: () => void;
   onHover: () => void;
   onHoverEnd: () => void;
 }) {
-  const angle = isActive ? 0 : isHovered ? HOVER_TILT_DEG : BASE_TILT_DEG;
-  const scale = isActive ? 1 : isHovered ? HOVER_SCALE : INACTIVE_SCALE;
+  const restAngle = isHovered ? HOVER_TILT_DEG : BASE_TILT_DEG;
+  const angle = isActive ? 0 : restAngle;
+  const signedAngle = slot === "left" ? angle : -angle;
+  const hingeOrigin = slot === "left" ? "right center" : "left center";
+  const spineOnLeft = slot === "left";
 
   return (
     <button
@@ -73,15 +79,46 @@ function BookCover({
       aria-label={`Show ${book.title}`}
       aria-current={isActive}
       disabled={isActive}
-      className="h-[440px] w-[315px] shrink-0 cursor-pointer bg-[#d9d9d9] flex items-center justify-center transition-transform duration-500 ease-out disabled:cursor-default"
-      style={{
-        transform: `rotateY(${direction * angle}deg) scale(${scale})`,
-        transformOrigin: origin === "left" ? "left center" : "right center",
-      }}
+      className="relative shrink-0 cursor-pointer disabled:cursor-default"
+      style={{ width: BOOK_W, height: BOOK_H, perspective: "1400px" }}
     >
-      <span className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-[#15161b] text-center px-4 uppercase">
-        {book.title}
-      </span>
+      <div
+        className="absolute inset-0"
+        style={{
+          transformStyle: "preserve-3d",
+          transform: `rotateY(${signedAngle}deg)`,
+          transformOrigin: hingeOrigin,
+          transition: TRANSITION,
+        }}
+      >
+        {/* Front cover */}
+        <div
+          className="absolute inset-0 flex items-center justify-center bg-[#d9d9d9] px-4"
+          style={{ backfaceVisibility: "hidden" }}
+        >
+          <span className="font-[family-name:var(--font-heading)] text-[22px] tracking-[1.76px] text-[#15161b] text-center uppercase">
+            {book.title}
+          </span>
+        </div>
+        {/* Spine */}
+        <div
+          className="absolute top-0 bottom-0 flex items-center justify-center overflow-hidden bg-[#8F8F8F]"
+          style={{
+            width: SPINE_DEPTH,
+            ...(spineOnLeft ? { right: "100%" } : { left: "100%" }),
+            transformOrigin: spineOnLeft ? "right center" : "left center",
+            transform: `rotateY(${spineOnLeft ? -90 : 90}deg)`,
+            backfaceVisibility: "hidden",
+          }}
+        >
+          <span
+            className="font-[family-name:var(--font-heading)] text-[13px] tracking-[1.04px] text-white uppercase whitespace-nowrap"
+            style={{ writingMode: "vertical-rl" }}
+          >
+            {book.title}
+          </span>
+        </div>
+      </div>
     </button>
   );
 }
@@ -96,15 +133,14 @@ export default function BookCarousel({ books }: { books: Book[] }) {
       {/* Desktop: fixed-position 3D book covers + info panel side by side */}
       <div className="hidden md:flex gap-[40px] items-center justify-center w-full">
         <div className="flex flex-col gap-[16px] items-center">
-          <div className="flex gap-[24px] items-center" style={{ perspective: "1400px" }}>
+          <div className="flex gap-[24px] items-center">
             {books.map((b, i) => (
               <BookCover
                 key={b.title}
                 book={b}
                 isActive={i === active}
                 isHovered={hovered === i}
-                origin={i === 0 ? "right" : "left"}
-                direction={i === 0 ? -1 : 1}
+                slot={i === 0 ? "left" : "right"}
                 onSelect={() => setActive(i)}
                 onHover={() => setHovered(i)}
                 onHoverEnd={() => setHovered(null)}
