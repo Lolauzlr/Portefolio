@@ -30,12 +30,11 @@ type Dims = {
   gap: number; // between the two book slots
 };
 
-// Chamfer traced from the reference cutout (frame 177): the cover's own
-// top-right corner stays a sharp point while the whole top edge collapses
-// into one diagonal down to the left edge; the bottom-left corner is cut
-// the same way, but the bottom itself stays a plain flat edge (no matching
-// point on the bottom-right — only the top comes to a point).
-const COVER_PEEK_CLIP = "polygon(87% 0%, 96% 100%, 34% 100%, 18% 94%, 11% 5%)";
+// Chamfer traced pixel-by-pixel from the reference cutout (frame 177): a
+// sharp point at the top-right, a sharp point at the bottom-left, each
+// formed by the whole top/bottom edge collapsing into one diagonal down
+// to the long, nearly-straight left/right edges.
+const COVER_PEEK_CLIP = "polygon(87% 0%, 96% 98%, 33% 99%, 18% 94%, 11% 5%)";
 
 const DESKTOP: Dims = { bookW: 385, bookH: 535, peekW: 32, spineW: 98, gap: 12 };
 const MOBILE: Dims = { bookW: 208, bookH: 289, peekW: 17, spineW: 51, gap: 8 };
