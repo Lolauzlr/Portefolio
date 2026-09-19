@@ -389,14 +389,11 @@ export default function TrailerPage() {
   return (
     <div className="bg-[#15161b] text-white min-h-screen">
       {/* Hero Section - no top padding, video bleeds under navbar */}
-      {/* Mobile: section is a 9:16 portrait frame (not the full 100vh) so
-          the video crop is less extreme, and the video covers it fully
-          (percentage-based, since the frame's height is derived from its
-          width via aspect-ratio rather than the viewport) - same idea as
-          desktop's cover-fill, just scoped to a shorter box. The caption
-          card overlays its bottom edge, same as desktop; 9:16 leaves
-          enough room for that without reaching the header. */}
-      <section ref={heroRef} className="relative aspect-[9/16] md:aspect-auto md:h-[810px] w-full overflow-hidden">
+      {/* Mobile: section is capped to 60vh (not the full 100vh, and not a
+          full 9:16 ~82vh frame) so the video and caption card don't take
+          over the whole screen - the video still covers the box fully
+          (vh-based, same cover-fill idea as desktop, just a shorter box). */}
+      <section ref={heroRef} className="relative h-[60vh] md:h-[810px] w-full overflow-hidden">
         {/* YouTube video background via API */}
         <div
           ref={containerRef}
@@ -404,7 +401,7 @@ export default function TrailerPage() {
         >
           <div
             id="yt-bg-player"
-            className="absolute top-1/2 left-1/2 w-[316.05%] h-full -translate-x-1/2 -translate-y-1/2 md:w-[177.78vh] md:h-[100vh] md:min-w-full md:min-h-full"
+            className="absolute top-1/2 left-1/2 w-[106.67vh] h-[60vh] -translate-x-1/2 -translate-y-1/2 min-w-full md:w-[177.78vh] md:h-[100vh] md:min-w-full md:min-h-full"
           />
         </div>
 
@@ -745,11 +742,12 @@ export default function TrailerPage() {
           <div className="w-full min-h-full md:h-full flex flex-col md:flex-row">
             {/* Left: Carousel */}
             <div className="relative w-full flex flex-col md:flex-1 md:min-h-0">
-              {/* Main image area - mobile: fixed 9:16 portrait frame, fully
-                  filled (object-cover, no letterboxing) instead of being
-                  squeezed by the info panel below; desktop keeps its
-                  original flexible-height, letterboxed layout. */}
-              <div className="relative w-full aspect-[9/16] md:aspect-auto md:flex-1 flex items-center justify-center min-h-0">
+              {/* Main image area - mobile: capped to 60vh, fully filled
+                  (object-cover, no letterboxing) instead of being squeezed
+                  by the info panel below or taking over the whole screen;
+                  desktop keeps its original flexible-height, letterboxed
+                  layout. */}
+              <div className="relative w-full h-[60vh] md:h-auto md:aspect-auto md:flex-1 flex items-center justify-center min-h-0">
                 {/* Counter */}
                 <span className="absolute top-4 left-4 md:top-6 md:left-6 font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white z-10">
                   {screenshotIndex + 1}/{screenshotsData.screenshots.length}
