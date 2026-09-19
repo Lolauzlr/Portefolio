@@ -35,9 +35,10 @@ type Dims = {
   gap: number; // between the two book slots
 };
 
-const BASE_TILT_DEG = 87; // resting rotation for the inactive book — close to
-// edge-on so its cover face's residual foreshortened sliver stays negligible
-// and it reads as a clean spine, not a compressed second cover.
+const BASE_TILT_DEG = 90; // resting rotation for the inactive book — fully
+// edge-on, so the cover face's foreshortened width is exactly zero (no
+// residual sliver breaking the spine's corners) and the spine itself lands
+// perfectly flat-on to the viewer (signedAngle + spine's own ±90deg = 0deg).
 const SIN_TILT = Math.sin((BASE_TILT_DEG * Math.PI) / 180);
 
 function dimsFor(bookW: number, bookH: number, spineVisible: number, perspective: number, gap: number): Dims {
