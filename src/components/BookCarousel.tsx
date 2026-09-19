@@ -89,7 +89,7 @@ function BookCover({
       aria-label={`Show ${book.title}`}
       aria-current={isActive}
       disabled={isActive}
-      className="relative shrink-0 cursor-pointer disabled:cursor-default"
+      className="relative shrink-0 overflow-hidden cursor-pointer disabled:cursor-default"
       style={{
         width: BOOK_W,
         height: BOOK_H,
