@@ -30,11 +30,12 @@ type Dims = {
   gap: number; // between the two book slots
 };
 
-// Chamfer traced pixel-by-pixel from the reference cutout (frame 177): a
-// sharp point at the top-right, a sharp point at the bottom-left, each
-// formed by the whole top/bottom edge collapsing into one diagonal down
-// to the long, nearly-straight left/right edges.
-const COVER_PEEK_CLIP = "polygon(87% 0%, 96% 98%, 33% 99%, 18% 94%, 11% 5%)";
+// Slanted quadrilateral traced from the reference cutout (frame 177): a
+// simple 4-corner shape, not a pointed chamfer. The right edge is one
+// straight line spanning the full height; the left edge is inset at both
+// ends — its top corner sits lower than the top-right corner, its bottom
+// corner sits higher than the bottom-right corner.
+const COVER_PEEK_CLIP = "polygon(53% 0%, 78% 100%, 39% 95%, 20% 4%)";
 
 const DESKTOP: Dims = { bookW: 385, bookH: 535, peekW: 24, spineW: 72, gap: 12 };
 const MOBILE: Dims = { bookW: 208, bookH: 289, peekW: 13, spineW: 39, gap: 8 };
