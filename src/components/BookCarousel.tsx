@@ -91,11 +91,19 @@ function BookSlot({
   isActive,
   dims,
   onSelect,
+  mirrorShape,
 }: {
   book: Book;
   isActive: boolean;
   dims: Dims;
   onSelect: () => void;
+  // The left book's spine must sit on its outer (left) edge with the
+  // cover peeking in on the inner (right) edge — the mirror image of the
+  // right book's arrangement — since each book "opens" toward the center.
+  // Flipping the whole shape group horizontally gets the geometry for
+  // free without re-deriving mirrored clip-paths; the title text inside
+  // gets a counter flip so it keeps reading normally.
+  mirrorShape: boolean;
 }) {
   const outerW = isActive ? dims.bookW : dims.peekW + dims.spineW;
   const fade = (visible: boolean) => ({
@@ -127,7 +135,10 @@ function BookSlot({
           between their boxes) whose own cut edges don't quite meet; the
           connector plugs exactly that leftover gap so the two read as one
           continuous silhouette instead of two separate tiles. */}
-      <div className="absolute inset-0" style={fade(!isActive)}>
+      <div
+        className="absolute inset-0"
+        style={{ ...fade(!isActive), transform: mirrorShape ? "scaleX(-1)" : undefined }}
+      >
         <div
           className="absolute inset-y-0 left-0 bg-white"
           style={{ width: dims.peekW, clipPath: COVER_PEEK_CLIP }}
@@ -142,7 +153,7 @@ function BookSlot({
         >
           <span
             className="font-[family-name:var(--font-heading)] text-[11px] md:text-[15px] tracking-[1.04px] text-[#15161b] uppercase whitespace-nowrap"
-            style={{ writingMode: "vertical-rl" }}
+            style={{ writingMode: "vertical-rl", transform: mirrorShape ? "scaleX(-1)" : undefined }}
           >
             {book.title}
           </span>
@@ -268,8 +279,8 @@ export default function BookCarousel({ books }: { books: Book[] }) {
       aria-label="Pick a story"
       tabIndex={0}
     >
-      <BookSlot book={books[0]} isActive={active === 0} dims={dims} onSelect={() => goTo(0)} />
-      <BookSlot book={books[1]} isActive={active === 1} dims={dims} onSelect={() => goTo(1)} />
+      <BookSlot book={books[0]} isActive={active === 0} dims={dims} onSelect={() => goTo(0)} mirrorShape />
+      <BookSlot book={books[1]} isActive={active === 1} dims={dims} onSelect={() => goTo(1)} mirrorShape={false} />
     </div>
   );
 
