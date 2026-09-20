@@ -135,6 +135,17 @@ function BookSlot({
     transition: `opacity ${TRANSITION_MS}ms ${EASE}, transform ${TRANSITION_MS}ms ${EASE}`,
   });
   const connector = connectorGeometry(dims.peekW, dims.spineW);
+  // SPINE_CLIP's own left/right edges both lean by this same angle (13% of
+  // spineW over the full bookH) — skewing the spine's image by the exact
+  // same amount makes the artwork's vertical lines follow the parallelogram
+  // instead of a straight-cut photo showing through a slanted window.
+  const spineSkewDeg = (Math.atan((0.13 * dims.spineW) / dims.bookH) * 180) / Math.PI;
+  // The CoverPeek is the cover's edge seen at a raking angle — a real
+  // perspective/rotateY tilt (hinged at the edge nearest the spine, where
+  // the two surfaces actually meet) reads as that edge receding away from
+  // the viewer instead of a flat photo. Only visible while inactive, since
+  // CoverPeek itself is opacity-0 when active.
+  const coverPeekTiltDeg = 40;
   // Both layers squeeze toward the slot's outer edge (where the spine
   // sits) and settle at full scale once fully active/inactive — the
   // squeeze only exists while opacity is also mid-fade, as a transient
@@ -216,10 +227,17 @@ function BookSlot({
             transition: `transform ${TRANSITION_MS}ms ${EASE}`,
           }}
         >
-          <div className="absolute inset-y-0 left-0" style={{ width: dims.peekW, clipPath: COVER_PEEK_CLIP }}>
+          <div
+            className="absolute inset-y-0 left-0"
+            style={{ width: dims.peekW, clipPath: COVER_PEEK_CLIP, perspective: 300 }}
+          >
             <div
               className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url(${book.coverImg})`, transform: mirrorShape ? "scaleX(-1)" : undefined }}
+              style={{
+                backgroundImage: `url(${book.coverImg})`,
+                transformOrigin: "right center",
+                transform: `rotateY(${coverPeekTiltDeg}deg)${mirrorShape ? " scaleX(-1)" : ""}`,
+              }}
             />
           </div>
           <div
@@ -229,7 +247,10 @@ function BookSlot({
           <div className="absolute inset-y-0 right-0" style={{ width: dims.spineW, clipPath: SPINE_CLIP }}>
             <div
               className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url(${book.spineImg})`, transform: mirrorShape ? "scaleX(-1)" : undefined }}
+              style={{
+                backgroundImage: `url(${book.spineImg})`,
+                transform: `skewX(${spineSkewDeg}deg)${mirrorShape ? " scaleX(-1)" : ""}`,
+              }}
             />
           </div>
         </div>
