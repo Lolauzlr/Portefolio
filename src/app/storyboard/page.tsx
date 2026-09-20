@@ -17,6 +17,9 @@ const books: Book[] = [
     href: "#",
     coverImg: "/images/Manga/NO_FINDER_COVER.webp",
     spineImg: "/images/Manga/No-finder-tranche.webp",
+    // Add the story's interior pages/art here once available, e.g.
+    // "/images/Manga/no-finder-page-01.webp".
+    screenshots: [],
   },
   {
     title: "Old Knight",
@@ -25,6 +28,9 @@ const books: Book[] = [
     coverImg: "/images/Manga/OLD_KNIGHT-01.webp",
     spineImg: "/images/Manga/Old-knight-tranche.webp",
     spineFill: "#EEEEEE",
+    // Add the story's interior pages/art here once available, e.g.
+    // "/images/Manga/old-knight-page-01.webp".
+    screenshots: [],
   },
 ];
 

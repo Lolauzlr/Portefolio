@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import ExpandableText from "@/components/ExpandableText";
 import PentagonCard from "@/components/PentagonCard";
+import ScreenshotGallery from "@/components/ScreenshotGallery";
 
 export type Book = {
   title: string;
@@ -14,6 +15,9 @@ export type Book = {
   // artwork's own paper tone so the join disappears instead of reading as
   // "an image sitting on a white card". Defaults to white.
   spineFill?: string;
+  // Interior pages/art shown in the full-screen gallery opened from "READ"
+  // or from clicking the already-selected book. Empty until supplied.
+  screenshots?: string[];
 };
 
 // ---------------------------------------------------------------------
@@ -119,12 +123,16 @@ function BookSlot({
   isActive,
   dims,
   onSelect,
+  onOpenGallery,
   mirrorShape,
 }: {
   book: Book;
   isActive: boolean;
   dims: Dims;
   onSelect: () => void;
+  // The already-selected book is clickable too — it opens its own
+  // screenshot gallery instead of doing nothing.
+  onOpenGallery: () => void;
   // The left book's spine must sit on its outer (left) edge with the
   // cover peeking in on the inner (right) edge — the mirror image of the
   // right book's arrangement — since each book "opens" toward the center.
@@ -171,12 +179,11 @@ function BookSlot({
   return (
     <button
       type="button"
-      onClick={isActive ? undefined : onSelect}
-      aria-disabled={isActive}
-      aria-label={`Show ${book.title}`}
+      onClick={isActive ? onOpenGallery : onSelect}
+      aria-label={isActive ? `View ${book.title} screenshots` : `Show ${book.title}`}
       aria-current={isActive}
-      className={`relative shrink-0 overflow-hidden ${REST_CLASS} ${
-        isActive ? "cursor-default" : `cursor-pointer ${mirrorShape ? HOVER_LEFT_CLASS : HOVER_RIGHT_CLASS}`
+      className={`relative shrink-0 overflow-hidden cursor-pointer ${REST_CLASS} ${
+        isActive ? "" : mirrorShape ? HOVER_LEFT_CLASS : HOVER_RIGHT_CLASS
       }`}
       style={{
         width: outerW,
@@ -305,6 +312,17 @@ export default function BookCarousel({ books }: { books: Book[] }) {
   const [active, setActive] = useState(0);
   const dims = useDims();
 
+  // Full-screen gallery: opened from "READ" or from clicking the
+  // already-selected book. `screenshots` is empty until supplied, so
+  // opening is a no-op rather than showing a blank overlay.
+  const [galleryImages, setGalleryImages] = useState<string[] | null>(null);
+  const [galleryIndex, setGalleryIndex] = useState(0);
+  const openGallery = useCallback((images: string[] | undefined) => {
+    if (!images || images.length === 0) return;
+    setGalleryIndex(0);
+    setGalleryImages(images);
+  }, []);
+
   // A drag that ends up toggling `active` also re-renders the book the
   // pointer is still resting on into a newly-clickable state; the browser's
   // trailing `click` event (fired after `pointerup`) then lands on it and
@@ -390,8 +408,22 @@ export default function BookCarousel({ books }: { books: Book[] }) {
       aria-label="Pick a story"
       tabIndex={0}
     >
-      <BookSlot book={books[0]} isActive={active === 0} dims={dims} onSelect={() => goTo(0)} mirrorShape />
-      <BookSlot book={books[1]} isActive={active === 1} dims={dims} onSelect={() => goTo(1)} mirrorShape={false} />
+      <BookSlot
+        book={books[0]}
+        isActive={active === 0}
+        dims={dims}
+        onSelect={() => goTo(0)}
+        onOpenGallery={() => openGallery(books[0].screenshots)}
+        mirrorShape
+      />
+      <BookSlot
+        book={books[1]}
+        isActive={active === 1}
+        dims={dims}
+        onSelect={() => goTo(1)}
+        onOpenGallery={() => openGallery(books[1].screenshots)}
+        mirrorShape={false}
+      />
     </div>
   );
 
@@ -417,14 +449,15 @@ export default function BookCarousel({ books }: { books: Book[] }) {
             </p>
           </div>
           <div className="flex flex-col items-start px-[24px] w-full" style={panelStyle}>
-            <a
-              href={panelBook.href}
-              className="backdrop-blur-[5px] bg-black/40 border-2 border-[#0fd1ea] flex items-center px-[40px] py-[20px] rounded-[40px] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] transition-colors"
+            <button
+              type="button"
+              onClick={() => openGallery(panelBook.screenshots)}
+              className="backdrop-blur-[5px] bg-black/40 border-2 border-[#0fd1ea] flex items-center px-[40px] py-[20px] rounded-[40px] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] transition-colors cursor-pointer"
             >
               <span className="font-[family-name:var(--font-heading)] text-[#0fd1ea] text-[24px] tracking-[1.92px] whitespace-nowrap hover:text-[#7FECFB] transition-colors">
                 READ
               </span>
-            </a>
+            </button>
           </div>
         </PentagonCard>
       </div>
@@ -443,16 +476,26 @@ export default function BookCarousel({ books }: { books: Book[] }) {
           <ExpandableText>{panelBook.description}</ExpandableText>
         </div>
 
-        <a
-          href={panelBook.href}
-          className="backdrop-blur-[5px] bg-black/40 border-2 border-[#0fd1ea] flex items-center px-[40px] py-[20px] rounded-[40px] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] transition-colors"
+        <button
+          type="button"
+          onClick={() => openGallery(panelBook.screenshots)}
+          className="backdrop-blur-[5px] bg-black/40 border-2 border-[#0fd1ea] flex items-center px-[40px] py-[20px] rounded-[40px] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] transition-colors cursor-pointer"
           style={panelStyle}
         >
           <span className="font-[family-name:var(--font-heading)] text-[#0fd1ea] text-[24px] tracking-[1.92px] whitespace-nowrap">
             READ
           </span>
-        </a>
+        </button>
       </div>
+
+      {galleryImages && (
+        <ScreenshotGallery
+          images={galleryImages}
+          index={galleryIndex}
+          onIndexChange={setGalleryIndex}
+          onClose={() => setGalleryImages(null)}
+        />
+      )}
     </div>
   );
 }
