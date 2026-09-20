@@ -24,6 +24,7 @@ const books: Book[] = [
     href: "#",
     coverImg: "/images/Manga/OLD_KNIGHT-01.webp",
     spineImg: "/images/Manga/Old-knight-tranche.webp",
+    spineFill: "#EEEEEE",
   },
 ];
 

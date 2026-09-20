@@ -10,6 +10,10 @@ export type Book = {
   href: string;
   coverImg: string; // used for both the full Cover and the CoverPeek sliver
   spineImg: string;
+  // Fill behind the spine artwork's bg-contain letterboxing — matches that
+  // artwork's own paper tone so the join disappears instead of reading as
+  // "an image sitting on a white card". Defaults to white.
+  spineFill?: string;
 };
 
 // ---------------------------------------------------------------------
@@ -253,8 +257,8 @@ function BookSlot({
               bg-contain leaves top/bottom, so the join reads as one
               continuous page rather than a hard-edged tile. */}
           <div
-            className="absolute inset-y-0 right-0 bg-white"
-            style={{ width: dims.spineW, clipPath: SPINE_CLIP }}
+            className="absolute inset-y-0 right-0"
+            style={{ width: dims.spineW, clipPath: SPINE_CLIP, backgroundColor: book.spineFill ?? "#ffffff" }}
           >
             <div
               className="absolute inset-0 bg-contain bg-center bg-no-repeat"
