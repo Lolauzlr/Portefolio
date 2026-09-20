@@ -244,9 +244,20 @@ function BookSlot({
             className="absolute inset-y-0 bg-[#D9D9D9]"
             style={{ left: connector.left, width: connector.width, clipPath: connector.clipPath }}
           />
-          <div className="absolute inset-y-0 right-0" style={{ width: dims.spineW, clipPath: SPINE_CLIP }}>
+          {/* bg-contain (not bg-cover) so the full spine artwork — title,
+              author line and its own margins — shows at its natural
+              proportions instead of being zoomed/cropped to fill this much
+              narrower window, which was pushing the lettering flush against
+              the cut edges. The white fill behind it stands in for the
+              artwork's own paper-colored margins in the letterboxed strip
+              bg-contain leaves top/bottom, so the join reads as one
+              continuous page rather than a hard-edged tile. */}
+          <div
+            className="absolute inset-y-0 right-0 bg-white"
+            style={{ width: dims.spineW, clipPath: SPINE_CLIP }}
+          >
             <div
-              className="absolute inset-0 bg-cover bg-center"
+              className="absolute inset-0 bg-contain bg-center bg-no-repeat"
               style={{
                 backgroundImage: `url(${book.spineImg})`,
                 transform: `skewX(${spineSkewDeg}deg)${mirrorShape ? " scaleX(-1)" : ""}`,
