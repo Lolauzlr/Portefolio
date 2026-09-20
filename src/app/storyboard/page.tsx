@@ -17,10 +17,10 @@ const books: Book[] = [
     href: "#",
     coverImg: "/images/Manga/NO_FINDER_COVER.webp",
     spineImg: "/images/Manga/No-finder-tranche.webp",
-    // Add No Finder's own interior pages/art here once available, e.g.
-    // "/images/Manga/no-finder-page-01.webp". Never coverImg/spineImg —
-    // the gallery is meant to show pages the cover/spine don't already
-    // show, and never another book's images.
+    // Add No Finder's own interior pages here once available, e.g.
+    // "/images/Manga/no-finder-page-01.webp" — the gallery always shows
+    // coverImg first on its own, so don't repeat it here. Never spineImg,
+    // and never another book's images.
     screenshots: [],
   },
   {
@@ -30,10 +30,10 @@ const books: Book[] = [
     coverImg: "/images/Manga/OLD_KNIGHT-01.webp",
     spineImg: "/images/Manga/Old-knight-tranche.webp",
     spineFill: "#EEEEEE",
-    // Add Old Knight's own interior pages/art here once available, e.g.
-    // "/images/Manga/old-knight-page-01.webp". Never coverImg/spineImg —
-    // the gallery is meant to show pages the cover/spine don't already
-    // show, and never another book's images.
+    // Add Old Knight's own interior pages here once available, e.g.
+    // "/images/Manga/old-knight-page-01.webp" — the gallery always shows
+    // coverImg first on its own, so don't repeat it here. Never spineImg,
+    // and never another book's images.
     screenshots: [],
   },
 ];

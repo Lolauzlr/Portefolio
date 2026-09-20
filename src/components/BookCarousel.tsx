@@ -15,8 +15,9 @@ export type Book = {
   // artwork's own paper tone so the join disappears instead of reading as
   // "an image sitting on a white card". Defaults to white.
   spineFill?: string;
-  // Interior pages/art shown in the full-screen gallery opened from "READ"
-  // or from clicking the already-selected book. Empty until supplied.
+  // Interior pages/art shown in the gallery AFTER the cover (which the
+  // gallery always prepends itself — don't repeat it here). Never the
+  // spine. Empty until supplied.
   screenshots?: string[];
 };
 
@@ -313,14 +314,14 @@ export default function BookCarousel({ books }: { books: Book[] }) {
   const dims = useDims();
 
   // Full-screen gallery: opened from "READ" or from clicking the
-  // already-selected book. `screenshots` is empty until supplied, so
-  // opening is a no-op rather than showing a blank overlay.
+  // already-selected book. The cover always leads as page one — it's the
+  // book's own cover art, not a spoiler — followed by that book's interior
+  // pages once supplied; the spine never appears here.
   const [galleryImages, setGalleryImages] = useState<string[] | null>(null);
   const [galleryIndex, setGalleryIndex] = useState(0);
-  const openGallery = useCallback((images: string[] | undefined) => {
-    if (!images || images.length === 0) return;
+  const openGallery = useCallback((book: Book) => {
     setGalleryIndex(0);
-    setGalleryImages(images);
+    setGalleryImages([book.coverImg, ...(book.screenshots ?? [])]);
   }, []);
 
   // A drag that ends up toggling `active` also re-renders the book the
@@ -413,7 +414,7 @@ export default function BookCarousel({ books }: { books: Book[] }) {
         isActive={active === 0}
         dims={dims}
         onSelect={() => goTo(0)}
-        onOpenGallery={() => openGallery(books[0].screenshots)}
+        onOpenGallery={() => openGallery(books[0])}
         mirrorShape
       />
       <BookSlot
@@ -421,7 +422,7 @@ export default function BookCarousel({ books }: { books: Book[] }) {
         isActive={active === 1}
         dims={dims}
         onSelect={() => goTo(1)}
-        onOpenGallery={() => openGallery(books[1].screenshots)}
+        onOpenGallery={() => openGallery(books[1])}
         mirrorShape={false}
       />
     </div>
@@ -451,7 +452,7 @@ export default function BookCarousel({ books }: { books: Book[] }) {
           <div className="flex flex-col items-start px-[24px] w-full" style={panelStyle}>
             <button
               type="button"
-              onClick={() => openGallery(panelBook.screenshots)}
+              onClick={() => openGallery(panelBook)}
               className="backdrop-blur-[5px] bg-black/40 border-2 border-[#0fd1ea] flex items-center px-[40px] py-[20px] rounded-[40px] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] transition-colors cursor-pointer"
             >
               <span className="font-[family-name:var(--font-heading)] text-[#0fd1ea] text-[24px] tracking-[1.92px] whitespace-nowrap hover:text-[#7FECFB] transition-colors">
@@ -478,7 +479,7 @@ export default function BookCarousel({ books }: { books: Book[] }) {
 
         <button
           type="button"
-          onClick={() => openGallery(panelBook.screenshots)}
+          onClick={() => openGallery(panelBook)}
           className="backdrop-blur-[5px] bg-black/40 border-2 border-[#0fd1ea] flex items-center px-[40px] py-[20px] rounded-[40px] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] transition-colors cursor-pointer"
           style={panelStyle}
         >
