@@ -11,8 +11,21 @@ const bookDescription =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque. Vivamus dapibus semper justo, interdum tincidunt tellus placerat a. Quisque vel orci et nulla vestibulum interdum.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in";
 
 const books: Book[] = [
-  { title: "No Finder", description: bookDescription, href: "#" },
-  { title: "Old Knight", description: bookDescription, href: "#" },
+  {
+    title: "No Finder",
+    description: bookDescription,
+    href: "#",
+    coverImg: "/images/Manga/NO_FINDER_COVER.webp",
+    spineImg: "/images/Manga/No-finder-tranche.webp",
+  },
+  {
+    title: "Old Knight",
+    description: bookDescription,
+    href: "#",
+    coverImg: "/images/Manga/OLD_KNIGHT-01.webp",
+    spineImg: "/images/Manga/Old-knight-tranche.webp",
+    spineFill: "#EEEEEE",
+  },
 ];
 
 const placeholderSlides = (count: number): CarouselSlide[] =>

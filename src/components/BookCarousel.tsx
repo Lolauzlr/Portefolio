@@ -8,6 +8,12 @@ export type Book = {
   title: string;
   description: string;
   href: string;
+  coverImg: string; // used for both the full Cover and the CoverPeek sliver
+  spineImg: string;
+  // Fill behind the spine artwork's bg-contain letterboxing — matches that
+  // artwork's own paper tone so the join disappears instead of reading as
+  // "an image sitting on a white card". Defaults to white.
+  spineFill?: string;
 };
 
 // ---------------------------------------------------------------------
@@ -77,14 +83,19 @@ const DRAG_THRESHOLD = 60; // px of swipe before it toggles the active book
 const TURN_SCALE = 0.88; // both settle back to 1 at rest, so the at-rest
 // look (and every clip-path traced against it) is completely unaffected.
 
-// Depth: the active book sits a bit closer — lifted with a soft ambient
-// glow; an inactive book rises to that same lift on hover. A dark drop
-// shadow is invisible against this page's own near-black background, so
-// depth reads through position (translateY) plus a light-colored glow
-// instead. Literal Tailwind arbitrary-value classes (not composed from
-// JS strings) so the compiler can see them.
-const NEAR_CLASS = "-translate-y-1.5 shadow-[0_28px_44px_-18px_rgba(255,255,255,0.28)]";
-const FAR_CLASS = "translate-y-0 shadow-[0_10px_18px_-14px_rgba(255,255,255,0.1)] hover:-translate-y-1.5 hover:shadow-[0_28px_44px_-18px_rgba(255,255,255,0.28)]";
+// Depth: both books sit at the same height by default — no lift, no
+// shadow difference. Only on hover does the inactive book read as
+// "coming toward the viewer": a barely-there scale up, nudged toward the
+// slot's own outer edge (away from the active book, so it never grows
+// over it) plus a light ambient glow (a dark drop shadow is invisible
+// against this page's own near-black background). Literal Tailwind
+// arbitrary-value classes (not composed from JS strings) so the
+// compiler can see them.
+const REST_CLASS = "scale-100 translate-x-0 shadow-[0_10px_18px_-14px_rgba(255,255,255,0.1)]";
+// Two full literal strings (not composed at runtime) so Tailwind's
+// scanner can see each complete "hover:..." token in the source.
+const HOVER_LEFT_CLASS = "hover:scale-[1.04] hover:-translate-x-1.5 hover:shadow-[0_20px_36px_-16px_rgba(255,255,255,0.24)]";
+const HOVER_RIGHT_CLASS = "hover:scale-[1.04] hover:translate-x-1.5 hover:shadow-[0_20px_36px_-16px_rgba(255,255,255,0.24)]";
 
 function useDims(): Dims {
   const [dims, setDims] = useState<Dims>(DESKTOP);
@@ -128,6 +139,17 @@ function BookSlot({
     transition: `opacity ${TRANSITION_MS}ms ${EASE}, transform ${TRANSITION_MS}ms ${EASE}`,
   });
   const connector = connectorGeometry(dims.peekW, dims.spineW);
+  // SPINE_CLIP's own left/right edges both lean by this same angle (13% of
+  // spineW over the full bookH) — skewing the spine's image by the exact
+  // same amount makes the artwork's vertical lines follow the parallelogram
+  // instead of a straight-cut photo showing through a slanted window.
+  const spineSkewDeg = (Math.atan((0.13 * dims.spineW) / dims.bookH) * 180) / Math.PI;
+  // The CoverPeek is the cover's edge seen at a raking angle — a real
+  // perspective/rotateY tilt (hinged at the edge nearest the spine, where
+  // the two surfaces actually meet) reads as that edge receding away from
+  // the viewer instead of a flat photo. Only visible while inactive, since
+  // CoverPeek itself is opacity-0 when active.
+  const coverPeekTiltDeg = 40;
   // Both layers squeeze toward the slot's outer edge (where the spine
   // sits) and settle at full scale once fully active/inactive — the
   // squeeze only exists while opacity is also mid-fade, as a transient
@@ -136,6 +158,15 @@ function BookSlot({
   const hingeOrigin = `${mirrorShape ? "left" : "right"} center`;
   const coverScale = isActive ? 1 : TURN_SCALE;
   const peekScale = isActive ? TURN_SCALE : 1;
+  // Peek/connector/spine are always laid out spine-at-right internally
+  // (mirroring happens once, below, on the whole group) so their own
+  // squeeze always hinges at "right" — never combine this with the
+  // mirror's scaleX(-1) on the same element: a negative scale anchored
+  // at an edge (not the center) shifts the whole box sideways by its own
+  // width instead of just flipping its content, pushing it outside the
+  // button's overflow-hidden bounds (found by comparing this group's
+  // getBoundingClientRect against the button's — it landed one full
+  // width to the left, clipped away entirely).
 
   return (
     <button
@@ -144,8 +175,8 @@ function BookSlot({
       aria-disabled={isActive}
       aria-label={`Show ${book.title}`}
       aria-current={isActive}
-      className={`relative shrink-0 overflow-hidden ${
-        isActive ? `cursor-default ${NEAR_CLASS}` : `cursor-pointer ${FAR_CLASS}`
+      className={`relative shrink-0 overflow-hidden ${REST_CLASS} ${
+        isActive ? "cursor-default" : `cursor-pointer ${mirrorShape ? HOVER_LEFT_CLASS : HOVER_RIGHT_CLASS}`
       }`}
       style={{
         width: outerW,
@@ -162,51 +193,81 @@ function BookSlot({
           nothing drifts apart or re-flows mid-transition. */}
       {/* Cover */}
       <div
-        className="absolute inset-y-0 flex items-center justify-center bg-white px-6"
+        className="absolute inset-y-0 bg-white bg-cover bg-center"
         style={{
           [mirrorShape ? "left" : "right"]: 0,
           width: dims.bookW,
+          backgroundImage: `url(${book.coverImg})`,
           transformOrigin: hingeOrigin,
           transform: `scaleX(${coverScale})`,
           ...fade(isActive),
         }}
-      >
-        <span className="font-[family-name:var(--font-heading)] text-[16px] md:text-[24px] tracking-[1.76px] text-[#15161b] text-center uppercase">
-          {book.title}
-        </span>
-      </div>
+      />
       {/* CoverPeek + Spine — two adjacent, non-overlapping shapes (0 gap
           between their boxes) whose own cut edges don't quite meet; the
           connector plugs exactly that leftover gap so the two read as one
-          continuous silhouette instead of two separate tiles. */}
+          continuous silhouette instead of two separate tiles. It's a flat
+          #D9D9D9 fill rather than a sliver of the cover image — showing
+          the same photo twice, right next to itself, read as an obvious
+          glitch rather than a continuation of it. The mirror (outer,
+          center-origin) and the squeeze (inner, right-edge-origin) are
+          two separate elements so their transforms never share an origin
+          (see the note above); each shape's own image gets a counter
+          scaleX(-1) so the artwork it shows never mirrors. */}
       <div
         className="absolute inset-y-0"
         style={{
           [mirrorShape ? "left" : "right"]: 0,
           width: dims.peekW + dims.spineW,
-          transformOrigin: hingeOrigin,
-          transform: `scaleX(${mirrorShape ? -peekScale : peekScale})`,
+          transform: mirrorShape ? "scaleX(-1)" : undefined,
           ...fade(!isActive),
         }}
       >
         <div
-          className="absolute inset-y-0 left-0 bg-white"
-          style={{ width: dims.peekW, clipPath: COVER_PEEK_CLIP }}
-        />
-        <div
-          className="absolute inset-y-0 bg-white"
-          style={{ left: connector.left, width: connector.width, clipPath: connector.clipPath }}
-        />
-        <div
-          className="absolute inset-y-0 right-0 flex items-center justify-center overflow-hidden bg-[#f2efe9]"
-          style={{ width: dims.spineW, clipPath: SPINE_CLIP }}
+          className="absolute inset-0"
+          style={{
+            transformOrigin: "right center",
+            transform: `scaleX(${peekScale})`,
+            transition: `transform ${TRANSITION_MS}ms ${EASE}`,
+          }}
         >
-          <span
-            className="font-[family-name:var(--font-heading)] text-[11px] md:text-[15px] tracking-[1.04px] text-[#15161b] uppercase whitespace-nowrap"
-            style={{ writingMode: "vertical-rl", transform: mirrorShape ? "scaleX(-1)" : undefined }}
+          <div
+            className="absolute inset-y-0 left-0"
+            style={{ width: dims.peekW, clipPath: COVER_PEEK_CLIP, perspective: 300 }}
           >
-            {book.title}
-          </span>
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{
+                backgroundImage: `url(${book.coverImg})`,
+                transformOrigin: "right center",
+                transform: `rotateY(${coverPeekTiltDeg}deg)${mirrorShape ? " scaleX(-1)" : ""}`,
+              }}
+            />
+          </div>
+          <div
+            className="absolute inset-y-0 bg-[#D9D9D9]"
+            style={{ left: connector.left, width: connector.width, clipPath: connector.clipPath }}
+          />
+          {/* bg-contain (not bg-cover) so the full spine artwork — title,
+              author line and its own margins — shows at its natural
+              proportions instead of being zoomed/cropped to fill this much
+              narrower window, which was pushing the lettering flush against
+              the cut edges. The white fill behind it stands in for the
+              artwork's own paper-colored margins in the letterboxed strip
+              bg-contain leaves top/bottom, so the join reads as one
+              continuous page rather than a hard-edged tile. */}
+          <div
+            className="absolute inset-y-0 right-0"
+            style={{ width: dims.spineW, clipPath: SPINE_CLIP, backgroundColor: book.spineFill ?? "#ffffff" }}
+          >
+            <div
+              className="absolute inset-0 bg-contain bg-center bg-no-repeat"
+              style={{
+                backgroundImage: `url(${book.spineImg})`,
+                transform: `skewX(${spineSkewDeg}deg)${mirrorShape ? " scaleX(-1)" : ""}`,
+              }}
+            />
+          </div>
         </div>
       </div>
     </button>
