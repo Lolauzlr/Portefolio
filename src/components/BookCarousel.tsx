@@ -79,14 +79,19 @@ const DRAG_THRESHOLD = 60; // px of swipe before it toggles the active book
 const TURN_SCALE = 0.88; // both settle back to 1 at rest, so the at-rest
 // look (and every clip-path traced against it) is completely unaffected.
 
-// Depth: the active book sits a bit closer — lifted with a soft ambient
-// glow; an inactive book rises to that same lift on hover. A dark drop
-// shadow is invisible against this page's own near-black background, so
-// depth reads through position (translateY) plus a light-colored glow
-// instead. Literal Tailwind arbitrary-value classes (not composed from
-// JS strings) so the compiler can see them.
-const NEAR_CLASS = "-translate-y-1.5 shadow-[0_28px_44px_-18px_rgba(255,255,255,0.28)]";
-const FAR_CLASS = "translate-y-0 shadow-[0_10px_18px_-14px_rgba(255,255,255,0.1)] hover:-translate-y-1.5 hover:shadow-[0_28px_44px_-18px_rgba(255,255,255,0.28)]";
+// Depth: both books sit at the same height by default — no lift, no
+// shadow difference. Only on hover does the inactive book read as
+// "coming toward the viewer": a barely-there scale up, nudged toward the
+// slot's own outer edge (away from the active book, so it never grows
+// over it) plus a light ambient glow (a dark drop shadow is invisible
+// against this page's own near-black background). Literal Tailwind
+// arbitrary-value classes (not composed from JS strings) so the
+// compiler can see them.
+const REST_CLASS = "scale-100 translate-x-0 shadow-[0_10px_18px_-14px_rgba(255,255,255,0.1)]";
+// Two full literal strings (not composed at runtime) so Tailwind's
+// scanner can see each complete "hover:..." token in the source.
+const HOVER_LEFT_CLASS = "hover:scale-[1.04] hover:-translate-x-1.5 hover:shadow-[0_20px_36px_-16px_rgba(255,255,255,0.24)]";
+const HOVER_RIGHT_CLASS = "hover:scale-[1.04] hover:translate-x-1.5 hover:shadow-[0_20px_36px_-16px_rgba(255,255,255,0.24)]";
 
 function useDims(): Dims {
   const [dims, setDims] = useState<Dims>(DESKTOP);
@@ -155,8 +160,8 @@ function BookSlot({
       aria-disabled={isActive}
       aria-label={`Show ${book.title}`}
       aria-current={isActive}
-      className={`relative shrink-0 overflow-hidden ${
-        isActive ? `cursor-default ${NEAR_CLASS}` : `cursor-pointer ${FAR_CLASS}`
+      className={`relative shrink-0 overflow-hidden ${REST_CLASS} ${
+        isActive ? "cursor-default" : `cursor-pointer ${mirrorShape ? HOVER_LEFT_CLASS : HOVER_RIGHT_CLASS}`
       }`}
       style={{
         width: outerW,
@@ -186,11 +191,14 @@ function BookSlot({
       {/* CoverPeek + Spine — two adjacent, non-overlapping shapes (0 gap
           between their boxes) whose own cut edges don't quite meet; the
           connector plugs exactly that leftover gap so the two read as one
-          continuous silhouette instead of two separate tiles. The mirror
-          (outer, center-origin) and the squeeze (inner, right-edge-origin)
-          are two separate elements so their transforms never share an
-          origin (see the note above); each shape's own image gets a
-          counter scaleX(-1) so the artwork it shows never mirrors. */}
+          continuous silhouette instead of two separate tiles. It's a flat
+          #D9D9D9 fill rather than a sliver of the cover image — showing
+          the same photo twice, right next to itself, read as an obvious
+          glitch rather than a continuation of it. The mirror (outer,
+          center-origin) and the squeeze (inner, right-edge-origin) are
+          two separate elements so their transforms never share an origin
+          (see the note above); each shape's own image gets a counter
+          scaleX(-1) so the artwork it shows never mirrors. */}
       <div
         className="absolute inset-y-0"
         style={{
@@ -215,14 +223,9 @@ function BookSlot({
             />
           </div>
           <div
-            className="absolute inset-y-0"
+            className="absolute inset-y-0 bg-[#D9D9D9]"
             style={{ left: connector.left, width: connector.width, clipPath: connector.clipPath }}
-          >
-            <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url(${book.coverImg})`, transform: mirrorShape ? "scaleX(-1)" : undefined }}
-            />
-          </div>
+          />
           <div className="absolute inset-y-0 right-0" style={{ width: dims.spineW, clipPath: SPINE_CLIP }}>
             <div
               className="absolute inset-0 bg-cover bg-center"
