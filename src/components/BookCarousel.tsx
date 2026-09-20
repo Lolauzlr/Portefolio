@@ -15,6 +15,11 @@ export type Book = {
   // artwork's own paper tone so the join disappears instead of reading as
   // "an image sitting on a white card". Defaults to white.
   spineFill?: string;
+  // CoverPeek's fill when inactive — a flat color, not a sliver of the
+  // cover artwork (showing a fragment of the cover here read as a spoiler/
+  // glitch rather than a continuation of the spine). Should read as darker
+  // than this book's own spineFill. Defaults to a mid-gray.
+  coverPeekFill?: string;
   // Interior pages/art shown in the gallery AFTER the cover (which the
   // gallery always prepends itself — don't repeat it here). Never the
   // spine. Empty until supplied.
@@ -80,13 +85,20 @@ const TRANSITION_MS = 650;
 const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 const DRAG_THRESHOLD = 60; // px of swipe before it toggles the active book
 
-// The "turn" is a 2D scaleX squeeze toward the hinge edge, not a real
-// rotateY: a `perspective`/3D-transformed element on this page combined
-// with the info panel's `backdrop-blur` triggers a Chromium compositing
-// bug that flashes the entire page dark mid-transition. scaleX gives a
-// similar "swinging shut/open" read without ever creating a 3D context.
-const TURN_SCALE = 0.88; // both settle back to 1 at rest, so the at-rest
-// look (and every clip-path traced against it) is completely unaffected.
+// The "turn" is a real perspective/rotateY flip: Cover and the CoverPeek+
+// Spine group are hinged at the same outer edge and rotate through the
+// same angular range in the same rotational sense — Cover sweeping from
+// flat (0deg) to edge-on, CoverPeek+Spine sweeping from edge-on back to
+// flat — so together they read as one object turning over, not two
+// crossfading tiles. Stopping just short of a true 90deg avoids the
+// exact-edge-on numerical case (a zero-width plane can flicker/z-fight).
+// A `perspective`/rotateY transform combined with the info panel's
+// `backdrop-filter: blur(...)` is known to trigger a Chromium compositing
+// bug that flashes the whole page dark — BookCarousel strips that blur
+// for the duration of every transition (see `isTransitioning`) so the
+// two conditions never coexist.
+const FLIP_ANGLE = 88;
+const FLIP_PERSPECTIVE = "1400px";
 
 // Depth: both books sit at the same height by default — no lift, no
 // shadow difference. Only on hover does the inactive book read as
@@ -153,29 +165,33 @@ function BookSlot({
   // same amount makes the artwork's vertical lines follow the parallelogram
   // instead of a straight-cut photo showing through a slanted window.
   const spineSkewDeg = (Math.atan((0.13 * dims.spineW) / dims.bookH) * 180) / Math.PI;
-  // The CoverPeek is the cover's edge seen at a raking angle — a real
-  // perspective/rotateY tilt (hinged at the edge nearest the spine, where
-  // the two surfaces actually meet) reads as that edge receding away from
-  // the viewer instead of a flat photo. Only visible while inactive, since
-  // CoverPeek itself is opacity-0 when active.
-  const coverPeekTiltDeg = 40;
-  // Both layers squeeze toward the slot's outer edge (where the spine
-  // sits) and settle at full scale once fully active/inactive — the
-  // squeeze only exists while opacity is also mid-fade, as a transient
-  // flourish layered on top of the existing crossfade, never a change to
-  // either shape's resting geometry.
   const hingeOrigin = `${mirrorShape ? "left" : "right"} center`;
-  const coverScale = isActive ? 1 : TURN_SCALE;
-  const peekScale = isActive ? TURN_SCALE : 1;
-  // Peek/connector/spine are always laid out spine-at-right internally
-  // (mirroring happens once, below, on the whole group) so their own
-  // squeeze always hinges at "right" — never combine this with the
-  // mirror's scaleX(-1) on the same element: a negative scale anchored
-  // at an edge (not the center) shifts the whole box sideways by its own
-  // width instead of just flipping its content, pushing it outside the
-  // button's overflow-hidden bounds (found by comparing this group's
-  // getBoundingClientRect against the button's — it landed one full
-  // width to the left, clipped away entirely).
+  // Cover is never itself mirrored (only the CoverPeek+Spine group gets a
+  // scaleX(-1) wrapper) — it's the same unmirrored element positioned at
+  // whichever outer edge, just with its transform-origin moved to that
+  // edge. Rotating a plane about an origin on its right edge vs. its left
+  // edge needs the OPPOSITE sign of rotateY to make the same thing happen
+  // on screen (the free edge receding away from the viewer, not popping
+  // toward them) — derived from the standard rotateY matrix
+  // (x' = x·cosθ, z' = -x·sinθ) evaluated at each edge's own relative
+  // coordinate, then confirmed by rendering both books side by side.
+  const coverAngle = isActive ? 0 : mirrorShape ? FLIP_ANGLE : -FLIP_ANGLE;
+  // The CoverPeek+Spine squeeze div is always coded hinge-at-right
+  // internally (mirroring happens once, on the whole group, below) so its
+  // own rotation always uses the same sign as an unmirrored right-hinged
+  // element — the group's outer scaleX(-1) only mirrors the rendered 3D
+  // result left/right on screen afterward, it doesn't touch depth, so it
+  // never needs a matching sign flip the way coverAngle does.
+  const peekAngle = isActive ? -FLIP_ANGLE : 0;
+  // Never combine this rotation with the mirror's scaleX(-1) on the same
+  // element: a negative scale anchored at an edge (not the center) shifts
+  // the whole box sideways by its own width instead of just flipping its
+  // content, pushing it outside the button's overflow-hidden bounds
+  // (found by comparing this group's getBoundingClientRect against the
+  // button's — it landed one full width to the left, clipped away
+  // entirely). Keeping the rotation on its own inner element, hinged at
+  // "right", sidesteps that regardless of which edge the outer mirror
+  // wrapper is anchored to.
 
   return (
     <button
@@ -207,21 +223,17 @@ function BookSlot({
           width: dims.bookW,
           backgroundImage: `url(${book.coverImg})`,
           transformOrigin: hingeOrigin,
-          transform: `scaleX(${coverScale})`,
+          transform: `perspective(${FLIP_PERSPECTIVE}) rotateY(${coverAngle}deg)`,
           ...fade(isActive),
         }}
       />
       {/* CoverPeek + Spine — two adjacent, non-overlapping shapes (0 gap
           between their boxes) whose own cut edges don't quite meet; the
           connector plugs exactly that leftover gap so the two read as one
-          continuous silhouette instead of two separate tiles. It's a flat
-          #D9D9D9 fill rather than a sliver of the cover image — showing
-          the same photo twice, right next to itself, read as an obvious
-          glitch rather than a continuation of it. The mirror (outer,
-          center-origin) and the squeeze (inner, right-edge-origin) are
-          two separate elements so their transforms never share an origin
-          (see the note above); each shape's own image gets a counter
-          scaleX(-1) so the artwork it shows never mirrors. */}
+          continuous silhouette instead of two separate tiles. The mirror
+          (outer, center-origin) and the flip (inner, right-edge-origin)
+          are two separate elements so their transforms never share an
+          origin (see the note above). */}
       <div
         className="absolute inset-y-0"
         style={{
@@ -235,23 +247,18 @@ function BookSlot({
           className="absolute inset-0"
           style={{
             transformOrigin: "right center",
-            transform: `scaleX(${peekScale})`,
+            transform: `perspective(${FLIP_PERSPECTIVE}) rotateY(${peekAngle}deg)`,
             transition: `transform ${TRANSITION_MS}ms ${EASE}`,
           }}
         >
+          {/* Flat fill, darker than this book's spineFill, rather than a
+              sliver of the cover image — a fragment of the cover here
+              read as a spoiler/glitch rather than a continuation of the
+              spine (see coverPeekFill on Book). */}
           <div
             className="absolute inset-y-0 left-0"
-            style={{ width: dims.peekW, clipPath: COVER_PEEK_CLIP, perspective: 300 }}
-          >
-            <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{
-                backgroundImage: `url(${book.coverImg})`,
-                transformOrigin: "right center",
-                transform: `rotateY(${coverPeekTiltDeg}deg)${mirrorShape ? " scaleX(-1)" : ""}`,
-              }}
-            />
-          </div>
+            style={{ width: dims.peekW, clipPath: COVER_PEEK_CLIP, backgroundColor: book.coverPeekFill ?? "#8C8C8C" }}
+          />
           <div
             className="absolute inset-y-0 bg-[#D9D9D9]"
             style={{ left: connector.left, width: connector.width, clipPath: connector.clipPath }}
@@ -312,6 +319,28 @@ function BookSlider({
 export default function BookCarousel({ books }: { books: Book[] }) {
   const [active, setActive] = useState(0);
   const dims = useDims();
+
+  // The book turn now uses a real perspective/rotateY flip, which is known
+  // to flash the whole page dark if it coexists with `backdrop-filter:
+  // blur(...)` (a Chromium compositing bug) — this info panel is the only
+  // blur on the page, so it's stripped for the exact span of every turn
+  // and restored once it's settled, keeping the two conditions from ever
+  // overlapping.
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  // Adjusted during render (React's supported pattern for resetting/
+  // deriving state from a prop change) rather than in an effect, so the
+  // flag flips on in the same commit as `active` itself instead of one
+  // render later.
+  const [settledActive, setSettledActive] = useState(active);
+  if (active !== settledActive) {
+    setSettledActive(active);
+    setIsTransitioning(true);
+  }
+  useEffect(() => {
+    if (!isTransitioning) return;
+    const t = setTimeout(() => setIsTransitioning(false), TRANSITION_MS + 50);
+    return () => clearTimeout(t);
+  }, [isTransitioning]);
 
   // Full-screen gallery: opened from "READ" or from clicking the
   // already-selected book. The cover always leads as page one — it's the
@@ -438,7 +467,7 @@ export default function BookCarousel({ books }: { books: Book[] }) {
         </div>
 
         <PentagonCard
-          className="h-[535px] w-[510px] shrink-0 backdrop-blur-[5px]"
+          className={`h-[535px] w-[510px] shrink-0${isTransitioning ? "" : " backdrop-blur-[5px]"}`}
           contentClassName="!p-0 flex flex-col gap-[20px] h-full items-start py-[20px]"
         >
           <div className="flex flex-col gap-[12px] items-start px-[24px] w-full" style={panelStyle}>
@@ -453,7 +482,7 @@ export default function BookCarousel({ books }: { books: Book[] }) {
             <button
               type="button"
               onClick={() => openGallery(panelBook)}
-              className="backdrop-blur-[5px] bg-black/40 border-2 border-[#0fd1ea] flex items-center px-[40px] py-[20px] rounded-[40px] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] transition-colors cursor-pointer"
+              className={`${isTransitioning ? "" : "backdrop-blur-[5px] "}bg-black/40 border-2 border-[#0fd1ea] flex items-center px-[40px] py-[20px] rounded-[40px] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] transition-colors cursor-pointer`}
             >
               <span className="font-[family-name:var(--font-heading)] text-[#0fd1ea] text-[24px] tracking-[1.92px] whitespace-nowrap hover:text-[#7FECFB] transition-colors">
                 READ
@@ -480,7 +509,7 @@ export default function BookCarousel({ books }: { books: Book[] }) {
         <button
           type="button"
           onClick={() => openGallery(panelBook)}
-          className="backdrop-blur-[5px] bg-black/40 border-2 border-[#0fd1ea] flex items-center px-[40px] py-[20px] rounded-[40px] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] transition-colors cursor-pointer"
+          className={`${isTransitioning ? "" : "backdrop-blur-[5px] "}bg-black/40 border-2 border-[#0fd1ea] flex items-center px-[40px] py-[20px] rounded-[40px] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] transition-colors cursor-pointer`}
           style={panelStyle}
         >
           <span className="font-[family-name:var(--font-heading)] text-[#0fd1ea] text-[24px] tracking-[1.92px] whitespace-nowrap">
