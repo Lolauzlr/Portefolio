@@ -85,6 +85,21 @@ const TRANSITION_MS = 650;
 const EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 const DRAG_THRESHOLD = 60; // px of swipe before it toggles the active book
 
+// The button's own width and the rotateY flip both run for TRANSITION_MS,
+// but they grow at different rates (width is linear in eased time; the
+// flip's apparent width follows the perspective/rotation math, which is
+// still well short of full width at the same eased time — e.g. only ~72%
+// of the way there at 50% progress on desktop). Width ends up the actual
+// bottleneck clipping the cover for most of the transition, then the last
+// sliver the flip had "ready" earlier gets revealed in one late step once
+// width finally catches up — read as the cover filling in twice instead
+// of turning smoothly. Finishing the width transition well before the
+// flip (verified numerically: by ~450ms width already exceeds the flip's
+// implied width at every point up to 650ms) means width is never the
+// limiting factor near the end, so the tail is governed only by the
+// flip's own continuous, gradual settle.
+const WIDTH_TRANSITION_MS = 450;
+
 // The "turn" is a real perspective/rotateY flip: Cover and the CoverPeek+
 // Spine group are hinged at the same outer edge and rotate through the
 // same angular range in the same rotational sense — Cover sweeping from
@@ -205,7 +220,7 @@ function BookSlot({
       style={{
         width: outerW,
         height: dims.bookH,
-        transition: `width ${TRANSITION_MS}ms ${EASE}, transform 400ms ${EASE}, box-shadow 400ms ${EASE}`,
+        transition: `width ${WIDTH_TRANSITION_MS}ms ${EASE}, transform 400ms ${EASE}, box-shadow 400ms ${EASE}`,
       }}
     >
       {/* Cover and the CoverPeek+Spine group are both fixed-size, anchored
