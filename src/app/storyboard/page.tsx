@@ -3,6 +3,7 @@
 import BookCarousel, { type Book } from "@/components/BookCarousel";
 import ImageCarousel, { type CarouselSlide } from "@/components/ImageCarousel";
 import ExpandableText from "@/components/ExpandableText";
+import VideoCard from "@/components/VideoCard";
 
 const loremIpsum =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque. Vivamus dapibus semper justo, interdum tincidunt tellus placerat a. Quisque vel orci et nulla vestibulum interdum.";
@@ -58,27 +59,37 @@ function SectionTitle({
   );
 }
 
+function SubLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <h4 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-[#ddff6e] uppercase">
+      {children}
+    </h4>
+  );
+}
+
 function StorySpot({
   label,
   description,
   reversed = false,
+  media,
 }: {
   label: string;
   description: string;
   reversed?: boolean;
+  // Overrides the default placeholder carousel — used for the real video
+  // card on "The Twins", for instance.
+  media?: React.ReactNode;
 }) {
   return (
     <div className={`flex flex-col md:flex-row gap-6 md:gap-[24px] items-start w-full ${reversed ? "md:flex-row-reverse" : ""}`}>
       <div className="flex flex-col gap-6 md:gap-[24px] items-start flex-1 w-full min-w-0">
         <div className="flex flex-col gap-4 items-start w-full">
-          <h4 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-[#ddff6e] uppercase">
-            {label}
-          </h4>
+          <SubLabel>{label}</SubLabel>
           <ExpandableText>{description}</ExpandableText>
         </div>
       </div>
       <div className="w-full md:w-[469px] shrink-0">
-        <ImageCarousel slides={placeholderSlides(3)} alt={label} aspectClassName="aspect-[469/663]" />
+        {media ?? <ImageCarousel slides={placeholderSlides(3)} alt={label} aspectClassName="aspect-[469/663]" />}
       </div>
     </div>
   );
@@ -86,15 +97,19 @@ function StorySpot({
 
 function StoryProject({
   title,
+  label,
   description,
 }: {
   title: string;
+  // Yellow subtitle under the title (e.g. "VIDEO CLIP", "SHORT FILM").
+  label?: string;
   description: string;
 }) {
   return (
     <div className="flex flex-col gap-6 md:gap-[24px] items-start w-full">
-      <div className="flex flex-col gap-6 md:gap-[24px] items-start w-full md:max-w-[994px]">
+      <div className="flex flex-col gap-4 md:gap-[16px] items-start w-full md:max-w-[994px]">
         <SectionTitle>{title}</SectionTitle>
+        {label && <SubLabel>{label}</SubLabel>}
         <ExpandableText>{description}</ExpandableText>
       </div>
       <div className="w-full">
@@ -130,21 +145,35 @@ export default function StoryboardPage() {
         </div>
 
         <div className="flex flex-col gap-8 md:gap-[40px] items-start w-full">
+          <StoryProject title="Nabil Harrow" label="Video clip" description={loremIpsum} />
+
           <div className="flex flex-col gap-6 md:gap-[24px] items-start w-full">
             <SectionTitle>The source</SectionTitle>
-            <StorySpot label="SPOT N°1" description={loremIpsum} />
-            <StorySpot label="SPOT N°2" description={loremIpsum} reversed />
+            <ExpandableText>{loremIpsum}</ExpandableText>
+            <div className="flex flex-col md:flex-row gap-6 md:gap-[24px] items-start w-full">
+              <div className="flex flex-col gap-4 items-start w-full md:flex-1 min-w-0">
+                <SubLabel>Commercial storyboard n°1</SubLabel>
+                <ImageCarousel slides={placeholderSlides(3)} alt="Commercial storyboard n°1" aspectClassName="aspect-[469/663]" />
+              </div>
+              <div className="flex flex-col gap-4 items-start w-full md:flex-1 min-w-0">
+                <SubLabel>Commercial storyboard n°2</SubLabel>
+                <ImageCarousel slides={placeholderSlides(3)} alt="Commercial storyboard n°2" aspectClassName="aspect-[469/663]" />
+              </div>
+            </div>
           </div>
-
-          <StoryProject title="Nabil Harrow" description={loremIpsum} />
 
           <div className="flex flex-col gap-6 md:gap-[24px] items-start w-full">
             <StoryProject title="The Twins" description={loremIpsum} />
-            <StorySpot label="CLIP VIDÉO" description={loremIpsum} reversed />
+            <StorySpot
+              label="Video clip"
+              description={loremIpsum}
+              reversed
+              media={<VideoCard videoId="3gWXENcQ_VU" title="Les Twins • Mirror" />}
+            />
           </div>
 
-          <StoryProject title="Rose" description={loremIpsum} />
-          <StoryProject title="Personal project" description={loremIpsum} />
+          <StoryProject title="Rose" label="Short film" description={loremIpsum} />
+          <StoryProject title="Personal project" label="Short film" description={loremIpsum} />
         </div>
       </section>
     </div>
