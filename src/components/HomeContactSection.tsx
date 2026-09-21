@@ -249,7 +249,7 @@ export default function HomeContactSection() {
       className="scroll-mt-[120px] bg-[#0D0D10] backdrop-blur-[3.15px] pt-6 md:pt-[40px] pb-[24px] md:pb-[80px] px-3 md:px-[120px]"
     >
       <div className="flex flex-col gap-6 md:gap-[24px]">
-        <h2 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[80px] tracking-[3.2px] md:tracking-[6.4px] leading-none text-white uppercase">
+        <h2 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[52px] tracking-[3.2px] md:tracking-[6.4px] leading-none text-white uppercase">
           Get in touch
         </h2>
 
