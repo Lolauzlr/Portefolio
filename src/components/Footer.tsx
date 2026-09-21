@@ -1,9 +1,21 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { asset } from "@/lib/asset";
 import { socialLinks } from "@/components/SocialIcons";
+
+const CONTACT_EMAIL = "mariechalandre.pro@gmail.com";
+
+function CopySimpleIcon({ className }: { className?: string }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
+      <path d="M184,72V216H40V72Z" opacity="0.2" />
+      <path d="M184,64H40a8,8,0,0,0-8,8V216a8,8,0,0,0,8,8H184a8,8,0,0,0,8-8V72A8,8,0,0,0,184,64Zm-8,144H48V80H176ZM224,40V184a8,8,0,0,1-16,0V48H72a8,8,0,0,1,0-16H216A8,8,0,0,1,224,40Z" />
+    </svg>
+  );
+}
 
 const exploreLinks = [
   { label: "Home", href: "/" },
@@ -17,6 +29,17 @@ const exploreLinks = [
 export default function Footer() {
   const pathname = usePathname();
   const isHome = pathname === "/";
+  const [copied, setCopied] = useState(false);
+
+  async function handleCopyEmail() {
+    try {
+      await navigator.clipboard.writeText(CONTACT_EMAIL);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // clipboard access denied or unavailable - the mailto link still works
+    }
+  }
 
   return (
     <footer className="backdrop-blur-[3.15px] bg-black/40 py-[24px] md:py-[40px] px-3 md:px-[120px]">
@@ -69,12 +92,27 @@ export default function Footer() {
               <div className="w-full h-[4px] bg-[#ddff6e]" />
             </div>
             <div className="flex flex-col gap-[12px] items-start">
-              <a
-                href="mailto:marie.chalandre@hotmail.fr"
-                className="font-[family-name:var(--font-body)] text-white text-[16px] tracking-[1.28px] hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors"
-              >
-                marie.chalandre@hotmail.fr
-              </a>
+              <div className="flex items-center gap-1">
+                <a
+                  href={`mailto:${CONTACT_EMAIL}`}
+                  className="font-[family-name:var(--font-body)] text-white text-[16px] tracking-[1.28px] hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors"
+                >
+                  {CONTACT_EMAIL}
+                </a>
+                <button
+                  type="button"
+                  onClick={handleCopyEmail}
+                  aria-label="Copy email address"
+                  className="text-white hover:text-[#7FECFB] transition-colors"
+                >
+                  <CopySimpleIcon className="w-5 h-5" />
+                </button>
+                {copied && (
+                  <span className="font-[family-name:var(--font-body)] text-[#ddff6e] text-[14px] tracking-[1.12px]">
+                    Copied!
+                  </span>
+                )}
+              </div>
               <div className="flex items-center gap-[12px] md:gap-[16px]">
                 {socialLinks.map(({ Icon, alt, href }) => (
                   <a
