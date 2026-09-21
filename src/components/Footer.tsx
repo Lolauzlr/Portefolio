@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { asset } from "@/lib/asset";
 import { socialLinks } from "@/components/SocialIcons";
+import { useSnackbar } from "@/components/Snackbar";
 
 const CONTACT_EMAIL = "mariechalandre.pro@gmail.com";
 
@@ -29,13 +29,12 @@ const exploreLinks = [
 export default function Footer() {
   const pathname = usePathname();
   const isHome = pathname === "/";
-  const [copied, setCopied] = useState(false);
+  const { show: showSnackbar, node: snackbarNode } = useSnackbar();
 
   async function handleCopyEmail() {
     try {
       await navigator.clipboard.writeText(CONTACT_EMAIL);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
+      showSnackbar({ icon: "success", message: "Copied!", oneLine: true });
     } catch {
       // clipboard access denied or unavailable - the mailto link still works
     }
@@ -60,7 +59,11 @@ export default function Footer() {
             join the outer flex-col directly under the logo, so Contact
             can be reordered above Explore via order-*; md: restores this
             as its own flex-row group. */}
-        <div className={`contents md:flex md:flex-1 md:flex-row md:items-start md:w-full md:gap-[40px] ${isHome ? "md:justify-end" : "md:justify-between"}`}>
+        {/* justify-between (not justify-end for home): with only Explore
+            visible — Contact hidden below — a single flex child under
+            space-between still lands at the start, right after the
+            divider, the same spot it sits in when Contact is also shown. */}
+        <div className="contents md:flex md:flex-1 md:flex-row md:items-start md:w-full md:gap-[40px] md:justify-between">
           {/* Explore */}
           <div className="order-2 md:order-none flex flex-col gap-[16px] md:gap-[24px] items-start">
             <div className="flex flex-col gap-[10px] items-start">
@@ -107,11 +110,6 @@ export default function Footer() {
                 >
                   <CopySimpleIcon className="w-5 h-5" />
                 </button>
-                {copied && (
-                  <span className="font-[family-name:var(--font-body)] text-[#ddff6e] text-[14px] tracking-[1.12px]">
-                    Copied!
-                  </span>
-                )}
               </div>
               <div className="flex items-center gap-[12px] md:gap-[16px]">
                 {socialLinks.map(({ Icon, alt, href }) => (
@@ -131,6 +129,8 @@ export default function Footer() {
           </div>
         </div>
       </div>
+
+      {snackbarNode}
     </footer>
   );
 }
