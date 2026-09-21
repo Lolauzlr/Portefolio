@@ -11,31 +11,33 @@ const loremIpsum =
 const bookDescription =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque. Vivamus dapibus semper justo, interdum tincidunt tellus placerat a. Quisque vel orci et nulla vestibulum interdum.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in";
 
+// Zero-padded page range, e.g. pageRange("NO_FINDER", 1, 52) ->
+// ["NO_FINDER-01.webp", ..., "NO_FINDER-52.webp"].
+const pageRange = (prefix: string, from: number, to: number): string[] =>
+  Array.from({ length: to - from + 1 }, (_, i) => `${prefix}-${String(from + i).padStart(2, "0")}.webp`);
+
 const books: Book[] = [
   {
     title: "No Finder",
     description: bookDescription,
     href: "#",
-    coverImg: "/images/Storybook/NO_FINDER_COVER.webp",
-    spineImg: "/images/Storybook/No-finder-tranche.webp",
-    // Add No Finder's own interior pages here once available, e.g.
-    // "/images/Storybook/no-finder-page-01.webp" — the gallery always shows
-    // coverImg first on its own, so don't repeat it here. Never spineImg,
-    // and never another book's images.
-    screenshots: [],
+    coverImg: "/images/Storybook/No-finder/NO_FINDER_COVER.webp",
+    spineImg: "/images/Storybook/No-finder/No-finder-tranche.webp",
+    // The gallery always shows coverImg first on its own, so the interior
+    // pages start at NO_FINDER-01 (the cover is its own separate file,
+    // NO_FINDER_COVER.webp, not part of this numbered sequence).
+    screenshots: pageRange("NO_FINDER", 1, 52).map((f) => `/images/Storybook/No-finder/${f}`),
   },
   {
     title: "Old Knight",
     description: bookDescription,
     href: "#",
-    coverImg: "/images/Storybook/OLD_KNIGHT-01.webp",
-    spineImg: "/images/Storybook/Old-knight-tranche.webp",
+    coverImg: "/images/Storybook/Old-knight/OLD_KNIGHT-01.webp",
+    spineImg: "/images/Storybook/Old-knight/Old-knight-tranche.webp",
     spineFill: "#EEEEEE",
-    // Add Old Knight's own interior pages here once available, e.g.
-    // "/images/Storybook/old-knight-page-01.webp" — the gallery always shows
-    // coverImg first on its own, so don't repeat it here. Never spineImg,
-    // and never another book's images.
-    screenshots: [],
+    // OLD_KNIGHT-01 is the coverImg above (the gallery shows it first on
+    // its own) - interior pages are 02-15, never repeating the cover.
+    screenshots: pageRange("OLD_KNIGHT", 2, 15).map((f) => `/images/Storybook/Old-knight/${f}`),
   },
 ];
 
