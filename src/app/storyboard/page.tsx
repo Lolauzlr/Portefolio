@@ -49,6 +49,37 @@ const nabilHarrowSlides: CarouselSlide[] = [
   { src: "/images/Storyboard/Nabil Harrow/NH_04.webp" },
 ];
 
+const commercialStoryboard1Slides: CarouselSlide[] = [
+  { src: "/images/The-source/thesource-SPOTS12-1.webp" },
+  { src: "/images/The-source/thesource-SPOTS12-2.webp" },
+  { src: "/images/The-source/thesource-SPOTS12-3.webp" },
+  { src: "/images/The-source/thesource-SPOTS12-4.webp" },
+];
+
+const commercialStoryboard2Slides: CarouselSlide[] = [
+  { src: "/images/The-source/thesource-SPOTS12-5.webp" },
+  { src: "/images/The-source/thesource-SPOTS12-6.webp" },
+];
+
+const theTwinsSlides: CarouselSlide[] = [
+  { src: "/images/The-twins/TheTwins_01.webp" },
+  { src: "/images/The-twins/TheTwins_02.webp" },
+];
+
+const roseSlides: CarouselSlide[] = [
+  { src: "/images/Rose/ROSE-1.webp" },
+  { src: "/images/Rose/ROSE-2.webp" },
+  { src: "/images/Rose/ROSE-3.webp" },
+  { src: "/images/Rose/ROSE-4.webp" },
+  { src: "/images/Rose/ROSE-5.webp" },
+  { src: "/images/Rose/ROSE-6.webp" },
+  { src: "/images/Rose/ROSE-7.webp" },
+  { src: "/images/Rose/ROSE-8.webp" },
+  { src: "/images/Rose/ROSE-9.webp" },
+];
+
+const theUntamedSlides: CarouselSlide[] = [{ src: "/images/The-Untamed/STB_The-Untamed.webp" }];
+
 function SectionTitle({
   children,
   underlineClassName = "bg-white",
@@ -201,20 +232,20 @@ export default function StoryboardPage() {
               <div className="flex flex-col gap-4 items-start w-full md:w-auto">
                 <SubLabel>Commercial storyboard n°1</SubLabel>
                 <div className="w-full md:w-auto md:h-[660px] aspect-[469/663]">
-                  <ImageCarousel slides={placeholderSlides(3)} alt="Commercial storyboard n°1" aspectClassName="h-full" />
+                  <ImageCarousel slides={commercialStoryboard1Slides} alt="Commercial storyboard n°1" aspectClassName="h-full" />
                 </div>
               </div>
               <div className="flex flex-col gap-4 items-start w-full md:w-auto">
                 <SubLabel>Commercial storyboard n°2</SubLabel>
                 <div className="w-full md:w-auto md:h-[660px] aspect-[469/663]">
-                  <ImageCarousel slides={placeholderSlides(3)} alt="Commercial storyboard n°2" aspectClassName="h-full" />
+                  <ImageCarousel slides={commercialStoryboard2Slides} alt="Commercial storyboard n°2" aspectClassName="h-full" />
                 </div>
               </div>
             </div>
           </div>
 
           <div className="flex flex-col gap-6 md:gap-[24px] items-start w-full">
-            <StoryProject title="The Twins" description={loremIpsum} />
+            <StoryProject title="The Twins" description={loremIpsum} slides={theTwinsSlides} />
             <StorySpot
               label="Video clip"
               description={loremIpsum}
@@ -223,8 +254,8 @@ export default function StoryboardPage() {
             />
           </div>
 
-          <StoryProject title="Rose" label="Short film" description={loremIpsum} />
-          <StoryProject title="Personal project" label="Short film" description={loremIpsum} />
+          <StoryProject title="Rose" label="Short film" description={loremIpsum} slides={roseSlides} />
+          <StoryProject title="The Untamed" label="Short film" description={loremIpsum} slides={theUntamedSlides} />
         </div>
       </section>
     </div>
