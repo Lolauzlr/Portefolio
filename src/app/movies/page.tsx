@@ -173,7 +173,7 @@ export default function MoviesPage() {
     <div className="pt-[95px] bg-[#15161b] text-white min-h-screen">
       {/* Features Films */}
       <section className="px-3 md:px-[120px] py-16">
-        <h2 className="text-[40px] md:text-[60px] font-[family-name:var(--font-heading)] tracking-[4.8px] mb-2">
+        <h2 className="text-[40px] font-[family-name:var(--font-heading)] tracking-[4.8px] mb-2">
           FEATURES FILMS
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-6 md:mb-10" />
@@ -200,7 +200,7 @@ export default function MoviesPage() {
 
       {/* Documentary */}
       <section className="bg-[#131313] px-3 md:px-[120px] py-16">
-        <h2 className="text-[40px] md:text-[60px] font-[family-name:var(--font-heading)] tracking-[4.8px] mb-2">
+        <h2 className="text-[40px] font-[family-name:var(--font-heading)] tracking-[4.8px] mb-2">
           DOCUMENTARY
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-6 md:mb-10" />

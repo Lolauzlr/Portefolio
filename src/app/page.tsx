@@ -15,7 +15,7 @@ const storyboardCards = [
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div className="mb-6 md:mb-10">
-      <h2 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[60px] tracking-[4.8px] uppercase text-white">
+      <h2 className="font-[family-name:var(--font-heading)] text-[40px] tracking-[4.8px] uppercase text-white">
         {children}
       </h2>
       <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-2" />
