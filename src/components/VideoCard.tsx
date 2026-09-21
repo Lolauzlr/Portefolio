@@ -72,7 +72,8 @@ export default function VideoCard({
               className="w-full h-full"
               src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`}
               title={title}
-              allow="autoplay; encrypted-media; fullscreen"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
               style={{ border: 0 }}
             />
