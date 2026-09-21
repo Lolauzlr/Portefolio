@@ -50,35 +50,35 @@ const nabilHarrowSlides: CarouselSlide[] = [
 ];
 
 const commercialStoryboard1Slides: CarouselSlide[] = [
-  { src: "/images/The-source/thesource-SPOTS12-1.webp" },
-  { src: "/images/The-source/thesource-SPOTS12-2.webp" },
-  { src: "/images/The-source/thesource-SPOTS12-3.webp" },
-  { src: "/images/The-source/thesource-SPOTS12-4.webp" },
+  { src: "/images/Storyboard/The-source/thesource-SPOTS12-1.webp" },
+  { src: "/images/Storyboard/The-source/thesource-SPOTS12-2.webp" },
+  { src: "/images/Storyboard/The-source/thesource-SPOTS12-3.webp" },
+  { src: "/images/Storyboard/The-source/thesource-SPOTS12-4.webp" },
 ];
 
 const commercialStoryboard2Slides: CarouselSlide[] = [
-  { src: "/images/The-source/thesource-SPOTS12-5.webp" },
-  { src: "/images/The-source/thesource-SPOTS12-6.webp" },
+  { src: "/images/Storyboard/The-source/thesource-SPOTS12-5.webp" },
+  { src: "/images/Storyboard/The-source/thesource-SPOTS12-6.webp" },
 ];
 
 const theTwinsSlides: CarouselSlide[] = [
-  { src: "/images/The-twins/TheTwins_01.webp" },
-  { src: "/images/The-twins/TheTwins_02.webp" },
+  { src: "/images/Storyboard/The-twins/TheTwins_01.webp" },
+  { src: "/images/Storyboard/The-twins/TheTwins_02.webp" },
 ];
 
 const roseSlides: CarouselSlide[] = [
-  { src: "/images/Rose/ROSE-1.webp" },
-  { src: "/images/Rose/ROSE-2.webp" },
-  { src: "/images/Rose/ROSE-3.webp" },
-  { src: "/images/Rose/ROSE-4.webp" },
-  { src: "/images/Rose/ROSE-5.webp" },
-  { src: "/images/Rose/ROSE-6.webp" },
-  { src: "/images/Rose/ROSE-7.webp" },
-  { src: "/images/Rose/ROSE-8.webp" },
-  { src: "/images/Rose/ROSE-9.webp" },
+  { src: "/images/Storyboard/Rose/ROSE-1.webp" },
+  { src: "/images/Storyboard/Rose/ROSE-2.webp" },
+  { src: "/images/Storyboard/Rose/ROSE-3.webp" },
+  { src: "/images/Storyboard/Rose/ROSE-4.webp" },
+  { src: "/images/Storyboard/Rose/ROSE-5.webp" },
+  { src: "/images/Storyboard/Rose/ROSE-6.webp" },
+  { src: "/images/Storyboard/Rose/ROSE-7.webp" },
+  { src: "/images/Storyboard/Rose/ROSE-8.webp" },
+  { src: "/images/Storyboard/Rose/ROSE-9.webp" },
 ];
 
-const theUntamedSlides: CarouselSlide[] = [{ src: "/images/The-Untamed/STB_The-Untamed.webp" }];
+const theUntamedSlides: CarouselSlide[] = [{ src: "/images/Storyboard/The-Untamed/STB_The-Untamed.webp" }];
 
 function SectionTitle({
   children,
