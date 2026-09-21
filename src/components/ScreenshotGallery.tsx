@@ -2,27 +2,20 @@
 
 import { useEffect } from "react";
 
-// Images-only variant of the /trailer page's screenshot overlay: same dark
-// full-screen frame, counter, arrows and thumbnail strip, but no side info
-// panel or per-image caption — just the artwork, larger and scrollable.
-export default function ScreenshotGallery({
-  images,
-  index,
-  onIndexChange,
-  onClose,
-}: {
-  images: string[];
-  index: number;
-  onIndexChange: (i: number) => void;
-  onClose: () => void;
-}) {
+// Shared by every full-screen image overlay on the site (this gallery and
+// ImageCarousel's own lightbox) so Escape-to-close and the scroll-lock
+// behave identically everywhere. `active` gates both effects for a lightbox
+// that stays mounted while closed (ImageCarousel); a gallery that only
+// mounts while open (this component) can just pass `true`.
+export function useLightboxBehavior(active: boolean, onClose: () => void) {
   useEffect(() => {
+    if (!active) return;
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", handleEsc);
     return () => window.removeEventListener("keydown", handleEsc);
-  }, [onClose]);
+  }, [active, onClose]);
 
   // Freeze the page behind this overlay. `overflow: hidden` alone doesn't
   // stop iOS Safari's rubber-band scroll chaining from reaching the body
@@ -31,6 +24,7 @@ export default function ScreenshotGallery({
   // spot on close — the gallery itself is then the only thing that can
   // move, on both desktop and mobile.
   useEffect(() => {
+    if (!active) return;
     const { body } = document;
     const scrollY = window.scrollY;
     const prev = { position: body.style.position, top: body.style.top, left: body.style.left, right: body.style.right, overflow: body.style.overflow };
@@ -47,7 +41,24 @@ export default function ScreenshotGallery({
       body.style.overflow = prev.overflow;
       window.scrollTo(0, scrollY);
     };
-  }, []);
+  }, [active]);
+}
+
+// Images-only variant of the /trailer page's screenshot overlay: same dark
+// full-screen frame, counter, arrows and thumbnail strip, but no side info
+// panel or per-image caption — just the artwork, larger and scrollable.
+export default function ScreenshotGallery({
+  images,
+  index,
+  onIndexChange,
+  onClose,
+}: {
+  images: string[];
+  index: number;
+  onIndexChange: (i: number) => void;
+  onClose: () => void;
+}) {
+  useLightboxBehavior(true, onClose);
 
   const count = images.length;
   if (count === 0) return null;
