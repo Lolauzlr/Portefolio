@@ -151,20 +151,32 @@ export default function StoryboardPage() {
           <div className="bg-[#ddff6e] h-[4px] w-[80px]" />
         </div>
 
-        <div className="flex flex-col gap-8 md:gap-[40px] items-start w-full">
+        {/* Capped and centered as a block: on a wide viewport the content
+            below (fixed-height carousels included) no longer stretches to
+            fill the section's full padded width, which left it stuck to
+            the left edge with a huge empty gap on the right. The
+            "Storyboards" heading above stays at the section's own padding,
+            unconstrained, matching every other page's section title. */}
+        <div className="flex flex-col gap-8 md:gap-[40px] items-start w-full max-w-[1200px] mx-auto">
           <StoryProject title="Nabil Harrow" label="Video clip" description={loremIpsum} />
 
           <div className="flex flex-col gap-6 md:gap-[24px] items-start w-full">
             <SectionTitle>The source</SectionTitle>
             <ExpandableText>{loremIpsum}</ExpandableText>
-            <div className="flex flex-col md:flex-row gap-6 md:gap-[24px] items-start w-full">
-              <div className="flex flex-col gap-4 items-center w-full md:flex-1 min-w-0">
+            {/* Content-sized columns (not flex-1) in a row centered as a
+                whole — flex-1 columns each centering their own fixed-width
+                carousel independently made the real visual gap between the
+                two carousels balloon well past the declared gap value on
+                wide viewports, since it was really (gap + leftover column
+                space on each side), not just the gap. */}
+            <div className="flex flex-col md:flex-row md:justify-center gap-6 md:gap-[40px] items-center w-full">
+              <div className="flex flex-col gap-4 items-center w-full md:w-auto">
                 <SubLabel>Commercial storyboard n°1</SubLabel>
                 <div className="w-full md:w-auto md:h-[660px] aspect-[469/663]">
                   <ImageCarousel slides={placeholderSlides(3)} alt="Commercial storyboard n°1" aspectClassName="h-full" />
                 </div>
               </div>
-              <div className="flex flex-col gap-4 items-center w-full md:flex-1 min-w-0">
+              <div className="flex flex-col gap-4 items-center w-full md:w-auto">
                 <SubLabel>Commercial storyboard n°2</SubLabel>
                 <div className="w-full md:w-auto md:h-[660px] aspect-[469/663]">
                   <ImageCarousel slides={placeholderSlides(3)} alt="Commercial storyboard n°2" aspectClassName="h-full" />
