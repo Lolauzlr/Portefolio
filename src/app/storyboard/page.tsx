@@ -16,10 +16,10 @@ const books: Book[] = [
     title: "No Finder",
     description: bookDescription,
     href: "#",
-    coverImg: "/images/Manga/NO_FINDER_COVER.webp",
-    spineImg: "/images/Manga/No-finder-tranche.webp",
+    coverImg: "/images/Storybook/NO_FINDER_COVER.webp",
+    spineImg: "/images/Storybook/No-finder-tranche.webp",
     // Add No Finder's own interior pages here once available, e.g.
-    // "/images/Manga/no-finder-page-01.webp" — the gallery always shows
+    // "/images/Storybook/no-finder-page-01.webp" — the gallery always shows
     // coverImg first on its own, so don't repeat it here. Never spineImg,
     // and never another book's images.
     screenshots: [],
@@ -28,11 +28,11 @@ const books: Book[] = [
     title: "Old Knight",
     description: bookDescription,
     href: "#",
-    coverImg: "/images/Manga/OLD_KNIGHT-01.webp",
-    spineImg: "/images/Manga/Old-knight-tranche.webp",
+    coverImg: "/images/Storybook/OLD_KNIGHT-01.webp",
+    spineImg: "/images/Storybook/Old-knight-tranche.webp",
     spineFill: "#EEEEEE",
     // Add Old Knight's own interior pages here once available, e.g.
-    // "/images/Manga/old-knight-page-01.webp" — the gallery always shows
+    // "/images/Storybook/old-knight-page-01.webp" — the gallery always shows
     // coverImg first on its own, so don't repeat it here. Never spineImg,
     // and never another book's images.
     screenshots: [],
@@ -41,6 +41,13 @@ const books: Book[] = [
 
 const placeholderSlides = (count: number): CarouselSlide[] =>
   Array.from({ length: count }, (_, i) => ({ label: `Image ${i + 1}/${count}` }));
+
+const nabilHarrowSlides: CarouselSlide[] = [
+  { src: "/images/Storyboard/Nabil Harrow/NH_01.webp" },
+  { src: "/images/Storyboard/Nabil Harrow/NH_02.webp" },
+  { src: "/images/Storyboard/Nabil Harrow/NH_03.webp" },
+  { src: "/images/Storyboard/Nabil Harrow/NH_04.webp" },
+];
 
 function SectionTitle({
   children,
@@ -103,11 +110,14 @@ function StoryProject({
   title,
   label,
   description,
+  slides,
 }: {
   title: string;
   // Yellow subtitle under the title (e.g. "VIDEO CLIP", "SHORT FILM").
   label?: string;
   description: string;
+  // Overrides the default 3-image placeholder with real carousel images.
+  slides?: CarouselSlide[];
 }) {
   return (
     // Capped to the carousel's own rendered width (660px height at
@@ -127,7 +137,7 @@ function StoryProject({
           full-width behavior, since a 660px-tall carousel would take over
           most of a phone screen. */}
       <div className="w-full md:h-[660px] aspect-[1199/799]">
-        <ImageCarousel slides={placeholderSlides(3)} alt={title} aspectClassName="h-full" />
+        <ImageCarousel slides={slides ?? placeholderSlides(3)} alt={title} aspectClassName="h-full" />
       </div>
     </div>
   );
@@ -165,7 +175,7 @@ export default function StoryboardPage() {
             "Storyboards" heading above stays at the section's own padding,
             unconstrained, matching every other page's section title. */}
         <div className="flex flex-col gap-8 md:gap-[40px] items-start w-full max-w-[1200px] mx-auto">
-          <StoryProject title="Nabil Harrow" label="Video clip" description={loremIpsum} />
+          <StoryProject title="Nabil Harrow" label="Video clip" description={loremIpsum} slides={nabilHarrowSlides} />
 
           {/* Capped to the same 990px width as every other block in this
               section (matching the single-carousel projects) and centered
