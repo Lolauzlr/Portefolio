@@ -1,23 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { useState } from "react";
 import { asset } from "@/lib/asset";
 import { socialLinks } from "@/components/SocialIcons";
+import { XCircleFillIcon, useSnackbar } from "@/components/Snackbar";
 
 // Web3Forms access keys are public identifiers meant to be embedded in
 // client-side code (see https://docs.web3forms.com) - not a secret.
 const WEB3FORMS_ACCESS_KEY = "ef5961a2-2875-452c-9c35-88058bcf4540";
 const CONTACT_EMAIL = "mariechalandre.pro@gmail.com";
-const SNACKBAR_AUTO_DISMISS_MS = 5000;
-
-function XCircleFillIcon({ className }: { className?: string }) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor" className={className}>
-      <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm37.66,130.34a8,8,0,0,1-11.32,11.32L128,139.31l-26.34,26.35a8,8,0,0,1-11.32-11.32L116.69,128,90.34,101.66a8,8,0,0,1,11.32-11.32L128,116.69l26.34-26.35a8,8,0,0,1,11.32,11.32L139.31,128Z" />
-    </svg>
-  );
-}
 
 function CopySimpleIcon({ className }: { className?: string }) {
   return (
@@ -118,48 +109,6 @@ function FormTextArea({
 }
 
 type SendStatus = "idle" | "sending";
-type SnackbarState = { icon: "success" | "error"; message: string; oneLine?: boolean } | null;
-
-function Snackbar({
-  icon,
-  message,
-  oneLine,
-  onClose,
-}: {
-  icon: "success" | "error";
-  message: string;
-  oneLine?: boolean;
-  onClose: () => void;
-}) {
-  return (
-    <div
-      role="status"
-      aria-live="polite"
-      className={`fixed bottom-[calc(env(safe-area-inset-bottom)+84px)] left-4 right-4 z-50 flex gap-3 rounded-[12px] border border-[#2E2F38] bg-[#1C1D24] px-5 py-4 shadow-lg shadow-black/40 md:left-auto md:right-6 md:bottom-6 md:max-w-[420px] ${
-        oneLine ? "items-center" : "items-start"
-      }`}
-    >
-      <img
-        src={asset(icon === "success" ? "/images/icons/smiley.svg" : "/images/icons/smiley-x-eyes.svg")}
-        alt=""
-        width={24}
-        height={24}
-        className={`shrink-0 ${oneLine ? "" : "mt-0.5"}`}
-      />
-      <p className="flex-1 font-[family-name:var(--font-body)] text-[14px] tracking-[1.12px] text-white">
-        {message}
-      </p>
-      <button
-        type="button"
-        onClick={onClose}
-        aria-label="Close notification"
-        className="self-center shrink-0 text-[#8F8F8F] hover:text-[#7FECFB] transition-colors"
-      >
-        <XCircleFillIcon className="w-5 h-5" />
-      </button>
-    </div>
-  );
-}
 
 function openMailtoFallback(subject: string, body: string, email: string) {
   const params = [
@@ -172,29 +121,10 @@ function openMailtoFallback(subject: string, body: string, email: string) {
 
 export default function HomeContactSection() {
   const [sendStatus, setSendStatus] = useState<SendStatus>("idle");
-  const [snackbar, setSnackbar] = useState<SnackbarState>(null);
+  const { show: showSnackbar, node: snackbarNode } = useSnackbar();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-  const dismissTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    if (!snackbar) return;
-    dismissTimer.current = setTimeout(() => setSnackbar(null), SNACKBAR_AUTO_DISMISS_MS);
-    return () => {
-      if (dismissTimer.current) clearTimeout(dismissTimer.current);
-    };
-  }, [snackbar]);
-
-  function showSnackbar(next: SnackbarState) {
-    if (dismissTimer.current) clearTimeout(dismissTimer.current);
-    setSnackbar(next);
-  }
-
-  function closeSnackbar() {
-    if (dismissTimer.current) clearTimeout(dismissTimer.current);
-    setSnackbar(null);
-  }
 
   async function handleCopyEmail() {
     try {
@@ -340,20 +270,7 @@ export default function HomeContactSection() {
         </div>
       </div>
 
-      {snackbar &&
-        // Portaled to document.body: this section's backdrop-blur (like
-        // `filter`) establishes a new containing block for `position:
-        // fixed` descendants, which would otherwise pin the snackbar to
-        // the bottom of the section instead of the viewport.
-        createPortal(
-          <Snackbar
-            icon={snackbar.icon}
-            message={snackbar.message}
-            oneLine={snackbar.oneLine}
-            onClose={closeSnackbar}
-          />,
-          document.body
-        )}
+      {snackbarNode}
     </section>
   );
 }
