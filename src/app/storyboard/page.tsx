@@ -112,8 +112,15 @@ function StoryProject({
         {label && <SubLabel>{label}</SubLabel>}
         <ExpandableText>{description}</ExpandableText>
       </div>
-      <div className="w-full">
-        <ImageCarousel slides={placeholderSlides(3)} alt={title} aspectClassName="aspect-[1199/799]" />
+      {/* Fixed height (desktop) instead of stretching full-width, which made
+          these carousels dominate the page — width is derived from the
+          660px height via the same aspect-ratio class, then centered in
+          the row. Mobile keeps the original full-width behavior, since a
+          660px-tall carousel would take over most of a phone screen. */}
+      <div className="w-full flex md:justify-center">
+        <div className="w-full md:w-auto md:h-[660px] aspect-[1199/799]">
+          <ImageCarousel slides={placeholderSlides(3)} alt={title} aspectClassName="h-full" />
+        </div>
       </div>
     </div>
   );
@@ -151,13 +158,17 @@ export default function StoryboardPage() {
             <SectionTitle>The source</SectionTitle>
             <ExpandableText>{loremIpsum}</ExpandableText>
             <div className="flex flex-col md:flex-row gap-6 md:gap-[24px] items-start w-full">
-              <div className="flex flex-col gap-4 items-start w-full md:flex-1 min-w-0">
+              <div className="flex flex-col gap-4 items-center w-full md:flex-1 min-w-0">
                 <SubLabel>Commercial storyboard n°1</SubLabel>
-                <ImageCarousel slides={placeholderSlides(3)} alt="Commercial storyboard n°1" aspectClassName="aspect-[469/663]" />
+                <div className="w-full md:w-auto md:h-[660px] aspect-[469/663]">
+                  <ImageCarousel slides={placeholderSlides(3)} alt="Commercial storyboard n°1" aspectClassName="h-full" />
+                </div>
               </div>
-              <div className="flex flex-col gap-4 items-start w-full md:flex-1 min-w-0">
+              <div className="flex flex-col gap-4 items-center w-full md:flex-1 min-w-0">
                 <SubLabel>Commercial storyboard n°2</SubLabel>
-                <ImageCarousel slides={placeholderSlides(3)} alt="Commercial storyboard n°2" aspectClassName="aspect-[469/663]" />
+                <div className="w-full md:w-auto md:h-[660px] aspect-[469/663]">
+                  <ImageCarousel slides={placeholderSlides(3)} alt="Commercial storyboard n°2" aspectClassName="h-full" />
+                </div>
               </div>
             </div>
           </div>
