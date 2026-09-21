@@ -72,6 +72,7 @@ function StorySpot({
   description,
   reversed = false,
   media,
+  className = "",
 }: {
   label: string;
   description: string;
@@ -79,9 +80,12 @@ function StorySpot({
   // Overrides the default placeholder carousel — used for the real video
   // card on "The Twins", for instance.
   media?: React.ReactNode;
+  // e.g. "md:max-w-[990px] md:mx-auto" to line this row up with the other
+  // width-capped, centered blocks around it.
+  className?: string;
 }) {
   return (
-    <div className={`flex flex-col md:flex-row gap-6 md:gap-[24px] items-start w-full ${reversed ? "md:flex-row-reverse" : ""}`}>
+    <div className={`flex flex-col md:flex-row gap-6 md:gap-[24px] items-start w-full ${reversed ? "md:flex-row-reverse" : ""} ${className}`}>
       <div className="flex flex-col gap-6 md:gap-[24px] items-start flex-1 w-full min-w-0">
         <div className="flex flex-col gap-4 items-start w-full">
           <SubLabel>{label}</SubLabel>
@@ -106,21 +110,24 @@ function StoryProject({
   description: string;
 }) {
   return (
-    <div className="flex flex-col gap-6 md:gap-[24px] items-start w-full">
-      <div className="flex flex-col gap-4 md:gap-[16px] items-start w-full md:max-w-[994px]">
+    // Capped to the carousel's own rendered width (660px height at
+    // 1199:799 works out to 990px) and centered as a whole, so the text
+    // above — being a plain 100%-width child of this same column — lines
+    // up with the carousel's edges instead of starting further left at
+    // the section's own padding while the carousel sits centered on its
+    // own further right.
+    <div className="flex flex-col gap-6 md:gap-[24px] items-start w-full md:max-w-[990px] md:mx-auto">
+      <div className="flex flex-col gap-4 md:gap-[16px] items-start w-full">
         <SectionTitle>{title}</SectionTitle>
         {label && <SubLabel>{label}</SubLabel>}
         <ExpandableText>{description}</ExpandableText>
       </div>
       {/* Fixed height (desktop) instead of stretching full-width, which made
-          these carousels dominate the page — width is derived from the
-          660px height via the same aspect-ratio class, then centered in
-          the row. Mobile keeps the original full-width behavior, since a
-          660px-tall carousel would take over most of a phone screen. */}
-      <div className="w-full flex md:justify-center">
-        <div className="w-full md:w-auto md:h-[660px] aspect-[1199/799]">
-          <ImageCarousel slides={placeholderSlides(3)} alt={title} aspectClassName="h-full" />
-        </div>
+          these carousels dominate the page. Mobile keeps the original
+          full-width behavior, since a 660px-tall carousel would take over
+          most of a phone screen. */}
+      <div className="w-full md:h-[660px] aspect-[1199/799]">
+        <ImageCarousel slides={placeholderSlides(3)} alt={title} aspectClassName="h-full" />
       </div>
     </div>
   );
@@ -160,23 +167,34 @@ export default function StoryboardPage() {
         <div className="flex flex-col gap-8 md:gap-[40px] items-start w-full max-w-[1200px] mx-auto">
           <StoryProject title="Nabil Harrow" label="Video clip" description={loremIpsum} />
 
-          <div className="flex flex-col gap-6 md:gap-[24px] items-start w-full">
+          {/* Capped to the same 990px width as every other block in this
+              section (matching the single-carousel projects) and centered
+              the same way, so every block's left/right edges line up with
+              each other, not just within themselves — the two-carousel row
+              (974px) ends up a few px narrower than this column, evenly
+              inset, rather than being its own slightly different width. */}
+          <div className="flex flex-col gap-6 md:gap-[24px] items-start w-full md:max-w-[990px] md:mx-auto">
             <SectionTitle>The source</SectionTitle>
             <ExpandableText>{loremIpsum}</ExpandableText>
-            {/* Content-sized columns (not flex-1) in a row centered as a
-                whole — flex-1 columns each centering their own fixed-width
-                carousel independently made the real visual gap between the
-                two carousels balloon well past the declared gap value on
-                wide viewports, since it was really (gap + leftover column
-                space on each side), not just the gap. */}
+            {/* Content-sized columns (not flex-1) in a row — flex-1 columns
+                each centering their own fixed-width carousel independently
+                made the real visual gap between the two carousels balloon
+                well past the declared gap value on wide viewports, since it
+                was really (gap + leftover column space on each side), not
+                just the gap. */}
             <div className="flex flex-col md:flex-row md:justify-center gap-6 md:gap-[40px] items-center w-full">
-              <div className="flex flex-col gap-4 items-center w-full md:w-auto">
+              {/* items-start (not items-center): the label is wider than
+                  the 467px carousel, so centering the two within the
+                  column — which is only as wide as its widest child, the
+                  label — pushed the carousel's left edge inward, away from
+                  the label's. Left-aligning both keeps their edges flush. */}
+              <div className="flex flex-col gap-4 items-start w-full md:w-auto">
                 <SubLabel>Commercial storyboard n°1</SubLabel>
                 <div className="w-full md:w-auto md:h-[660px] aspect-[469/663]">
                   <ImageCarousel slides={placeholderSlides(3)} alt="Commercial storyboard n°1" aspectClassName="h-full" />
                 </div>
               </div>
-              <div className="flex flex-col gap-4 items-center w-full md:w-auto">
+              <div className="flex flex-col gap-4 items-start w-full md:w-auto">
                 <SubLabel>Commercial storyboard n°2</SubLabel>
                 <div className="w-full md:w-auto md:h-[660px] aspect-[469/663]">
                   <ImageCarousel slides={placeholderSlides(3)} alt="Commercial storyboard n°2" aspectClassName="h-full" />
@@ -190,8 +208,8 @@ export default function StoryboardPage() {
             <StorySpot
               label="Video clip"
               description={loremIpsum}
-              reversed
               media={<VideoCard videoId="3gWXENcQ_VU" title="Les Twins • Mirror" />}
+              className="md:max-w-[990px] md:mx-auto"
             />
           </div>
 
