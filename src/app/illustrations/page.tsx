@@ -75,7 +75,7 @@ export default function IllustrationsPage() {
       {/* ── VRIC À VRAC ── */}
       <section className="bg-[#131313] py-[60px] px-3 md:px-[120px]">
         <div className="mb-[60px]">
-          <h2 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[60px] tracking-[4.8px] uppercase text-white">
+          <h2 className="font-[family-name:var(--font-heading)] text-[40px] tracking-[4.8px] uppercase text-white">
             VRIC À VRAC
           </h2>
           <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-[4px]" />
