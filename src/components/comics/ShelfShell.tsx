@@ -4,7 +4,7 @@ import { useRouter, useSelectedLayoutSegment } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { canInteract, isBusy, nextState, type ShelfState } from "@/components/comics/machine";
 import type { SceneHandle } from "@/components/comics/scene";
-import { ShellContext } from "@/components/comics/shell-context";
+import { ShellContext, type ShellApi } from "@/components/comics/shell-context";
 import { COMICS } from "@/lib/comics";
 
 const OVERLAY_MS = 320;
@@ -37,7 +37,9 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
   const [selected, setSelectedValue] = useState<number | null>(null);
   const [showArticle, setShowArticle] = useState(Boolean(segment));
   const [overlay, setOverlay] = useState(0);
-  const [canvasHidden, setCanvasHidden] = useState(Boolean(segment));
+  /** Vrai tant que la scène n'a pas pris la main : le canvas plein écran ne doit
+   * jamais recouvrir la grille de repli avant que `ready` ne soit posé. */
+  const [canvasHidden, setCanvasHidden] = useState(true);
 
   const setPhase = useCallback((next: ShelfState) => {
     stateRef.current = next;
@@ -227,33 +229,51 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const gl = canvas.getContext("webgl2") ?? canvas.getContext("webgl");
-    if (!gl) return; // sans WebGL, la grille de repli reste visible
+    // La sonde se fait sur un canvas jetable, jamais sur celui de la scène :
+    // obtenir un contexte réel sur le canvas final figerait ses attributs et
+    // ferait ignorer silencieusement les options passées à THREE.WebGLRenderer.
+    const probe = document.createElement("canvas");
+    const gl = probe.getContext("webgl2");
+    // Cette version de three a retiré le rendu WebGL1 : un repli sur "webgl" ici
+    // serait activement nuisible, la sonde réussirait puis createScene lèverait.
+    gl?.getExtension("WEBGL_lose_context")?.loseContext();
+    if (!gl) return; // sans WebGL2, la grille de repli reste visible
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     reducedMotionRef.current = reducedMotion;
 
-    void import("@/components/comics/scene").then(({ createScene }) => {
-      if (disposed) return;
-      const handle = createScene(canvas, COMICS, {
-        reducedMotion,
-        onHoverChange: () => {},
-        onPick: (index) => pickRef.current(index),
-        onDismiss: () => dismissRef.current(),
-      });
-      sceneRef.current = handle;
+    void import("@/components/comics/scene")
+      .then(({ createScene }) => {
+        if (disposed) return;
+        try {
+          const handle = createScene(canvas, COMICS, {
+            reducedMotion,
+            onHoverChange: () => {},
+            onPick: (index) => pickRef.current(index),
+            onDismiss: () => dismissRef.current(),
+          });
+          sceneRef.current = handle;
 
-      const first = initialSegmentRef.current;
-      const index = first ? COMICS.findIndex((comic) => comic.slug === first) : -1;
-      if (index >= 0) {
-        handle.enterImmediate(index);
-        handle.setVisible(false);
-        handle.setPickingEnabled(false);
-        selectedRef.current = index;
-        setSelectedValue(index);
-      }
-      setReady(true);
-    });
+          const first = initialSegmentRef.current;
+          const index = first ? COMICS.findIndex((comic) => comic.slug === first) : -1;
+          if (index >= 0) {
+            handle.enterImmediate(index);
+            handle.setVisible(false);
+            handle.setPickingEnabled(false);
+            selectedRef.current = index;
+            setSelectedValue(index);
+          } else {
+            setCanvasHidden(false);
+          }
+          setReady(true);
+        } catch {
+          // Le moteur exige WebGL2 et a levé malgré une sonde positive : on reste
+          // sur la grille de repli, `ready` n'est pas posé et `sceneRef` reste nul.
+        }
+      })
+      .catch(() => {
+        // Import du module de scène en échec : même repli, la grille reste visible.
+      });
 
     const onResize = () => sceneRef.current?.resize();
     window.addEventListener("resize", onResize);
@@ -305,7 +325,12 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
     if (state === "SELECTED") openButtonRef.current?.focus();
   }, [state]);
 
-  const api = useMemo(() => ({ requestExit: () => void exit({ navigate: true }) }), [exit]);
+  // Le contexte ne vaut quelque chose que si la scène est réellement montée :
+  // sans quoi BackToShelf doit retomber sur la navigation ordinaire du lien.
+  const api = useMemo<ShellApi | null>(
+    () => (ready ? { requestExit: () => void exit({ navigate: true }) } : null),
+    [ready, exit],
+  );
 
   return (
     <ShellContext.Provider value={api}>
@@ -337,7 +362,10 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
           style={{ opacity: overlay }}
         />
 
-        <div className={showArticle ? "relative z-10" : "sr-only"}>{children}</div>
+        {/* La grille reste visible tant que la scène n'a pas réellement pris la
+            main (`ready`) ; elle ne passe en `sr-only` qu'une fois la 3D montée
+            et hors de l'état INSIDE, où c'est l'article qui doit s'afficher. */}
+        <div className={!ready || showArticle ? "relative z-10" : "sr-only"}>{children}</div>
       </div>
     </ShellContext.Provider>
   );

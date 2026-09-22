@@ -15,6 +15,8 @@ export type Comic = {
   accent: string;
   meta: { format: string; pages: number | null; technique: string };
   plates: string[];
+  synopsis?: string;
+  credits?: string;
 };
 
 export type PublishedComic = Comic & { slug: string; cover: string; spine: string };
