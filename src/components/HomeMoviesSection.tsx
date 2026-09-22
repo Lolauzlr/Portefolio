@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { asset } from "@/lib/asset";
+import { useSupportsHover } from "@/hooks/useSupportsHover";
 
 function CaretCircleRight() {
   return (
@@ -28,13 +29,19 @@ function VideoCard({
   onPlay?: () => void;
   className?: string;
 }) {
+  const supportsHover = useSupportsHover();
   const [hovered, setHovered] = useState(false);
 
   return (
     <div
       className={`relative aspect-video cursor-pointer group overflow-hidden ${className || ""}`}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      // Skipping these two handlers entirely on touch-only devices (rather
+      // than attaching them and gating in onClick) matters: WebKit treats
+      // any element with a mouseenter/mouseover listener as hover-aware and
+      // eats the first tap to simulate that hover, only firing click on a
+      // second tap. With no listener attached, the first tap fires click
+      // immediately.
+      {...(supportsHover ? { onMouseEnter: () => setHovered(true), onMouseLeave: () => setHovered(false) } : {})}
       onClick={() => {
         if (onPlay) onPlay();
         else if (externalUrl) window.open(externalUrl, "_blank", "noopener,noreferrer");
@@ -175,7 +182,7 @@ export default function HomeMoviesSection() {
           {/* Jerry Gretzinger */}
           <PentagonCard className="flex-1" contentClassName="flex flex-col gap-4 md:gap-6">
             <VideoCard
-              thumbnail="/images/arte-gymnastique.webp"
+              thumbnail="/images/documentary/arte-gymnastique.webp"
               title="JERRY GRETZINGER"
               externalUrl="https://www.arte.tv/fr/videos/105628-041-A/gymnastique/"
               className="w-full"

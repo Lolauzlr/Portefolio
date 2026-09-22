@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { asset } from "@/lib/asset";
+import { useSupportsHover } from "@/hooks/useSupportsHover";
 
 function CaretCircleRight() {
   return (
@@ -122,6 +123,7 @@ const trailerCards = [
 ];
 
 export default function HomeTrailerSection() {
+  const supportsHover = useSupportsHover();
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [videoModal, setVideoModal] = useState<{ videoId: string; title: string } | null>(null);
   const [screenshotsData, setScreenshotsData] = useState<{
@@ -170,8 +172,15 @@ export default function HomeTrailerSection() {
             <div key={card.title} className="flex-shrink-0 w-[300px] md:w-[474px] flex flex-col gap-3 md:gap-4">
               <div
                 className="relative w-full aspect-video cursor-pointer overflow-hidden bg-black"
-                onMouseEnter={() => setHoveredCard(card.videoId)}
-                onMouseLeave={() => setHoveredCard(null)}
+                // Skipping these two handlers entirely on touch-only devices
+                // (rather than attaching them and gating in onClick) matters:
+                // WebKit treats any element with a mouseenter/mouseover
+                // listener as hover-aware and eats the first tap to simulate
+                // that hover, only firing click on a second tap. With no
+                // listener attached, the first tap fires click immediately.
+                {...(supportsHover
+                  ? { onMouseEnter: () => setHoveredCard(card.videoId), onMouseLeave: () => setHoveredCard(null) }
+                  : {})}
                 onClick={() => setVideoModal({ videoId: card.videoId, title: card.title })}
               >
                 {hoveredCard === card.videoId ? (
