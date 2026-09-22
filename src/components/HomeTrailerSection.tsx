@@ -137,14 +137,18 @@ export default function HomeTrailerSection() {
   const [screenshotIndex, setScreenshotIndex] = useState(0);
 
   useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         if (videoModal) setVideoModal(null);
         if (screenshotsData) setScreenshotsData(null);
+      } else if (screenshotsData && screenshotsData.screenshots.length > 1) {
+        const count = screenshotsData.screenshots.length;
+        if (e.key === "ArrowLeft") setScreenshotIndex((i) => (i - 1 + count) % count);
+        else if (e.key === "ArrowRight") setScreenshotIndex((i) => (i + 1) % count);
       }
     };
-    window.addEventListener("keydown", handleEsc);
-    return () => window.removeEventListener("keydown", handleEsc);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [videoModal, screenshotsData]);
 
   const openScreenshots = (
