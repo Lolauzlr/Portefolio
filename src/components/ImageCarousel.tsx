@@ -75,7 +75,7 @@ export default function ImageCarousel({
 
   return (
     <div
-      className={`relative w-full ${aspectClassName} outline-none focus-visible:ring-2 focus-visible:ring-[#0fd1ea]`}
+      className={`relative w-full ${aspectClassName} outline-none cursor-pointer focus-visible:ring-2 focus-visible:ring-[#0fd1ea]`}
       // Focusable so ArrowLeft/ArrowRight can navigate this specific
       // carousel without ambiguity when several sit on the same page -
       // only the one the user actually focused/interacted with responds.
@@ -85,15 +85,31 @@ export default function ImageCarousel({
         if (e.key === "ArrowLeft") { e.preventDefault(); goPrev(); }
         else if (e.key === "ArrowRight") { e.preventDefault(); goNext(); }
       }}
+      // Clicking the image itself opens the lightbox too, not just the
+      // expand button - guarded on !lightboxOpen so clicks bubbling up
+      // from inside the already-open lightbox (its own close/prev/next/
+      // thumbnail buttons) never re-trigger this. The prev/next arrows
+      // below stop propagation so they advance the slide instead.
+      onClick={() => !lightboxOpen && setLightboxOpen(true)}
     >
       <SlideContent slide={current} alt={alt} />
 
       {hasMultiple && (
         <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex items-center justify-between px-3">
-          <button type="button" onClick={goPrev} aria-label="Previous image" className={ARROW_BUTTON_CLASSES}>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); goPrev(); }}
+            aria-label="Previous image"
+            className={ARROW_BUTTON_CLASSES}
+          >
             <CaretCircleLeftIcon className="w-10 h-10" />
           </button>
-          <button type="button" onClick={goNext} aria-label="Next image" className={ARROW_BUTTON_CLASSES}>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); goNext(); }}
+            aria-label="Next image"
+            className={ARROW_BUTTON_CLASSES}
+          >
             <CaretCircleRightIcon className="w-10 h-10" />
           </button>
         </div>
@@ -102,7 +118,7 @@ export default function ImageCarousel({
       <div className="absolute bottom-0 right-0 p-3">
         <button
           type="button"
-          onClick={() => setLightboxOpen(true)}
+          onClick={(e) => { e.stopPropagation(); setLightboxOpen(true); }}
           aria-label="Expand image"
           className={ARROW_BUTTON_CLASSES}
         >
