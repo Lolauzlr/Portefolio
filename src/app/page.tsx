@@ -5,11 +5,15 @@ import { asset } from "@/lib/asset";
 import HomeMoviesSection from "@/components/HomeMoviesSection";
 import HomeTrailerSection from "@/components/HomeTrailerSection";
 import HomeContactSection from "@/components/HomeContactSection";
+import ImageCarousel from "@/components/ImageCarousel";
+import { oldKnightSlides, nabilHarrowSlides } from "@/data/storytelling";
 
-const storyboardCards = [
-  { img: "/images/storyboard_scene.png", title: "SHORTFILM", desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula." },
-  { img: "/images/storyboard_nabil.png", title: "MUSIC CLIP", desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula." },
-  { img: "/images/storyboard_shortfilm.png", title: "CLIP NABIL HARLOW - C'EST PAS VRAI", desc: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula." },
+const loremIpsum =
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula.";
+
+const storytellingCards = [
+  { title: "OLD KNIGHT", label: "Manga", slides: oldKnightSlides, widthClassName: "md:w-[372px]", aspectClassName: "aspect-[372/525]" },
+  { title: "Nabil Harrow", label: "Video clip", slides: nabilHarrowSlides, widthClassName: "md:flex-1", aspectClassName: "aspect-[788/525]" },
 ];
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -98,24 +102,30 @@ export default function Home() {
       {/* Movies */}
       <HomeMoviesSection />
 
-      {/* Storyboards */}
+      {/* Storytelling */}
       <section className="py-6 md:py-[60px] bg-[#131313] px-3 md:px-[120px]">
-        <SectionTitle>STORYBOARDS</SectionTitle>
-        <div className="flex flex-col gap-[16px] md:gap-[24px]">
-          {storyboardCards.map((c) => (
-            <div key={c.title} className="flex flex-col md:flex-row gap-3 md:gap-4">
-              <img
-                src={asset(c.img)}
-                alt={c.title}
-                className="w-full md:w-[612px] h-[250px] md:h-[344px] object-cover shrink-0"
-              />
-              <div className="flex flex-col gap-3">
-                <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">
-                  {c.title}
-                </h3>
-                <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
-                  {c.desc}
-                </p>
+        <SectionTitle>STORYTELLING</SectionTitle>
+        <div className="flex flex-col md:flex-row gap-6 md:gap-[40px]">
+          {storytellingCards.map((c) => (
+            <div key={c.title} className={`flex flex-col gap-4 w-full ${c.widthClassName} shrink-0`}>
+              <div className={`w-full md:h-[525px] ${c.aspectClassName}`}>
+                <ImageCarousel slides={c.slides} alt={c.title} aspectClassName="h-full" />
+              </div>
+              <div className="flex flex-col gap-[24px]">
+                <div>
+                  <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px] uppercase">
+                    {c.title}
+                  </h3>
+                  <div className="w-[80px] h-[4px] bg-white mt-1" />
+                </div>
+                <div className="flex flex-col gap-4">
+                  <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-[#ddff6e] uppercase">
+                    {c.label}
+                  </p>
+                  <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
+                    {loremIpsum}
+                  </p>
+                </div>
               </div>
             </div>
           ))}
