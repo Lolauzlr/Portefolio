@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CornersOutIcon } from "@/components/CarouselIcons";
+import { useSupportsHover } from "@/hooks/useSupportsHover";
 
 // Same hover-to-preview / click-to-fullscreen pattern as the trailer cards
 // on /trailer: a static YouTube thumbnail, swapped for a muted autoplaying
@@ -16,6 +17,7 @@ export default function VideoCard({
   title: string;
   aspectClassName?: string;
 }) {
+  const supportsHover = useSupportsHover();
   const [hovered, setHovered] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -23,20 +25,14 @@ export default function VideoCard({
     <>
       <div
         className={`relative w-full ${aspectClassName} cursor-pointer overflow-hidden bg-black`}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        onClick={() => {
-          // On desktop, hovering already armed the preview before this click
-          // fires, so this still opens fullscreen on the first click. On
-          // mobile, there's no hover - so the first tap only arms the muted
-          // preview (matching the desktop hover step) and a second tap opens
-          // fullscreen, instead of jumping straight to fullscreen.
-          if (!hovered) {
-            setHovered(true);
-            return;
-          }
-          setModalOpen(true);
-        }}
+        // Skipping these two handlers entirely on touch-only devices
+        // (rather than attaching them and gating in onClick) matters:
+        // WebKit treats any element with a mouseenter/mouseover listener as
+        // hover-aware and eats the first tap to simulate that hover, only
+        // firing click on a second tap. With no listener attached, the
+        // first tap fires click immediately.
+        {...(supportsHover ? { onMouseEnter: () => setHovered(true), onMouseLeave: () => setHovered(false) } : {})}
+        onClick={() => setModalOpen(true)}
       >
         {hovered ? (
           <iframe

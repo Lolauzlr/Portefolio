@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { asset } from "@/lib/asset";
+import { useSupportsHover } from "@/hooks/useSupportsHover";
 
 function CaretCircleRight() {
   return (
@@ -28,26 +29,20 @@ function VideoCard({
   onPlay?: () => void;
   className?: string;
 }) {
+  const supportsHover = useSupportsHover();
   const [hovered, setHovered] = useState(false);
 
   return (
     <div
       className={`relative aspect-video cursor-pointer group overflow-hidden ${className || ""}`}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      // Skipping these two handlers entirely on touch-only devices (rather
+      // than attaching them and gating in onClick) matters: WebKit treats
+      // any element with a mouseenter/mouseover listener as hover-aware and
+      // eats the first tap to simulate that hover, only firing click on a
+      // second tap. With no listener attached, the first tap fires click
+      // immediately.
+      {...(supportsHover ? { onMouseEnter: () => setHovered(true), onMouseLeave: () => setHovered(false) } : {})}
       onClick={() => {
-        // On desktop, hovering already armed the preview before this click
-        // fires, so this still opens fullscreen on the first click. On
-        // mobile, there's no hover - so the first tap only arms the muted
-        // preview (matching the desktop hover step) and a second tap opens
-        // fullscreen, instead of jumping straight to fullscreen. Only
-        // applies to youtubeId cards, which are the only ones with a
-        // preview state - externalUrl cards (Jerry Gretzinger) still open
-        // on the first tap.
-        if (youtubeId && !hovered) {
-          setHovered(true);
-          return;
-        }
         if (onPlay) onPlay();
         else if (externalUrl) window.open(externalUrl, "_blank", "noopener,noreferrer");
       }}
