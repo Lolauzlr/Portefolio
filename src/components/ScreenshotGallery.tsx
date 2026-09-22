@@ -3,19 +3,23 @@
 import { useEffect } from "react";
 
 // Shared by every full-screen image overlay on the site (this gallery and
-// ImageCarousel's own lightbox) so Escape-to-close and the scroll-lock
-// behave identically everywhere. `active` gates both effects for a lightbox
-// that stays mounted while closed (ImageCarousel); a gallery that only
-// mounts while open (this component) can just pass `true`.
-export function useLightboxBehavior(active: boolean, onClose: () => void) {
+// ImageCarousel's own lightbox) so Escape-to-close, arrow-key navigation
+// and the scroll-lock behave identically everywhere. `active` gates both
+// effects for a lightbox that stays mounted while closed (ImageCarousel);
+// a gallery that only mounts while open (this component) can just pass
+// `true`. onPrev/onNext are optional since a single-image lightbox has
+// nothing to navigate to.
+export function useLightboxBehavior(active: boolean, onClose: () => void, onPrev?: () => void, onNext?: () => void) {
   useEffect(() => {
     if (!active) return;
-    const handleEsc = (e: KeyboardEvent) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
+      else if (e.key === "ArrowLeft") onPrev?.();
+      else if (e.key === "ArrowRight") onNext?.();
     };
-    window.addEventListener("keydown", handleEsc);
-    return () => window.removeEventListener("keydown", handleEsc);
-  }, [active, onClose]);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [active, onClose, onPrev, onNext]);
 
   // Freeze the page behind this overlay. `overflow: hidden` alone doesn't
   // stop iOS Safari's rubber-band scroll chaining from reaching the body
@@ -58,12 +62,12 @@ export default function ScreenshotGallery({
   onIndexChange: (i: number) => void;
   onClose: () => void;
 }) {
-  useLightboxBehavior(true, onClose);
-
   const count = images.length;
-  if (count === 0) return null;
-
   const go = (delta: number) => onIndexChange((index + delta + count) % count);
+
+  useLightboxBehavior(true, onClose, count > 1 ? () => go(-1) : undefined, count > 1 ? () => go(1) : undefined);
+
+  if (count === 0) return null;
 
   return (
     <div

@@ -62,14 +62,30 @@ export default function ImageCarousel({
     setIndex((i) => (i + 1) % slides.length);
   }
 
-  useLightboxBehavior(lightboxOpen, () => setLightboxOpen(false));
+  useLightboxBehavior(
+    lightboxOpen,
+    () => setLightboxOpen(false),
+    hasMultiple ? goPrev : undefined,
+    hasMultiple ? goNext : undefined
+  );
 
   if (slides.length === 0) return null;
 
   const current = slides[index];
 
   return (
-    <div className={`relative w-full ${aspectClassName}`}>
+    <div
+      className={`relative w-full ${aspectClassName} outline-none focus-visible:ring-2 focus-visible:ring-[#0fd1ea]`}
+      // Focusable so ArrowLeft/ArrowRight can navigate this specific
+      // carousel without ambiguity when several sit on the same page -
+      // only the one the user actually focused/interacted with responds.
+      tabIndex={hasMultiple ? 0 : -1}
+      onKeyDown={(e) => {
+        if (lightboxOpen || !hasMultiple) return;
+        if (e.key === "ArrowLeft") { e.preventDefault(); goPrev(); }
+        else if (e.key === "ArrowRight") { e.preventDefault(); goNext(); }
+      }}
+    >
       <SlideContent slide={current} alt={alt} />
 
       {hasMultiple && (
