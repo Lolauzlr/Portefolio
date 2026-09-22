@@ -21,6 +21,15 @@ export type Comic = {
 
 export type PublishedComic = Comic & { slug: string; cover: string; spine: string };
 
+/**
+ * Interior pages are numbered and zero-padded, e.g.
+ * plateRange("No-finder", "NO_FINDER", 1, 52).
+ */
+const plateRange = (folder: string, prefix: string, from: number, to: number): string[] =>
+  Array.from({ length: to - from + 1 }, (_, i) =>
+    asset(`/images/Storybook/${folder}/${prefix}-${String(from + i).padStart(2, "0")}.webp`),
+  );
+
 export const COMICS: Comic[] = [
   {
     slug: "old-knight",
@@ -31,8 +40,9 @@ export const COMICS: Comic[] = [
     cover: asset("/images/Storybook/Old-knight/OLD_KNIGHT-01.webp"),
     spine: asset("/images/Storybook/Old-knight/Old-knight-tranche.webp"),
     accent: "#ddff6e",
-    meta: { format: "Bande dessinée", pages: null, technique: "Encre" },
-    plates: [],
+    meta: { format: "Bande dessinée", pages: 14, technique: "Encre" },
+    // OLD_KNIGHT-01 is the cover above, so the interior starts at 02.
+    plates: plateRange("Old-knight", "OLD_KNIGHT", 2, 15),
   },
   {
     slug: "no-finder",
@@ -43,8 +53,9 @@ export const COMICS: Comic[] = [
     cover: asset("/images/Storybook/No-finder/NO_FINDER_COVER.webp"),
     spine: asset("/images/Storybook/No-finder/No-finder-tranche.webp"),
     accent: "#cf5a55",
-    meta: { format: "Bande dessinée", pages: null, technique: "Encre et lavis" },
-    plates: [],
+    meta: { format: "Bande dessinée", pages: 52, technique: "Encre et lavis" },
+    // The cover is its own file, so the numbered sequence is the interior.
+    plates: plateRange("No-finder", "NO_FINDER", 1, 52),
   },
   {
     slug: null,

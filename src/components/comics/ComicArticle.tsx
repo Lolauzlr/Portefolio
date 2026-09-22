@@ -78,6 +78,8 @@ export default function ComicArticle({ comic }: { comic: PublishedComic }) {
                 key={plate}
                 src={plate}
                 alt={`${comic.title} — planche ${index + 1}`}
+                loading="lazy"
+                decoding="async"
                 className="w-full object-cover"
               />
             ))}
