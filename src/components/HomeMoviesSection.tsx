@@ -36,6 +36,18 @@ function VideoCard({
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onClick={() => {
+        // On desktop, hovering already armed the preview before this click
+        // fires, so this still opens fullscreen on the first click. On
+        // mobile, there's no hover - so the first tap only arms the muted
+        // preview (matching the desktop hover step) and a second tap opens
+        // fullscreen, instead of jumping straight to fullscreen. Only
+        // applies to youtubeId cards, which are the only ones with a
+        // preview state - externalUrl cards (Jerry Gretzinger) still open
+        // on the first tap.
+        if (youtubeId && !hovered) {
+          setHovered(true);
+          return;
+        }
         if (onPlay) onPlay();
         else if (externalUrl) window.open(externalUrl, "_blank", "noopener,noreferrer");
       }}

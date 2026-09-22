@@ -25,7 +25,18 @@ export default function VideoCard({
         className={`relative w-full ${aspectClassName} cursor-pointer overflow-hidden bg-black`}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        onClick={() => setModalOpen(true)}
+        onClick={() => {
+          // On desktop, hovering already armed the preview before this click
+          // fires, so this still opens fullscreen on the first click. On
+          // mobile, there's no hover - so the first tap only arms the muted
+          // preview (matching the desktop hover step) and a second tap opens
+          // fullscreen, instead of jumping straight to fullscreen.
+          if (!hovered) {
+            setHovered(true);
+            return;
+          }
+          setModalOpen(true);
+        }}
       >
         {hovered ? (
           <iframe

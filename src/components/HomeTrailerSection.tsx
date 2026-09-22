@@ -172,7 +172,19 @@ export default function HomeTrailerSection() {
                 className="relative w-full aspect-video cursor-pointer overflow-hidden bg-black"
                 onMouseEnter={() => setHoveredCard(card.videoId)}
                 onMouseLeave={() => setHoveredCard(null)}
-                onClick={() => setVideoModal({ videoId: card.videoId, title: card.title })}
+                onClick={() => {
+                  // On desktop, hovering already armed the preview before this
+                  // click fires, so this still opens fullscreen on the first
+                  // click. On mobile, there's no hover - so the first tap only
+                  // arms the muted preview (matching the desktop hover step)
+                  // and a second tap on the same, now-armed card opens
+                  // fullscreen, instead of jumping straight to fullscreen.
+                  if (hoveredCard !== card.videoId) {
+                    setHoveredCard(card.videoId);
+                    return;
+                  }
+                  setVideoModal({ videoId: card.videoId, title: card.title });
+                }}
               >
                 {hoveredCard === card.videoId ? (
                   <iframe
