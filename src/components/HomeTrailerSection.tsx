@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { asset } from "@/lib/asset";
 import { useSupportsHover } from "@/hooks/useSupportsHover";
+import { CornersOutIcon } from "@/components/CarouselIcons";
 
 function CaretCircleRight() {
   return (
@@ -188,12 +189,16 @@ export default function HomeTrailerSection() {
                 onClick={() => setVideoModal({ videoId: card.videoId, title: card.title })}
               >
                 {hoveredCard === card.videoId ? (
+                  // Native YouTube controls enabled (scrub bar + seeking) -
+                  // the iframe is interactive now and swallows its own
+                  // clicks, so the expand button below is the only way to
+                  // open the fullscreen modal while hovering.
                   <iframe
                     className="absolute inset-0 w-full h-full"
-                    src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
+                    src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&modestbranding=1&rel=0&showinfo=0`}
                     title={card.title}
                     allow="autoplay; encrypted-media"
-                    style={{ border: 0, pointerEvents: "none" }}
+                    style={{ border: 0 }}
                   />
                 ) : (
                   <img
@@ -203,6 +208,17 @@ export default function HomeTrailerSection() {
                     onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${card.videoId}/hqdefault.jpg`; }}
                   />
                 )}
+                {/* Top-right, clear of YouTube's own bottom control bar. */}
+                <div className="absolute top-0 right-0 p-3">
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title }); }}
+                    aria-label="Agrandir la vidéo"
+                    className="flex items-center justify-center rounded-full bg-black/40 text-white hover:text-[#7FECFB] transition-colors cursor-pointer w-10 h-10"
+                  >
+                    <CornersOutIcon className="w-10 h-10" />
+                  </button>
+                </div>
               </div>
               <div className="flex flex-col gap-3 flex-1">
                 <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">

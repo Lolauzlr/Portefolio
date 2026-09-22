@@ -35,12 +35,18 @@ export default function VideoCard({
         onClick={() => setModalOpen(true)}
       >
         {hovered ? (
+          // Native YouTube controls enabled here (unlike the fullscreen
+          // modal's embed, this was previously controls=0 + pointer-events:
+          // none) so the hover preview shows the scrub bar and lets the
+          // viewer seek - it's interactive now, so it swallows its own
+          // clicks (cross-origin iframe) and no longer bubbles to this
+          // card's onClick, hence the explicit expand button below.
           <iframe
             className="absolute inset-0 w-full h-full"
-            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&modestbranding=1&rel=0&showinfo=0`}
             title={title}
             allow="autoplay; encrypted-media"
-            style={{ border: 0, pointerEvents: "none" }}
+            style={{ border: 0 }}
           />
         ) : (
           <img
@@ -52,10 +58,18 @@ export default function VideoCard({
             }}
           />
         )}
-        <div className="absolute bottom-0 right-0 p-3">
-          <div className="flex items-center justify-center rounded-full bg-black/40 text-white w-10 h-10">
+        {/* Top-right (not bottom, where YouTube's own control bar sits once
+            the hover preview is interactive) so it never overlaps the
+            native fullscreen/settings buttons. */}
+        <div className="absolute top-0 right-0 p-3">
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setModalOpen(true); }}
+            aria-label="Agrandir la vidéo"
+            className="flex items-center justify-center rounded-full bg-black/40 text-white hover:text-[#7FECFB] transition-colors cursor-pointer w-10 h-10"
+          >
             <CornersOutIcon className="w-10 h-10" />
-          </div>
+          </button>
         </div>
       </div>
 

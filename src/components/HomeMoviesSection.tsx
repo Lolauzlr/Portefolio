@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { asset } from "@/lib/asset";
 import { useSupportsHover } from "@/hooks/useSupportsHover";
+import { CornersOutIcon } from "@/components/CarouselIcons";
 
 function CaretCircleRight() {
   return (
@@ -48,9 +49,13 @@ function VideoCard({
       }}
     >
       {youtubeId && hovered ? (
+        // Native YouTube controls enabled (scrub bar + seeking) - the
+        // iframe is interactive now and swallows its own clicks, so the
+        // expand button below is the only way to open the fullscreen modal
+        // while hovering.
         <iframe
-          className="w-full h-full pointer-events-none"
-          src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
+          className="w-full h-full"
+          src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&modestbranding=1&rel=0&showinfo=0`}
           title={title}
           allow="autoplay; encrypted-media"
           style={{ border: 0 }}
@@ -77,6 +82,22 @@ function VideoCard({
             </svg>
           </div>
         </>
+      )}
+      {/* Only the youtubeId (embedded preview) case needs this - the
+          externalUrl case (Jerry Gretzinger) has no interactive iframe of
+          its own to compete with, so its outer onClick still works as-is.
+          Top-right, clear of YouTube's own bottom control bar. */}
+      {youtubeId && (
+        <div className="absolute top-0 right-0 p-3">
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onPlay?.(); }}
+            aria-label="Agrandir la vidéo"
+            className="flex items-center justify-center rounded-full bg-black/40 text-white hover:text-[#7FECFB] transition-colors cursor-pointer w-10 h-10"
+          >
+            <CornersOutIcon className="w-10 h-10" />
+          </button>
+        </div>
       )}
     </div>
   );
