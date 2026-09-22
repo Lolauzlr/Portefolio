@@ -175,7 +175,7 @@ export default function HomeMoviesSection() {
           {/* Jerry Gretzinger */}
           <PentagonCard className="flex-1" contentClassName="flex flex-col gap-4 md:gap-6">
             <VideoCard
-              thumbnail="/images/arte-gymnastique.webp"
+              thumbnail="/images/documentary/arte-gymnastique.webp"
               title="JERRY GRETZINGER"
               externalUrl="https://www.arte.tv/fr/videos/105628-041-A/gymnastique/"
               className="w-full"
