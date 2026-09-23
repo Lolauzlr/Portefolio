@@ -11,6 +11,7 @@ const navLinks = [
   { label: "MOVIES", href: "/movies" },
   { label: "ILLUSTRATIONS", href: "/illustrations" },
   { label: "STORYTELLING", href: "/storyboard" },
+  { label: "COMICS", href: "/comics" },
   { label: "CV", href: "/cv" },
 ];
 
@@ -32,7 +33,7 @@ export default function Navbar() {
         </Link>
 
         {/* Center nav pill */}
-        <nav className="hidden lg:flex items-center gap-10 rounded-[40px] bg-black/40 backdrop-blur-[5px] px-[40px] py-[24px]">
+        <nav className="hidden min-[1560px]:flex items-center gap-10 rounded-[40px] bg-black/40 backdrop-blur-[5px] px-[40px] py-[24px]">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
@@ -53,14 +54,14 @@ export default function Navbar() {
         {/* Contact button - absolutely positioned right */}
         <Link
           href="/#contact"
-          className="hidden lg:block absolute right-6 md:right-[120px] font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-[#0fd1ea] border-2 border-[#0fd1ea] rounded-[40px] bg-black/40 backdrop-blur-[5px] px-[40px] py-[20px] hover:text-[#7FECFB] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] focus:text-[#7FECFB] focus:border-[#7FECFB] focus:bg-[rgba(15,209,234,0.1)] active:text-[#0897A9] active:border-[#0897A9] active:bg-[rgba(8,151,169,0.1)] transition-colors"
+          className="hidden min-[1560px]:block absolute right-6 md:right-[120px] font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-[#0fd1ea] border-2 border-[#0fd1ea] rounded-[40px] bg-black/40 backdrop-blur-[5px] px-[40px] py-[20px] hover:text-[#7FECFB] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] focus:text-[#7FECFB] focus:border-[#7FECFB] focus:bg-[rgba(15,209,234,0.1)] active:text-[#0897A9] active:border-[#0897A9] active:bg-[rgba(8,151,169,0.1)] transition-colors"
         >
           CONTACT ME
         </Link>
 
         {/* Hamburger */}
         <button
-          className="lg:hidden absolute right-6 flex flex-col gap-1.5 p-2"
+          className="min-[1560px]:hidden absolute right-6 flex flex-col gap-1.5 p-2"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
         >
@@ -72,7 +73,7 @@ export default function Navbar() {
 
       {/* Mobile overlay */}
       {menuOpen && (
-        <div className="fixed inset-0 z-[65] bg-[#15161b]/95 backdrop-blur-md flex flex-col items-center justify-center gap-8 lg:hidden">
+        <div className="fixed inset-0 z-[65] bg-[#15161b]/95 backdrop-blur-md flex flex-col items-center justify-center gap-8 min-[1560px]:hidden">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
