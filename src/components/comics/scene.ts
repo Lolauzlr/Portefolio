@@ -197,25 +197,15 @@ export function createScene(
   const camTarget = new THREE.Vector3(0, BOOK.h * 0.5, 0);
 
   // --- environnement -------------------------------------------------------
-  const span = comics.length * (BOOK.t + GAP);
-
+  // Fond non éclairé à dessein : un matériau standard prendrait la tache du
+  // projecteur en plein sur son cône et lirait comme un filtre gris posé sur
+  // la scène - le fond doit rester plat quelle que soit la lumière qui l'atteint.
   const wallGeo = new THREE.PlaneGeometry(20, 12);
-  const wallMat = new THREE.MeshStandardMaterial({ color: "#15161b", roughness: 1 });
+  const wallMat = new THREE.MeshBasicMaterial({ color: "#15161b" });
   const wall = new THREE.Mesh(wallGeo, wallMat);
   wall.position.set(0, 2, -1.2);
   wall.receiveShadow = false;
   scene.add(wall);
-
-  const boardGeo = new THREE.BoxGeometry(span + 1.2, 0.12, 0.72);
-  const boardMat = new THREE.MeshStandardMaterial({
-    color: "#22242b",
-    roughness: 0.42,
-    metalness: 0.55,
-  });
-  const board = new THREE.Mesh(boardGeo, boardMat);
-  board.position.set(0, -0.06, 0);
-  board.receiveShadow = true;
-  scene.add(board);
 
   const ambient = new THREE.AmbientLight(0xffffff, AMBIENT_SHELF);
   scene.add(ambient);
@@ -1145,8 +1135,8 @@ export function createScene(
       turnPage.dispose();
       readerPageGeo.dispose();
       [leftPageMaterial, rightPageMaterial].forEach((m) => m.dispose());
-      [pagesGeo, plateGeo, spineGeo, pickGeo, boardGeo, wallGeo].forEach((g) => g.dispose());
-      [pagesMat, boardsMat, pickMat, boardMat, wallMat].forEach((m) => m.dispose());
+      [pagesGeo, plateGeo, spineGeo, pickGeo, wallGeo].forEach((g) => g.dispose());
+      [pagesMat, boardsMat, pickMat, wallMat].forEach((m) => m.dispose());
       nodes.forEach((n) => {
         n.spineMaterial.map?.dispose();
         n.coverMaterial.map?.dispose();

@@ -65,28 +65,6 @@ export const COMICS: Comic[] = [
       (src) => !SKIPPED_NO_FINDER.some((n) => src.endsWith(`NO_FINDER-${n}.webp`)),
     ),
   },
-  {
-    slug: null,
-    title: "En écriture",
-    year: null,
-    status: "upcoming",
-    cover: null,
-    spine: null,
-    accent: "#6b7076",
-    meta: { format: "Bande dessinée", pages: null, technique: "—" },
-    plates: [],
-  },
-  {
-    slug: null,
-    title: "En écriture",
-    year: null,
-    status: "upcoming",
-    cover: null,
-    spine: null,
-    accent: "#6b7076",
-    meta: { format: "Bande dessinée", pages: null, technique: "—" },
-    plates: [],
-  },
 ];
 
 export function publishedComics(): PublishedComic[] {
