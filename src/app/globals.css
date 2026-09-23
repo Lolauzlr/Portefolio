@@ -18,3 +18,18 @@ body {
   color: white;
   font-family: var(--font-body);
 }
+
+/* En lecture, le livre occupe tout l'écran : la barre de navigation
+   le recouvrirait, et le bouton de sortie suffit à en ressortir. */
+body[data-reading="true"] header {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 300ms ease, visibility 0s linear 300ms;
+}
+
+/* Le pied de page rend le document plus haut que la fenêtre : sa barre de défilement
+   rognait quinze pixels à droite du canevas, le pli de la double page se posait
+   d'autant à gauche du centre de l'écran et les deux marges devenaient inégales. */
+body[data-reading="true"] {
+  overflow: hidden;
+}
