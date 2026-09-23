@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import ExpandableText from "@/components/ExpandableText";
 import PentagonCard from "@/components/PentagonCard";
 import ScreenshotGallery from "@/components/ScreenshotGallery";
@@ -9,6 +10,9 @@ export type Book = {
   title: string;
   description: string;
   href: string;
+  // Only read by a caller's own getReadHref (see BookCarousel) - unused by
+  // this component's default screenshot-gallery behavior.
+  slug?: string;
   coverImg: string; // used for both the full Cover and the CoverPeek sliver
   spineImg: string;
   // Fill behind the spine artwork's bg-contain letterboxing — matches that
@@ -152,6 +156,7 @@ function BookSlot({
   dims,
   onSelect,
   onOpenGallery,
+  readHref,
   mirrorShape,
 }: {
   book: Book;
@@ -161,6 +166,13 @@ function BookSlot({
   // The already-selected book is clickable too — it opens its own
   // screenshot gallery instead of doing nothing.
   onOpenGallery: () => void;
+  // When set, this slot is a real link (not a gallery-opening button):
+  // active state navigates there on a plain left click, inactive state
+  // still just switches which book is active — same as the default
+  // gallery behavior. The element type never changes between the two
+  // states (always a Link), so the flip/select transitions never remount
+  // and lose their in-flight animation.
+  readHref?: string;
   // The left book's spine must sit on its outer (left) edge with the
   // cover peeking in on the inner (right) edge — the mirror image of the
   // right book's arrangement — since each book "opens" toward the center.
@@ -208,21 +220,27 @@ function BookSlot({
   // "right", sidesteps that regardless of which edge the outer mirror
   // wrapper is anchored to.
 
-  return (
-    <button
-      type="button"
-      onClick={isActive ? onOpenGallery : onSelect}
-      aria-label={isActive ? `View ${book.title} screenshots` : `Show ${book.title}`}
-      aria-current={isActive}
-      className={`relative shrink-0 overflow-hidden cursor-pointer ${REST_CLASS} ${
-        isActive ? "" : mirrorShape ? HOVER_LEFT_CLASS : HOVER_RIGHT_CLASS
-      }`}
-      style={{
-        width: outerW,
-        height: dims.bookH,
-        transition: `width ${WIDTH_TRANSITION_MS}ms ${EASE}, transform 400ms ${EASE}, box-shadow 400ms ${EASE}`,
-      }}
-    >
+  const sharedProps = {
+    "aria-label": readHref
+      ? isActive
+        ? `Read ${book.title}`
+        : `Show ${book.title}`
+      : isActive
+        ? `View ${book.title} screenshots`
+        : `Show ${book.title}`,
+    "aria-current": isActive,
+    className: `relative shrink-0 overflow-hidden cursor-pointer ${REST_CLASS} ${
+      isActive ? "" : mirrorShape ? HOVER_LEFT_CLASS : HOVER_RIGHT_CLASS
+    }`,
+    style: {
+      width: outerW,
+      height: dims.bookH,
+      transition: `width ${WIDTH_TRANSITION_MS}ms ${EASE}, transform 400ms ${EASE}, box-shadow 400ms ${EASE}`,
+    },
+  };
+
+  const content = (
+    <>
       {/* Cover and the CoverPeek+Spine group are both fixed-size, anchored
           to the slot's outer edge (the edge the spine sits against — left
           for the left book, right for the right book) instead of
@@ -300,6 +318,32 @@ function BookSlot({
           </div>
         </div>
       </div>
+    </>
+  );
+
+  // The element type stays constant across active/inactive re-renders of a
+  // given slot (readHref itself never changes), so toggling `isActive`
+  // never remounts it and never interrupts an in-flight flip transition.
+  if (readHref) {
+    return (
+      <Link
+        href={readHref}
+        onClick={(e) => {
+          if (isActive) return; // plain navigation into the reader
+          if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+          e.preventDefault();
+          onSelect();
+        }}
+        {...sharedProps}
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <button type="button" onClick={isActive ? onOpenGallery : onSelect} {...sharedProps}>
+      {content}
     </button>
   );
 }
@@ -331,7 +375,19 @@ function BookSlider({
   );
 }
 
-export default function BookCarousel({ books }: { books: Book[] }) {
+export default function BookCarousel({
+  books,
+  readBasePath,
+}: {
+  books: Book[];
+  // When provided, replaces the built-in screenshot gallery with real
+  // navigation: the active cover and the READ button become links to
+  // `${readBasePath}/${book.slug}/lire` (e.g. a page-turning reader route)
+  // instead of opening ScreenshotGallery in place. A plain string (rather
+  // than a callback) so a Server Component can pass this prop directly.
+  readBasePath?: string;
+}) {
+  const getReadHref = readBasePath ? (book: Book) => `${readBasePath}/${book.slug}/lire` : undefined;
   const [active, setActive] = useState(0);
   const dims = useDims();
 
@@ -459,6 +515,7 @@ export default function BookCarousel({ books }: { books: Book[] }) {
         dims={dims}
         onSelect={() => goTo(0)}
         onOpenGallery={() => openGallery(books[0])}
+        readHref={getReadHref?.(books[0])}
         mirrorShape
       />
       <BookSlot
@@ -467,10 +524,15 @@ export default function BookCarousel({ books }: { books: Book[] }) {
         dims={dims}
         onSelect={() => goTo(1)}
         onOpenGallery={() => openGallery(books[1])}
+        readHref={getReadHref?.(books[1])}
         mirrorShape={false}
       />
     </div>
   );
+
+  const panelReadHref = getReadHref?.(panelBook);
+  const readButtonClass =
+    "bg-black/40 border-2 border-[#0fd1ea] flex items-center px-[40px] py-[20px] rounded-[40px] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] transition-colors cursor-pointer";
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -494,15 +556,26 @@ export default function BookCarousel({ books }: { books: Book[] }) {
             </p>
           </div>
           <div className="flex flex-col items-start px-[24px] w-full" style={panelStyle}>
-            <button
-              type="button"
-              onClick={() => openGallery(panelBook)}
-              className={`${isTransitioning ? "" : "backdrop-blur-[5px] "}bg-black/40 border-2 border-[#0fd1ea] flex items-center px-[40px] py-[20px] rounded-[40px] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] transition-colors cursor-pointer`}
-            >
-              <span className="font-[family-name:var(--font-heading)] text-[#0fd1ea] text-[24px] tracking-[1.92px] whitespace-nowrap hover:text-[#7FECFB] transition-colors">
-                READ
-              </span>
-            </button>
+            {panelReadHref ? (
+              <Link
+                href={panelReadHref}
+                className={`${isTransitioning ? "" : "backdrop-blur-[5px] "}${readButtonClass}`}
+              >
+                <span className="font-[family-name:var(--font-heading)] text-[#0fd1ea] text-[24px] tracking-[1.92px] whitespace-nowrap hover:text-[#7FECFB] transition-colors">
+                  READ
+                </span>
+              </Link>
+            ) : (
+              <button
+                type="button"
+                onClick={() => openGallery(panelBook)}
+                className={`${isTransitioning ? "" : "backdrop-blur-[5px] "}${readButtonClass}`}
+              >
+                <span className="font-[family-name:var(--font-heading)] text-[#0fd1ea] text-[24px] tracking-[1.92px] whitespace-nowrap hover:text-[#7FECFB] transition-colors">
+                  READ
+                </span>
+              </button>
+            )}
           </div>
         </PentagonCard>
       </div>
@@ -521,16 +594,28 @@ export default function BookCarousel({ books }: { books: Book[] }) {
           <ExpandableText>{panelBook.description}</ExpandableText>
         </div>
 
-        <button
-          type="button"
-          onClick={() => openGallery(panelBook)}
-          className={`${isTransitioning ? "" : "backdrop-blur-[5px] "}bg-black/40 border-2 border-[#0fd1ea] flex items-center px-[40px] py-[20px] rounded-[40px] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] transition-colors cursor-pointer`}
-          style={panelStyle}
-        >
-          <span className="font-[family-name:var(--font-heading)] text-[#0fd1ea] text-[24px] tracking-[1.92px] whitespace-nowrap">
-            READ
-          </span>
-        </button>
+        {panelReadHref ? (
+          <Link
+            href={panelReadHref}
+            className={`${isTransitioning ? "" : "backdrop-blur-[5px] "}${readButtonClass}`}
+            style={panelStyle}
+          >
+            <span className="font-[family-name:var(--font-heading)] text-[#0fd1ea] text-[24px] tracking-[1.92px] whitespace-nowrap">
+              READ
+            </span>
+          </Link>
+        ) : (
+          <button
+            type="button"
+            onClick={() => openGallery(panelBook)}
+            className={`${isTransitioning ? "" : "backdrop-blur-[5px] "}${readButtonClass}`}
+            style={panelStyle}
+          >
+            <span className="font-[family-name:var(--font-heading)] text-[#0fd1ea] text-[24px] tracking-[1.92px] whitespace-nowrap">
+              READ
+            </span>
+          </button>
+        )}
       </div>
 
       {galleryImages && (

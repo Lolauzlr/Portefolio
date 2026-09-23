@@ -79,7 +79,10 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
     slugSegment && !isReading ? "INSIDE" : "SHELF",
   );
   const [selected, setSelectedValue] = useState<number | null>(null);
-  const [showArticle, setShowArticle] = useState(Boolean(slugSegment) && !isReading);
+  // Browsing (no slug) now uses the same flat 2D picker as the album page,
+  // never the 3D canvas - both stay visible whenever we're not reading, not
+  // just when a slug is present.
+  const [showArticle, setShowArticle] = useState(!isReading);
   /** L'article s'efface sur le canevas au lieu d'être coupé derrière un voile. */
   const [articleOut, setArticleOut] = useState(false);
   const [overlay, setOverlay] = useState(0);
@@ -213,7 +216,12 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
       setSelected(null);
       setPhase("SHELF");
       setReadingChrome(false);
-      scene.setPickingEnabled(true);
+      // Browsing is the flat 2D picker now, never the 3D canvas: once the
+      // close/deselect animation has settled the shelf back to rest, hide
+      // it again and hand the page back to the picker/article content.
+      setCanvasHidden(true);
+      setShowArticle(true);
+      scene.setPickingEnabled(false);
     },
     [router, setPhase, setSelected],
   );
@@ -501,7 +509,9 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
             setSelectedValue(index);
             setCanvasHidden(false);
           } else {
-            setCanvasHidden(false);
+            // Étagère nue (pas de slug) : le canvas n'a plus rien à montrer
+            // tant qu'on ne lit pas - le picker 2D est le contenu par défaut.
+            handle.setPickingEnabled(false);
           }
           setReady(true);
         } catch {

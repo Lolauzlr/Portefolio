@@ -34,6 +34,12 @@ const plateRange = (folder: string, prefix: string, from: number, to: number): s
 
 const SKIPPED_NO_FINDER = ["24", "34", "44"];
 
+// Same placeholder used for the other work-in-progress descriptions across
+// the site (e.g. the Storyboard "Pick a story" books) until real copy is
+// written for each album.
+const placeholderSynopsis =
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque. Vivamus dapibus semper justo, interdum tincidunt tellus placerat a. Quisque vel orci et nulla vestibulum interdum.";
+
 export const COMICS: Comic[] = [
   {
     slug: "old-knight",
@@ -47,6 +53,7 @@ export const COMICS: Comic[] = [
     meta: { format: "Bande dessinée", pages: 14, technique: "Encre" },
     // OLD_KNIGHT-01 is the cover above, so the interior starts at 02.
     plates: plateRange("Old-knight", "OLD_KNIGHT", 2, 15),
+    synopsis: placeholderSynopsis,
   },
   {
     slug: "no-finder",
@@ -64,6 +71,7 @@ export const COMICS: Comic[] = [
     plates: plateRange("No-finder", "NO_FINDER", 1, 52).filter(
       (src) => !SKIPPED_NO_FINDER.some((n) => src.endsWith(`NO_FINDER-${n}.webp`)),
     ),
+    synopsis: placeholderSynopsis,
   },
 ];
 
