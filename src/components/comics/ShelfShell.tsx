@@ -16,9 +16,10 @@ import { ShellContext, type ShellApi } from "@/components/comics/shell-context";
 import { COMICS, comicBySlug } from "@/lib/comics";
 
 /**
- * Livre mis en avant par défaut, avant tout survol/clic - au sens du survol
- * (légère avancée), pas de la désignation (le gros plan resterait sur lui
- * et masquerait l'autre livre, jamais visible ni cliquable à côté).
+ * Livre désigné par défaut, avant tout clic. select() ne fait plus de gros
+ * plan depuis la correction de setHover/select (le gros plan reste réservé
+ * à open()/openForReading()) : le désigner d'emblée est donc sûr, l'autre
+ * livre restant visible et cliquable à côté.
  */
 const DEFAULT_SLUG = "old-knight";
 
@@ -534,13 +535,15 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
             setCanvasHidden(false);
           } else {
             // Étagère nue (pas de slug, pas de lecture) : le premier livre
-            // avance légèrement d'emblée (même geste qu'un survol), les deux
-            // livres restant visibles et cliquables côte à côte - le gros
-            // plan de select() reste réservé au clic.
+            // est désigné d'emblée (sans animation), l'autre restant visible
+            // et cliquable à côté - select() ne fait plus de gros plan.
             const defaultIndex = COMICS.findIndex((comic) => comic.slug === DEFAULT_SLUG);
             if (defaultIndex >= 0) {
-              handle.setHover(defaultIndex);
-              setHoveredIndex(defaultIndex);
+              void handle.select(defaultIndex, false);
+              stateRef.current = "SELECTED";
+              setStateValue("SELECTED");
+              selectedRef.current = defaultIndex;
+              setSelectedValue(defaultIndex);
             }
             setCanvasHidden(false);
           }

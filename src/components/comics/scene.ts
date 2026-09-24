@@ -865,8 +865,11 @@ export function createScene(
     hovered = index;
     nodes.forEach((node, i) => {
       const lifted = i === index && selected === null;
+      // Le livre désigné reste à l'échelle de select() (HOVER_OUT) : un survol
+      // qui suivrait ne doit pas le renvoyer au gros plan de l'ouverture
+      // (SELECT_OUT), réservé à open()/openForReading().
       gsap.to(node.group.position, {
-        z: lifted ? HOVER_OUT : selected === i ? SELECT_OUT : 0,
+        z: lifted ? HOVER_OUT : selected === i ? HOVER_OUT : 0,
         duration: dur(220),
         ease: "power2.out",
         onUpdate: markDirty,
