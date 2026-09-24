@@ -392,6 +392,15 @@ export default function ShelfShell({
     };
   }, []);
 
+  // Posé une seule fois, à l'entrée sur /storyboard (jamais rejoué pendant la
+  // navigation interne étagère <-> lecture, la coquille restant montée d'un
+  // bout à l'autre) : évite qu'un défilement resté du chargement précédent,
+  // ou un rattrapage du navigateur pendant le premier rendu, ne laisse la
+  // page ouverte plus bas que le haut de l'étagère.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // --- réconciliation avec le routeur -------------------------------------
   const reconcile = useCallback(
     (route: Route) => {
@@ -677,10 +686,17 @@ export default function ShelfShell({
   // et verrouillé, exactement comme sur l'ancienne page /comics - il n'y a
   // alors plus rien d'autre à atteindre sur cette page.
   const immersive = readingChrome;
+  // L'entrée/sortie de lecture change l'URL (slugSegment) avant que la scène
+  // n'ait fini d'animer : sans le && !immersive, header/footer réapparaissent
+  // dès ce changement d'URL, pendant que l'étagère est encore en train de se
+  // refermer/s'ouvrir en plein écran - on verrait alors la section
+  // "Storyboards" par-dessous. `readingChrome` couvre toute l'animation, pas
+  // seulement l'état READING stable.
+  const showAround = !slugSegment && !immersive;
 
   return (
-    <div className="relative min-h-screen bg-[#15161b] text-white">
-      {!slugSegment && header}
+    <div className="relative min-h-screen bg-[#15161b] text-white" style={{ overflowAnchor: "none" }}>
+      {showAround && header}
 
       {/* Rangée plein écran (verrouillée pendant la lecture, en flux sinon) :
           le canevas cède la largeur qu'occupe la card au lieu de rester plein
@@ -753,7 +769,7 @@ export default function ShelfShell({
           main (`ready`) ; elle ne passe en `sr-only` qu'une fois la 3D montée. */}
       <div className={!ready || showArticle ? "relative z-10" : "sr-only"}>{children}</div>
 
-      {!slugSegment && footer}
+      {showAround && footer}
     </div>
   );
 }
