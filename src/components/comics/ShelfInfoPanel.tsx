@@ -51,7 +51,7 @@ export default function ShelfInfoPanel({
   };
 
   return (
-    <div className="fixed bottom-16 left-1/2 z-20 w-[calc(100%-32px)] max-w-[400px] -translate-x-1/2 md:bottom-1/2 md:left-auto md:right-[60px] md:w-auto md:max-w-none md:translate-x-0 md:translate-y-1/2">
+    <div className="fixed bottom-16 left-1/2 z-20 w-[calc(100%-32px)] max-w-[400px] -translate-x-1/2 md:static md:left-auto md:w-auto md:max-w-none md:translate-x-0 md:translate-y-0">
       <PentagonCard
         className="h-auto w-full md:h-[535px] md:w-[510px] backdrop-blur-[5px]"
         contentClassName="!p-0 flex flex-col gap-[20px] h-full items-start py-[20px]"

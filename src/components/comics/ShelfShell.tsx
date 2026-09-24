@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSelectedLayoutSegments } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   canInteract,
   canTurn,
@@ -41,6 +41,15 @@ const WHEEL_IDLE_MS = 180;
 const WHEEL_LINE_PX = 16;
 /** Effacement de l'article quand la lecture s'enchaîne depuis la page de détail. */
 const ARTICLE_FADE_MS = 240;
+/**
+ * Écart voulu entre le livre le plus à droite et la card d'info, en desktop. Le
+ * canevas garde toute la largeur que la rangée flexbox lui laisse (voir le rendu
+ * plus bas) : les livres n'en occupent qu'une fraction, centrée dedans, si bien
+ * qu'un simple `gap` de rangée laisserait un vide qui varie avec la largeur de
+ * fenêtre. La card est donc décalée (transform) sur la position réelle des
+ * livres (voir refreshCardGap) plutôt que posée au bord du canevas.
+ */
+const CARD_GAP_PX = 40;
 
 /** L'adresse telle que le routeur la donne, réduite à ce dont la coquille a besoin. */
 type Route = { slug: string | null; reading: boolean; spread: number };
@@ -58,6 +67,9 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const sceneRef = useRef<SceneHandle | null>(null);
+  /** Enfant de flux (pas de position fixe) : décalé à la main (transform) sur
+   *  la position réelle des livres, voir refreshCardGap. */
+  const panelWrapperRef = useRef<HTMLDivElement | null>(null);
   const stateRef = useRef<ShelfState>(slugSegment && !isReading ? "INSIDE" : "SHELF");
   const selectedRef = useRef<number | null>(null);
   /** null : rien en attente. Sinon : adresse reçue pendant une transition. */
@@ -330,6 +342,28 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
     [advance, setSelected],
   );
 
+  /**
+   * Recale la card sur la position réelle des livres, plutôt que sur un point
+   * fixe du viewport : lue après coup (jamais pendant un tween de select(), dont
+   * la coroutine n'a pas fini de bouger les livres), donc toujours appelée une
+   * fois la désignation retombée, jamais depuis son déclenchement. Sans effet si
+   * la card n'est pas montée (hors SHELF/SELECTED).
+   */
+  const refreshCardGap = useCallback(() => {
+    const scene = sceneRef.current;
+    const canvas = canvasRef.current;
+    const wrapper = panelWrapperRef.current;
+    if (!scene || !canvas || !wrapper) return;
+    const edge = scene.contentRightEdge();
+    // Un transform, jamais une marge : une marge négative libère de la place pour
+    // le canevas voisin (flex-1) dans le calcul même qui doit rester stable - la
+    // card et le canevas se rétroagissaient alors l'un l'autre, chacun grandissant
+    // à la mesure suivante (boucle de rétroaction). Un transform ne participe pas
+    // à la mise en page : il déplace la card sans jamais changer la largeur que
+    // flex-1 accorde au canevas.
+    wrapper.style.transform = `translateX(${edge + CARD_GAP_PX - canvas.clientWidth}px)`;
+  }, []);
+
   const handlePick = useCallback(
     (index: number) => {
       const scene = sceneRef.current;
@@ -345,9 +379,9 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
       if (nextState(current, "select") === null) return;
       setPhase("SELECTED");
       setSelected(index);
-      void scene.select(index, true);
+      void scene.select(index, true).then(refreshCardGap);
     },
-    [enterReading, setPhase, setSelected],
+    [enterReading, setPhase, setSelected, refreshCardGap],
   );
 
   /**
@@ -534,16 +568,27 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
         // Import du module de scène en échec : même repli, la grille reste visible.
       });
 
-    const onResize = () => sceneRef.current?.resize();
-    window.addEventListener("resize", onResize);
+    // Le canevas ne change plus de taille seulement avec la fenêtre : la card
+    // voisine, en flux depuis la nouvelle mise en page, lui cède ou lui reprend
+    // de la largeur à chaque apparition/disparition (SELECTED ↔ READING). Un
+    // ResizeObserver sur le canevas lui-même couvre les deux causes, là où
+    // l'écoute de "resize" sur la fenêtre ne voyait que la première.
+    const onResize = () => {
+      sceneRef.current?.resize();
+      refreshCardGap();
+    };
+    const resizeObserver = new ResizeObserver(onResize);
+    resizeObserver.observe(canvas);
     return () => {
       disposed = true;
-      window.removeEventListener("resize", onResize);
+      resizeObserver.disconnect();
       sceneRef.current?.dispose();
       sceneRef.current = null;
     };
     // Monté une seule fois : la scène doit survivre aux changements de segment.
-  }, []);
+    // refreshCardGap est stable (deps vides) : l'ajouter ici ne fait pas revivre
+    // cet effet à chacun de ses appels.
+  }, [refreshCardGap]);
 
   // --- clavier -------------------------------------------------------------
   useEffect(() => {
@@ -662,27 +707,51 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
   const highlightedSlug = highlightIndex !== null ? (COMICS[highlightIndex]?.slug ?? null) : null;
   const highlightedComic = highlightedSlug ? (comicBySlug(highlightedSlug) ?? null) : null;
 
+  // Filet : recale la card dès qu'elle apparaît ou qu'un livre change (les
+  // tweens animés se rattrapent eux-mêmes via leur propre .then(refreshCardGap),
+  // ceci couvre les cas déjà retombés - montage initial, retour de lecture).
+  useLayoutEffect(() => {
+    refreshCardGap();
+  }, [state, highlightIndex, ready, refreshCardGap]);
+
   return (
     <ShellContext.Provider value={api}>
       <div className="relative min-h-screen bg-[#15161b] text-white">
-        <canvas
-          ref={canvasRef}
-          aria-hidden
-          className="fixed inset-0 h-full w-full"
-          style={{
-            display: canvasHidden ? "none" : "block",
-            pointerEvents: canInteract(state) || canTurn(state) ? "auto" : "none",
-          }}
-        />
+        {/* Rangée plein écran : le canevas cède la largeur qu'occupe la card au lieu
+            de rester plein cadre sous elle - la card cesse ainsi d'être posée en
+            position fixe par-dessus les livres, et redevient un enfant de flux
+            (voir refreshCardGap pour l'écart qui les sépare). Sur mobile le
+            panneau garde sa propre position fixe (voir ShelfInfoPanel) : cette
+            rangée ne le contraint alors pas, `flex` n'y agissant qu'à partir de
+            `md:`. */}
+        <div className="fixed inset-0 flex flex-col md:flex-row">
+          <div className="relative min-h-0 min-w-0 flex-1">
+            <canvas
+              ref={canvasRef}
+              aria-hidden
+              className="h-full min-h-0 w-full min-w-0"
+              style={{
+                display: canvasHidden ? "none" : "block",
+                pointerEvents: canInteract(state) || canTurn(state) ? "auto" : "none",
+              }}
+            />
+          </div>
 
-        {/* Panneau d'info façon "Pick a story" : reflète le survol puis la
-            désignation, toutes deux à la même échelle (voir select() dans
-            scene.ts) - le clic garde son propre effet range/sors et son
-            ouverture, inchangés (voir handlePick). READ rejoue la même
-            ouverture animée qu'un second clic sur le livre. */}
-        {ready && (state === "SHELF" || state === "SELECTED") && highlightIndex !== null && (
-          <ShelfInfoPanel comic={highlightedComic} onRead={() => void readFromPanel(highlightIndex)} />
-        )}
+          {/* Panneau d'info façon "Pick a story" : reflète le survol puis la
+              désignation, toutes deux à la même échelle (voir select() dans
+              scene.ts) - le clic garde son propre effet range/sors et son
+              ouverture, inchangés (voir handlePick). READ rejoue la même
+              ouverture animée qu'un second clic sur le livre. Le décalage
+              (desktop) est posé à la main par refreshCardGap, pas en CSS : un
+              `gap` fixe laisserait un vide qui varie avec la largeur de fenêtre,
+              le canevas cédant plus de place à la card qu'il n'en faut vu que
+              les livres n'en occupent centrés qu'une fraction. */}
+          {ready && (state === "SHELF" || state === "SELECTED") && highlightIndex !== null && (
+            <div ref={panelWrapperRef} className="md:flex md:shrink-0 md:items-center md:pr-[60px]">
+              <ShelfInfoPanel comic={highlightedComic} onRead={() => void readFromPanel(highlightIndex)} />
+            </div>
+          )}
+        </div>
 
         {/* Reste affiché pendant un tourne-page pour ne pas clignoter : la machine
             refuse `close` depuis TURNING, le bouton y est donc sans effet. */}

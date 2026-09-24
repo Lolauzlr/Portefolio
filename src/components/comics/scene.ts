@@ -121,6 +121,10 @@ export type SceneHandle = {
   setVisible(visible: boolean): void;
   renderOnce(): void;
   resize(): void;
+  /** Abscisse, en pixels CSS depuis le bord gauche du canevas, du point le plus à
+   *  droite parmi les livres actuellement posés - sert à river la card à un
+   *  écart constant plutôt qu'à un point fixe du viewport (voir ShelfShell). */
+  contentRightEdge(): number;
   dispose(): void;
 };
 
@@ -128,9 +132,9 @@ type BookNode = {
   group: THREE.Group;
   pick: THREE.Mesh;
   coverPivot: THREE.Group;
-  spineMaterial: THREE.MeshStandardMaterial;
-  coverMaterial: THREE.MeshStandardMaterial;
-  firstPlateMaterial: THREE.MeshStandardMaterial;
+  spineMaterial: THREE.MeshBasicMaterial;
+  coverMaterial: THREE.MeshBasicMaterial;
+  firstPlateMaterial: THREE.MeshBasicMaterial;
   restX: number;
   comic: Comic;
   coverLoaded: boolean;
@@ -343,17 +347,19 @@ export function createScene(
     group.rotation.y = Math.PI / 2; // le dos fait face à la caméra
     group.position.set(restX, BOOK.h / 2, 0);
 
-    const spineMaterial = new THREE.MeshStandardMaterial({
+    // Non éclairés à dessein : ce sont les seules faces qui portent les visuels
+    // déposés par Marie (couverture, dos, première planche). Un matériau standard
+    // les faisait varier avec l'éclairage de la scène (projecteur, ambiante) -
+    // ombrées, voire quasi noires en bord de cône - alors qu'elles doivent rendre
+    // exactement les couleurs des images fournies, comme une reproduction fidèle.
+    const spineMaterial = new THREE.MeshBasicMaterial({
       color: comic.spine ? 0xffffff : 0x1b1d22,
-      roughness: 0.8,
     });
-    const coverMaterial = new THREE.MeshStandardMaterial({
+    const coverMaterial = new THREE.MeshBasicMaterial({
       color: comic.cover ? 0xffffff : 0x1b1d22,
-      roughness: 0.75,
     });
-    const firstPlateMaterial = new THREE.MeshStandardMaterial({
+    const firstPlateMaterial = new THREE.MeshBasicMaterial({
       color: 0xefe7d6,
-      roughness: 0.95,
     });
 
     const pages = new THREE.Mesh(pagesGeo, [
@@ -1048,6 +1054,28 @@ export function createScene(
     return readingBack(camera.aspect, READ_FOV);
   }
 
+  /** Voir SceneHandle.contentRightEdge. */
+  function contentRightEdge(): number {
+    const box = new THREE.Box3();
+    for (const node of nodes) box.expandByObject(node.group);
+    const w = canvas.clientWidth || window.innerWidth;
+    // updateMatrixWorld: .project() lit la matrice caméra telle qu'elle était au
+    // dernier rendu, qui peut dater d'avant le dernier déplacement des livres.
+    camera.lookAt(camTarget);
+    camera.updateMatrixWorld();
+    let maxPx = 0;
+    const corner = new THREE.Vector3();
+    for (const x of [box.min.x, box.max.x]) {
+      for (const y of [box.min.y, box.max.y]) {
+        for (const z of [box.min.z, box.max.z]) {
+          corner.set(x, y, z).project(camera);
+          maxPx = Math.max(maxPx, ((corner.x + 1) / 2) * w);
+        }
+      }
+    }
+    return maxPx;
+  }
+
   function resize() {
     const w = canvas.clientWidth || window.innerWidth;
     const h = canvas.clientHeight || window.innerHeight;
@@ -1100,6 +1128,7 @@ export function createScene(
       renderer.render(scene, camera);
     },
     resize,
+    contentRightEdge,
     dispose() {
       disposed = true;
       killOurTweens();
