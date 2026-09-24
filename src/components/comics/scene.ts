@@ -317,7 +317,13 @@ export function createScene(
   const pickGeo = new THREE.BoxGeometry(BOOK.w, BOOK.h, BOOK.t);
 
   const pagesMat = new THREE.MeshStandardMaterial({ color: "#efe7d6", roughness: 0.95 });
-  const boardsMat = new THREE.MeshStandardMaterial({ color: "#101216", roughness: 0.7 });
+  /**
+   * Tranche des plats (dos, chants) : jamais la face qui porte une texture, seulement
+   * ce qui en dépasse au bord d'un livre tourné vers la caméra. Un noir profond
+   * (#101216) s'y détachait comme un manque plutôt qu'un bord de reliure - un beige
+   * proche des tranches (crème #efe7d6, dos #D4CBBE) s'y fond au lieu d'y trancher.
+   */
+  const boardsMat = new THREE.MeshStandardMaterial({ color: "#D4CBBE", roughness: 0.7 });
   const pickMat = new THREE.MeshBasicMaterial();
   pickMat.visible = false; // non rendu, mais toujours atteint par le lancer de rayon
 
