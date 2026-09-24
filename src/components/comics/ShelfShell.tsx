@@ -85,9 +85,7 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
   const [state, setStateValue] = useState<ShelfState>(
     slugSegment && !isReading ? "INSIDE" : "SHELF",
   );
-  // La valeur ne sert plus qu'à `selectedRef` (rien ne la lit plus au rendu
-  // depuis que le panneau suit le survol, pas la désignation).
-  const [, setSelectedValue] = useState<number | null>(null);
+  const [selected, setSelectedValue] = useState<number | null>(null);
   // Pilote uniquement le panneau d'info pendant le survol de l'étagère (rien
   // n'est encore désigné) - la désignation (clic) prend le relais une fois
   // `selected` posé.
@@ -181,6 +179,27 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
       router.push(readingHref(slug, 0));
     },
     [advance, router, setSelected],
+  );
+
+  /**
+   * Bouton READ du panneau : le livre n'est parfois que survolé (jamais
+   * cliqué) - la désignation se pose alors ici, sans animation ni saut
+   * visible puisque enterReading part aussitôt de la même pose pour son
+   * propre agrandissement.
+   */
+  const readFromPanel = useCallback(
+    async (index: number) => {
+      const scene = sceneRef.current;
+      if (!scene) return;
+      if (stateRef.current === "SHELF") {
+        if (!advance("select")) return;
+        setSelected(index);
+        await scene.select(index, false);
+        if (!mountedRef.current) return;
+      }
+      void enterReading(index);
+    },
+    [advance, enterReading, setSelected],
   );
 
   /** `navigate` est faux quand le navigateur a déjà changé l'URL lui-même. */
@@ -661,10 +680,12 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
     [ready, exit, readFromArticle],
   );
 
-  // Le panneau ne s'affiche que sur l'étagère au repos (survol) : une fois
-  // un livre désigné (SELECTED), le gros plan de select() occupe le même
-  // espace à l'écran et les deux se chevaucheraient.
-  const highlightedSlug = hoveredIndex !== null ? (COMICS[hoveredIndex]?.slug ?? null) : null;
+  // La désignation reste à l'échelle du survol (voir select() dans scene.ts) :
+  // le panneau peut donc rester affiché une fois un livre désigné, pas
+  // seulement pendant le survol - la désignation l'emporte sur un survol
+  // ultérieur (ex. la souris qui traîne sur l'autre livre sans cliquer).
+  const highlightIndex = selected ?? hoveredIndex;
+  const highlightedSlug = highlightIndex !== null ? (COMICS[highlightIndex]?.slug ?? null) : null;
   const highlightedComic = highlightedSlug ? (comicBySlug(highlightedSlug) ?? null) : null;
 
   return (
@@ -680,12 +701,14 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
           }}
         />
 
-        {/* Panneau d'info façon "Pick a story" : reflète le livre en avant
-            (léger survol, pas la désignation) tant que l'étagère est au
-            repos - le clic garde son propre effet range/sors et son
-            ouverture, inchangés (voir handlePick). READ mène droit à la
-            liseuse. */}
-        {ready && state === "SHELF" && <ShelfInfoPanel comic={highlightedComic} />}
+        {/* Panneau d'info façon "Pick a story" : reflète le survol puis la
+            désignation, toutes deux à la même échelle (voir select() dans
+            scene.ts) - le clic garde son propre effet range/sors et son
+            ouverture, inchangés (voir handlePick). READ rejoue la même
+            ouverture animée qu'un second clic sur le livre. */}
+        {ready && (state === "SHELF" || state === "SELECTED") && highlightIndex !== null && (
+          <ShelfInfoPanel comic={highlightedComic} onRead={() => void readFromPanel(highlightIndex)} />
+        )}
 
         {/* Reste affiché pendant un tourne-page pour ne pas clignoter : la machine
             refuse `close` depuis TURNING, le bouton y est donc sans effet. */}

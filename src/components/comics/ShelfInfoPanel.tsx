@@ -14,7 +14,17 @@ const CROSSFADE_MS = 220;
  * look and its own put-away/pull-out and open-on-click interactions,
  * unlike Storyboard's flat flip-card carousel.
  */
-export default function ShelfInfoPanel({ comic }: { comic: PublishedComic | null }) {
+export default function ShelfInfoPanel({
+  comic,
+  onRead,
+}: {
+  comic: PublishedComic | null;
+  // Plain navigation would jump straight to the reader with no transition -
+  // this replays the same animated opening as a second click on the book
+  // itself (see readFromPanel in ShelfShell). The href stays real (right
+  // click, open in a new tab, no-JS) for anything but a plain left click.
+  onRead: () => void;
+}) {
   // Crossfades the content instead of snapping it when the shelf selection
   // changes: panelComic trails `comic` by one fade-out tick (derived, not
   // set synchronously in the effect - matches BookCarousel's own panel
@@ -59,6 +69,11 @@ export default function ShelfInfoPanel({ comic }: { comic: PublishedComic | null
         <div className="flex flex-col items-start px-[24px] w-full" style={panelStyle}>
           <Link
             href={`/comics/${panelComic.slug}/lire`}
+            onClick={(e) => {
+              if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+              e.preventDefault();
+              onRead();
+            }}
             className="bg-black/40 border-2 border-[#0fd1ea] flex items-center px-[40px] py-[20px] rounded-[40px] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] transition-colors cursor-pointer"
           >
             <span className="font-[family-name:var(--font-heading)] text-[#0fd1ea] text-[24px] tracking-[1.92px] whitespace-nowrap hover:text-[#7FECFB] transition-colors">

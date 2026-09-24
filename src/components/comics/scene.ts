@@ -22,6 +22,15 @@ const COVER_T = 0.022;
 const GAP = 0.012;
 const HOVER_OUT = 0.09;
 const SELECT_OUT = 0.9;
+/**
+ * Écart du livre non désigné, au-delà de son restX. La désignation tourne le
+ * livre choisi vers la caméra : sa tranche (BOOK.t, ~0.26) cède la place à sa
+ * pleine largeur (BOOK.w, ~1.02), et 0.25 - qui suffisait à l'écarter du
+ * livre resté tranche sur tranche - le laisse alors chevauché. La marge vise
+ * le bord du livre choisi (BOOK.w / 2) plus la moitié de la tranche de
+ * l'autre (BOOK.t / 2) plus un jeu, moins son propre restX déjà écarté.
+ */
+const SELECT_PUSH = BOOK.w / 2 + BOOK.t / 2 + 0.05 - (BOOK.t + GAP) / 2;
 const OPEN_ANGLE = -2.3;
 /** Hauteur du centre du livre engagé : la lecture cadre sur elle, pas sur BOOK.h / 2. */
 const SELECT_Y = BOOK.h / 2 + 0.15;
@@ -640,7 +649,13 @@ export function createScene(
       },
     });
     const d = animate && !opts.reducedMotion ? dur(1100) : 0;
-    tl.to(aim, { reach: 1, duration: d, ease: "power2.inOut" }, 0)
+    // Le livre peut arriver ici juste désigné (HOVER_OUT, pas encore tourné
+    // vers la caméra) - depuis le panneau, sans second clic préalable. Ces
+    // deux tweens l'amènent à la pose engagée quel que soit son point de
+    // départ ; déjà là (lien profond via enterImmediate), ils ne font rien.
+    tl.to(node.group.position, { y: SELECT_Y, z: SELECT_OUT, duration: d, ease: "power2.inOut" }, 0)
+      .to(node.group.rotation, { y: 0, duration: d, ease: "power2.inOut" }, 0)
+      .to(aim, { reach: 1, duration: d, ease: "power2.inOut" }, 0)
       .to(node.coverPivot.rotation, { y: READ_OPEN_ANGLE, duration: d, ease: "power2.inOut" }, 0)
       .to(camera.position, { y: SELECT_Y, z: SELECT_OUT + readBack(), duration: d }, 0)
       .to(camTarget, { y: SELECT_Y, z: 0, duration: d }, 0)
@@ -884,6 +899,13 @@ export function createScene(
     });
   }
 
+  /**
+   * La désignation reste à l'échelle du survol (HOVER_OUT, pas SELECT_OUT) et
+   * ne bouge pas la caméra : elle se contente de tourner le livre vers la
+   * caméra et d'écarter l'autre, à côté, jamais par-dessus. Le gros plan
+   * (SELECT_OUT + zoom caméra) est réservé à l'ouverture (open /
+   * openForReading), pas à la simple désignation.
+   */
   async function select(index: number, animate: boolean): Promise<void> {
     selected = index;
     void ensureCover(nodes[index]);
@@ -892,9 +914,9 @@ export function createScene(
     // dépendre d'un soulèvement de survol en cours.
     nodes.forEach((node, i) => {
       if (i === index) {
-        setPickPose(node.pick, 0, BOOK.h / 2 + 0.15, SELECT_OUT, 0);
+        setPickPose(node.pick, 0, BOOK.h / 2, HOVER_OUT, 0);
       } else {
-        const push = node.restX < nodes[index].restX ? -0.25 : 0.25;
+        const push = node.restX < nodes[index].restX ? -SELECT_PUSH : SELECT_PUSH;
         setPickPose(node.pick, node.restX + push, BOOK.h / 2, 0, Math.PI / 2);
       }
     });
@@ -904,14 +926,14 @@ export function createScene(
 
     nodes.forEach((node, i) => {
       if (i === index) {
-        tl.to(node.group.position, { x: 0, y: BOOK.h / 2 + 0.15, z: SELECT_OUT, duration: d }, 0)
+        tl.to(node.group.position, { x: 0, y: BOOK.h / 2, z: HOVER_OUT, duration: d }, 0)
           .to(node.group.rotation, { y: 0, duration: d }, 0)
           .to(node.spineMaterial, { opacity: 1, duration: d }, 0);
         node.coverMaterial.transparent = false;
         node.spineMaterial.transparent = false;
         tl.to(node.coverMaterial, { opacity: 1, duration: d }, 0);
       } else {
-        const push = node.restX < nodes[index].restX ? -0.25 : 0.25;
+        const push = node.restX < nodes[index].restX ? -SELECT_PUSH : SELECT_PUSH;
         node.coverMaterial.transparent = true;
         node.spineMaterial.transparent = true;
         tl.to(
@@ -925,7 +947,6 @@ export function createScene(
       }
     });
 
-    tl.to(camera.position, { z: 3.4 - 0.6, duration: d }, 0);
     await tl;
   }
 
@@ -962,7 +983,15 @@ export function createScene(
     const node = nodes[selected];
     returnFirstPlate();
     const tl = gsap.timeline({ onUpdate: markDirty });
+    // La désignation ne fait qu'avancer le livre au survol (HOVER_OUT) : le
+    // gros plan proprement dit - le livre gagnant SELECT_OUT - n'a lieu qu'à
+    // l'ouverture, en même temps que la couverture se rabat et que la caméra
+    // s'approche.
     tl.to(
+      node.group.position,
+      { y: SELECT_Y, z: SELECT_OUT, duration: animate ? dur(1100) : 0, ease: "power2.inOut" },
+      0,
+    ).to(
       node.coverPivot.rotation,
       { y: OPEN_ANGLE, duration: animate ? dur(1100) : 0, ease: "power2.inOut" },
       0,
