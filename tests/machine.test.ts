@@ -18,13 +18,12 @@ const STATES: ShelfState[] = [
   "CLOSING",
 ];
 
-const EVENTS: ShelfEvent[] = ["select", "deselect", "read", "turn", "close", "done"];
+const EVENTS: ShelfEvent[] = ["select", "read", "turn", "close", "done"];
 
 /** Les seules transitions autorisées ; toute autre combinaison doit rendre null. */
 const ALLOWED_PAIRS: Array<[ShelfState, ShelfEvent, ShelfState]> = [
   ["SHELF", "select", "SELECTED"],
   ["SELECTED", "select", "SELECTED"],
-  ["SELECTED", "deselect", "SHELF"],
   ["SELECTED", "read", "OPENING_READ"],
   ["INSIDE", "close", "CLOSING"],
   ["INSIDE", "read", "OPENING_READ"],
@@ -36,13 +35,13 @@ const ALLOWED_PAIRS: Array<[ShelfState, ShelfEvent, ShelfState]> = [
 ];
 
 describe("machine à états de l'étagère et de la lecture", () => {
-  it("décrit les 42 combinaisons, chacune une seule fois", () => {
+  it("décrit les 35 combinaisons, chacune une seule fois", () => {
     const seen = new Set<string>();
     for (const state of STATES) {
       for (const event of EVENTS) seen.add(`${state}/${event}`);
     }
     expect(seen.size).toBe(STATES.length * EVENTS.length);
-    expect(seen.size).toBe(42);
+    expect(seen.size).toBe(35);
   });
 
   it.each(ALLOWED_PAIRS)("%s + %s mène à %s", (state, event, expected) => {

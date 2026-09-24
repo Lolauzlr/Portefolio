@@ -219,14 +219,16 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
       }
       await closing;
       if (!mountedRef.current) return;
-      await scene.deselect(true);
+      // Le livre lu reste désigné au retour : l'étagère ne doit jamais se
+      // retrouver sans aucun livre désigné (voir handleDismiss plus bas).
+      const index = selectedRef.current;
+      if (index !== null) await scene.select(index, true);
       if (!mountedRef.current) return;
-      setSelected(null);
-      setPhase("SHELF");
+      setPhase("SELECTED");
       setReadingChrome(false);
       scene.setPickingEnabled(true);
     },
-    [router, setPhase, setSelected],
+    [router, setPhase],
   );
 
   /**
@@ -348,15 +350,12 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
     [enterReading, setPhase, setSelected],
   );
 
-  /** Un clic hors des livres range la sélection en cours, si le livre n'est pas déjà ouvert. */
-  const handleDismiss = useCallback(() => {
-    const scene = sceneRef.current;
-    if (!scene) return;
-    if (stateRef.current !== "SELECTED") return;
-    setPhase("SHELF");
-    setSelected(null);
-    void scene.deselect(true);
-  }, [setPhase, setSelected]);
+  /**
+   * Un clic hors des livres ne range plus rien : l'étagère garde toujours son
+   * dernier livre désigné (jamais les deux à la fois "en rayon"), qu'on
+   * clique en dehors ou qu'on revienne de la lecture (voir exit()).
+   */
+  const handleDismiss = useCallback(() => {}, []);
 
   useEffect(() => {
     pickRef.current = handlePick;
@@ -577,16 +576,11 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
       } else if (event.key === "Enter" && selectedRef.current !== null) {
         event.preventDefault();
         void enterReading(selectedRef.current);
-      } else if (event.key === "Escape" && stateRef.current === "SELECTED") {
-        event.preventDefault();
-        setPhase("SHELF");
-        setSelected(null);
-        void scene.deselect(true);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [enterReading, exit, handlePick, setPhase, setSelected, turn]);
+  }, [enterReading, exit, handlePick, turn]);
 
   // --- molette --------------------------------------------------------------
   useEffect(() => {

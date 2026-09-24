@@ -7,13 +7,12 @@ export type ShelfState =
   | "TURNING"
   | "CLOSING";
 
-export type ShelfEvent = "select" | "deselect" | "read" | "turn" | "close" | "done";
+export type ShelfEvent = "select" | "read" | "turn" | "close" | "done";
 
 const ALLOWED: Record<ShelfState, Partial<Record<ShelfEvent, ShelfState>>> = {
   SHELF: { select: "SELECTED" },
   SELECTED: {
     select: "SELECTED",
-    deselect: "SHELF",
     read: "OPENING_READ",
   },
   // Depuis la page de détail (lien profond direct, hors de ce clic) le livre est déjà

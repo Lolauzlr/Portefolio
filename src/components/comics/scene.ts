@@ -31,6 +31,19 @@ const SELECT_OUT = 0.9;
  * l'autre (BOOK.t / 2) plus un jeu, moins son propre restX déjà écarté.
  */
 const SELECT_PUSH = BOOK.w / 2 + BOOK.t / 2 + 0.05 - (BOOK.t + GAP) / 2;
+/**
+ * Estompage du livre non désigné : un seul voile non éclairé (MeshBasicMaterial)
+ * qui l'enveloppe, plutôt que quatre matériaux (tranche, couverture, plats, pages)
+ * pâlis chacun séparément. Deux raisons à la fois : sous l'éclairage PBR de la
+ * scène, une couleur assombrie reflète encore beaucoup sous le projecteur - le
+ * voile, non éclairé, reste sombre quelle que soit la lumière qui l'atteint ; et
+ * rendre quatre matériaux alpha-blendés sur une géométrie aussi compacte rouvrait
+ * à chaque image l'ordre de tri des objets transparents (non garanti pour un livre
+ * qui tourne en même temps qu'il se déplace), d'où le liseré gris et le plat qui
+ * réapparaissait en plein virage. Un seul voile par livre n'a personne avec qui
+ * s'emmêler : son propre livre est entièrement opaque en dessous.
+ */
+const DIM_OPACITY = 0.82;
 const OPEN_ANGLE = -2.3;
 /** Hauteur du centre du livre engagé : la lecture cadre sur elle, pas sur BOOK.h / 2. */
 const SELECT_Y = BOOK.h / 2 + 0.15;
@@ -76,7 +89,14 @@ const PIXEL_RATIO_FLOOR = 0.75;
 /** Surface rendue au-delà de laquelle la carte d'ombre passe au format inférieur. */
 const SHADOW_FULL_PIXELS = 2_400_000;
 
-const AMBIENT_SHELF = 0.18;
+/**
+ * À 0.18 la couverture désignée (blanche, roughness 0.75) restait mate,
+ * proche du gris sous la seule flaque du projecteur : l'ambiante remonte
+ * pour qu'elle lise franchement blanche, sans toucher le mur (MeshBasicMaterial,
+ * non éclairé) ni assez les plats/pages sombres (#101216, #efe7d6 déjà bas)
+ * pour rouvrir le livre non désigné qui, lui, reste estompé par sa teinte.
+ */
+const AMBIENT_SHELF = 0.34;
 /** L'environnement porte tout l'éclairement en lecture : l'ambiante ferait doublon. */
 const AMBIENT_READ = 0;
 const ENV_READ_INTENSITY = 0.5;
@@ -92,7 +112,6 @@ export type SceneOptions = {
 export type SceneHandle = {
   setHover(index: number | null): void;
   select(index: number, animate: boolean): Promise<void>;
-  deselect(animate: boolean): Promise<void>;
   close(animate: boolean): Promise<void>;
   enterImmediate(index: number): void;
   openForReading(index: number, spread: number, animate: boolean): Promise<void>;
@@ -114,11 +133,11 @@ type BookNode = {
   spineMaterial: THREE.MeshStandardMaterial;
   coverMaterial: THREE.MeshStandardMaterial;
   firstPlateMaterial: THREE.MeshStandardMaterial;
-  // Propres à chaque livre (pas les gabarits partagés boardsMat/pagesMat) :
-  // la désignation les fait pâlir avec le reste du livre non désigné, ce
-  // qu'un matériau commun aux deux livres ne pourrait pas faire séparément.
-  boardsMaterial: THREE.MeshStandardMaterial;
-  pagesMaterial: THREE.MeshStandardMaterial;
+  /**
+   * Voile non éclairé qui enveloppe le livre : la désignation l'amène à l'opacité
+   * plutôt que de pâlir les matériaux du livre eux-mêmes (voir DIM_OPACITY).
+   */
+  dimMaterial: THREE.MeshBasicMaterial;
   restX: number;
   comic: Comic;
   coverLoaded: boolean;
@@ -303,6 +322,9 @@ export function createScene(
   const plateGeo = new THREE.BoxGeometry(BOOK.w - 2 * PLATE_INSET, BOOK.h, COVER_T);
   const spineGeo = new THREE.BoxGeometry(COVER_T, BOOK.h, BOOK.t);
   const pickGeo = new THREE.BoxGeometry(BOOK.w, BOOK.h, BOOK.t);
+  // Légèrement plus grand que le livre fermé : il l'enveloppe sans z-fighting
+  // avec ses propres faces, quelle que soit la pose (tranche ou couverture).
+  const dimGeo = new THREE.BoxGeometry(BOOK.w + 0.01, BOOK.h + 0.01, BOOK.t + 0.01);
 
   const pagesMat = new THREE.MeshStandardMaterial({ color: "#efe7d6", roughness: 0.95 });
   const boardsMat = new THREE.MeshStandardMaterial({ color: "#101216", roughness: 0.7 });
@@ -325,11 +347,6 @@ export function createScene(
     group.rotation.y = Math.PI / 2; // le dos fait face à la caméra
     group.position.set(restX, BOOK.h / 2, 0);
 
-    // Clonés plutôt que partagés : select() doit pouvoir faire pâlir la
-    // tranche de pages et la plaque arrière d'un livre sans toucher à l'autre.
-    const boardsMaterial = boardsMat.clone();
-    const pagesMaterial = pagesMat.clone();
-
     const spineMaterial = new THREE.MeshStandardMaterial({
       color: comic.spine ? 0xffffff : 0x1b1d22,
       roughness: 0.8,
@@ -344,30 +361,30 @@ export function createScene(
     });
 
     const pages = new THREE.Mesh(pagesGeo, [
-      pagesMaterial,
-      pagesMaterial,
-      pagesMaterial,
-      pagesMaterial,
+      pagesMat,
+      pagesMat,
+      pagesMat,
+      pagesMat,
       firstPlateMaterial,
-      pagesMaterial,
+      pagesMat,
     ]);
     pages.position.x = 0;
     pages.castShadow = true;
     group.add(pages);
 
-    const back = new THREE.Mesh(plateGeo, boardsMaterial);
+    const back = new THREE.Mesh(plateGeo, boardsMat);
     back.position.set(0, 0, -(BOOK.t / 2 - COVER_T / 2) + 0.001);
     back.castShadow = true;
     group.add(back);
 
     // L'ordre des matériaux d'une BoxGeometry est [+X, -X, +Y, -Y, +Z, -Z].
     const spine = new THREE.Mesh(spineGeo, [
-      boardsMaterial,
+      boardsMat,
       spineMaterial,
-      boardsMaterial,
-      boardsMaterial,
-      boardsMaterial,
-      boardsMaterial,
+      boardsMat,
+      boardsMat,
+      boardsMat,
+      boardsMat,
     ]);
     spine.position.x = -(BOOK.w / 2 - COVER_T / 2);
     spine.castShadow = true;
@@ -379,17 +396,30 @@ export function createScene(
     // la couverture un arc qui la décolle du livre.
     coverPivot.position.set(-BOOK.w / 2 + PLATE_INSET, 0, BOOK.t / 2 - COVER_T / 2 + 0.001);
     const cover = new THREE.Mesh(plateGeo, [
-      boardsMaterial,
-      boardsMaterial,
-      boardsMaterial,
-      boardsMaterial,
+      boardsMat,
+      boardsMat,
+      boardsMat,
+      boardsMat,
       coverMaterial,
-      boardsMaterial,
+      boardsMat,
     ]);
     cover.position.set((BOOK.w - 2 * PLATE_INSET) / 2, 0, 0);
     cover.castShadow = true;
     coverPivot.add(cover);
     group.add(coverPivot);
+
+    // Voile d'estompage : non éclairé (MeshBasicMaterial), donc sombre quelle que
+    // soit la lumière de la scène, et seul objet transparent du livre - rien avec
+    // qui s'emmêler dans l'ordre de tri. Invisible (opacity 0) tant que ce livre
+    // est désigné, select() l'amène à DIM_OPACITY sinon.
+    const dimMaterial = new THREE.MeshBasicMaterial({
+      color: 0x000000,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+    });
+    const dimMesh = new THREE.Mesh(dimGeo, dimMaterial);
+    group.add(dimMesh);
 
     // Le volume de désignation est un frère du groupe du livre, jamais un enfant :
     // il ne doit subir ni le survol ni la sélection tant qu'on ne l'y pose pas
@@ -407,8 +437,7 @@ export function createScene(
       spineMaterial,
       coverMaterial,
       firstPlateMaterial,
-      boardsMaterial,
-      pagesMaterial,
+      dimMaterial,
       restX,
       comic,
       coverLoaded: false,
@@ -894,13 +923,7 @@ export function createScene(
   function killOurTweens() {
     const targets: object[] = [camera, camera.position, camTarget, key.position, ambient];
     for (const node of nodes) {
-      targets.push(
-        node.group.position,
-        node.group.rotation,
-        node.coverPivot.rotation,
-        node.spineMaterial,
-        node.coverMaterial,
-      );
+      targets.push(node.group.position, node.group.rotation, node.coverPivot.rotation, node.dimMaterial);
     }
     gsap.killTweensOf(targets);
   }
@@ -914,10 +937,13 @@ export function createScene(
 
   /**
    * La désignation reste à l'échelle du survol (HOVER_OUT, pas SELECT_OUT) et
-   * ne bouge pas la caméra : elle se contente de tourner le livre vers la
-   * caméra et d'écarter l'autre, à côté, jamais par-dessus. Le gros plan
-   * (SELECT_OUT + zoom caméra) est réservé à l'ouverture (open /
-   * openForReading), pas à la simple désignation.
+   * ne bouge pas la caméra vers le livre : elle se contente de tourner le
+   * livre vers la caméra et d'écarter l'autre, à côté, jamais par-dessus. Le
+   * gros plan (SELECT_OUT + zoom caméra) est réservé à l'ouverture (open /
+   * openForReading), pas à la simple désignation. Elle ramène en revanche
+   * toujours la caméra à sa distance de repos (3.4) : c'est désormais le seul
+   * point d'entrée du repos de l'étagère, un livre y étant toujours désigné
+   * (voir exit() dans ShelfShell, qui l'appelle au lieu de désélectionner).
    */
   async function select(index: number, animate: boolean): Promise<void> {
     selected = index;
@@ -936,71 +962,26 @@ export function createScene(
 
     const d = animate ? dur(900) : 0;
     const tl = timeline();
+    tl.to(camera.position, { x: 0, y: BOOK.h * 0.55, z: 3.4, duration: d }, 0);
 
     nodes.forEach((node, i) => {
       if (i === index) {
         tl.to(node.group.position, { x: 0, y: BOOK.h / 2, z: HOVER_OUT, duration: d }, 0)
           .to(node.group.rotation, { y: 0, duration: d }, 0)
-          .to(node.spineMaterial, { opacity: 1, duration: d }, 0)
-          .to(node.boardsMaterial, { opacity: 1, duration: d }, 0)
-          .to(node.pagesMaterial, { opacity: 1, duration: d }, 0);
-        node.coverMaterial.transparent = false;
-        node.spineMaterial.transparent = false;
-        node.boardsMaterial.transparent = false;
-        node.pagesMaterial.transparent = false;
-        tl.to(node.coverMaterial, { opacity: 1, duration: d }, 0);
+          .to(node.dimMaterial, { opacity: 0, duration: d }, 0);
       } else {
         const push = node.restX < nodes[index].restX ? -SELECT_PUSH : SELECT_PUSH;
-        node.coverMaterial.transparent = true;
-        node.spineMaterial.transparent = true;
-        node.boardsMaterial.transparent = true;
-        node.pagesMaterial.transparent = true;
         tl.to(
           node.group.position,
           { x: node.restX + push, y: BOOK.h / 2, z: 0, duration: d },
           0,
         )
           .to(node.group.rotation, { y: Math.PI / 2, duration: d }, 0)
-          .to(node.spineMaterial, { opacity: 0.25, duration: d }, 0)
-          .to(node.coverMaterial, { opacity: 0.25, duration: d }, 0)
-          .to(node.boardsMaterial, { opacity: 0.25, duration: d }, 0)
-          .to(node.pagesMaterial, { opacity: 0.25, duration: d }, 0);
+          .to(node.dimMaterial, { opacity: DIM_OPACITY, duration: d }, 0);
       }
     });
 
     await tl;
-  }
-
-  async function deselect(animate: boolean): Promise<void> {
-    selected = null;
-
-    // Toutes les désignations reviennent sur leur position de repos.
-    nodes.forEach((node) => {
-      setPickPose(node.pick, node.restX, BOOK.h / 2, 0, Math.PI / 2);
-    });
-
-    const d = animate ? dur(700) : 0;
-    const tl = gsap.timeline({ defaults: { ease: "power2.inOut" }, onUpdate: markDirty });
-    nodes.forEach((node) => {
-      tl.to(
-        node.group.position,
-        { x: node.restX, y: BOOK.h / 2, z: 0, duration: d },
-        0,
-      )
-        .to(node.group.rotation, { y: Math.PI / 2, duration: d }, 0)
-        .to(node.spineMaterial, { opacity: 1, duration: d }, 0)
-        .to(node.coverMaterial, { opacity: 1, duration: d }, 0)
-        .to(node.boardsMaterial, { opacity: 1, duration: d }, 0)
-        .to(node.pagesMaterial, { opacity: 1, duration: d }, 0);
-    });
-    tl.to(camera.position, { z: 3.4, duration: d }, 0);
-    await tl;
-    nodes.forEach((n) => {
-      n.spineMaterial.transparent = false;
-      n.coverMaterial.transparent = false;
-      n.boardsMaterial.transparent = false;
-      n.pagesMaterial.transparent = false;
-    });
   }
 
   async function close(animate: boolean): Promise<void> {
@@ -1065,18 +1046,12 @@ export function createScene(
         node.group.position.set(0, BOOK.h / 2 + 0.15, SELECT_OUT);
         node.group.rotation.y = 0;
         node.coverPivot.rotation.y = OPEN_ANGLE;
+        node.dimMaterial.opacity = 0;
       } else {
         const push = node.restX < nodes[index].restX ? -0.25 : 0.25;
         setPickPose(node.pick, node.restX + push, BOOK.h / 2, 0, Math.PI / 2);
         node.group.position.set(node.restX + push, BOOK.h / 2, 0);
-        node.spineMaterial.transparent = true;
-        node.spineMaterial.opacity = 0.25;
-        node.coverMaterial.transparent = true;
-        node.coverMaterial.opacity = 0.25;
-        node.boardsMaterial.transparent = true;
-        node.boardsMaterial.opacity = 0.25;
-        node.pagesMaterial.transparent = true;
-        node.pagesMaterial.opacity = 0.25;
+        node.dimMaterial.opacity = DIM_OPACITY;
       }
     });
     camera.position.set(0, BOOK.h * 0.52, SELECT_OUT + 0.16);
@@ -1116,7 +1091,6 @@ export function createScene(
   return {
     setHover,
     select,
-    deselect,
     close,
     enterImmediate,
     openForReading,
@@ -1157,7 +1131,7 @@ export function createScene(
       turnPage.dispose();
       readerPageGeo.dispose();
       [leftPageMaterial, rightPageMaterial].forEach((m) => m.dispose());
-      [pagesGeo, plateGeo, spineGeo, pickGeo, wallGeo].forEach((g) => g.dispose());
+      [pagesGeo, plateGeo, spineGeo, pickGeo, dimGeo, wallGeo].forEach((g) => g.dispose());
       [pagesMat, boardsMat, pickMat, wallMat].forEach((m) => m.dispose());
       nodes.forEach((n) => {
         n.spineMaterial.map?.dispose();
@@ -1166,8 +1140,7 @@ export function createScene(
         n.spineMaterial.dispose();
         n.coverMaterial.dispose();
         n.firstPlateMaterial.dispose();
-        n.boardsMaterial.dispose();
-        n.pagesMaterial.dispose();
+        n.dimMaterial.dispose();
       });
       key.dispose();
       readLight.dispose();
