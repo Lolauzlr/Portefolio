@@ -892,11 +892,15 @@ export function createScene(
   function setHover(index: number | null) {
     hovered = index;
     nodes.forEach((node, i) => {
-      // Le livre désigné et celui survolé partagent la même avancée
-      // (HOVER_OUT, jamais SELECT_OUT - réservé à l'ouverture) : survoler
-      // l'autre livre l'avance toujours, qu'un livre soit déjà désigné ou non.
+      // Le livre désigné garde son avancée (HOVER_OUT, jamais SELECT_OUT -
+      // réservé à l'ouverture) quel que soit le survol. Survoler l'AUTRE livre
+      // ne l'avance plus : un livre étant toujours désigné (voir DEFAULT_SLUG),
+      // ce survol ne resterait sinon jamais qu'un aperçu avant clic, mais le
+      // faisait déjà bondir à la même hauteur que le livre engagé - confusion
+      // entre "survolé" et "désigné" que seule l'étagère nue (rien désigné,
+      // aujourd'hui inatteignable en pratique) justifie encore de lever.
       gsap.to(node.group.position, {
-        z: i === selected || i === index ? HOVER_OUT : SPINE_REST_Z,
+        z: i === selected || (i === index && selected === null) ? HOVER_OUT : SPINE_REST_Z,
         duration: dur(220),
         ease: "power2.out",
         onUpdate: markDirty,
