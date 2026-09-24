@@ -338,7 +338,7 @@ export function createScene(
    * sombre selon l'angle au lieu de rester net comme les autres faces blanches -
    * non éclairé désormais, comme couverture/dos/première planche (voir plus bas).
    */
-  const boardsMat = new THREE.MeshBasicMaterial({ color: "#ffffff" });
+  const boardsMat = new THREE.MeshBasicMaterial({ color: "#efefef" });
   const pickMat = new THREE.MeshBasicMaterial();
   pickMat.visible = false; // non rendu, mais toujours atteint par le lancer de rayon
 
