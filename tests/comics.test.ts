@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { COMICS, comicBySlug, publishedComics } from "@/lib/comics";
 
 describe("catalogue des récits", () => {
-  it("contient quatre livres", () => {
-    expect(COMICS).toHaveLength(4);
+  it("contient deux livres", () => {
+    expect(COMICS).toHaveLength(2);
   });
 
   it("ne publie que les albums qui ont une couverture et un dos", () => {

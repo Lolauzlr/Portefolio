@@ -22,6 +22,15 @@ const COVER_T = 0.022;
 const GAP = 0.012;
 const HOVER_OUT = 0.09;
 const SELECT_OUT = 0.9;
+/**
+ * Écart du livre non désigné, au-delà de son restX. La désignation tourne le
+ * livre choisi vers la caméra : sa tranche (BOOK.t, ~0.26) cède la place à sa
+ * pleine largeur (BOOK.w, ~1.02), et 0.25 - qui suffisait à l'écarter du
+ * livre resté tranche sur tranche - le laisse alors chevauché. La marge vise
+ * le bord du livre choisi (BOOK.w / 2) plus la moitié de la tranche de
+ * l'autre (BOOK.t / 2) plus un jeu, moins son propre restX déjà écarté.
+ */
+const SELECT_PUSH = BOOK.w / 2 + BOOK.t / 2 + 0.05 - (BOOK.t + GAP) / 2;
 const OPEN_ANGLE = -2.3;
 /** Hauteur du centre du livre engagé : la lecture cadre sur elle, pas sur BOOK.h / 2. */
 const SELECT_Y = BOOK.h / 2 + 0.15;
@@ -67,7 +76,14 @@ const PIXEL_RATIO_FLOOR = 0.75;
 /** Surface rendue au-delà de laquelle la carte d'ombre passe au format inférieur. */
 const SHADOW_FULL_PIXELS = 2_400_000;
 
-const AMBIENT_SHELF = 0.18;
+/**
+ * À 0.18 la couverture désignée (blanche, roughness 0.75) restait mate,
+ * proche du gris sous la seule flaque du projecteur : l'ambiante remonte
+ * pour qu'elle lise franchement blanche, sans toucher le mur (MeshBasicMaterial,
+ * non éclairé) ni assez les plats/pages sombres (#101216, #efe7d6 déjà bas)
+ * pour rouvrir le livre non désigné qui, lui, reste estompé par sa teinte.
+ */
+const AMBIENT_SHELF = 0.34;
 /** L'environnement porte tout l'éclairement en lecture : l'ambiante ferait doublon. */
 const AMBIENT_READ = 0;
 const ENV_READ_INTENSITY = 0.5;
@@ -83,8 +99,6 @@ export type SceneOptions = {
 export type SceneHandle = {
   setHover(index: number | null): void;
   select(index: number, animate: boolean): Promise<void>;
-  deselect(animate: boolean): Promise<void>;
-  open(animate: boolean): Promise<void>;
   close(animate: boolean): Promise<void>;
   enterImmediate(index: number): void;
   openForReading(index: number, spread: number, animate: boolean): Promise<void>;
@@ -197,25 +211,15 @@ export function createScene(
   const camTarget = new THREE.Vector3(0, BOOK.h * 0.5, 0);
 
   // --- environnement -------------------------------------------------------
-  const span = comics.length * (BOOK.t + GAP);
-
+  // Fond non éclairé à dessein : un matériau standard prendrait la tache du
+  // projecteur en plein sur son cône et lirait comme un filtre gris posé sur
+  // la scène - le fond doit rester plat quelle que soit la lumière qui l'atteint.
   const wallGeo = new THREE.PlaneGeometry(20, 12);
-  const wallMat = new THREE.MeshStandardMaterial({ color: "#15161b", roughness: 1 });
+  const wallMat = new THREE.MeshBasicMaterial({ color: "#15161b" });
   const wall = new THREE.Mesh(wallGeo, wallMat);
   wall.position.set(0, 2, -1.2);
   wall.receiveShadow = false;
   scene.add(wall);
-
-  const boardGeo = new THREE.BoxGeometry(span + 1.2, 0.12, 0.72);
-  const boardMat = new THREE.MeshStandardMaterial({
-    color: "#22242b",
-    roughness: 0.42,
-    metalness: 0.55,
-  });
-  const board = new THREE.Mesh(boardGeo, boardMat);
-  board.position.set(0, -0.06, 0);
-  board.receiveShadow = true;
-  scene.add(board);
 
   const ambient = new THREE.AmbientLight(0xffffff, AMBIENT_SHELF);
   scene.add(ambient);
@@ -650,7 +654,13 @@ export function createScene(
       },
     });
     const d = animate && !opts.reducedMotion ? dur(1100) : 0;
-    tl.to(aim, { reach: 1, duration: d, ease: "power2.inOut" }, 0)
+    // Le livre peut arriver ici juste désigné (HOVER_OUT, pas encore tourné
+    // vers la caméra) - depuis le panneau, sans second clic préalable. Ces
+    // deux tweens l'amènent à la pose engagée quel que soit son point de
+    // départ ; déjà là (lien profond via enterImmediate), ils ne font rien.
+    tl.to(node.group.position, { y: SELECT_Y, z: SELECT_OUT, duration: d, ease: "power2.inOut" }, 0)
+      .to(node.group.rotation, { y: 0, duration: d, ease: "power2.inOut" }, 0)
+      .to(aim, { reach: 1, duration: d, ease: "power2.inOut" }, 0)
       .to(node.coverPivot.rotation, { y: READ_OPEN_ANGLE, duration: d, ease: "power2.inOut" }, 0)
       .to(camera.position, { y: SELECT_Y, z: SELECT_OUT + readBack(), duration: d }, 0)
       .to(camTarget, { y: SELECT_Y, z: 0, duration: d }, 0)
@@ -859,9 +869,11 @@ export function createScene(
   function setHover(index: number | null) {
     hovered = index;
     nodes.forEach((node, i) => {
-      const lifted = i === index && selected === null;
+      // Le livre désigné et celui survolé partagent la même avancée
+      // (HOVER_OUT, jamais SELECT_OUT - réservé à l'ouverture) : survoler
+      // l'autre livre l'avance toujours, qu'un livre soit déjà désigné ou non.
       gsap.to(node.group.position, {
-        z: lifted ? HOVER_OUT : selected === i ? SELECT_OUT : 0,
+        z: i === selected || i === index ? HOVER_OUT : 0,
         duration: dur(220),
         ease: "power2.out",
         onUpdate: markDirty,
@@ -876,13 +888,7 @@ export function createScene(
   function killOurTweens() {
     const targets: object[] = [camera, camera.position, camTarget, key.position, ambient];
     for (const node of nodes) {
-      targets.push(
-        node.group.position,
-        node.group.rotation,
-        node.coverPivot.rotation,
-        node.spineMaterial,
-        node.coverMaterial,
-      );
+      targets.push(node.group.position, node.group.rotation, node.coverPivot.rotation);
     }
     gsap.killTweensOf(targets);
   }
@@ -894,6 +900,16 @@ export function createScene(
     });
   }
 
+  /**
+   * La désignation reste à l'échelle du survol (HOVER_OUT, pas SELECT_OUT) et
+   * ne bouge pas la caméra vers le livre : elle se contente de tourner le
+   * livre vers la caméra et d'écarter l'autre, à côté, jamais par-dessus. Le
+   * gros plan (SELECT_OUT + zoom caméra) est réservé à l'ouverture (open /
+   * openForReading), pas à la simple désignation. Elle ramène en revanche
+   * toujours la caméra à sa distance de repos (3.4) : c'est désormais le seul
+   * point d'entrée du repos de l'étagère, un livre y étant toujours désigné
+   * (voir exit() dans ShelfShell, qui l'appelle au lieu de désélectionner).
+   */
   async function select(index: number, animate: boolean): Promise<void> {
     selected = index;
     void ensureCover(nodes[index]);
@@ -902,95 +918,34 @@ export function createScene(
     // dépendre d'un soulèvement de survol en cours.
     nodes.forEach((node, i) => {
       if (i === index) {
-        setPickPose(node.pick, 0, BOOK.h / 2 + 0.15, SELECT_OUT, 0);
+        setPickPose(node.pick, 0, BOOK.h / 2, HOVER_OUT, 0);
       } else {
-        const push = node.restX < nodes[index].restX ? -0.25 : 0.25;
+        const push = node.restX < nodes[index].restX ? -SELECT_PUSH : SELECT_PUSH;
         setPickPose(node.pick, node.restX + push, BOOK.h / 2, 0, Math.PI / 2);
       }
     });
 
     const d = animate ? dur(900) : 0;
     const tl = timeline();
+    tl.to(camera.position, { x: 0, y: BOOK.h * 0.55, z: 3.4, duration: d }, 0);
 
     nodes.forEach((node, i) => {
       if (i === index) {
-        tl.to(node.group.position, { x: 0, y: BOOK.h / 2 + 0.15, z: SELECT_OUT, duration: d }, 0)
-          .to(node.group.rotation, { y: 0, duration: d }, 0)
-          .to(node.spineMaterial, { opacity: 1, duration: d }, 0);
-        node.coverMaterial.transparent = false;
-        node.spineMaterial.transparent = false;
-        tl.to(node.coverMaterial, { opacity: 1, duration: d }, 0);
+        tl.to(node.group.position, { x: 0, y: BOOK.h / 2, z: HOVER_OUT, duration: d }, 0).to(
+          node.group.rotation,
+          { y: 0, duration: d },
+          0,
+        );
       } else {
-        const push = node.restX < nodes[index].restX ? -0.25 : 0.25;
-        node.coverMaterial.transparent = true;
-        node.spineMaterial.transparent = true;
+        const push = node.restX < nodes[index].restX ? -SELECT_PUSH : SELECT_PUSH;
         tl.to(
           node.group.position,
           { x: node.restX + push, y: BOOK.h / 2, z: 0, duration: d },
           0,
-        )
-          .to(node.group.rotation, { y: Math.PI / 2, duration: d }, 0)
-          .to(node.spineMaterial, { opacity: 0.25, duration: d }, 0)
-          .to(node.coverMaterial, { opacity: 0.25, duration: d }, 0);
+        ).to(node.group.rotation, { y: Math.PI / 2, duration: d }, 0);
       }
     });
 
-    tl.to(camera.position, { z: 3.4 - 0.6, duration: d }, 0);
-    await tl;
-  }
-
-  async function deselect(animate: boolean): Promise<void> {
-    selected = null;
-
-    // Toutes les désignations reviennent sur leur position de repos.
-    nodes.forEach((node) => {
-      setPickPose(node.pick, node.restX, BOOK.h / 2, 0, Math.PI / 2);
-    });
-
-    const d = animate ? dur(700) : 0;
-    const tl = gsap.timeline({ defaults: { ease: "power2.inOut" }, onUpdate: markDirty });
-    nodes.forEach((node) => {
-      tl.to(
-        node.group.position,
-        { x: node.restX, y: BOOK.h / 2, z: 0, duration: d },
-        0,
-      )
-        .to(node.group.rotation, { y: Math.PI / 2, duration: d }, 0)
-        .to(node.spineMaterial, { opacity: 1, duration: d }, 0)
-        .to(node.coverMaterial, { opacity: 1, duration: d }, 0);
-    });
-    tl.to(camera.position, { z: 3.4, duration: d }, 0);
-    await tl;
-    nodes.forEach((n) => {
-      n.spineMaterial.transparent = false;
-      n.coverMaterial.transparent = false;
-    });
-  }
-
-  async function open(animate: boolean): Promise<void> {
-    if (selected === null) return;
-    const node = nodes[selected];
-    returnFirstPlate();
-    const tl = gsap.timeline({ onUpdate: markDirty });
-    tl.to(
-      node.coverPivot.rotation,
-      { y: OPEN_ANGLE, duration: animate ? dur(1100) : 0, ease: "power2.inOut" },
-      0,
-    );
-    if (animate && !opts.reducedMotion) {
-      tl.to(
-        camera.position,
-        { z: SELECT_OUT + 0.16, y: BOOK.h * 0.52, duration: dur(1150), ease: "power2.in" },
-        dur(250),
-      )
-        .to(camTarget, { y: BOOK.h * 0.44, z: -0.2, duration: dur(1150) }, dur(250))
-        .to(camera, { fov: 58, duration: dur(1150), onUpdate: () => camera.updateProjectionMatrix() }, dur(250));
-    } else {
-      camera.position.set(0, BOOK.h * 0.52, SELECT_OUT + 0.16);
-      camTarget.set(0, BOOK.h * 0.44, -0.2);
-      camera.fov = 58;
-      camera.updateProjectionMatrix();
-    }
     await tl;
   }
 
@@ -1060,10 +1015,6 @@ export function createScene(
         const push = node.restX < nodes[index].restX ? -0.25 : 0.25;
         setPickPose(node.pick, node.restX + push, BOOK.h / 2, 0, Math.PI / 2);
         node.group.position.set(node.restX + push, BOOK.h / 2, 0);
-        node.spineMaterial.transparent = true;
-        node.spineMaterial.opacity = 0.25;
-        node.coverMaterial.transparent = true;
-        node.coverMaterial.opacity = 0.25;
       }
     });
     camera.position.set(0, BOOK.h * 0.52, SELECT_OUT + 0.16);
@@ -1103,8 +1054,6 @@ export function createScene(
   return {
     setHover,
     select,
-    deselect,
-    open,
     close,
     enterImmediate,
     openForReading,
@@ -1145,8 +1094,8 @@ export function createScene(
       turnPage.dispose();
       readerPageGeo.dispose();
       [leftPageMaterial, rightPageMaterial].forEach((m) => m.dispose());
-      [pagesGeo, plateGeo, spineGeo, pickGeo, boardGeo, wallGeo].forEach((g) => g.dispose());
-      [pagesMat, boardsMat, pickMat, boardMat, wallMat].forEach((m) => m.dispose());
+      [pagesGeo, plateGeo, spineGeo, pickGeo, wallGeo].forEach((g) => g.dispose());
+      [pagesMat, boardsMat, pickMat, wallMat].forEach((m) => m.dispose());
       nodes.forEach((n) => {
         n.spineMaterial.map?.dispose();
         n.coverMaterial.map?.dispose();

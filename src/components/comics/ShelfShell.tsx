@@ -11,8 +11,17 @@ import {
   type ShelfState,
 } from "@/components/comics/machine";
 import type { SceneHandle } from "@/components/comics/scene";
+import ShelfInfoPanel from "@/components/comics/ShelfInfoPanel";
 import { ShellContext, type ShellApi } from "@/components/comics/shell-context";
-import { COMICS } from "@/lib/comics";
+import { COMICS, comicBySlug } from "@/lib/comics";
+
+/**
+ * Livre désigné par défaut, avant tout clic. select() ne fait plus de gros
+ * plan depuis la correction de setHover/select (le gros plan reste réservé
+ * à open()/openForReading()) : le désigner d'emblée est donc sûr, l'autre
+ * livre restant visible et cliquable à côté.
+ */
+const DEFAULT_SLUG = "old-knight";
 
 const OVERLAY_MS = 320;
 
@@ -65,7 +74,6 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
   const mountedRef = useRef(true);
   /** Lue une seule fois à la construction de la scène, réutilisée par `exit`. */
   const reducedMotionRef = useRef(false);
-  const openButtonRef = useRef<HTMLButtonElement | null>(null);
   /**
    * La scène n'est construite qu'une fois et ne doit pas capturer une version périmée
    * des gestionnaires : ses rappels passent par ce relais.
@@ -79,6 +87,10 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
     slugSegment && !isReading ? "INSIDE" : "SHELF",
   );
   const [selected, setSelectedValue] = useState<number | null>(null);
+  // Pilote uniquement le panneau d'info pendant le survol de l'étagère (rien
+  // n'est encore désigné) - la désignation (clic) prend le relais une fois
+  // `selected` posé.
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [showArticle, setShowArticle] = useState(Boolean(slugSegment) && !isReading);
   /** L'article s'efface sur le canevas au lieu d'être coupé derrière un voile. */
   const [articleOut, setArticleOut] = useState(false);
@@ -124,28 +136,6 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
   );
 
   // --- intentions ----------------------------------------------------------
-  const enterDetails = useCallback(
-    async (index: number) => {
-      const scene = sceneRef.current;
-      const slug = COMICS[index]?.slug;
-      if (!scene || !slug) return;
-      if (nextState(stateRef.current, "details") === null) return;
-
-      setPhase("OPENING_DETAILS");
-      scene.setPickingEnabled(false);
-      await scene.open(true);
-      if (!mountedRef.current) return;
-      setOverlay(1);
-      await wait(OVERLAY_MS);
-      if (!mountedRef.current) return;
-      scene.setVisible(false);
-      setCanvasHidden(true);
-      selfNavigatedRef.current += 1;
-      router.push(`/comics/${slug}`);
-    },
-    [router, setPhase],
-  );
-
   /**
    * La lecture ne fait pas entrer dans le livre : ni voile, ni canvas masqué. Le livre
    * s'ouvre, la caméra recule sur la double page, et l'URL suit en silence.
@@ -168,6 +158,27 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
       router.push(readingHref(slug, 0));
     },
     [advance, router, setSelected],
+  );
+
+  /**
+   * Bouton READ du panneau : le livre n'est parfois que survolé (jamais
+   * cliqué) - la désignation se pose alors ici, sans animation ni saut
+   * visible puisque enterReading part aussitôt de la même pose pour son
+   * propre agrandissement.
+   */
+  const readFromPanel = useCallback(
+    async (index: number) => {
+      const scene = sceneRef.current;
+      if (!scene) return;
+      if (stateRef.current === "SHELF") {
+        if (!advance("select")) return;
+        setSelected(index);
+        await scene.select(index, false);
+        if (!mountedRef.current) return;
+      }
+      void enterReading(index);
+    },
+    [advance, enterReading, setSelected],
   );
 
   /** `navigate` est faux quand le navigateur a déjà changé l'URL lui-même. */
@@ -208,14 +219,16 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
       }
       await closing;
       if (!mountedRef.current) return;
-      await scene.deselect(true);
+      // Le livre lu reste désigné au retour : l'étagère ne doit jamais se
+      // retrouver sans aucun livre désigné (voir handleDismiss plus bas).
+      const index = selectedRef.current;
+      if (index !== null) await scene.select(index, true);
       if (!mountedRef.current) return;
-      setSelected(null);
-      setPhase("SHELF");
+      setPhase("SELECTED");
       setReadingChrome(false);
       scene.setPickingEnabled(true);
     },
-    [router, setPhase, setSelected],
+    [router, setPhase],
   );
 
   /**
@@ -326,7 +339,7 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
       if (!COMICS[index]?.slug) return; // album à venir
 
       if (current === "SELECTED" && selectedRef.current === index) {
-        void enterDetails(index);
+        void enterReading(index);
         return;
       }
       if (nextState(current, "select") === null) return;
@@ -334,18 +347,15 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
       setSelected(index);
       void scene.select(index, true);
     },
-    [enterDetails, setPhase, setSelected],
+    [enterReading, setPhase, setSelected],
   );
 
-  /** Un clic hors des livres range la sélection en cours, si le livre n'est pas déjà ouvert. */
-  const handleDismiss = useCallback(() => {
-    const scene = sceneRef.current;
-    if (!scene) return;
-    if (stateRef.current !== "SELECTED") return;
-    setPhase("SHELF");
-    setSelected(null);
-    void scene.deselect(true);
-  }, [setPhase, setSelected]);
+  /**
+   * Un clic hors des livres ne range plus rien : l'étagère garde toujours son
+   * dernier livre désigné (jamais les deux à la fois "en rayon"), qu'on
+   * clique en dehors ou qu'on revienne de la lecture (voir exit()).
+   */
+  const handleDismiss = useCallback(() => {}, []);
 
   useEffect(() => {
     pickRef.current = handlePick;
@@ -478,7 +488,7 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
         try {
           const handle = createScene(canvas, COMICS, {
             reducedMotion,
-            onHoverChange: () => {},
+            onHoverChange: (index) => setHoveredIndex(index),
             onPick: (index) => pickRef.current(index),
             onDismiss: () => dismissRef.current(),
             onTurn: (direction) => turnRef.current(direction),
@@ -501,6 +511,17 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
             setSelectedValue(index);
             setCanvasHidden(false);
           } else {
+            // Étagère nue (pas de slug, pas de lecture) : le premier livre
+            // est désigné d'emblée (sans animation), l'autre restant visible
+            // et cliquable à côté - select() ne fait plus de gros plan.
+            const defaultIndex = COMICS.findIndex((comic) => comic.slug === DEFAULT_SLUG);
+            if (defaultIndex >= 0) {
+              void handle.select(defaultIndex, false);
+              stateRef.current = "SELECTED";
+              setStateValue("SELECTED");
+              selectedRef.current = defaultIndex;
+              setSelectedValue(defaultIndex);
+            }
             setCanvasHidden(false);
           }
           setReady(true);
@@ -554,18 +575,12 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
         handlePick(playable[(at + step + playable.length) % playable.length]);
       } else if (event.key === "Enter" && selectedRef.current !== null) {
         event.preventDefault();
-        if (event.shiftKey) void enterReading(selectedRef.current);
-        else void enterDetails(selectedRef.current);
-      } else if (event.key === "Escape" && stateRef.current === "SELECTED") {
-        event.preventDefault();
-        setPhase("SHELF");
-        setSelected(null);
-        void scene.deselect(true);
+        void enterReading(selectedRef.current);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [enterDetails, enterReading, exit, handlePick, setPhase, setSelected, turn]);
+  }, [enterReading, exit, handlePick, turn]);
 
   // --- molette --------------------------------------------------------------
   useEffect(() => {
@@ -616,10 +631,6 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
     };
   }, [turn]);
 
-  useEffect(() => {
-    if (state === "SELECTED") openButtonRef.current?.focus();
-  }, [state]);
-
   // La barre de navigation est rendue par le gabarit racine : cet attribut est le seul
   // levier depuis ici. Le nettoyage au démontage évite de la laisser masquée ailleurs.
   useEffect(() => {
@@ -643,6 +654,14 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
     [ready, exit, readFromArticle],
   );
 
+  // La désignation reste à l'échelle du survol (voir select() dans scene.ts) :
+  // le panneau peut donc rester affiché une fois un livre désigné, pas
+  // seulement pendant le survol - la désignation l'emporte sur un survol
+  // ultérieur (ex. la souris qui traîne sur l'autre livre sans cliquer).
+  const highlightIndex = selected ?? hoveredIndex;
+  const highlightedSlug = highlightIndex !== null ? (COMICS[highlightIndex]?.slug ?? null) : null;
+  const highlightedComic = highlightedSlug ? (comicBySlug(highlightedSlug) ?? null) : null;
+
   return (
     <ShellContext.Provider value={api}>
       <div className="relative min-h-screen bg-[#15161b] text-white">
@@ -656,24 +675,13 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
           }}
         />
 
-        {ready && state === "SELECTED" && selected !== null && (
-          <div className="fixed bottom-16 left-1/2 z-20 flex -translate-x-1/2 gap-4">
-            <button
-              type="button"
-              ref={openButtonRef}
-              onClick={() => void enterDetails(selected)}
-              className="rounded-[40px] border-2 border-[#0fd1ea] bg-black/40 px-[32px] py-[20px] font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-[#0fd1ea] backdrop-blur-[5px] transition-colors hover:bg-[#0fd1ea]/10"
-            >
-              Détails
-            </button>
-            <button
-              type="button"
-              onClick={() => void enterReading(selected)}
-              className="rounded-[40px] border-2 border-[#ddff6e] bg-black/40 px-[32px] py-[20px] font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-[#ddff6e] backdrop-blur-[5px] transition-colors hover:bg-[#ddff6e]/10"
-            >
-              Lire
-            </button>
-          </div>
+        {/* Panneau d'info façon "Pick a story" : reflète le survol puis la
+            désignation, toutes deux à la même échelle (voir select() dans
+            scene.ts) - le clic garde son propre effet range/sors et son
+            ouverture, inchangés (voir handlePick). READ rejoue la même
+            ouverture animée qu'un second clic sur le livre. */}
+        {ready && (state === "SHELF" || state === "SELECTED") && highlightIndex !== null && (
+          <ShelfInfoPanel comic={highlightedComic} onRead={() => void readFromPanel(highlightIndex)} />
         )}
 
         {/* Reste affiché pendant un tourne-page pour ne pas clignoter : la machine
