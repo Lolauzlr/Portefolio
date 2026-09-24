@@ -38,10 +38,11 @@ const SELECT_OUT = 0.9;
  * livre resté tranche sur tranche - le laisse alors chevauché. La marge vise
  * le bord du livre choisi (BOOK.w / 2) plus la moitié de la tranche de
  * l'autre (BOOK.t / 2) plus un jeu, moins son propre restX déjà écarté. Le
- * jeu (0.1866) est calibré pour un écart visible de 80px entre les deux
- * livres à la largeur de référence (2000px) - 24px valait 0.05.
+ * jeu (0.089) est calibré pour un écart visible de 40px entre les deux
+ * livres à la largeur de référence (2000px) - 24px valait 0.05, 80px valait
+ * 0.1866.
  */
-const SELECT_PUSH = BOOK.w / 2 + BOOK.t / 2 + 0.1866 - (BOOK.t + GAP) / 2;
+const SELECT_PUSH = BOOK.w / 2 + BOOK.t / 2 + 0.089 - (BOOK.t + GAP) / 2;
 /**
  * Profondeur de repos d'un livre non désigné, tranche tournée vers la caméra. La
  * tranche est postée au bord du livre (voir spine.position.x plus bas), pas en son
