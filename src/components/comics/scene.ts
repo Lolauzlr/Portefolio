@@ -22,11 +22,14 @@ const COVER_T = 0.022;
 const GAP = 0.012;
 const HOVER_OUT = 0.09;
 /**
- * Avancée du livre non désigné au survol : sensiblement moins que HOVER_OUT
- * (réservé au livre désigné, dont l'avancée ne doit jamais paraître égalée),
- * mais assez pour rester un vrai bond plutôt qu'un frémissement.
+ * Bond du livre non désigné au survol, ajouté à son repos (SPINE_REST_Z, pas
+ * 0 - un bond absolu le ramènerait assez près de la caméra pour réexposer le
+ * dessus du bloc de pages, voir SPINE_REST_Z). Même amplitude que HOVER_OUT :
+ * un livre encore loin derrière son repos (SPINE_REST_Z ≈ -0.29) peut se le
+ * permettre sans jamais paraître aussi engagé que le livre désigné, qui parte
+ * déjà de HOVER_OUT (0.09) tout court.
  */
-const HOVER_OUT_UNSELECTED = HOVER_OUT * 0.45;
+const HOVER_OUT_UNSELECTED = HOVER_OUT;
 const SELECT_OUT = 0.9;
 /**
  * Écart du livre non désigné, au-delà de son restX. La désignation tourne le
@@ -900,10 +903,12 @@ export function createScene(
     nodes.forEach((node, i) => {
       // Le livre désigné garde son avancée pleine (HOVER_OUT, jamais SELECT_OUT
       // - réservé à l'ouverture) quel que soit le survol. Survoler l'AUTRE livre
-      // le fait bondir aussi, mais moins (HOVER_OUT_UNSELECTED) : un vrai geste
-      // d'appel, sans jamais paraître aussi engagé que le livre désigné.
+      // le fait bondir aussi, mais moins (HOVER_OUT_UNSELECTED) et depuis SON
+      // repos (SPINE_REST_Z, pas 0) : un bond absolu le ramènerait aussi près de
+      // la caméra que HOVER_OUT lui-même, ce que SPINE_REST_Z corrige justement -
+      // et exposerait à nouveau le dessus du bloc de pages (voir SPINE_REST_Z).
       gsap.to(node.group.position, {
-        z: i === selected ? HOVER_OUT : i === index ? HOVER_OUT_UNSELECTED : SPINE_REST_Z,
+        z: i === selected ? HOVER_OUT : i === index ? SPINE_REST_Z + HOVER_OUT_UNSELECTED : SPINE_REST_Z,
         duration: dur(220),
         ease: "power2.out",
         onUpdate: markDirty,
