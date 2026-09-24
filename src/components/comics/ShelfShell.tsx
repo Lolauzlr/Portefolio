@@ -11,8 +11,16 @@ import {
   type ShelfState,
 } from "@/components/comics/machine";
 import type { SceneHandle } from "@/components/comics/scene";
+import ShelfInfoPanel from "@/components/comics/ShelfInfoPanel";
 import { ShellContext, type ShellApi } from "@/components/comics/shell-context";
-import { COMICS } from "@/lib/comics";
+import { COMICS, comicBySlug } from "@/lib/comics";
+
+/**
+ * Livre mis en avant par défaut, avant tout survol/clic - au sens du survol
+ * (légère avancée), pas de la désignation (le gros plan resterait sur lui
+ * et masquerait l'autre livre, jamais visible ni cliquable à côté).
+ */
+const DEFAULT_SLUG = "old-knight";
 
 const OVERLAY_MS = 320;
 
@@ -65,7 +73,6 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
   const mountedRef = useRef(true);
   /** Lue une seule fois à la construction de la scène, réutilisée par `exit`. */
   const reducedMotionRef = useRef(false);
-  const openButtonRef = useRef<HTMLButtonElement | null>(null);
   /**
    * La scène n'est construite qu'une fois et ne doit pas capturer une version périmée
    * des gestionnaires : ses rappels passent par ce relais.
@@ -78,11 +85,14 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
   const [state, setStateValue] = useState<ShelfState>(
     slugSegment && !isReading ? "INSIDE" : "SHELF",
   );
-  const [selected, setSelectedValue] = useState<number | null>(null);
-  // Browsing (no slug) now uses the same flat 2D picker as the album page,
-  // never the 3D canvas - both stay visible whenever we're not reading, not
-  // just when a slug is present.
-  const [showArticle, setShowArticle] = useState(!isReading);
+  // La valeur ne sert plus qu'à `selectedRef` (rien ne la lit plus au rendu
+  // depuis que le panneau suit le survol, pas la désignation).
+  const [, setSelectedValue] = useState<number | null>(null);
+  // Pilote uniquement le panneau d'info pendant le survol de l'étagère (rien
+  // n'est encore désigné) - la désignation (clic) prend le relais une fois
+  // `selected` posé.
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [showArticle, setShowArticle] = useState(Boolean(slugSegment) && !isReading);
   /** L'article s'efface sur le canevas au lieu d'être coupé derrière un voile. */
   const [articleOut, setArticleOut] = useState(false);
   const [overlay, setOverlay] = useState(0);
@@ -216,12 +226,7 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
       setSelected(null);
       setPhase("SHELF");
       setReadingChrome(false);
-      // Browsing is the flat 2D picker now, never the 3D canvas: once the
-      // close/deselect animation has settled the shelf back to rest, hide
-      // it again and hand the page back to the picker/article content.
-      setCanvasHidden(true);
-      setShowArticle(true);
-      scene.setPickingEnabled(false);
+      scene.setPickingEnabled(true);
     },
     [router, setPhase, setSelected],
   );
@@ -486,7 +491,7 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
         try {
           const handle = createScene(canvas, COMICS, {
             reducedMotion,
-            onHoverChange: () => {},
+            onHoverChange: (index) => setHoveredIndex(index),
             onPick: (index) => pickRef.current(index),
             onDismiss: () => dismissRef.current(),
             onTurn: (direction) => turnRef.current(direction),
@@ -509,9 +514,16 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
             setSelectedValue(index);
             setCanvasHidden(false);
           } else {
-            // Étagère nue (pas de slug) : le canvas n'a plus rien à montrer
-            // tant qu'on ne lit pas - le picker 2D est le contenu par défaut.
-            handle.setPickingEnabled(false);
+            // Étagère nue (pas de slug, pas de lecture) : le premier livre
+            // avance légèrement d'emblée (même geste qu'un survol), les deux
+            // livres restant visibles et cliquables côte à côte - le gros
+            // plan de select() reste réservé au clic.
+            const defaultIndex = COMICS.findIndex((comic) => comic.slug === DEFAULT_SLUG);
+            if (defaultIndex >= 0) {
+              handle.setHover(defaultIndex);
+              setHoveredIndex(defaultIndex);
+            }
+            setCanvasHidden(false);
           }
           setReady(true);
         } catch {
@@ -626,10 +638,6 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
     };
   }, [turn]);
 
-  useEffect(() => {
-    if (state === "SELECTED") openButtonRef.current?.focus();
-  }, [state]);
-
   // La barre de navigation est rendue par le gabarit racine : cet attribut est le seul
   // levier depuis ici. Le nettoyage au démontage évite de la laisser masquée ailleurs.
   useEffect(() => {
@@ -653,6 +661,12 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
     [ready, exit, readFromArticle],
   );
 
+  // Le panneau ne s'affiche que sur l'étagère au repos (survol) : une fois
+  // un livre désigné (SELECTED), le gros plan de select() occupe le même
+  // espace à l'écran et les deux se chevaucheraient.
+  const highlightedSlug = hoveredIndex !== null ? (COMICS[hoveredIndex]?.slug ?? null) : null;
+  const highlightedComic = highlightedSlug ? (comicBySlug(highlightedSlug) ?? null) : null;
+
   return (
     <ShellContext.Provider value={api}>
       <div className="relative min-h-screen bg-[#15161b] text-white">
@@ -666,25 +680,12 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
           }}
         />
 
-        {ready && state === "SELECTED" && selected !== null && (
-          <div className="fixed bottom-16 left-1/2 z-20 flex -translate-x-1/2 gap-4">
-            <button
-              type="button"
-              ref={openButtonRef}
-              onClick={() => void enterDetails(selected)}
-              className="rounded-[40px] border-2 border-[#0fd1ea] bg-black/40 px-[32px] py-[20px] font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-[#0fd1ea] backdrop-blur-[5px] transition-colors hover:bg-[#0fd1ea]/10"
-            >
-              Détails
-            </button>
-            <button
-              type="button"
-              onClick={() => void enterReading(selected)}
-              className="rounded-[40px] border-2 border-[#ddff6e] bg-black/40 px-[32px] py-[20px] font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-[#ddff6e] backdrop-blur-[5px] transition-colors hover:bg-[#ddff6e]/10"
-            >
-              Lire
-            </button>
-          </div>
-        )}
+        {/* Panneau d'info façon "Pick a story" : reflète le livre en avant
+            (léger survol, pas la désignation) tant que l'étagère est au
+            repos - le clic garde son propre effet range/sors et son
+            ouverture, inchangés (voir handlePick). READ mène droit à la
+            liseuse. */}
+        {ready && state === "SHELF" && <ShelfInfoPanel comic={highlightedComic} />}
 
         {/* Reste affiché pendant un tourne-page pour ne pas clignoter : la machine
             refuse `close` depuis TURNING, le bouton y est donc sans effet. */}
