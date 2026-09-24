@@ -31,6 +31,17 @@ const SELECT_OUT = 0.9;
  * l'autre (BOOK.t / 2) plus un jeu, moins son propre restX déjà écarté.
  */
 const SELECT_PUSH = BOOK.w / 2 + BOOK.t / 2 + 0.05 - (BOOK.t + GAP) / 2;
+/**
+ * Profondeur de repos d'un livre non désigné, tranche tournée vers la caméra. La
+ * tranche est postée au bord du livre (voir spine.position.x plus bas), pas en son
+ * centre : la pivoter à 90° l'avance donc de BOOK.w / 2 - COVER_T / 2 devant l'axe
+ * du groupe, presque la moitié de la largeur du livre. Non compensé, ce surplomb
+ * plaçait la tranche bien plus près de la caméra que la couverture du livre désigné
+ * (avancée seulement de BOOK.t / 2, l'épaisseur), qui en paraissait la plus petite
+ * des deux - l'exact inverse de la hiérarchie voulue. Ce repos vise donc la même
+ * profondeur que la couverture désignée à son propre repos (HOVER_OUT).
+ */
+const SPINE_REST_Z = HOVER_OUT + (BOOK.t - BOOK.w) / 2;
 const OPEN_ANGLE = -2.3;
 /** Hauteur du centre du livre engagé : la lecture cadre sur elle, pas sur BOOK.h / 2. */
 const SELECT_Y = BOOK.h / 2 + 0.15;
@@ -873,7 +884,7 @@ export function createScene(
       // (HOVER_OUT, jamais SELECT_OUT - réservé à l'ouverture) : survoler
       // l'autre livre l'avance toujours, qu'un livre soit déjà désigné ou non.
       gsap.to(node.group.position, {
-        z: i === selected || i === index ? HOVER_OUT : 0,
+        z: i === selected || i === index ? HOVER_OUT : SPINE_REST_Z,
         duration: dur(220),
         ease: "power2.out",
         onUpdate: markDirty,
@@ -921,7 +932,7 @@ export function createScene(
         setPickPose(node.pick, 0, BOOK.h / 2, HOVER_OUT, 0);
       } else {
         const push = node.restX < nodes[index].restX ? -SELECT_PUSH : SELECT_PUSH;
-        setPickPose(node.pick, node.restX + push, BOOK.h / 2, 0, Math.PI / 2);
+        setPickPose(node.pick, node.restX + push, BOOK.h / 2, SPINE_REST_Z, Math.PI / 2);
       }
     });
 
@@ -940,7 +951,7 @@ export function createScene(
         const push = node.restX < nodes[index].restX ? -SELECT_PUSH : SELECT_PUSH;
         tl.to(
           node.group.position,
-          { x: node.restX + push, y: BOOK.h / 2, z: 0, duration: d },
+          { x: node.restX + push, y: BOOK.h / 2, z: SPINE_REST_Z, duration: d },
           0,
         ).to(node.group.rotation, { y: Math.PI / 2, duration: d }, 0);
       }
@@ -1013,8 +1024,8 @@ export function createScene(
         node.coverPivot.rotation.y = OPEN_ANGLE;
       } else {
         const push = node.restX < nodes[index].restX ? -0.25 : 0.25;
-        setPickPose(node.pick, node.restX + push, BOOK.h / 2, 0, Math.PI / 2);
-        node.group.position.set(node.restX + push, BOOK.h / 2, 0);
+        setPickPose(node.pick, node.restX + push, BOOK.h / 2, SPINE_REST_Z, Math.PI / 2);
+        node.group.position.set(node.restX + push, BOOK.h / 2, SPINE_REST_Z);
       }
     });
     camera.position.set(0, BOOK.h * 0.52, SELECT_OUT + 0.16);
