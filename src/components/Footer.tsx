@@ -23,7 +23,6 @@ const exploreLinks = [
   { label: "Movies", href: "/movies" },
   { label: "Illustrations", href: "/illustrations" },
   { label: "Storytelling", href: "/storyboard" },
-  { label: "Comics", href: "/comics" },
   { label: "Curriculum vitae", href: "/cv" },
 ];
 

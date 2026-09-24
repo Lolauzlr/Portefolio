@@ -7,7 +7,7 @@ export default function ShelfFallback({ className = "" }: { className?: string }
       {COMICS.map((comic, index) => (
         <li key={comic.slug ?? `upcoming-${index}`}>
           {comic.slug ? (
-            <Link href={`/comics/${comic.slug}`} className="group block">
+            <Link href={`/storyboard/${comic.slug}/lire`} className="group block">
               <img
                 src={comic.cover ?? ""}
                 alt={`Couverture de ${comic.title}`}

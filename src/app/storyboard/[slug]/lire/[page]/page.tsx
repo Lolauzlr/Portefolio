@@ -16,7 +16,7 @@ export function generateStaticParams() {
     );
 }
 
-export async function generateMetadata({ params }: PageProps<"/comics/[slug]/lire/[page]">) {
+export async function generateMetadata({ params }: PageProps<"/storyboard/[slug]/lire/[page]">) {
   const { slug, page } = await params;
   const comic = comicBySlug(slug);
   if (!comic) return {};
@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: PageProps<"/comics/[slug]/lir
   return { title: `${comic.title} — page ${Number(page) + 1} sur ${total} | Marie Chalandre` };
 }
 
-export default async function ReaderPage({ params }: PageProps<"/comics/[slug]/lire/[page]">) {
+export default async function ReaderPage({ params }: PageProps<"/storyboard/[slug]/lire/[page]">) {
   const { slug, page } = await params;
   const comic = comicBySlug(slug);
   if (!comic) notFound();

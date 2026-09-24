@@ -68,7 +68,7 @@ export default function ShelfInfoPanel({
         </div>
         <div className="flex flex-col items-start px-[24px] w-full" style={panelStyle}>
           <Link
-            href={`/comics/${panelComic.slug}/lire`}
+            href={`/storyboard/${panelComic.slug}/lire`}
             onClick={(e) => {
               if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
               e.preventDefault();

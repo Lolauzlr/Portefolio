@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSelectedLayoutSegments } from "next/navigation";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   canInteract,
   canTurn,
@@ -10,9 +10,9 @@ import {
   type ShelfEvent,
   type ShelfState,
 } from "@/components/comics/machine";
+import BookSlider from "@/components/comics/BookSlider";
 import type { SceneHandle } from "@/components/comics/scene";
 import ShelfInfoPanel from "@/components/comics/ShelfInfoPanel";
-import { ShellContext, type ShellApi } from "@/components/comics/shell-context";
 import { COMICS, comicBySlug } from "@/lib/comics";
 
 /**
@@ -39,8 +39,6 @@ const WHEEL_STEP = 50;
 const WHEEL_IDLE_MS = 180;
 /** `deltaMode` 1 compte en lignes : hauteur de ligne usuelle des navigateurs. */
 const WHEEL_LINE_PX = 16;
-/** Effacement de l'article quand la lecture s'enchaîne depuis la page de détail. */
-const ARTICLE_FADE_MS = 240;
 /**
  * Écart voulu entre le livre le plus à droite et la card d'info, en desktop. Le
  * canevas garde toute la largeur que la rangée flexbox lui laisse (voir le rendu
@@ -55,10 +53,21 @@ const CARD_GAP_PX = 40;
 type Route = { slug: string | null; reading: boolean; spread: number };
 
 function readingHref(slug: string, spread: number): string {
-  return spread === 0 ? `/comics/${slug}/lire` : `/comics/${slug}/lire/${spread}`;
+  return spread === 0 ? `/storyboard/${slug}/lire` : `/storyboard/${slug}/lire/${spread}`;
 }
 
-export default function ShelfShell({ children }: { children: React.ReactNode }) {
+export default function ShelfShell({
+  children,
+  header,
+  footer,
+}: {
+  children: React.ReactNode;
+  /** Affiché en permanence au-dessus de l'étagère, seulement sur la page
+   *  index (jamais pendant la lecture, qui passe l'étagère en plein écran). */
+  header?: React.ReactNode;
+  /** Idem, en dessous — la section "Storyboards" sur /storyboard. */
+  footer?: React.ReactNode;
+}) {
   const segments = useSelectedLayoutSegments();
   const slugSegment = segments[0] ?? null;
   const isReading = segments[1] === "lire";
@@ -104,8 +113,6 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
   // `selected` posé.
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [showArticle, setShowArticle] = useState(Boolean(slugSegment) && !isReading);
-  /** L'article s'efface sur le canevas au lieu d'être coupé derrière un voile. */
-  const [articleOut, setArticleOut] = useState(false);
   const [overlay, setOverlay] = useState(0);
   /** Vrai tant que la scène n'a pas pris la main : le canvas plein écran ne doit
    * jamais recouvrir la grille de repli avant que `ready` ne soit posé. */
@@ -214,7 +221,7 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
 
       if (navigate) {
         selfNavigatedRef.current += 1;
-        router.push("/comics");
+        router.push("/storyboard");
       }
 
       scene.setVisible(true);
@@ -242,43 +249,6 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
     },
     [router, setPhase],
   );
-
-  /**
-   * Depuis la page de détail : la couverture est déjà rabattue et la caméra engagée
-   * dans le livre. La lecture reprend cette pose telle quelle, sans refermer d'abord :
-   * l'article s'efface sur l'ouverture déjà commencée.
-   */
-  const readFromArticle = useCallback(async () => {
-    const scene = sceneRef.current;
-    const index = selectedRef.current;
-    const slug = COMICS[index ?? -1]?.slug;
-    if (!scene || index === null || !slug) return;
-    if (!advance("read")) return;
-
-    setReadingChrome(true);
-    scene.setPickingEnabled(false);
-    // Le canevas revient sous l'article, qui s'efface par-dessus : la scène tient déjà
-    // la pose où l'article nous avait amenés, il n'y a rien à masquer.
-    scene.setVisible(true);
-    scene.renderOnce(); // sans ce cadre forcé, le canvas réapparaît noir
-    setCanvasHidden(false);
-    setArticleOut(true);
-
-    // L'ouverture court pendant l'effacement : ses premières centaines de
-    // millisecondes ne font que charger les planches, sur une image immobile.
-    const opening = scene.openForReading(index, 0, true);
-    await wait(ARTICLE_FADE_MS);
-    if (!mountedRef.current) return;
-    setShowArticle(false);
-    setArticleOut(false);
-
-    await opening;
-    if (!mountedRef.current) return;
-    if (!advance("done")) return;
-    scene.setTurningEnabled(true);
-    selfNavigatedRef.current += 1;
-    router.push(readingHref(slug, 0));
-  }, [advance, router]);
 
   /** Tourne-page sans navigation : sert aussi au retour du navigateur. */
   const goTo = useCallback(
@@ -686,19 +656,6 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
     };
   }, [readingChrome]);
 
-  // Le contexte ne vaut quelque chose que si la scène est réellement montée :
-  // sans quoi BackToShelf doit retomber sur la navigation ordinaire du lien.
-  const api = useMemo<ShellApi | null>(
-    () =>
-      ready
-        ? {
-            requestExit: () => void exit({ navigate: true }),
-            requestReading: () => void readFromArticle(),
-          }
-        : null,
-    [ready, exit, readFromArticle],
-  );
-
   // La désignation reste à l'échelle du survol (voir select() dans scene.ts) :
   // le panneau peut donc rester affiché une fois un livre désigné, pas
   // seulement pendant le survol - la désignation l'emporte sur un survol
@@ -714,74 +671,90 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
     refreshCardGap();
   }, [state, highlightIndex, ready, refreshCardGap]);
 
+  // Hors lecture, l'étagère ne prend que la hauteur de l'écran (comme un
+  // "hero" en haut de page) : le reste de la page (header, footer) reste
+  // joignable en défilant. Pendant la lecture, elle passe en plein écran fixe
+  // et verrouillé, exactement comme sur l'ancienne page /comics - il n'y a
+  // alors plus rien d'autre à atteindre sur cette page.
+  const immersive = readingChrome;
+
   return (
-    <ShellContext.Provider value={api}>
-      <div className="relative min-h-screen bg-[#15161b] text-white">
-        {/* Rangée plein écran : le canevas cède la largeur qu'occupe la card au lieu
-            de rester plein cadre sous elle - la card cesse ainsi d'être posée en
-            position fixe par-dessus les livres, et redevient un enfant de flux
-            (voir refreshCardGap pour l'écart qui les sépare). Sur mobile le
-            panneau garde sa propre position fixe (voir ShelfInfoPanel) : cette
-            rangée ne le contraint alors pas, `flex` n'y agissant qu'à partir de
-            `md:`. */}
-        <div className="fixed inset-0 flex flex-col md:flex-row">
-          <div className="relative min-h-0 min-w-0 flex-1">
-            <canvas
-              ref={canvasRef}
-              aria-hidden
-              className="h-full min-h-0 w-full min-w-0"
-              style={{
-                display: canvasHidden ? "none" : "block",
-                pointerEvents: canInteract(state) || canTurn(state) ? "auto" : "none",
-              }}
+    <div className="relative min-h-screen bg-[#15161b] text-white">
+      {!slugSegment && header}
+
+      {/* Rangée plein écran (verrouillée pendant la lecture, en flux sinon) :
+          le canevas cède la largeur qu'occupe la card au lieu de rester plein
+          cadre sous elle - la card cesse ainsi d'être posée en position fixe
+          par-dessus les livres, et redevient un enfant de flux (voir
+          refreshCardGap pour l'écart qui les sépare). Sur mobile le panneau
+          garde sa propre position fixe (voir ShelfInfoPanel) : cette rangée
+          ne le contraint alors pas, `flex` n'y agissant qu'à partir de `md:`. */}
+      <div
+        className={
+          immersive
+            ? "fixed inset-0 flex flex-col md:flex-row"
+            : "relative flex h-screen w-full flex-col md:flex-row"
+        }
+      >
+        <div className="relative min-h-0 min-w-0 flex-1">
+          <canvas
+            ref={canvasRef}
+            aria-hidden
+            className="h-full min-h-0 w-full min-w-0"
+            style={{
+              display: canvasHidden ? "none" : "block",
+              pointerEvents: canInteract(state) || canTurn(state) ? "auto" : "none",
+            }}
+          />
+        </div>
+
+        {/* Panneau d'info façon "Pick a story" : reflète le survol puis la
+            désignation, toutes deux à la même échelle (voir select() dans
+            scene.ts) - le clic garde son propre effet range/sors et son
+            ouverture, inchangés (voir handlePick). READ rejoue la même
+            ouverture animée qu'un second clic sur le livre. Le décalage
+            (desktop) est posé à la main par refreshCardGap, pas en CSS : un
+            `gap` fixe laisserait un vide qui varie avec la largeur de fenêtre,
+            le canevas cédant plus de place à la card qu'il n'en faut vu que
+            les livres n'en occupent centrés qu'une fraction. */}
+        {ready && (state === "SHELF" || state === "SELECTED") && highlightIndex !== null && (
+          <div ref={panelWrapperRef} className="flex flex-col gap-4 md:shrink-0 md:items-center md:justify-center md:pr-[60px]">
+            <ShelfInfoPanel comic={highlightedComic} onRead={() => void readFromPanel(highlightIndex)} />
+            {/* Garde la façon dont on changeait de livre côté "Pick a story" :
+                un contrôle dédié, en plus du clic direct sur un livre. */}
+            <BookSlider
+              items={COMICS.map((comic, i) => ({ key: comic.slug ?? `upcoming-${i}`, label: comic.title }))}
+              active={highlightIndex}
+              onSelect={handlePick}
             />
           </div>
-
-          {/* Panneau d'info façon "Pick a story" : reflète le survol puis la
-              désignation, toutes deux à la même échelle (voir select() dans
-              scene.ts) - le clic garde son propre effet range/sors et son
-              ouverture, inchangés (voir handlePick). READ rejoue la même
-              ouverture animée qu'un second clic sur le livre. Le décalage
-              (desktop) est posé à la main par refreshCardGap, pas en CSS : un
-              `gap` fixe laisserait un vide qui varie avec la largeur de fenêtre,
-              le canevas cédant plus de place à la card qu'il n'en faut vu que
-              les livres n'en occupent centrés qu'une fraction. */}
-          {ready && (state === "SHELF" || state === "SELECTED") && highlightIndex !== null && (
-            <div ref={panelWrapperRef} className="md:flex md:shrink-0 md:items-center md:pr-[60px]">
-              <ShelfInfoPanel comic={highlightedComic} onRead={() => void readFromPanel(highlightIndex)} />
-            </div>
-          )}
-        </div>
-
-        {/* Reste affiché pendant un tourne-page pour ne pas clignoter : la machine
-            refuse `close` depuis TURNING, le bouton y est donc sans effet. */}
-        {ready && (state === "READING" || state === "TURNING") && (
-          <button
-            type="button"
-            onClick={() => void exit({ navigate: true })}
-            className="fixed bottom-16 right-4 z-20 rounded-[40px] border-2 border-[#0fd1ea] bg-black/40 px-[32px] py-[20px] font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-[#0fd1ea] backdrop-blur-[5px] transition-colors hover:bg-[#0fd1ea]/10 md:right-[120px]"
-          >
-            Sortir
-          </button>
         )}
-
-        <div
-          aria-hidden
-          className="pointer-events-none fixed inset-0 z-30 bg-[#131313] transition-opacity duration-300"
-          style={{ opacity: overlay }}
-        />
-
-        {/* La grille reste visible tant que la scène n'a pas réellement pris la
-            main (`ready`) ; elle ne passe en `sr-only` qu'une fois la 3D montée
-            et hors de l'état INSIDE, où c'est l'article qui doit s'afficher. */}
-        <div
-          className={!ready || showArticle ? "relative z-10" : "sr-only"}
-          style={{ opacity: articleOut ? 0 : 1, transition: `opacity ${ARTICLE_FADE_MS}ms ease` }}
-        >
-          {children}
-        </div>
       </div>
-    </ShellContext.Provider>
+
+      {/* Reste affiché pendant un tourne-page pour ne pas clignoter : la machine
+          refuse `close` depuis TURNING, le bouton y est donc sans effet. */}
+      {ready && (state === "READING" || state === "TURNING") && (
+        <button
+          type="button"
+          onClick={() => void exit({ navigate: true })}
+          className="fixed bottom-16 right-4 z-20 rounded-[40px] border-2 border-[#0fd1ea] bg-black/40 px-[32px] py-[20px] font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-[#0fd1ea] backdrop-blur-[5px] transition-colors hover:bg-[#0fd1ea]/10 md:right-[120px]"
+        >
+          Sortir
+        </button>
+      )}
+
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 z-30 bg-[#131313] transition-opacity duration-300"
+        style={{ opacity: overlay }}
+      />
+
+      {/* La grille reste visible tant que la scène n'a pas réellement pris la
+          main (`ready`) ; elle ne passe en `sr-only` qu'une fois la 3D montée. */}
+      <div className={!ready || showArticle ? "relative z-10" : "sr-only"}>{children}</div>
+
+      {!slugSegment && footer}
+    </div>
   );
 }
 

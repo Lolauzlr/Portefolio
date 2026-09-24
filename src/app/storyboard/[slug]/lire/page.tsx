@@ -11,7 +11,7 @@ export function generateStaticParams() {
     .map((comic) => ({ slug: comic.slug }));
 }
 
-export async function generateMetadata({ params }: PageProps<"/comics/[slug]/lire">) {
+export async function generateMetadata({ params }: PageProps<"/storyboard/[slug]/lire">) {
   const { slug } = await params;
   const comic = comicBySlug(slug);
   if (!comic) return {};
@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: PageProps<"/comics/[slug]/lir
   return { title: `${comic.title} — page 1 sur ${total} | Marie Chalandre` };
 }
 
-export default async function ReaderFirstPage({ params }: PageProps<"/comics/[slug]/lire">) {
+export default async function ReaderFirstPage({ params }: PageProps<"/storyboard/[slug]/lire">) {
   const { slug } = await params;
   const comic = comicBySlug(slug);
   if (!comic) notFound();

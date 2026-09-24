@@ -19,26 +19,26 @@ describe("export statique de la section", () => {
   });
 
   it("produit la page d'étagère", () => {
-    expect(existsSync(`${OUT}/comics.html`)).toBe(true);
+    expect(existsSync(`${OUT}/storyboard.html`)).toBe(true);
   });
 
-  it("produit une page par album publié", () => {
-    expect(existsSync(`${OUT}/comics/old-knight.html`)).toBe(true);
-    expect(existsSync(`${OUT}/comics/no-finder.html`)).toBe(true);
+  it("produit une page de lecture par album publié", () => {
+    expect(existsSync(`${OUT}/storyboard/old-knight/lire.html`)).toBe(true);
+    expect(existsSync(`${OUT}/storyboard/no-finder/lire.html`)).toBe(true);
   });
 
   it("ne produit aucune page pour les albums à venir", () => {
-    expect(existsSync(`${OUT}/comics/en-ecriture.html`)).toBe(false);
+    expect(existsSync(`${OUT}/storyboard/en-ecriture/lire.html`)).toBe(false);
   });
 
   it("place le titre de l'album dans le HTML pré-rendu", () => {
-    const html = readFileSync(`${OUT}/comics/old-knight.html`, "utf8");
+    const html = readFileSync(`${OUT}/storyboard/old-knight/lire.html`, "utf8");
     expect(html).toContain("Old Knight");
   });
 
   it("place les liens vers les albums dans la page d'étagère", () => {
-    const html = readFileSync(`${OUT}/comics.html`, "utf8");
-    expect(html).toContain("/comics/old-knight");
-    expect(html).toContain("/comics/no-finder");
+    const html = readFileSync(`${OUT}/storyboard.html`, "utf8");
+    expect(html).toContain("/storyboard/old-knight/lire");
+    expect(html).toContain("/storyboard/no-finder/lire");
   });
 });
