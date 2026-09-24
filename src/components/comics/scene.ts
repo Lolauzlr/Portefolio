@@ -93,7 +93,6 @@ export type SceneHandle = {
   setHover(index: number | null): void;
   select(index: number, animate: boolean): Promise<void>;
   deselect(animate: boolean): Promise<void>;
-  open(animate: boolean): Promise<void>;
   close(animate: boolean): Promise<void>;
   enterImmediate(index: number): void;
   openForReading(index: number, spread: number, animate: boolean): Promise<void>;
@@ -115,6 +114,11 @@ type BookNode = {
   spineMaterial: THREE.MeshStandardMaterial;
   coverMaterial: THREE.MeshStandardMaterial;
   firstPlateMaterial: THREE.MeshStandardMaterial;
+  // Propres à chaque livre (pas les gabarits partagés boardsMat/pagesMat) :
+  // la désignation les fait pâlir avec le reste du livre non désigné, ce
+  // qu'un matériau commun aux deux livres ne pourrait pas faire séparément.
+  boardsMaterial: THREE.MeshStandardMaterial;
+  pagesMaterial: THREE.MeshStandardMaterial;
   restX: number;
   comic: Comic;
   coverLoaded: boolean;
@@ -321,6 +325,11 @@ export function createScene(
     group.rotation.y = Math.PI / 2; // le dos fait face à la caméra
     group.position.set(restX, BOOK.h / 2, 0);
 
+    // Clonés plutôt que partagés : select() doit pouvoir faire pâlir la
+    // tranche de pages et la plaque arrière d'un livre sans toucher à l'autre.
+    const boardsMaterial = boardsMat.clone();
+    const pagesMaterial = pagesMat.clone();
+
     const spineMaterial = new THREE.MeshStandardMaterial({
       color: comic.spine ? 0xffffff : 0x1b1d22,
       roughness: 0.8,
@@ -335,30 +344,30 @@ export function createScene(
     });
 
     const pages = new THREE.Mesh(pagesGeo, [
-      pagesMat,
-      pagesMat,
-      pagesMat,
-      pagesMat,
+      pagesMaterial,
+      pagesMaterial,
+      pagesMaterial,
+      pagesMaterial,
       firstPlateMaterial,
-      pagesMat,
+      pagesMaterial,
     ]);
     pages.position.x = 0;
     pages.castShadow = true;
     group.add(pages);
 
-    const back = new THREE.Mesh(plateGeo, boardsMat);
+    const back = new THREE.Mesh(plateGeo, boardsMaterial);
     back.position.set(0, 0, -(BOOK.t / 2 - COVER_T / 2) + 0.001);
     back.castShadow = true;
     group.add(back);
 
     // L'ordre des matériaux d'une BoxGeometry est [+X, -X, +Y, -Y, +Z, -Z].
     const spine = new THREE.Mesh(spineGeo, [
-      boardsMat,
+      boardsMaterial,
       spineMaterial,
-      boardsMat,
-      boardsMat,
-      boardsMat,
-      boardsMat,
+      boardsMaterial,
+      boardsMaterial,
+      boardsMaterial,
+      boardsMaterial,
     ]);
     spine.position.x = -(BOOK.w / 2 - COVER_T / 2);
     spine.castShadow = true;
@@ -370,12 +379,12 @@ export function createScene(
     // la couverture un arc qui la décolle du livre.
     coverPivot.position.set(-BOOK.w / 2 + PLATE_INSET, 0, BOOK.t / 2 - COVER_T / 2 + 0.001);
     const cover = new THREE.Mesh(plateGeo, [
-      boardsMat,
-      boardsMat,
-      boardsMat,
-      boardsMat,
+      boardsMaterial,
+      boardsMaterial,
+      boardsMaterial,
+      boardsMaterial,
       coverMaterial,
-      boardsMat,
+      boardsMaterial,
     ]);
     cover.position.set((BOOK.w - 2 * PLATE_INSET) / 2, 0, 0);
     cover.castShadow = true;
@@ -398,6 +407,8 @@ export function createScene(
       spineMaterial,
       coverMaterial,
       firstPlateMaterial,
+      boardsMaterial,
+      pagesMaterial,
       restX,
       comic,
       coverLoaded: false,
@@ -864,12 +875,11 @@ export function createScene(
   function setHover(index: number | null) {
     hovered = index;
     nodes.forEach((node, i) => {
-      const lifted = i === index && selected === null;
-      // Le livre désigné reste à l'échelle de select() (HOVER_OUT) : un survol
-      // qui suivrait ne doit pas le renvoyer au gros plan de l'ouverture
-      // (SELECT_OUT), réservé à open()/openForReading().
+      // Le livre désigné et celui survolé partagent la même avancée
+      // (HOVER_OUT, jamais SELECT_OUT - réservé à l'ouverture) : survoler
+      // l'autre livre l'avance toujours, qu'un livre soit déjà désigné ou non.
       gsap.to(node.group.position, {
-        z: lifted ? HOVER_OUT : selected === i ? HOVER_OUT : 0,
+        z: i === selected || i === index ? HOVER_OUT : 0,
         duration: dur(220),
         ease: "power2.out",
         onUpdate: markDirty,
@@ -931,14 +941,20 @@ export function createScene(
       if (i === index) {
         tl.to(node.group.position, { x: 0, y: BOOK.h / 2, z: HOVER_OUT, duration: d }, 0)
           .to(node.group.rotation, { y: 0, duration: d }, 0)
-          .to(node.spineMaterial, { opacity: 1, duration: d }, 0);
+          .to(node.spineMaterial, { opacity: 1, duration: d }, 0)
+          .to(node.boardsMaterial, { opacity: 1, duration: d }, 0)
+          .to(node.pagesMaterial, { opacity: 1, duration: d }, 0);
         node.coverMaterial.transparent = false;
         node.spineMaterial.transparent = false;
+        node.boardsMaterial.transparent = false;
+        node.pagesMaterial.transparent = false;
         tl.to(node.coverMaterial, { opacity: 1, duration: d }, 0);
       } else {
         const push = node.restX < nodes[index].restX ? -SELECT_PUSH : SELECT_PUSH;
         node.coverMaterial.transparent = true;
         node.spineMaterial.transparent = true;
+        node.boardsMaterial.transparent = true;
+        node.pagesMaterial.transparent = true;
         tl.to(
           node.group.position,
           { x: node.restX + push, y: BOOK.h / 2, z: 0, duration: d },
@@ -946,7 +962,9 @@ export function createScene(
         )
           .to(node.group.rotation, { y: Math.PI / 2, duration: d }, 0)
           .to(node.spineMaterial, { opacity: 0.25, duration: d }, 0)
-          .to(node.coverMaterial, { opacity: 0.25, duration: d }, 0);
+          .to(node.coverMaterial, { opacity: 0.25, duration: d }, 0)
+          .to(node.boardsMaterial, { opacity: 0.25, duration: d }, 0)
+          .to(node.pagesMaterial, { opacity: 0.25, duration: d }, 0);
       }
     });
 
@@ -971,49 +989,18 @@ export function createScene(
       )
         .to(node.group.rotation, { y: Math.PI / 2, duration: d }, 0)
         .to(node.spineMaterial, { opacity: 1, duration: d }, 0)
-        .to(node.coverMaterial, { opacity: 1, duration: d }, 0);
+        .to(node.coverMaterial, { opacity: 1, duration: d }, 0)
+        .to(node.boardsMaterial, { opacity: 1, duration: d }, 0)
+        .to(node.pagesMaterial, { opacity: 1, duration: d }, 0);
     });
     tl.to(camera.position, { z: 3.4, duration: d }, 0);
     await tl;
     nodes.forEach((n) => {
       n.spineMaterial.transparent = false;
       n.coverMaterial.transparent = false;
+      n.boardsMaterial.transparent = false;
+      n.pagesMaterial.transparent = false;
     });
-  }
-
-  async function open(animate: boolean): Promise<void> {
-    if (selected === null) return;
-    const node = nodes[selected];
-    returnFirstPlate();
-    const tl = gsap.timeline({ onUpdate: markDirty });
-    // La désignation ne fait qu'avancer le livre au survol (HOVER_OUT) : le
-    // gros plan proprement dit - le livre gagnant SELECT_OUT - n'a lieu qu'à
-    // l'ouverture, en même temps que la couverture se rabat et que la caméra
-    // s'approche.
-    tl.to(
-      node.group.position,
-      { y: SELECT_Y, z: SELECT_OUT, duration: animate ? dur(1100) : 0, ease: "power2.inOut" },
-      0,
-    ).to(
-      node.coverPivot.rotation,
-      { y: OPEN_ANGLE, duration: animate ? dur(1100) : 0, ease: "power2.inOut" },
-      0,
-    );
-    if (animate && !opts.reducedMotion) {
-      tl.to(
-        camera.position,
-        { z: SELECT_OUT + 0.16, y: BOOK.h * 0.52, duration: dur(1150), ease: "power2.in" },
-        dur(250),
-      )
-        .to(camTarget, { y: BOOK.h * 0.44, z: -0.2, duration: dur(1150) }, dur(250))
-        .to(camera, { fov: 58, duration: dur(1150), onUpdate: () => camera.updateProjectionMatrix() }, dur(250));
-    } else {
-      camera.position.set(0, BOOK.h * 0.52, SELECT_OUT + 0.16);
-      camTarget.set(0, BOOK.h * 0.44, -0.2);
-      camera.fov = 58;
-      camera.updateProjectionMatrix();
-    }
-    await tl;
   }
 
   async function close(animate: boolean): Promise<void> {
@@ -1086,6 +1073,10 @@ export function createScene(
         node.spineMaterial.opacity = 0.25;
         node.coverMaterial.transparent = true;
         node.coverMaterial.opacity = 0.25;
+        node.boardsMaterial.transparent = true;
+        node.boardsMaterial.opacity = 0.25;
+        node.pagesMaterial.transparent = true;
+        node.pagesMaterial.opacity = 0.25;
       }
     });
     camera.position.set(0, BOOK.h * 0.52, SELECT_OUT + 0.16);
@@ -1126,7 +1117,6 @@ export function createScene(
     setHover,
     select,
     deselect,
-    open,
     close,
     enterImmediate,
     openForReading,
@@ -1176,6 +1166,8 @@ export function createScene(
         n.spineMaterial.dispose();
         n.coverMaterial.dispose();
         n.firstPlateMaterial.dispose();
+        n.boardsMaterial.dispose();
+        n.pagesMaterial.dispose();
       });
       key.dispose();
       readLight.dispose();

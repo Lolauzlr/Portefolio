@@ -136,28 +136,6 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
   );
 
   // --- intentions ----------------------------------------------------------
-  const enterDetails = useCallback(
-    async (index: number) => {
-      const scene = sceneRef.current;
-      const slug = COMICS[index]?.slug;
-      if (!scene || !slug) return;
-      if (nextState(stateRef.current, "details") === null) return;
-
-      setPhase("OPENING_DETAILS");
-      scene.setPickingEnabled(false);
-      await scene.open(true);
-      if (!mountedRef.current) return;
-      setOverlay(1);
-      await wait(OVERLAY_MS);
-      if (!mountedRef.current) return;
-      scene.setVisible(false);
-      setCanvasHidden(true);
-      selfNavigatedRef.current += 1;
-      router.push(`/comics/${slug}`);
-    },
-    [router, setPhase],
-  );
-
   /**
    * La lecture ne fait pas entrer dans le livre : ni voile, ni canvas masqué. Le livre
    * s'ouvre, la caméra recule sur la double page, et l'URL suit en silence.
@@ -359,7 +337,7 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
       if (!COMICS[index]?.slug) return; // album à venir
 
       if (current === "SELECTED" && selectedRef.current === index) {
-        void enterDetails(index);
+        void enterReading(index);
         return;
       }
       if (nextState(current, "select") === null) return;
@@ -367,7 +345,7 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
       setSelected(index);
       void scene.select(index, true);
     },
-    [enterDetails, setPhase, setSelected],
+    [enterReading, setPhase, setSelected],
   );
 
   /** Un clic hors des livres range la sélection en cours, si le livre n'est pas déjà ouvert. */
@@ -598,8 +576,7 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
         handlePick(playable[(at + step + playable.length) % playable.length]);
       } else if (event.key === "Enter" && selectedRef.current !== null) {
         event.preventDefault();
-        if (event.shiftKey) void enterReading(selectedRef.current);
-        else void enterDetails(selectedRef.current);
+        void enterReading(selectedRef.current);
       } else if (event.key === "Escape" && stateRef.current === "SELECTED") {
         event.preventDefault();
         setPhase("SHELF");
@@ -609,7 +586,7 @@ export default function ShelfShell({ children }: { children: React.ReactNode }) 
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [enterDetails, enterReading, exit, handlePick, setPhase, setSelected, turn]);
+  }, [enterReading, exit, handlePick, setPhase, setSelected, turn]);
 
   // --- molette --------------------------------------------------------------
   useEffect(() => {
