@@ -177,6 +177,15 @@ export type SceneHandle = {
    *  droite parmi les livres actuellement posés - sert à river la card à un
    *  écart constant plutôt qu'à un point fixe du viewport (voir ShelfShell). */
   contentRightEdge(): number;
+  /** Abscisse, en pixels CSS depuis le bord gauche du canevas, du centre de
+   *  l'étagère - sert à centrer le curseur (BookSlider) sous les livres,
+   *  pas sous la card (voir ShelfShell). */
+  contentCenterX(): number;
+  /** Ordonnée, en pixels CSS depuis le sommet du canevas, du pied des livres
+   *  (là où ils posent sur l'étagère) - sert à poser le curseur juste sous
+   *  eux, pas sous un bord du conteneur qui peut déborder l'écran (voir
+   *  ShelfShell). */
+  contentBottomY(): number;
   dispose(): void;
 };
 
@@ -1119,24 +1128,28 @@ export function createScene(
     return readingBack(camera.aspect, READ_FOV);
   }
 
-  /** Voir SceneHandle.contentRightEdge. */
-  function contentRightEdge(): number {
+  /**
+   * Boîte englobante du pire cas, en pixels CSS depuis le bord gauche du
+   * canevas, pas celle des livres tels qu'ils sont en ce moment
+   * (nodes[].group) : la désignation resserre l'étagère autour du livre
+   * désigné (voir pushedPositions dans select()), donc la largeur occupée -
+   * et son centre - varient déjà selon lequel est désigné. On énumère donc
+   * les trois désignations possibles (un seul livre à la fois, jamais plus
+   * de trois sur cette étagère) et on retient les extrêmes : la card
+   * (contentRightEdge) et le curseur (contentCenterX) restent ainsi à une
+   * position constante plutôt que recalée au gré des désignations.
+   */
+  function contentBoundsPx(): { minPx: number; maxPx: number; bottomPx: number } {
     const w = canvas.clientWidth || window.innerWidth;
+    const h = canvas.clientHeight || window.innerHeight;
     // updateMatrixWorld: .project() lit la matrice caméra telle qu'elle était au
     // dernier rendu, qui peut dater d'avant le dernier déplacement des livres.
     camera.lookAt(camTarget);
     camera.updateMatrixWorld();
-    let maxPx = 0;
+    let minPx = Infinity;
+    let maxPx = -Infinity;
+    let bottomPx = -Infinity;
     const corner = new THREE.Vector3();
-    // Boîte englobante du pire cas, pas celle des livres tels qu'ils sont en
-    // ce moment (nodes[].group) : la désignation resserre l'étagère autour
-    // du livre désigné (voir pushedPositions dans select()), donc la largeur
-    // occupée varie déjà selon lequel est désigné - inutile de la recalculer
-    // à chaque survol/désignation, la card doit rester à un écart constant.
-    // On énumère donc les trois désignations possibles (un seul livre à la
-    // fois, jamais plus de trois sur cette étagère) et on retient la plus à
-    // droite : le pire cas est Old Knight désigné, les deux autres resserrés
-    // à sa droite.
     for (let selectedIndex = 0; selectedIndex < nodes.length; selectedIndex++) {
       const xs = pushedPositions(nodes.length, selectedIndex);
       nodes.forEach((_, i) => {
@@ -1145,13 +1158,34 @@ export function createScene(
           for (const y of [0, BOOK.h]) {
             for (const z of [-BOOK.t / 2, HOVER_OUT + BOOK.t / 2]) {
               corner.set(x, y, z).project(camera);
-              maxPx = Math.max(maxPx, ((corner.x + 1) / 2) * w);
+              const px = ((corner.x + 1) / 2) * w;
+              minPx = Math.min(minPx, px);
+              maxPx = Math.max(maxPx, px);
+              // NDC y = -1 en bas, +1 en haut - inverse de l'axe écran, qui
+              // grandit vers le bas depuis le sommet du canevas.
+              if (y === 0) bottomPx = Math.max(bottomPx, ((1 - corner.y) / 2) * h);
             }
           }
         }
       });
     }
-    return maxPx;
+    return { minPx, maxPx, bottomPx };
+  }
+
+  /** Voir SceneHandle.contentRightEdge. */
+  function contentRightEdge(): number {
+    return contentBoundsPx().maxPx;
+  }
+
+  /** Voir SceneHandle.contentCenterX. */
+  function contentCenterX(): number {
+    const { minPx, maxPx } = contentBoundsPx();
+    return (minPx + maxPx) / 2;
+  }
+
+  /** Voir SceneHandle.contentBottomY. */
+  function contentBottomY(): number {
+    return contentBoundsPx().bottomPx;
   }
 
   function resize() {
@@ -1207,6 +1241,8 @@ export function createScene(
     },
     resize,
     contentRightEdge,
+    contentCenterX,
+    contentBottomY,
     dispose() {
       disposed = true;
       killOurTweens();

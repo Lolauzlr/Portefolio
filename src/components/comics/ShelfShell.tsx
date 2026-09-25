@@ -47,6 +47,8 @@ const WHEEL_LINE_PX = 16;
  * position réelle des livres, plutôt qu'au bord du canevas.
  */
 const CARD_GAP_PX = 40;
+/** Écart voulu entre le pied des livres et le curseur (BookSlider), en desktop. */
+const SLIDER_GAP_PX = 6;
 
 /** L'adresse telle que le routeur la donne, réduite à ce dont la coquille a besoin. */
 type Route = { slug: string | null; reading: boolean; spread: number };
@@ -78,6 +80,9 @@ export default function ShelfShell({
   /** Enfant de flux (pas de position fixe) : décalé à la main (transform) sur
    *  la position réelle des livres, voir refreshCardGap. */
   const panelWrapperRef = useRef<HTMLDivElement | null>(null);
+  /** Curseur (BookSlider), posé sous les livres - pas sous la card, voir
+   *  refreshCardGap. */
+  const sliderWrapperRef = useRef<HTMLDivElement | null>(null);
   const stateRef = useRef<ShelfState>(slugSegment && !isReading ? "INSIDE" : "SHELF");
   const selectedRef = useRef<number | null>(null);
   /** null : rien en attente. Sinon : adresse reçue pendant une transition. */
@@ -318,12 +323,16 @@ export default function ShelfShell({
    * d'eux. La désignation resserre l'étagère autour du livre désigné (voir
    * pushedPositions dans scene.ts) : contentRightEdge() renvoie donc le pire
    * cas plutôt que la position réelle du moment, pour que la card reste à un
-   * écart constant, jamais recalé au gré des désignations. Sans effet si la
-   * card n'est pas montée (hors SHELF/SELECTED).
+   * écart constant, jamais recalé au gré des désignations. Recale de la même
+   * façon le curseur (BookSlider), mais centré sous les livres eux-mêmes
+   * (contentCenterX), pas sous la card - ce sont deux éléments distincts,
+   * chacun posé en absolute par-dessus le canevas, pas l'un sous l'autre en
+   * flux. Sans effet si la card n'est pas montée (hors SHELF/SELECTED).
    */
   const refreshCardGap = useCallback(() => {
     const scene = sceneRef.current;
     const wrapper = panelWrapperRef.current;
+    const slider = sliderWrapperRef.current;
     const canvas = canvasRef.current;
     if (!scene || !wrapper || !canvas) return;
     const edge = scene.contentRightEdge();
@@ -338,6 +347,14 @@ export default function ShelfShell({
     // livres.
     const maxLeft = canvas.clientWidth - wrapper.offsetWidth - CARD_GAP_PX;
     wrapper.style.left = `${Math.min(desired, maxLeft)}px`;
+    if (slider) {
+      slider.style.left = `${scene.contentCenterX() - slider.offsetWidth / 2}px`;
+      // `top`, pas `bottom` : le conteneur (h-screen) commence sous l'en-tête
+      // et le titre de page, donc déborde l'écran par le bas au premier
+      // affichage - un `bottom` y ancrerait le curseur hors champ. contentBottomY
+      // vise le pied des livres tel qu'il est réellement rendu par la caméra.
+      slider.style.top = `${scene.contentBottomY() + SLIDER_GAP_PX}px`;
+    }
   }, []);
 
   const handlePick = useCallback(
@@ -741,19 +758,27 @@ export default function ShelfShell({
             livres n'occupant centrés qu'une fraction d'un canevas maintenant
             plein cadre. */}
         {ready && (state === "SHELF" || state === "SELECTED") && highlightIndex !== null && (
-          <div
-            ref={panelWrapperRef}
-            className="flex flex-col items-center gap-4 md:absolute md:top-1/2 md:-translate-y-1/2"
-          >
-            <ShelfInfoPanel comic={highlightedComic} onRead={() => void readFromPanel(highlightIndex)} />
+          <>
+            <div
+              ref={panelWrapperRef}
+              className="flex flex-col items-center gap-4 md:absolute md:top-1/2 md:-translate-y-1/2"
+            >
+              <ShelfInfoPanel comic={highlightedComic} onRead={() => void readFromPanel(highlightIndex)} />
+            </div>
             {/* Garde la façon dont on changeait de livre côté "Pick a story" :
-                un contrôle dédié, en plus du clic direct sur un livre. */}
-            <BookSlider
-              items={COMICS.map((comic, i) => ({ key: comic.slug ?? `upcoming-${i}`, label: comic.title }))}
-              active={highlightIndex}
-              onSelect={handlePick}
-            />
-          </div>
+                un contrôle dédié, en plus du clic direct sur un livre. Posé
+                sous les livres eux-mêmes (contentCenterX/contentBottomY, voir
+                refreshCardGap), pas sous la card : un élément distinct, en
+                absolute par-dessus le canevas comme elle, pas empilé dessous
+                en flux. `top`, pas un `bottom` CSS, voir refreshCardGap. */}
+            <div ref={sliderWrapperRef} className="mt-4 flex justify-center md:absolute md:mt-0">
+              <BookSlider
+                items={COMICS.map((comic, i) => ({ key: comic.slug ?? `upcoming-${i}`, label: comic.title }))}
+                active={highlightIndex}
+                onSelect={handlePick}
+              />
+            </div>
+          </>
         )}
       </div>
 
