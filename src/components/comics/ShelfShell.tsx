@@ -313,10 +313,13 @@ export default function ShelfShell({
 
   /**
    * Recale la card sur la position réelle des livres, plutôt que sur un point
-   * fixe du viewport : lue après coup (jamais pendant un tween de select(), dont
-   * la coroutine n'a pas fini de bouger les livres), donc toujours appelée une
-   * fois la désignation retombée, jamais depuis son déclenchement. Sans effet si
-   * la card n'est pas montée (hors SHELF/SELECTED).
+   * fixe du viewport : le canevas occupe toute la largeur de la page (voir
+   * CARD_GAP_PX plus haut), donc rien en CSS ne peut ancrer la card à côté
+   * d'eux. Les livres tournant sur place (jamais de déplacement latéral
+   * d'une désignation à l'autre, voir select() dans scene.ts), cet écart
+   * reste en pratique constant - mais reste calculé, pas figé en dur, pour
+   * suivre une largeur de fenêtre ou un redimensionnement du canevas. Sans
+   * effet si la card n'est pas montée (hors SHELF/SELECTED).
    */
   const refreshCardGap = useCallback(() => {
     const scene = sceneRef.current;
@@ -330,10 +333,9 @@ export default function ShelfShell({
     // voisine. `left`, pas un `transform` : la card doit rester ancrée à
     // l'écart voulu des livres même si le conteneur change de taille.
     const desired = edge + CARD_GAP_PX;
-    // Sur une fenêtre trop étroite pour cet écart (l'éventail des livres non
-    // désignés peut s'étaler assez loin, voir pushedRotations), la card se
-    // rapproche du bord plutôt que de sortir du champ - jamais au point de
-    // chevaucher les livres.
+    // Sur une fenêtre trop étroite pour cet écart, la card se rapproche du
+    // bord plutôt que de sortir du champ - jamais au point de chevaucher les
+    // livres.
     const maxLeft = canvas.clientWidth - wrapper.offsetWidth - CARD_GAP_PX;
     wrapper.style.left = `${Math.min(desired, maxLeft)}px`;
   }, []);

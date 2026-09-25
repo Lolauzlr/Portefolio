@@ -19,8 +19,16 @@ import { buildSpreads, clampSpreadIndex, presentSpread, type Spread } from "@/li
 
 const BOOK = { w: 1.02, h: 1.5, t: 0.26 };
 const COVER_T = 0.022;
-const GAP = 0.012;
 const HOVER_OUT = 0.09;
+/**
+ * Écart entre les abscisses de repos (restX) de deux livres voisins - fixe,
+ * jamais recalculé d'une désignation à l'autre (voir select()). Le livre
+ * désigné tourne sur place pour montrer sa couverture (BOOK.w, bien plus
+ * large que sa tranche BOOK.t) : l'écart doit donc être assez large pour
+ * que cette couverture ne recouvre pas la tranche de son voisin, pas
+ * seulement large comme deux tranches côte à côte.
+ */
+const SHELF_SLOT_W = 0.85;
 /**
  * Bond du livre non désigné au survol, ajouté à son repos (SPINE_REST_Z, pas
  * 0 - un bond absolu le ramènerait assez près de la caméra pour réexposer le
@@ -31,141 +39,6 @@ const HOVER_OUT = 0.09;
  */
 const HOVER_OUT_UNSELECTED = HOVER_OUT;
 const SELECT_OUT = 0.9;
-/**
- * Écart (au-delà du contact tranche à tranche/couverture) entre le livre
- * désigné et son premier voisin, à droite puis à gauche. La caméra n'étant
- * plus centrée sur la scène au repos (SHELF_CENTER_X, plus bas) mais décalée
- * vers la droite, un voisin à gauche s'en écarte bien plus qu'un voisin à
- * droite - il cesse d'être vu tranche pile face, laissant deviner en biais
- * un peu de son plat, ce qui grignote l'écart voulu s'il n'est pas plus
- * généreux de ce côté. Calibré pixel par pixel (mesure d'écran, pas de
- * formule) pour un écart visible net à la largeur de référence (2000px).
- */
-const FIRST_NEIGHBOR_JEU_RIGHT = 0.118;
-const FIRST_NEIGHBOR_JEU_LEFT = 0.47;
-/**
- * Écart pour le second voisin d'un côté, au-delà du premier qui penche
- * (voir FAN_TILT_ANGLE_Z) - n'entre en jeu que lorsque le livre désigné est
- * à une extrémité de l'étagère (Old Knight ou À venir), le seul cas avec
- * deux voisins du même côté. Le premier voisin penche justement vers ce
- * second, pied ancré mais haut basculé dans son espace (voir groundedPose) :
- * un écart droit/gauche distinct comme pour FIRST_NEIGHBOR_JEU_*. À gauche
- * (Old Knight, quand À venir est désigné) volontairement resserré : Old
- * Knight doit rester collé à No Finder et dans le cadre, cliquable - un
- * écart généreux (comme l'asymétrie caméra le suggérerait, cf.
- * FIRST_NEIGHBOR_JEU_*) le pousse hors champ sans vraiment supprimer le
- * plat de couverture qu'on devine en biais à cette distance.
- */
-const NEXT_NEIGHBOR_JEU_RIGHT = 0.16;
-const NEXT_NEIGHBOR_JEU_LEFT = 0.2;
-/**
- * Inclinaison (rotation.z, dans le plan de l'image - pas rotation.y qui
- * pivoterait le livre en profondeur) du seul premier voisin de chaque côté,
- * comme s'il penchait dans l'espace laissé par le livre désigné jusqu'à
- * sembler reposer sur le suivant (voir pushedTilts). Un livre a une vraie
- * épaisseur (BOOK.t) : le faire pivoter sur l'axe Y pour ce même effet
- * révèle un coin de ses plats de couverture (un losange), pas le simple
- * penché à plat de la référence - d'où ce roulis en façade plutôt qu'un
- * pivot en profondeur. Les voisins au-delà restent droits, non déplacés par
- * ce blanc. Même angle des deux côtés (No Finder vers À venir, No Finder
- * vers Old Knight) : un angle plus marqué à gauche a été tenté, mais son
- * empiètement (le haut du livre penché, pied ancré, voir groundedPose)
- * imposait soit un écart qui poussait Old Knight hors cadre - et hors de
- * portée du clic - soit un passage devant lui une fois rapproché.
- */
-const FAN_TILT_ANGLE_Z = (5 * Math.PI) / 180;
-
-/**
- * Rang de chaque livre non désigné, en éventail de part et d'autre du livre
- * désigné (rang 0) : 1 pour le premier voisin de chaque côté, 2 pour le
- * suivant, etc. Sert à graduer aussi bien l'écart (pushedPositions) que la
- * rotation (pushedRotations) selon la distance au livre désigné.
- */
-function bookRanks(count: number, selectedIndex: number): number[] {
-  const ranks = new Array<number>(count).fill(0);
-  for (const sign of [1, -1] as const) {
-    const indices =
-      sign === 1
-        ? Array.from({ length: Math.max(0, count - selectedIndex - 1) }, (_, k) => selectedIndex + 1 + k)
-        : Array.from({ length: Math.max(0, selectedIndex) }, (_, k) => selectedIndex - 1 - k);
-    indices.forEach((i, k) => {
-      ranks[i] = k + 1;
-    });
-  }
-  return ranks;
-}
-
-/**
- * Abscisse de chaque livre non désigné, en éventail de part et d'autre du
- * livre désigné (toujours posé à x = 0) : le premier de chaque côté à
- * FIRST_NEIGHBOR_JEU_*, les suivants à NEXT_NEIGHBOR_JEU_* de sa couverture.
- */
-function pushedPositions(count: number, selectedIndex: number): number[] {
-  const positions = new Array<number>(count).fill(0);
-  for (const sign of [1, -1] as const) {
-    let edge = sign * (BOOK.w / 2); // bord du livre désigné, côté sign.
-    let jeu = sign === 1 ? FIRST_NEIGHBOR_JEU_RIGHT : FIRST_NEIGHBOR_JEU_LEFT;
-    const indices =
-      sign === 1
-        ? Array.from({ length: Math.max(0, count - selectedIndex - 1) }, (_, k) => selectedIndex + 1 + k)
-        : Array.from({ length: Math.max(0, selectedIndex) }, (_, k) => selectedIndex - 1 - k);
-    for (const i of indices) {
-      const x = edge + sign * (jeu + BOOK.t / 2);
-      positions[i] = x;
-      edge = x + sign * (BOOK.t / 2);
-      jeu = sign === 1 ? NEXT_NEIGHBOR_JEU_RIGHT : NEXT_NEIGHBOR_JEU_LEFT;
-    }
-  }
-  return positions;
-}
-
-/**
- * Angle (rotation.y, en profondeur) de chaque livre : 0 pour le désigné
- * (couverture face caméra), Math.PI / 2 pour tous les autres (tranche à
- * plat) - le penché des voisins n'est plus porté par cet axe (voir
- * pushedTilts, rotation.z) pour ne pas révéler leurs plats de couverture.
- */
-function pushedRotations(count: number, selectedIndex: number): number[] {
-  const ranks = bookRanks(count, selectedIndex);
-  return ranks.map((rank) => (rank === 0 ? 0 : Math.PI / 2));
-}
-
-/**
- * Inclinaison (rotation.z) de chaque livre non désigné : seul le premier
- * voisin de chaque côté penche, du côté opposé au livre désigné - comme s'il
- * s'affaissait dans l'espace laissé par lui jusqu'à sembler reposer sur le
- * suivant. Les voisins au-delà restent droits (0), non déplacés par ce
- * blanc. "À venir" (le dernier de l'étagère, voir comics.ts) fait toujours
- * exception : le panneau d'info est posé juste à sa droite (refreshCardGap
- * dans ShelfShell), et un penché y empiéterait - il reste donc droit même
- * en rang 1, qu'il ait ou non un second voisin sur qui reposer.
- */
-function pushedTilts(count: number, selectedIndex: number): number[] {
-  const ranks = bookRanks(count, selectedIndex);
-  return nodesSigns(count, selectedIndex).map((sign, i) =>
-    ranks[i] === 1 && i !== count - 1 ? -sign * FAN_TILT_ANGLE_Z : 0,
-  );
-}
-
-/** Côté (1 = à droite, -1 = à gauche, 0 = le désigné lui-même) de chaque livre. */
-function nodesSigns(count: number, selectedIndex: number): number[] {
-  return Array.from({ length: count }, (_, i) =>
-    i === selectedIndex ? 0 : i > selectedIndex ? 1 : -1,
-  );
-}
-
-/**
- * Position (x, y) du groupe d'un livre penché (rotation.z = tiltZ) pour que
- * son pied reste posé au sol (y = 0) à l'abscisse x visée, plutôt que de
- * pivoter sur son centre (l'origine du groupe, voir group.position.set plus
- * bas) - ce qui ferait plonger son bas sous l'étagère et son haut s'envoler
- * au-dessus, au lieu de sembler s'appuyer sur le voisin. Un livre droit
- * (tiltZ = 0) retombe exactement sur (x, BOOK.h / 2), la pose d'avant.
- */
-function groundedPose(x: number, tiltZ: number): { x: number; y: number } {
-  const halfH = BOOK.h / 2;
-  return { x: x - halfH * Math.sin(tiltZ), y: halfH * Math.cos(tiltZ) };
-}
 /**
  * Profondeur de repos d'un livre non désigné, tranche tournée vers la caméra. La
  * tranche est postée au bord du livre (voir spine.position.x plus bas), pas en son
@@ -488,15 +361,9 @@ export function createScene(
   const pickMeshes: THREE.Mesh[] = [];
 
   comics.forEach((comic, i) => {
-    const restX = (i - (comics.length - 1) / 2) * (BOOK.t + GAP);
+    const restX = (i - (comics.length - 1) / 2) * SHELF_SLOT_W;
 
     const group = new THREE.Group();
-    // Ordre Z-Y-X (pas XYZ par défaut) : rotation.z (le penché, voir
-    // pushedTilts) doit s'appliquer en dernier, autour de l'axe caméra fixe -
-    // pas en premier, dans le repère d'origine du livre, où il finirait
-    // recomposé par le yaw (rotation.y) en un pivot en profondeur au lieu
-    // d'un simple roulis en façade.
-    group.rotation.order = "ZYX";
     group.rotation.y = Math.PI / 2; // le dos fait face à la caméra
     group.position.set(restX, BOOK.h / 2, 0);
 
@@ -1086,29 +953,31 @@ export function createScene(
   /**
    * La désignation reste à l'échelle du survol (HOVER_OUT, pas SELECT_OUT) et
    * ne bouge pas la caméra vers le livre : elle se contente de tourner le
-   * livre vers la caméra et d'écarter l'autre, à côté, jamais par-dessus. Le
-   * gros plan (SELECT_OUT + zoom caméra) est réservé à l'ouverture (open /
-   * openForReading), pas à la simple désignation. Elle ramène en revanche
-   * toujours la caméra à sa distance de repos (3.4) : c'est désormais le seul
-   * point d'entrée du repos de l'étagère, un livre y étant toujours désigné
-   * (voir exit() dans ShelfShell, qui l'appelle au lieu de désélectionner).
+   * livre vers la caméra, sur place - chaque livre garde son abscisse de
+   * repos (restX) qu'il soit désigné ou non, pour que le reste de la
+   * composition (l'étagère, la card d'info posée à sa droite) ne bouge
+   * jamais d'une désignation à l'autre. Le gros plan (SELECT_OUT + zoom
+   * caméra) est réservé à l'ouverture (open / openForReading), pas à la
+   * simple désignation. Elle ramène en revanche toujours la caméra à sa
+   * distance de repos (3.4) : c'est désormais le seul point d'entrée du
+   * repos de l'étagère, un livre y étant toujours désigné (voir exit() dans
+   * ShelfShell, qui l'appelle au lieu de désélectionner).
    */
   async function select(index: number, animate: boolean): Promise<void> {
     selected = index;
     void ensureCover(nodes[index]);
-    const xs = pushedPositions(nodes.length, index);
-    const rots = pushedRotations(nodes.length, index);
-    const tilts = pushedTilts(nodes.length, index);
 
     // La désignation suit la pose engagée dès l'appel : elle ne doit jamais
     // dépendre d'un soulèvement de survol en cours.
     nodes.forEach((node, i) => {
-      if (i === index) {
-        setPickPose(node.pick, 0, BOOK.h / 2, HOVER_OUT, 0);
-      } else {
-        const pose = groundedPose(xs[i], tilts[i]);
-        setPickPose(node.pick, pose.x, pose.y, SPINE_REST_Z, rots[i]);
-      }
+      const isSelected = i === index;
+      setPickPose(
+        node.pick,
+        node.restX,
+        BOOK.h / 2,
+        isSelected ? HOVER_OUT : SPINE_REST_Z,
+        isSelected ? 0 : Math.PI / 2,
+      );
     });
 
     const d = animate ? dur(900) : 0;
@@ -1117,20 +986,12 @@ export function createScene(
     tl.to(camTarget, { x: SHELF_CENTER_X, duration: d }, 0);
 
     nodes.forEach((node, i) => {
-      if (i === index) {
-        tl.to(node.group.position, { x: 0, y: BOOK.h / 2, z: HOVER_OUT, duration: d }, 0).to(
-          node.group.rotation,
-          { y: 0, z: 0, duration: d },
-          0,
-        );
-      } else {
-        const pose = groundedPose(xs[i], tilts[i]);
-        tl.to(
-          node.group.position,
-          { x: pose.x, y: pose.y, z: SPINE_REST_Z, duration: d },
-          0,
-        ).to(node.group.rotation, { y: rots[i], z: tilts[i], duration: d }, 0);
-      }
+      const isSelected = i === index;
+      tl.to(
+        node.group.position,
+        { x: node.restX, y: BOOK.h / 2, z: isSelected ? HOVER_OUT : SPINE_REST_Z, duration: d },
+        0,
+      ).to(node.group.rotation, { y: isSelected ? 0 : Math.PI / 2, duration: d }, 0);
     });
 
     await tl;
@@ -1196,7 +1057,6 @@ export function createScene(
     applyReadingLighting(false);
     selected = index;
     void ensureCover(nodes[index]);
-    const xs = pushedPositions(nodes.length, index);
     nodes.forEach((node, i) => {
       if (i === index) {
         setPickPose(node.pick, 0, BOOK.h / 2 + 0.15, SELECT_OUT, 0);
@@ -1204,8 +1064,8 @@ export function createScene(
         node.group.rotation.y = 0;
         node.coverPivot.rotation.y = OPEN_ANGLE;
       } else {
-        setPickPose(node.pick, xs[i], BOOK.h / 2, SPINE_REST_Z, Math.PI / 2);
-        node.group.position.set(xs[i], BOOK.h / 2, SPINE_REST_Z);
+        setPickPose(node.pick, node.restX, BOOK.h / 2, SPINE_REST_Z, Math.PI / 2);
+        node.group.position.set(node.restX, BOOK.h / 2, SPINE_REST_Z);
       }
     });
     camera.position.set(0, BOOK.h * 0.52, SELECT_OUT + 0.16);
@@ -1224,8 +1084,6 @@ export function createScene(
 
   /** Voir SceneHandle.contentRightEdge. */
   function contentRightEdge(): number {
-    const box = new THREE.Box3();
-    for (const node of nodes) box.expandByObject(node.group);
     const w = canvas.clientWidth || window.innerWidth;
     // updateMatrixWorld: .project() lit la matrice caméra telle qu'elle était au
     // dernier rendu, qui peut dater d'avant le dernier déplacement des livres.
@@ -1233,11 +1091,20 @@ export function createScene(
     camera.updateMatrixWorld();
     let maxPx = 0;
     const corner = new THREE.Vector3();
-    for (const x of [box.min.x, box.max.x]) {
-      for (const y of [box.min.y, box.max.y]) {
-        for (const z of [box.min.z, box.max.z]) {
-          corner.set(x, y, z).project(camera);
-          maxPx = Math.max(maxPx, ((corner.x + 1) / 2) * w);
+    // Boîte englobante du pire cas (chaque livre à sa pleine largeur de
+    // couverture, restX ± BOOK.w / 2), pas celle des livres tels qu'ils sont
+    // en ce moment (nodes[].group, tranche ou couverture selon la
+    // désignation) : les abscisses de repos ne bougeant plus d'une
+    // désignation à l'autre (voir select()), la card doit rester à un écart
+    // constant plutôt que suivre la largeur, elle vraiment variable, du
+    // livre actuellement désigné.
+    for (const node of nodes) {
+      for (const x of [node.restX - BOOK.w / 2, node.restX + BOOK.w / 2]) {
+        for (const y of [0, BOOK.h]) {
+          for (const z of [-BOOK.t / 2, HOVER_OUT + BOOK.t / 2]) {
+            corner.set(x, y, z).project(camera);
+            maxPx = Math.max(maxPx, ((corner.x + 1) / 2) * w);
+          }
         }
       }
     }
