@@ -54,10 +54,10 @@ export default function ShelfInfoPanel({
     <div className="fixed bottom-16 left-1/2 z-20 w-[calc(100%-32px)] max-w-[400px] -translate-x-1/2 md:static md:left-auto md:w-auto md:max-w-none md:translate-x-0 md:translate-y-0">
       <PentagonCard
         className="h-auto w-full md:h-[535px] md:w-[510px] backdrop-blur-[5px]"
-        contentClassName="!p-0 flex flex-col gap-[20px] h-full items-start py-[20px]"
+        contentClassName="!p-[16px] flex flex-col gap-[20px] h-full items-start"
       >
         <div
-          className="flex min-h-0 flex-1 flex-col gap-[12px] items-start px-[24px] w-full"
+          className="flex min-h-0 flex-1 flex-col gap-[12px] items-start w-full"
           style={panelStyle}
         >
           <h3 className="font-[family-name:var(--font-heading)] text-[32px] md:text-[40px] tracking-[3.2px] text-white w-full flex-none">
@@ -78,7 +78,7 @@ export default function ShelfInfoPanel({
             dans ShelfShell - mais n'a encore ni pages ni route de lecture :
             READ cède alors la place à une mention, plutôt que de proposer un
             lien mort. */}
-        <div className="flex flex-col items-start px-[24px] w-full" style={panelStyle}>
+        <div className="flex flex-col items-start w-full" style={panelStyle}>
           {panelComic.slug ? (
             <Link
               href={`/storyboard/${panelComic.slug}/lire`}
