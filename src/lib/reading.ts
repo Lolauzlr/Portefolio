@@ -1,7 +1,8 @@
 /**
  * Une double page telle qu'un livre l'ouvre. `null` désigne une page de garde
- * vierge. Les champs `left` et `right` sont en ordre LOGIQUE : le sens de
- * lecture ne s'applique qu'à la présentation, par presentSpread.
+ * vierge - seulement la dernière, quand le compte de planches est impair.
+ * Les champs `left` et `right` sont en ordre LOGIQUE : le sens de lecture ne
+ * s'applique qu'à la présentation, par presentSpread.
  */
 export type Spread = {
   index: number;
@@ -10,13 +11,15 @@ export type Spread = {
 };
 
 /**
- * Un livre relié s'ouvre sur une garde face à sa première planche, d'où le null
- * de tête. La séquence est complétée par une garde finale si elle est impaire.
+ * Le livre s'ouvre directement sur sa première planche (jamais une garde
+ * vierge en tête) : les deux pages de la première double page sont remplies
+ * dès l'ouverture. Seule la toute dernière double page peut porter une garde,
+ * quand le compte de planches est impair.
  *
  * `overlap` sert les planches conçues comme des doubles pages glissantes (une
- * illustration continue plutôt que des pages disjointes) : chaque planche reste
- * affichée pour la double page suivante au lieu d'être consommée par paires -
- * pas de garde de tête, la première planche ouvre directement le livre.
+ * illustration continue plutôt que des pages disjointes) : chaque planche
+ * reste affichée pour la double page suivante au lieu d'être consommée par
+ * paires.
  */
 export function buildSpreads(plates: string[], overlap = false): Spread[] {
   if (plates.length === 0) return [];
@@ -29,7 +32,7 @@ export function buildSpreads(plates: string[], overlap = false): Spread[] {
     return spreads;
   }
 
-  const pages: (string | null)[] = [null, ...plates];
+  const pages: (string | null)[] = [...plates];
   if (pages.length % 2 === 1) pages.push(null);
 
   const spreads: Spread[] = [];
@@ -56,5 +59,5 @@ export function clampSpreadIndex(index: number, total: number): number {
 
 /** `plateIndex` est l'indice de la planche dans le tableau `plates`, à partir de zéro. */
 export function spreadIndexForPlate(plateIndex: number): number {
-  return Math.floor((plateIndex + 1) / 2);
+  return Math.floor(plateIndex / 2);
 }

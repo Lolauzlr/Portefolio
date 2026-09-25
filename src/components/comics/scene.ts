@@ -95,6 +95,14 @@ const SPINE_REST_Z = HOVER_OUT + (BOOK.t - BOOK.w) / 2;
  */
 const SHELF_CENTER_X = 0.55;
 const OPEN_ANGLE = -2.3;
+/**
+ * Profondeur du fond assombri posé derrière le livre en lecture (voir
+ * readBackdrop plus bas) : entre le repos des livres voisins (SPINE_REST_Z
+ * ≈ -0.29, HOVER_OUT_UNSELECTED au plus près) et la double page elle-même
+ * (SELECT_OUT = 0.9), pour couvrir l'étagère et la pièce sans jamais mordre
+ * sur la page en cours de lecture.
+ */
+const READ_BACKDROP_Z = 0.35;
 /** Hauteur du centre du livre engagé : la lecture cadre sur elle, pas sur BOOK.h / 2. */
 const SELECT_Y = BOOK.h / 2 + 0.15;
 const READ_FOV = 42;
@@ -599,6 +607,21 @@ export function createScene(
   turnPage.pivot.position.set(0, 0, BOOK.t / 2 + 0.006);
   readingGroup.add(turnPage.pivot);
 
+  /**
+   * Fond assombri (25% de noir) posé entre le livre en lecture et le reste de
+   * l'étagère (voir READ_BACKDROP_Z) : sans lui, les livres voisins et la
+   * pièce restent visibles et pleinement éclairés autour de la double page,
+   * qui devrait pourtant seule occuper l'attention. Un plan du monde, pas un
+   * enfant du livre : il ne doit ni tourner ni avancer avec lui.
+   */
+  const readBackdrop = new THREE.Mesh(
+    new THREE.PlaneGeometry(1, 1),
+    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.25 }),
+  );
+  readBackdrop.scale.set(40, 40, 1);
+  readBackdrop.visible = false;
+  scene.add(readBackdrop);
+
   let readingNode: BookNode | null = null;
   let readingSpreads: Spread[] = [];
   let readingIndex = 0;
@@ -734,6 +757,8 @@ export function createScene(
     leftPage.visible = false;
     applyReadingLighting(true);
     turnPage.setVisible(false);
+    readBackdrop.position.set(node.group.position.x + HINGE_X, SELECT_Y, READ_BACKDROP_Z);
+    readBackdrop.visible = true;
 
     // Les planches d'abord : montrées avant, les deux pages nues remplissent le cadre
     // d'un aplat crème, la caméra étant encore à la distance de la pose engagée.
@@ -1069,6 +1094,7 @@ export function createScene(
       if (readingNode === node) lendRightPage(node, true);
       stopReading();
       applyReadingLighting(false);
+      readBackdrop.visible = false;
     };
     if (readingNode === null) stow();
 
@@ -1078,17 +1104,21 @@ export function createScene(
         markDirty();
       },
     });
+    // Réduits de moitié environ par rapport à l'ouverture (dur(1100)/dur(1000)+dur(900)) :
+    // en sortie de lecture l'œil n'a plus rien de nouveau à découvrir, contrairement à
+    // l'ouverture qui révèle la double page - une fermeture aussi lente ne faisait
+    // que retarder le retour à l'étagère, perçu comme mou plutôt que soigné.
     if (animate && !opts.reducedMotion) {
       tl.to(
         camera.position,
-        { x: SHELF_CENTER_X, z: 3.4 - 0.6, y: BOOK.h * 0.55, duration: dur(1000), ease: "power2.out" },
+        { x: SHELF_CENTER_X, z: 3.4 - 0.6, y: BOOK.h * 0.55, duration: dur(550), ease: "power2.out" },
         0,
       )
-        .to(camTarget, { x: SHELF_CENTER_X, y: BOOK.h * 0.5, z: 0, duration: dur(1000) }, 0)
-        .to(camera, { fov: 45, duration: dur(1000), onUpdate: () => camera.updateProjectionMatrix() }, 0)
+        .to(camTarget, { x: SHELF_CENTER_X, y: BOOK.h * 0.5, z: 0, duration: dur(550) }, 0)
+        .to(camera, { fov: 45, duration: dur(550), onUpdate: () => camera.updateProjectionMatrix() }, 0)
         .to(
           key.position,
-          { x: KEY_SHELF.x, y: KEY_SHELF.y, z: KEY_SHELF.z, duration: dur(1000) },
+          { x: KEY_SHELF.x, y: KEY_SHELF.y, z: KEY_SHELF.z, duration: dur(550) },
           0,
         );
     } else {
@@ -1100,8 +1130,8 @@ export function createScene(
     }
     tl.to(
       node.coverPivot.rotation,
-      { y: 0, duration: animate ? dur(900) : 0, ease: "power2.inOut" },
-      animate ? dur(300) : 0,
+      { y: 0, duration: animate ? dur(500) : 0, ease: "power2.inOut" },
+      animate ? dur(150) : 0,
     );
     await tl;
     stow(); // filet : une durée nulle n'émet aucun onUpdate
@@ -1113,6 +1143,7 @@ export function createScene(
     returnFirstPlate(); // une fermeture interrompue ne rend jamais la planche 1
     stopReading();
     applyReadingLighting(false);
+    readBackdrop.visible = false;
     selected = index;
     void ensureCover(nodes[index]);
     const xs = pushedPositions(nodes.length, index);
@@ -1276,6 +1307,8 @@ export function createScene(
       turnPage.dispose();
       readerPageGeo.dispose();
       [leftPageMaterial, rightPageMaterial].forEach((m) => m.dispose());
+      readBackdrop.geometry.dispose();
+      (readBackdrop.material as THREE.Material).dispose();
       [pagesGeo, plateGeo, spineGeo, pickGeo, wallGeo].forEach((g) => g.dispose());
       [pagesMat, boardsMat, pickMat, wallMat].forEach((m) => m.dispose());
       nodes.forEach((n) => {

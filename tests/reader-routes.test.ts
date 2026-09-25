@@ -26,15 +26,15 @@ describe("routes de lecture", () => {
     }
   });
 
-  it("génère les huit doubles pages d'Old Knight", () => {
-    for (let i = 0; i < 8; i += 1) {
+  it("génère les sept doubles pages d'Old Knight", () => {
+    for (let i = 0; i < 7; i += 1) {
       expect(existsSync(`${OUT}/storyboard/old-knight/lire/${i}.html`), `double page ${i}`).toBe(true);
     }
   });
 
   it("ne génère pas de double page au-delà de la dernière", () => {
     expect(existsSync(`${OUT}/storyboard/no-finder/lire/25.html`)).toBe(false);
-    expect(existsSync(`${OUT}/storyboard/old-knight/lire/8.html`)).toBe(false);
+    expect(existsSync(`${OUT}/storyboard/old-knight/lire/7.html`)).toBe(false);
     expect(existsSync(`${OUT}/storyboard/mazou/lire/5.html`)).toBe(false);
   });
 
@@ -52,8 +52,8 @@ describe("routes de lecture", () => {
 
   it("met les deux planches et les liens dans le HTML pré-rendu", () => {
     const html = readFileSync(`${OUT}/storyboard/no-finder/lire/1.html`, "utf8");
-    expect(html).toContain("NO_FINDER-02.webp");
     expect(html).toContain("NO_FINDER-03.webp");
+    expect(html).toContain("NO_FINDER-04.webp");
     expect(html).toContain("/storyboard/no-finder/lire/0");
     expect(html).toContain("/storyboard/no-finder/lire/2");
   });
@@ -61,6 +61,15 @@ describe("routes de lecture", () => {
   it("n'offre pas de page précédente sur la première double page", () => {
     const html = readFileSync(`${OUT}/storyboard/no-finder/lire/0.html`, "utf8");
     expect(html).not.toContain("/storyboard/no-finder/lire/-1");
+  });
+
+  it("ouvre directement sur les deux premières planches, sans garde vierge", () => {
+    const noFinder = readFileSync(`${OUT}/storyboard/no-finder/lire/0.html`, "utf8");
+    expect(noFinder).toContain("NO_FINDER-01.webp");
+    expect(noFinder).toContain("NO_FINDER-02.webp");
+    const oldKnight = readFileSync(`${OUT}/storyboard/old-knight/lire/0.html`, "utf8");
+    expect(oldKnight).toContain("OLD_KNIGHT-02.webp");
+    expect(oldKnight).toContain("OLD_KNIGHT-03.webp");
   });
 
   it("renvoie vers l'étagère depuis la page de lecture", () => {
