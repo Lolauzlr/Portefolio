@@ -82,11 +82,22 @@ export const COMICS: Comic[] = [
     title: "À venir",
     year: null,
     status: "upcoming",
-    cover: null,
-    spine: null,
+    cover: asset("/images/book/MAZOU-BD-cover-earth-plane-001.webp"),
+    spine: asset("/images/book/Tranche-MAZOU-BD-typo.webp"),
     accent: "#8ec9ff",
     meta: { format: "Bande dessinée", pages: null, technique: "" },
-    plates: [],
+    // Chaque planche est un croquis double page : la 002 ouvre sur la 003, puis
+    // chaque planche suivante glisse d'un cran (003+004, 004+005, ...) plutôt que
+    // de se paginer par paires disjointes - pas encore branché sur buildSpreads
+    // (voir src/lib/reading.ts) tant que ce livre n'a pas de route de lecture.
+    plates: [
+      "MAZOU-BD-moto-jungle-sketch-002.webp",
+      "MAZOU-BD-moto-jungle-sketch-003.webp",
+      "MAZOU-BD-spicy-food-sketch-004.webp",
+      "MAZOU-BD-spicy-food-sketch-005.webp",
+      "MAZOU-BD-wash-clothes-sketch-006.webp",
+      "MAZOU-BD-wash-clothes-sketch-007.webp",
+    ].map((f) => asset(`/images/book/${f}`)),
   },
 ];
 
