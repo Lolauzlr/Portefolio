@@ -44,12 +44,12 @@ const SELECT_OUT = 0.9;
 const FIRST_NEIGHBOR_JEU_RIGHT = 0.118;
 const FIRST_NEIGHBOR_JEU_LEFT = 0.47;
 /**
- * Écart pour chaque voisin suivant, au-delà du premier - plus généreux
- * encore : lui aussi s'écarte de l'axe de la caméra, un peu plus à chaque
- * pas. Calibré de la même façon (mesure d'écran) côté droit ; réutilisé côté
- * gauche à défaut d'un troisième livre pour l'y calibrer séparément.
+ * Écart pour chaque voisin suivant, au-delà du premier - volontairement plus
+ * resserré (12px à la largeur de référence, contre 40px pour le premier
+ * voisin) : calibré de la même façon (mesure d'écran) côté droit ; réutilisé
+ * côté gauche à défaut d'un troisième livre pour l'y calibrer séparément.
  */
-const NEXT_NEIGHBOR_JEU = 0.235;
+const NEXT_NEIGHBOR_JEU = 0.147;
 
 /**
  * Abscisse de chaque livre non désigné, en éventail de part et d'autre du
