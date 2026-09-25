@@ -19,18 +19,81 @@ import { buildSpreads, clampSpreadIndex, presentSpread, type Spread } from "@/li
 
 const BOOK = { w: 1.02, h: 1.5, t: 0.26 };
 const COVER_T = 0.022;
-const GAP = 0.012;
 const HOVER_OUT = 0.09;
+/**
+ * Écart (au-delà du contact tranche/couverture) entre le livre désigné et
+ * son premier voisin de chaque côté - le seul vrai vide de la composition,
+ * pour distinguer sa couverture, large (BOOK.w), de la tranche fine
+ * (BOOK.t) qui la longe. Au-delà de ce premier voisin, les suivants restent
+ * tranche à tranche (voir NEXT_NEIGHBOR_GAP) : c'est le premier voisin, pas
+ * eux, qui absorbe tout l'écart ouvert par la désignation.
+ */
+const FIRST_NEIGHBOR_GAP = 0.16;
+/**
+ * Écart entre deux voisins non désignés, l'un contre l'autre - un simple
+ * filet (pas une vraie séparation) plutôt qu'un vide, pour qu'ils lisent
+ * comme des livres serrés sur une étagère, non comme des cases espacées.
+ */
+const NEXT_NEIGHBOR_GAP = 0.015;
+
+/**
+ * Abscisse de chaque livre, désigné toujours posé à x = 0, les autres en
+ * éventail de part et d'autre : le premier de chaque côté à
+ * FIRST_NEIGHBOR_GAP de sa couverture (large), les suivants à
+ * NEXT_NEIGHBOR_GAP les uns des autres, tranche contre tranche. Recalculée
+ * à chaque désignation (voir select()) - contrairement aux abscisses de
+ * repos (restX) d'avant toute désignation, purement décoratives une fois
+ * l'étagère montée, un livre y étant toujours désigné.
+ */
+function pushedPositions(count: number, selectedIndex: number): number[] {
+  const positions = new Array<number>(count).fill(0);
+  for (const sign of [1, -1] as const) {
+    let edge = sign * (BOOK.w / 2); // bord du livre désigné, côté sign.
+    let gap = FIRST_NEIGHBOR_GAP;
+    const indices =
+      sign === 1
+        ? Array.from({ length: Math.max(0, count - selectedIndex - 1) }, (_, k) => selectedIndex + 1 + k)
+        : Array.from({ length: Math.max(0, selectedIndex) }, (_, k) => selectedIndex - 1 - k);
+    for (const i of indices) {
+      const x = edge + sign * (gap + BOOK.t / 2);
+      positions[i] = x;
+      edge = x + sign * (BOOK.t / 2);
+      gap = NEXT_NEIGHBOR_GAP;
+    }
+  }
+  return positions;
+}
+/**
+ * Bond du livre non désigné au survol, ajouté à son repos (SPINE_REST_Z, pas
+ * 0 - un bond absolu le ramènerait assez près de la caméra pour réexposer le
+ * dessus du bloc de pages, voir SPINE_REST_Z). Même amplitude que HOVER_OUT :
+ * un livre encore loin derrière son repos (SPINE_REST_Z ≈ -0.29) peut se le
+ * permettre sans jamais paraître aussi engagé que le livre désigné, qui parte
+ * déjà de HOVER_OUT (0.09) tout court.
+ */
+const HOVER_OUT_UNSELECTED = HOVER_OUT;
 const SELECT_OUT = 0.9;
 /**
- * Écart du livre non désigné, au-delà de son restX. La désignation tourne le
- * livre choisi vers la caméra : sa tranche (BOOK.t, ~0.26) cède la place à sa
- * pleine largeur (BOOK.w, ~1.02), et 0.25 - qui suffisait à l'écarter du
- * livre resté tranche sur tranche - le laisse alors chevauché. La marge vise
- * le bord du livre choisi (BOOK.w / 2) plus la moitié de la tranche de
- * l'autre (BOOK.t / 2) plus un jeu, moins son propre restX déjà écarté.
+ * Profondeur de repos d'un livre non désigné, tranche tournée vers la caméra. La
+ * tranche est postée au bord du livre (voir spine.position.x plus bas), pas en son
+ * centre : la pivoter à 90° l'avance donc de BOOK.w / 2 - COVER_T / 2 devant l'axe
+ * du groupe, presque la moitié de la largeur du livre. Non compensé, ce surplomb
+ * plaçait la tranche bien plus près de la caméra que la couverture du livre désigné
+ * (avancée seulement de BOOK.t / 2, l'épaisseur), qui en paraissait la plus petite
+ * des deux - l'exact inverse de la hiérarchie voulue. Ce repos vise donc la même
+ * profondeur que la couverture désignée à son propre repos (HOVER_OUT).
  */
-const SELECT_PUSH = BOOK.w / 2 + BOOK.t / 2 + 0.05 - (BOOK.t + GAP) / 2;
+const SPINE_REST_Z = HOVER_OUT + (BOOK.t - BOOK.w) / 2;
+/**
+ * Décalage de la caméra (et de sa cible, pour ne pas l'incliner) au repos de
+ * l'étagère : la déplacer vers la droite (x positif) fait paraître tout ce
+ * qui reste à x = 0 - la composition livre désigné + tranche écartée -
+ * décalé vers la GAUCHE du canevas, qui occupe maintenant toute la largeur
+ * de la page (voir ShelfShell). Ça laisse un espace vide à droite, pour un
+ * troisième livre à venir, plutôt que de centrer exactement les deux livres
+ * actuels.
+ */
+const SHELF_CENTER_X = 0.55;
 const OPEN_ANGLE = -2.3;
 /** Hauteur du centre du livre engagé : la lecture cadre sur elle, pas sur BOOK.h / 2. */
 const SELECT_Y = BOOK.h / 2 + 0.15;
@@ -110,6 +173,24 @@ export type SceneHandle = {
   setVisible(visible: boolean): void;
   renderOnce(): void;
   resize(): void;
+  /** Abscisse, en pixels CSS depuis le bord gauche du canevas, du point le plus à
+   *  droite parmi les livres actuellement posés - sert à river la card à un
+   *  écart constant plutôt qu'à un point fixe du viewport (voir ShelfShell). */
+  contentRightEdge(): number;
+  /** Abscisse, en pixels CSS depuis le bord gauche du canevas, du centre de
+   *  l'étagère - sert à centrer le curseur (BookSlider) sous les livres,
+   *  pas sous la card (voir ShelfShell). */
+  contentCenterX(): number;
+  /** Ordonnée, en pixels CSS depuis le sommet du canevas, du sommet des livres
+   *  (le pire cas des trois désignations, comme contentRightEdge) - sert à
+   *  rapprocher tout le bloc canevas de l'en-tête "Pick a story" d'un écart
+   *  constant plutôt que de la moitié fixe de l'écran (voir ShelfShell). */
+  contentTopY(): number;
+  /** Ordonnée, en pixels CSS depuis le sommet du canevas, du pied des livres
+   *  (là où ils posent sur l'étagère) - sert à poser le curseur juste sous
+   *  eux, pas sous un bord du conteneur qui peut déborder l'écran (voir
+   *  ShelfShell). */
+  contentBottomY(): number;
   dispose(): void;
 };
 
@@ -117,9 +198,11 @@ type BookNode = {
   group: THREE.Group;
   pick: THREE.Mesh;
   coverPivot: THREE.Group;
-  spineMaterial: THREE.MeshStandardMaterial;
-  coverMaterial: THREE.MeshStandardMaterial;
-  firstPlateMaterial: THREE.MeshStandardMaterial;
+  spineMaterial: THREE.MeshBasicMaterial;
+  coverMaterial: THREE.MeshBasicMaterial;
+  firstPlateMaterial: THREE.MeshBasicMaterial;
+  /** Partagé (boardsMat) sauf si comic.boardsColor le remplace par une instance propre. */
+  boardsMaterial: THREE.MeshBasicMaterial;
   restX: number;
   comic: Comic;
   coverLoaded: boolean;
@@ -207,8 +290,8 @@ export function createScene(
   scene.background = new THREE.Color("#15161b");
 
   const camera = new THREE.PerspectiveCamera(45, 1, 0.01, 50);
-  camera.position.set(0, BOOK.h * 0.55, 3.4);
-  const camTarget = new THREE.Vector3(0, BOOK.h * 0.5, 0);
+  camera.position.set(SHELF_CENTER_X, BOOK.h * 0.55, 3.4);
+  const camTarget = new THREE.Vector3(SHELF_CENTER_X, BOOK.h * 0.5, 0);
 
   // --- environnement -------------------------------------------------------
   // Fond non éclairé à dessein : un matériau standard prendrait la tache du
@@ -306,7 +389,15 @@ export function createScene(
   const pickGeo = new THREE.BoxGeometry(BOOK.w, BOOK.h, BOOK.t);
 
   const pagesMat = new THREE.MeshStandardMaterial({ color: "#efe7d6", roughness: 0.95 });
-  const boardsMat = new THREE.MeshStandardMaterial({ color: "#101216", roughness: 0.7 });
+  /**
+   * Tranche des plats (dos, chants, dessus) : jamais la face qui porte une texture,
+   * seulement ce qui en dépasse au bord d'un livre tourné ou avancé vers la caméra -
+   * y compris le mince dessus de la couverture engagée, qu'un léger surplomb de
+   * caméra découvre. Éclairé (MeshStandardMaterial), ce dépassement virait au gris
+   * sombre selon l'angle au lieu de rester net comme les autres faces blanches -
+   * non éclairé désormais, comme couverture/dos/première planche (voir plus bas).
+   */
+  const boardsMat = new THREE.MeshBasicMaterial({ color: "#efefef" });
   const pickMat = new THREE.MeshBasicMaterial();
   pickMat.visible = false; // non rendu, mais toujours atteint par le lancer de rayon
 
@@ -320,24 +411,37 @@ export function createScene(
   const pickMeshes: THREE.Mesh[] = [];
 
   comics.forEach((comic, i) => {
-    const restX = (i - (comics.length - 1) / 2) * (BOOK.t + GAP);
+    // Pose initiale seulement : select() (toujours appelé au montage, un
+    // livre étant toujours désigné) la remplace aussitôt par pushedPositions.
+    const restX = (i - (comics.length - 1) / 2) * (BOOK.t + NEXT_NEIGHBOR_GAP);
 
     const group = new THREE.Group();
     group.rotation.y = Math.PI / 2; // le dos fait face à la caméra
     group.position.set(restX, BOOK.h / 2, 0);
 
-    const spineMaterial = new THREE.MeshStandardMaterial({
-      color: comic.spine ? 0xffffff : 0x1b1d22,
-      roughness: 0.8,
-    });
-    const coverMaterial = new THREE.MeshStandardMaterial({
+    // Non éclairés à dessein : ce sont les seules faces qui portent les visuels
+    // déposés par Marie (couverture, dos, première planche). Un matériau standard
+    // les faisait varier avec l'éclairage de la scène (projecteur, ambiante) -
+    // ombrées, voire quasi noires en bord de cône - alors qu'elles doivent rendre
+    // exactement les couleurs des images fournies, comme une reproduction fidèle.
+    // Toujours blanc, jamais 0x1b1d22 comme coverMaterial plus bas : à la
+    // différence de la couverture, la tranche reçoit TOUJOURS une texture
+    // (l'image fournie, ou à défaut le dos peint par paintUpcomingSpine plus
+    // bas) - une teinte sombre ici l'assombrirait doublement (`map` se
+    // multiplie à `color`), quand paintUpcomingSpine dessine déjà son propre
+    // fond sombre sur la texture elle-même.
+    const spineMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const coverMaterial = new THREE.MeshBasicMaterial({
       color: comic.cover ? 0xffffff : 0x1b1d22,
-      roughness: 0.75,
     });
-    const firstPlateMaterial = new THREE.MeshStandardMaterial({
+    const firstPlateMaterial = new THREE.MeshBasicMaterial({
       color: 0xefe7d6,
-      roughness: 0.95,
     });
+    // Un livre à tranche sombre laisse voir ce blanc partagé à ses chants et à son
+    // dos (plat 4, sans image dédiée) : une instance propre le remplace alors.
+    const boardsMaterial = comic.boardsColor
+      ? new THREE.MeshBasicMaterial({ color: comic.boardsColor })
+      : boardsMat;
 
     const pages = new THREE.Mesh(pagesGeo, [
       pagesMat,
@@ -351,19 +455,19 @@ export function createScene(
     pages.castShadow = true;
     group.add(pages);
 
-    const back = new THREE.Mesh(plateGeo, boardsMat);
+    const back = new THREE.Mesh(plateGeo, boardsMaterial);
     back.position.set(0, 0, -(BOOK.t / 2 - COVER_T / 2) + 0.001);
     back.castShadow = true;
     group.add(back);
 
     // L'ordre des matériaux d'une BoxGeometry est [+X, -X, +Y, -Y, +Z, -Z].
     const spine = new THREE.Mesh(spineGeo, [
-      boardsMat,
+      boardsMaterial,
       spineMaterial,
-      boardsMat,
-      boardsMat,
-      boardsMat,
-      boardsMat,
+      boardsMaterial,
+      boardsMaterial,
+      boardsMaterial,
+      boardsMaterial,
     ]);
     spine.position.x = -(BOOK.w / 2 - COVER_T / 2);
     spine.castShadow = true;
@@ -375,12 +479,12 @@ export function createScene(
     // la couverture un arc qui la décolle du livre.
     coverPivot.position.set(-BOOK.w / 2 + PLATE_INSET, 0, BOOK.t / 2 - COVER_T / 2 + 0.001);
     const cover = new THREE.Mesh(plateGeo, [
-      boardsMat,
-      boardsMat,
-      boardsMat,
-      boardsMat,
+      boardsMaterial,
+      boardsMaterial,
+      boardsMaterial,
+      boardsMaterial,
       coverMaterial,
-      boardsMat,
+      boardsMaterial,
     ]);
     cover.position.set((BOOK.w - 2 * PLATE_INSET) / 2, 0, 0);
     cover.castShadow = true;
@@ -403,6 +507,7 @@ export function createScene(
       spineMaterial,
       coverMaterial,
       firstPlateMaterial,
+      boardsMaterial,
       restX,
       comic,
       coverLoaded: false,
@@ -620,7 +725,7 @@ export function createScene(
     returnFirstPlate();
     selected = index;
     readingNode = node;
-    readingSpreads = buildSpreads(node.comic.plates);
+    readingSpreads = buildSpreads(node.comic.plates, node.comic.overlappingPlates);
     readingIndex = clampSpreadIndex(spread, readingSpreads.length);
 
     node.group.add(readingGroup);
@@ -869,11 +974,14 @@ export function createScene(
   function setHover(index: number | null) {
     hovered = index;
     nodes.forEach((node, i) => {
-      // Le livre désigné et celui survolé partagent la même avancée
-      // (HOVER_OUT, jamais SELECT_OUT - réservé à l'ouverture) : survoler
-      // l'autre livre l'avance toujours, qu'un livre soit déjà désigné ou non.
+      // Le livre désigné garde son avancée pleine (HOVER_OUT, jamais SELECT_OUT
+      // - réservé à l'ouverture) quel que soit le survol. Survoler l'AUTRE livre
+      // le fait bondir aussi, mais moins (HOVER_OUT_UNSELECTED) et depuis SON
+      // repos (SPINE_REST_Z, pas 0) : un bond absolu le ramènerait aussi près de
+      // la caméra que HOVER_OUT lui-même, ce que SPINE_REST_Z corrige justement -
+      // et exposerait à nouveau le dessus du bloc de pages (voir SPINE_REST_Z).
       gsap.to(node.group.position, {
-        z: i === selected || i === index ? HOVER_OUT : 0,
+        z: i === selected ? HOVER_OUT : i === index ? SPINE_REST_Z + HOVER_OUT_UNSELECTED : SPINE_REST_Z,
         duration: dur(220),
         ease: "power2.out",
         onUpdate: markDirty,
@@ -903,8 +1011,10 @@ export function createScene(
   /**
    * La désignation reste à l'échelle du survol (HOVER_OUT, pas SELECT_OUT) et
    * ne bouge pas la caméra vers le livre : elle se contente de tourner le
-   * livre vers la caméra et d'écarter l'autre, à côté, jamais par-dessus. Le
-   * gros plan (SELECT_OUT + zoom caméra) est réservé à l'ouverture (open /
+   * livre vers la caméra et de refermer l'étagère autour de lui - le livre
+   * désigné toujours posé à x = 0, les autres resserrés tranche contre
+   * tranche (voir pushedPositions), pas chacun à une abscisse de repos figée.
+   * Le gros plan (SELECT_OUT + zoom caméra) est réservé à l'ouverture (open /
    * openForReading), pas à la simple désignation. Elle ramène en revanche
    * toujours la caméra à sa distance de repos (3.4) : c'est désormais le seul
    * point d'entrée du repos de l'étagère, un livre y étant toujours désigné
@@ -913,37 +1023,33 @@ export function createScene(
   async function select(index: number, animate: boolean): Promise<void> {
     selected = index;
     void ensureCover(nodes[index]);
+    const xs = pushedPositions(nodes.length, index);
 
     // La désignation suit la pose engagée dès l'appel : elle ne doit jamais
     // dépendre d'un soulèvement de survol en cours.
     nodes.forEach((node, i) => {
-      if (i === index) {
-        setPickPose(node.pick, 0, BOOK.h / 2, HOVER_OUT, 0);
-      } else {
-        const push = node.restX < nodes[index].restX ? -SELECT_PUSH : SELECT_PUSH;
-        setPickPose(node.pick, node.restX + push, BOOK.h / 2, 0, Math.PI / 2);
-      }
+      const isSelected = i === index;
+      setPickPose(
+        node.pick,
+        xs[i],
+        BOOK.h / 2,
+        isSelected ? HOVER_OUT : SPINE_REST_Z,
+        isSelected ? 0 : Math.PI / 2,
+      );
     });
 
     const d = animate ? dur(900) : 0;
     const tl = timeline();
-    tl.to(camera.position, { x: 0, y: BOOK.h * 0.55, z: 3.4, duration: d }, 0);
+    tl.to(camera.position, { x: SHELF_CENTER_X, y: BOOK.h * 0.55, z: 3.4, duration: d }, 0);
+    tl.to(camTarget, { x: SHELF_CENTER_X, duration: d }, 0);
 
     nodes.forEach((node, i) => {
-      if (i === index) {
-        tl.to(node.group.position, { x: 0, y: BOOK.h / 2, z: HOVER_OUT, duration: d }, 0).to(
-          node.group.rotation,
-          { y: 0, duration: d },
-          0,
-        );
-      } else {
-        const push = node.restX < nodes[index].restX ? -SELECT_PUSH : SELECT_PUSH;
-        tl.to(
-          node.group.position,
-          { x: node.restX + push, y: BOOK.h / 2, z: 0, duration: d },
-          0,
-        ).to(node.group.rotation, { y: Math.PI / 2, duration: d }, 0);
-      }
+      const isSelected = i === index;
+      tl.to(
+        node.group.position,
+        { x: xs[i], y: BOOK.h / 2, z: isSelected ? HOVER_OUT : SPINE_REST_Z, duration: d },
+        0,
+      ).to(node.group.rotation, { y: isSelected ? 0 : Math.PI / 2, duration: d }, 0);
     });
 
     await tl;
@@ -973,8 +1079,12 @@ export function createScene(
       },
     });
     if (animate && !opts.reducedMotion) {
-      tl.to(camera.position, { x: 0, z: 3.4 - 0.6, y: BOOK.h * 0.55, duration: dur(1000), ease: "power2.out" }, 0)
-        .to(camTarget, { x: 0, y: BOOK.h * 0.5, z: 0, duration: dur(1000) }, 0)
+      tl.to(
+        camera.position,
+        { x: SHELF_CENTER_X, z: 3.4 - 0.6, y: BOOK.h * 0.55, duration: dur(1000), ease: "power2.out" },
+        0,
+      )
+        .to(camTarget, { x: SHELF_CENTER_X, y: BOOK.h * 0.5, z: 0, duration: dur(1000) }, 0)
         .to(camera, { fov: 45, duration: dur(1000), onUpdate: () => camera.updateProjectionMatrix() }, 0)
         .to(
           key.position,
@@ -982,8 +1092,8 @@ export function createScene(
           0,
         );
     } else {
-      camera.position.set(0, BOOK.h * 0.55, 3.4 - 0.6);
-      camTarget.set(0, BOOK.h * 0.5, 0);
+      camera.position.set(SHELF_CENTER_X, BOOK.h * 0.55, 3.4 - 0.6);
+      camTarget.set(SHELF_CENTER_X, BOOK.h * 0.5, 0);
       camera.fov = 45;
       camera.updateProjectionMatrix();
       key.position.copy(KEY_SHELF);
@@ -1005,6 +1115,7 @@ export function createScene(
     applyReadingLighting(false);
     selected = index;
     void ensureCover(nodes[index]);
+    const xs = pushedPositions(nodes.length, index);
     nodes.forEach((node, i) => {
       if (i === index) {
         setPickPose(node.pick, 0, BOOK.h / 2 + 0.15, SELECT_OUT, 0);
@@ -1012,9 +1123,8 @@ export function createScene(
         node.group.rotation.y = 0;
         node.coverPivot.rotation.y = OPEN_ANGLE;
       } else {
-        const push = node.restX < nodes[index].restX ? -0.25 : 0.25;
-        setPickPose(node.pick, node.restX + push, BOOK.h / 2, 0, Math.PI / 2);
-        node.group.position.set(node.restX + push, BOOK.h / 2, 0);
+        setPickPose(node.pick, xs[i], BOOK.h / 2, SPINE_REST_Z, Math.PI / 2);
+        node.group.position.set(xs[i], BOOK.h / 2, SPINE_REST_Z);
       }
     });
     camera.position.set(0, BOOK.h * 0.52, SELECT_OUT + 0.16);
@@ -1029,6 +1139,74 @@ export function createScene(
    *  de la double page qui commande. */
   function readBack(): number {
     return readingBack(camera.aspect, READ_FOV);
+  }
+
+  /**
+   * Boîte englobante du pire cas, en pixels CSS depuis le bord gauche du
+   * canevas, pas celle des livres tels qu'ils sont en ce moment
+   * (nodes[].group) : la désignation resserre l'étagère autour du livre
+   * désigné (voir pushedPositions dans select()), donc la largeur occupée -
+   * et son centre - varient déjà selon lequel est désigné. On énumère donc
+   * les trois désignations possibles (un seul livre à la fois, jamais plus
+   * de trois sur cette étagère) et on retient les extrêmes : la card
+   * (contentRightEdge) et le curseur (contentCenterX) restent ainsi à une
+   * position constante plutôt que recalée au gré des désignations.
+   */
+  function contentBoundsPx(): { minPx: number; maxPx: number; topPx: number; bottomPx: number } {
+    const w = canvas.clientWidth || window.innerWidth;
+    const h = canvas.clientHeight || window.innerHeight;
+    // updateMatrixWorld: .project() lit la matrice caméra telle qu'elle était au
+    // dernier rendu, qui peut dater d'avant le dernier déplacement des livres.
+    camera.lookAt(camTarget);
+    camera.updateMatrixWorld();
+    let minPx = Infinity;
+    let maxPx = -Infinity;
+    let topPx = Infinity;
+    let bottomPx = -Infinity;
+    const corner = new THREE.Vector3();
+    for (let selectedIndex = 0; selectedIndex < nodes.length; selectedIndex++) {
+      const xs = pushedPositions(nodes.length, selectedIndex);
+      nodes.forEach((_, i) => {
+        const halfW = (i === selectedIndex ? BOOK.w : BOOK.t) / 2;
+        for (const x of [xs[i] - halfW, xs[i] + halfW]) {
+          for (const y of [0, BOOK.h]) {
+            for (const z of [-BOOK.t / 2, HOVER_OUT + BOOK.t / 2]) {
+              corner.set(x, y, z).project(camera);
+              const px = ((corner.x + 1) / 2) * w;
+              minPx = Math.min(minPx, px);
+              maxPx = Math.max(maxPx, px);
+              // NDC y = -1 en bas, +1 en haut - inverse de l'axe écran, qui
+              // grandit vers le bas depuis le sommet du canevas.
+              const py = ((1 - corner.y) / 2) * h;
+              if (y === 0) bottomPx = Math.max(bottomPx, py);
+              if (y === BOOK.h) topPx = Math.min(topPx, py);
+            }
+          }
+        }
+      });
+    }
+    return { minPx, maxPx, topPx, bottomPx };
+  }
+
+  /** Voir SceneHandle.contentRightEdge. */
+  function contentRightEdge(): number {
+    return contentBoundsPx().maxPx;
+  }
+
+  /** Voir SceneHandle.contentCenterX. */
+  function contentCenterX(): number {
+    const { minPx, maxPx } = contentBoundsPx();
+    return (minPx + maxPx) / 2;
+  }
+
+  /** Voir SceneHandle.contentTopY. */
+  function contentTopY(): number {
+    return contentBoundsPx().topPx;
+  }
+
+  /** Voir SceneHandle.contentBottomY. */
+  function contentBottomY(): number {
+    return contentBoundsPx().bottomPx;
   }
 
   function resize() {
@@ -1083,6 +1261,10 @@ export function createScene(
       renderer.render(scene, camera);
     },
     resize,
+    contentRightEdge,
+    contentCenterX,
+    contentTopY,
+    contentBottomY,
     dispose() {
       disposed = true;
       killOurTweens();
@@ -1103,6 +1285,9 @@ export function createScene(
         n.spineMaterial.dispose();
         n.coverMaterial.dispose();
         n.firstPlateMaterial.dispose();
+        // boardsMat (partagé) est déjà disposé ci-dessus : seule une instance
+        // propre à comic.boardsColor reste à disposer ici.
+        if (n.boardsMaterial !== boardsMat) n.boardsMaterial.dispose();
       });
       key.dispose();
       readLight.dispose();

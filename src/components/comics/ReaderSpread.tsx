@@ -29,7 +29,7 @@ export default function ReaderSpread({
   comic: PublishedComic;
   index: number;
 }) {
-  const spreads = buildSpreads(comic.plates);
+  const spreads = buildSpreads(comic.plates, comic.overlappingPlates);
   const spread = spreads[index];
   const shown = presentSpread(spread, comic.reverseReading ?? false);
   const previous = index > 0 ? index - 1 : null;
@@ -38,7 +38,7 @@ export default function ReaderSpread({
   return (
     <article className="mx-auto max-w-[1440px] px-4 pt-[152px] pb-24 md:px-[120px]">
       <Link
-        href={`/comics/${comic.slug}`}
+        href="/storyboard"
         className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-[#0fd1ea] hover:opacity-80"
       >
         ← {comic.title}
@@ -58,7 +58,7 @@ export default function ReaderSpread({
           <span className="text-[#8b9099]">Début</span>
         ) : (
           <Link
-            href={`/comics/${comic.slug}/lire/${previous}`}
+            href={`/storyboard/${comic.slug}/lire/${previous}`}
             className="text-[#0fd1ea] hover:opacity-80"
           >
             ← Précédent
@@ -71,7 +71,7 @@ export default function ReaderSpread({
           <span className="text-[#8b9099]">Fin</span>
         ) : (
           <Link
-            href={`/comics/${comic.slug}/lire/${next}`}
+            href={`/storyboard/${comic.slug}/lire/${next}`}
             className="text-[#0fd1ea] hover:opacity-80"
           >
             Suivant →

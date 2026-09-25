@@ -49,6 +49,27 @@ describe("pagination en doubles pages", () => {
   });
 });
 
+describe("pagination en doubles pages glissantes", () => {
+  it("ouvre directement sur les deux premières planches, sans garde", () => {
+    const s = buildSpreads(plates(6), true);
+    expect(s[0]).toEqual({ index: 0, left: "p1", right: "p2" });
+  });
+
+  it("fait glisser chaque double page d'une planche", () => {
+    const s = buildSpreads(plates(6), true);
+    expect(s[1]).toEqual({ index: 1, left: "p2", right: "p3" });
+    expect(s[2]).toEqual({ index: 2, left: "p3", right: "p4" });
+  });
+
+  it("compte une double page de moins que de planches", () => {
+    expect(buildSpreads(plates(6), true)).toHaveLength(5);
+  });
+
+  it("ne produit aucune double page sans planche, même glissante", () => {
+    expect(buildSpreads([], true)).toEqual([]);
+  });
+});
+
 describe("sens de lecture", () => {
   const spread: Spread = { index: 3, left: "a", right: "b" };
 

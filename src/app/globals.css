@@ -19,9 +19,12 @@ body {
   font-family: var(--font-body);
 }
 
-/* En lecture, le livre occupe tout l'écran : la barre de navigation
-   le recouvrirait, et le bouton de sortie suffit à en ressortir. */
-body[data-reading="true"] header {
+/* En lecture, le livre occupe tout l'écran : la barre de navigation et le
+   pied de page (tous deux du layout racine, donc jamais démontés par
+   ShelfShell) le recouvriraient sinon, et le bouton de sortie suffit à en
+   ressortir. */
+body[data-reading="true"] header,
+body[data-reading="true"] footer {
   opacity: 0;
   visibility: hidden;
   transition: opacity 300ms ease, visibility 0s linear 300ms;

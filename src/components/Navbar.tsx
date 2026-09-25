@@ -11,7 +11,6 @@ const navLinks = [
   { label: "MOVIES", href: "/movies" },
   { label: "ILLUSTRATIONS", href: "/illustrations" },
   { label: "STORYTELLING", href: "/storyboard" },
-  { label: "COMICS", href: "/comics" },
   { label: "CV", href: "/cv" },
 ];
 

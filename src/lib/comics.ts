@@ -15,10 +15,22 @@ export type Comic = {
   accent: string;
   meta: { format: string; pages: number | null; technique: string };
   plates: string[];
+  /**
+   * Planches en double pages glissantes (chaque planche réapparaît sur la
+   * suivante) plutôt qu'en paires disjointes - voir buildSpreads. Faux par
+   * défaut.
+   */
+  overlappingPlates?: boolean;
   /** Lecture de droite à gauche, comme un manga. Faux par défaut. */
   reverseReading?: boolean;
   synopsis?: string;
   credits?: string;
+  /**
+   * Chants/dessus de la tranche et dos (plat 4) : #efefef partagé par défaut
+   * (voir boardsMat dans scene.ts). À définir quand une tranche sombre laisse
+   * sinon voir ce blanc partagé aux bords.
+   */
+  boardsColor?: string;
 };
 
 export type PublishedComic = Comic & { slug: string; cover: string; spine: string };
@@ -72,6 +84,34 @@ export const COMICS: Comic[] = [
       (src) => !SKIPPED_NO_FINDER.some((n) => src.endsWith(`NO_FINDER-${n}.webp`)),
     ),
     synopsis: placeholderSynopsis,
+  },
+  {
+    // Troisième emplacement de l'étagère, prévu à droite de No Finder (voir
+    // SHELF_CENTER_X dans scene.ts).
+    slug: "mazou",
+    title: "Mazou BD",
+    year: null,
+    status: "published",
+    cover: asset("/images/book/MAZOU-BD-cover-earth-plane-001.webp"),
+    spine: asset("/images/book/Tranche-MAZOU-BD-typo.webp"),
+    accent: "#8ec9ff",
+    meta: { format: "Bande dessinée", pages: null, technique: "" },
+    // Chaque planche est un croquis double page : la 002 ouvre sur la 003, puis
+    // chaque planche suivante glisse d'un cran (003+004, 004+005, ...) plutôt que
+    // de se paginer par paires disjointes - voir overlappingPlates.
+    plates: [
+      "MAZOU-BD-moto-jungle-sketch-002.webp",
+      "MAZOU-BD-moto-jungle-sketch-003.webp",
+      "MAZOU-BD-spicy-food-sketch-004.webp",
+      "MAZOU-BD-spicy-food-sketch-005.webp",
+      "MAZOU-BD-wash-clothes-sketch-006.webp",
+      "MAZOU-BD-wash-clothes-sketch-007.webp",
+    ].map((f) => asset(`/images/book/${f}`)),
+    overlappingPlates: true,
+    synopsis: placeholderSynopsis,
+    // La tranche est sombre : le blanc partagé de boardsMat débordait sur ses
+    // chants et sur le dos (plat 4), qui n'a pas d'image dédiée.
+    boardsColor: "#0C0F11",
   },
 ];
 

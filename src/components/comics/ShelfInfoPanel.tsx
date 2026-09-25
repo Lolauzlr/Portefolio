@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import PentagonCard from "@/components/PentagonCard";
-import type { PublishedComic } from "@/lib/comics";
+import type { Comic } from "@/lib/comics";
 
 const CROSSFADE_MS = 220;
 
@@ -18,7 +18,7 @@ export default function ShelfInfoPanel({
   comic,
   onRead,
 }: {
-  comic: PublishedComic | null;
+  comic: Comic | null;
   // Plain navigation would jump straight to the reader with no transition -
   // this replays the same animated opening as a second click on the book
   // itself (see readFromPanel in ShelfShell). The href stays real (right
@@ -51,7 +51,7 @@ export default function ShelfInfoPanel({
   };
 
   return (
-    <div className="fixed bottom-16 left-1/2 z-20 w-[calc(100%-32px)] max-w-[400px] -translate-x-1/2 md:bottom-1/2 md:left-auto md:right-[60px] md:w-auto md:max-w-none md:translate-x-0 md:translate-y-1/2">
+    <div className="fixed bottom-16 left-1/2 z-20 w-[calc(100%-32px)] max-w-[400px] -translate-x-1/2 md:static md:left-auto md:w-auto md:max-w-none md:translate-x-0 md:translate-y-0">
       <PentagonCard
         className="h-auto w-full md:h-[535px] md:w-[510px] backdrop-blur-[5px]"
         contentClassName="!p-0 flex flex-col gap-[20px] h-full items-start py-[20px]"
@@ -66,20 +66,32 @@ export default function ShelfInfoPanel({
             </p>
           )}
         </div>
+        {/* Un album "à venir" (slug à null) reste désignable - voir handlePick
+            dans ShelfShell - mais n'a encore ni pages ni route de lecture :
+            READ cède alors la place à une mention, plutôt que de proposer un
+            lien mort. */}
         <div className="flex flex-col items-start px-[24px] w-full" style={panelStyle}>
-          <Link
-            href={`/comics/${panelComic.slug}/lire`}
-            onClick={(e) => {
-              if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
-              e.preventDefault();
-              onRead();
-            }}
-            className="bg-black/40 border-2 border-[#0fd1ea] flex items-center px-[40px] py-[20px] rounded-[40px] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] transition-colors cursor-pointer"
-          >
-            <span className="font-[family-name:var(--font-heading)] text-[#0fd1ea] text-[24px] tracking-[1.92px] whitespace-nowrap hover:text-[#7FECFB] transition-colors">
-              READ
+          {panelComic.slug ? (
+            <Link
+              href={`/storyboard/${panelComic.slug}/lire`}
+              onClick={(e) => {
+                if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+                e.preventDefault();
+                onRead();
+              }}
+              className="bg-black/40 border-2 border-[#0fd1ea] flex items-center px-[40px] py-[20px] rounded-[40px] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] transition-colors cursor-pointer"
+            >
+              <span className="font-[family-name:var(--font-heading)] text-[#0fd1ea] text-[24px] tracking-[1.92px] whitespace-nowrap hover:text-[#7FECFB] transition-colors">
+                READ
+              </span>
+            </Link>
+          ) : (
+            <span className="border-2 border-[#555] flex items-center px-[40px] py-[20px] rounded-[40px]">
+              <span className="font-[family-name:var(--font-heading)] text-[#8b9099] text-[24px] tracking-[1.92px] whitespace-nowrap">
+                BIENTÔT
+              </span>
             </span>
-          </Link>
+          )}
         </div>
       </PentagonCard>
     </div>

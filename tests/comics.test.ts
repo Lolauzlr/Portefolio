@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { COMICS, comicBySlug, publishedComics } from "@/lib/comics";
 
 describe("catalogue des récits", () => {
-  it("contient deux livres", () => {
-    expect(COMICS).toHaveLength(2);
+  it("contient trois livres", () => {
+    expect(COMICS).toHaveLength(3);
   });
 
   it("ne publie que les albums qui ont une couverture et un dos", () => {
@@ -13,10 +13,11 @@ describe("catalogue des récits", () => {
     }
   });
 
-  it("expose exactement deux albums publiés", () => {
+  it("expose exactement trois albums publiés", () => {
     expect(publishedComics().map((c) => c.slug)).toEqual([
       "old-knight",
       "no-finder",
+      "mazou",
     ]);
   });
 
@@ -30,7 +31,7 @@ describe("catalogue des récits", () => {
 
   it("n'attribue un slug qu'aux albums publiés", () => {
     const withSlug = COMICS.filter((c) => c.slug !== null);
-    expect(withSlug).toHaveLength(2);
+    expect(withSlug).toHaveLength(3);
   });
 
   it("donne à chaque livre une couleur d'accent", () => {
