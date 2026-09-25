@@ -46,12 +46,6 @@ const plateRange = (folder: string, prefix: string, from: number, to: number): s
 
 const SKIPPED_NO_FINDER = ["24", "34", "44"];
 
-// Same placeholder used for the other work-in-progress descriptions across
-// the site (e.g. the Storyboard "Pick a story" books) until real copy is
-// written for each album.
-const placeholderSynopsis =
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque. Vivamus dapibus semper justo, interdum tincidunt tellus placerat a. Quisque vel orci et nulla vestibulum interdum.";
-
 export const COMICS: Comic[] = [
   {
     slug: "old-knight",
@@ -65,7 +59,8 @@ export const COMICS: Comic[] = [
     meta: { format: "Bande dessinée", pages: 14, technique: "Encre" },
     // OLD_KNIGHT-01 is the cover above, so the interior starts at 02.
     plates: plateRange("Old-knight", "OLD_KNIGHT", 2, 15),
-    synopsis: placeholderSynopsis,
+    synopsis:
+      "This project was designed for the international Silent Manga Audition, which challenges artists to craft a compelling narrative entirely without dialogue. It is a heartfelt love story that relies entirely on expressive character acting, dynamic framing, and precise pacing.",
   },
   {
     slug: "no-finder",
@@ -83,7 +78,8 @@ export const COMICS: Comic[] = [
     plates: plateRange("No-finder", "NO_FINDER", 1, 52).filter(
       (src) => !SKIPPED_NO_FINDER.some((n) => src.endsWith(`NO_FINDER-${n}.webp`)),
     ),
-    synopsis: placeholderSynopsis,
+    synopsis:
+      "This project was my very first manga. While the execution is a bit rougher around the edges, it was an important learning experience for me.\n\nThe story follows a young woman who travels to Japan to become a professional photographer. After she tragically loses her sight, she crosses paths with an elderly local who takes her under his wing and teaches her to take pictures by feeling, rather than seeing.",
   },
   {
     // Troisième emplacement de l'étagère, prévu à droite de No Finder (voir
@@ -108,7 +104,8 @@ export const COMICS: Comic[] = [
       "MAZOU-BD-wash-clothes-sketch-007.webp",
     ].map((f) => asset(`/images/book/${f}`)),
     overlappingPlates: true,
-    synopsis: placeholderSynopsis,
+    synopsis:
+      "Mazou is an original travel comic inspired by my year travelling around the world. I spent a year travelling around the world, backpack on my shoulders and pens in my pockets. Along the way, I filled a sketchbook with Mazou’s adventures, many of which grew out of my own experiences.\n\nFast-paced and full of discoveries, the story is above all an attempt to capture something deeply human. In the discomfort, confusion and loss of familiar landmarks, there is also the beauty of awkwardness, the joy of doing silly things, and the spontaneity of wonder.\n\nAdventure is as much a part of us as it is something we find out in the world. And there is nothing quite like a few mishaps to remind us of that.\n\nThrough humour and a touch of poetry, I wanted to share the discovery of other cultures through surprise, misunderstanding and the unexpected.",
     // La tranche est sombre : le blanc partagé de boardsMat débordait sur ses
     // chants et sur le dos (plat 4), qui n'a pas d'image dédiée.
     boardsColor: "#0C0F11",

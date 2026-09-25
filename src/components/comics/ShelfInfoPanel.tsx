@@ -56,12 +56,20 @@ export default function ShelfInfoPanel({
         className="h-auto w-full md:h-[535px] md:w-[510px] backdrop-blur-[5px]"
         contentClassName="!p-0 flex flex-col gap-[20px] h-full items-start py-[20px]"
       >
-        <div className="flex flex-col gap-[12px] items-start px-[24px] w-full" style={panelStyle}>
-          <h3 className="font-[family-name:var(--font-heading)] text-[32px] md:text-[40px] tracking-[3.2px] text-white w-full">
+        <div
+          className="flex min-h-0 flex-1 flex-col gap-[12px] items-start px-[24px] w-full"
+          style={panelStyle}
+        >
+          <h3 className="font-[family-name:var(--font-heading)] text-[32px] md:text-[40px] tracking-[3.2px] text-white w-full flex-none">
             {panelComic.title}
           </h3>
           {panelComic.synopsis && (
-            <p className="font-[family-name:var(--font-body)] text-[14px] tracking-[2.24px] text-white w-full">
+            // whitespace-pre-line : les synopsis multi-paragraphes utilisent des
+            // sauts de ligne doubles comme séparateurs plutôt qu'un tableau, un seul
+            // champ texte suffit. min-h-0 + overflow-y-auto : la card garde sa
+            // hauteur fixe sur desktop (voir PentagonCard plus haut) - un texte plus
+            // long qu'elle défile plutôt que de déborder par-dessus le bouton READ.
+            <p className="font-[family-name:var(--font-body)] text-[14px] tracking-[2.24px] text-white w-full min-h-0 flex-1 overflow-y-auto whitespace-pre-line">
               {panelComic.synopsis}
             </p>
           )}
