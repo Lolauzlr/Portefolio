@@ -562,6 +562,10 @@ export function createScene(
         lent.plate = tex;
         return;
       }
+      // Sans ce blanc, la planche restait multipliée par le crème posé plus haut
+      // comme couleur de base (pour la page nue, avant planche) - jaunissant
+      // toute image chargée par-dessus au lieu de rendre ses couleurs vraies.
+      node.firstPlateMaterial.color.set(0xffffff);
       node.firstPlateMaterial.map = tex;
       node.firstPlateMaterial.needsUpdate = true;
       markDirty();
@@ -695,6 +699,11 @@ export function createScene(
    * Une page sans texture rend le crème du papier, que le lecteur lit comme une page
    * blanche. Une planche attendue mais pas encore là laisse donc la page telle quelle ;
    * seule une page de garde, qui n'a pas de planche, se montre nue.
+   *
+   * `color` doit suivre `map` : posé au crème par défaut pour cette page nue, il
+   * jaunissait sinon toute planche chargée par-dessus (`map` se multiplie à
+   * `color`) au lieu de rendre ses couleurs vraies - blanc dès qu'une texture
+   * est là, crème seulement quand la page reste nue.
    */
   function showPlate(
     material: THREE.MeshStandardMaterial,
@@ -703,6 +712,7 @@ export function createScene(
   ) {
     if (url !== null && texture === null) return;
     material.map = texture;
+    material.color.set(texture ? 0xffffff : 0xefe7d6);
     material.needsUpdate = true;
   }
 
