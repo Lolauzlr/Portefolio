@@ -315,11 +315,11 @@ export default function ShelfShell({
    * Recale la card sur la position réelle des livres, plutôt que sur un point
    * fixe du viewport : le canevas occupe toute la largeur de la page (voir
    * CARD_GAP_PX plus haut), donc rien en CSS ne peut ancrer la card à côté
-   * d'eux. Les livres tournant sur place (jamais de déplacement latéral
-   * d'une désignation à l'autre, voir select() dans scene.ts), cet écart
-   * reste en pratique constant - mais reste calculé, pas figé en dur, pour
-   * suivre une largeur de fenêtre ou un redimensionnement du canevas. Sans
-   * effet si la card n'est pas montée (hors SHELF/SELECTED).
+   * d'eux. La désignation resserre l'étagère autour du livre désigné (voir
+   * pushedPositions dans scene.ts) : contentRightEdge() renvoie donc le pire
+   * cas plutôt que la position réelle du moment, pour que la card reste à un
+   * écart constant, jamais recalé au gré des désignations. Sans effet si la
+   * card n'est pas montée (hors SHELF/SELECTED).
    */
   const refreshCardGap = useCallback(() => {
     const scene = sceneRef.current;
