@@ -38,30 +38,35 @@ const SELECT_OUT = 0.9;
  * vers la droite, un voisin à gauche s'en écarte bien plus qu'un voisin à
  * droite - il cesse d'être vu tranche pile face, laissant deviner en biais
  * un peu de son plat, ce qui grignote l'écart voulu s'il n'est pas plus
- * généreux de ce côté. Le premier voisin étant aussi celui qui penche
- * (FAN_TILT_ANGLE, voir pushedRotations), ce plat se révèle davantage qu'à
- * plat sur la tranche : recalibré pixel par pixel (mesure d'écran, pas de
- * formule) en conséquence pour garder un écart net (~25-35px à la largeur
- * de référence de 2000px) des deux côtés.
+ * généreux de ce côté. Calibré pixel par pixel (mesure d'écran, pas de
+ * formule) pour un écart visible net à la largeur de référence (2000px).
  */
-const FIRST_NEIGHBOR_JEU_RIGHT = 0.27;
-const FIRST_NEIGHBOR_JEU_LEFT = 0.62;
+const FIRST_NEIGHBOR_JEU_RIGHT = 0.118;
+const FIRST_NEIGHBOR_JEU_LEFT = 0.47;
 /**
- * Écart pour le second voisin d'un côté (celui qui reste droit, au-delà du
- * premier qui penche) - n'entre en jeu que lorsque le livre désigné est à
- * une extrémité de l'étagère (Old Knight ou À venir), le seul cas avec deux
- * voisins du même côté. Calibré de la même façon (mesure d'écran) côté
- * droit, pour un écart net comparable à celui du premier voisin ; réutilisé
- * tel quel côté gauche.
+ * Écart pour le second voisin d'un côté, au-delà du premier qui penche
+ * (voir FAN_TILT_ANGLE_Z) - n'entre en jeu que lorsque le livre désigné est
+ * à une extrémité de l'étagère (Old Knight ou À venir), le seul cas avec
+ * deux voisins du même côté. Le premier voisin penche justement vers ce
+ * second, pied ancré mais haut basculé dans son espace (voir groundedPose) :
+ * un écart droit/gauche distinct comme pour FIRST_NEIGHBOR_JEU_*, pas juste
+ * plus généreux qu'un simple contact - la même asymétrie caméra s'y ajoute.
+ * Calibré pixel par pixel (mesure d'écran) des deux côtés.
  */
-const NEXT_NEIGHBOR_JEU = 0.29;
+const NEXT_NEIGHBOR_JEU_RIGHT = 0.16;
+const NEXT_NEIGHBOR_JEU_LEFT = 1.1;
 /**
- * Angle du seul premier voisin de chaque côté - comme s'il penchait dans
- * l'espace laissé par le livre désigné, jusqu'à sembler reposer sur le
- * suivant (voir pushedRotations). Les voisins au-delà restent droits
- * (Math.PI / 2, tranche à plat), non déplacés par ce blanc.
+ * Inclinaison (rotation.z, dans le plan de l'image - pas rotation.y qui
+ * pivoterait le livre en profondeur) du seul premier voisin de chaque côté,
+ * comme s'il penchait dans l'espace laissé par le livre désigné jusqu'à
+ * sembler reposer sur le suivant (voir pushedTilts). Un livre a une vraie
+ * épaisseur (BOOK.t) : le faire pivoter sur l'axe Y pour ce même effet
+ * révèle un coin de ses plats de couverture (un losange), pas le simple
+ * penché à plat de la référence - d'où ce roulis en façade plutôt qu'un
+ * pivot en profondeur. Les voisins au-delà restent droits, non déplacés par
+ * ce blanc.
  */
-const FAN_TILT_ANGLE = (65 * Math.PI) / 180;
+const FAN_TILT_ANGLE_Z = (9 * Math.PI) / 180;
 
 /**
  * Rang de chaque livre non désigné, en éventail de part et d'autre du livre
@@ -86,8 +91,7 @@ function bookRanks(count: number, selectedIndex: number): number[] {
 /**
  * Abscisse de chaque livre non désigné, en éventail de part et d'autre du
  * livre désigné (toujours posé à x = 0) : le premier de chaque côté à
- * FIRST_NEIGHBOR_JEU_* de sa couverture, les suivants à NEXT_NEIGHBOR_JEU
- * les uns des autres.
+ * FIRST_NEIGHBOR_JEU_*, les suivants à NEXT_NEIGHBOR_JEU_* de sa couverture.
  */
 function pushedPositions(count: number, selectedIndex: number): number[] {
   const positions = new Array<number>(count).fill(0);
@@ -102,22 +106,55 @@ function pushedPositions(count: number, selectedIndex: number): number[] {
       const x = edge + sign * (jeu + BOOK.t / 2);
       positions[i] = x;
       edge = x + sign * (BOOK.t / 2);
-      jeu = NEXT_NEIGHBOR_JEU;
+      jeu = sign === 1 ? NEXT_NEIGHBOR_JEU_RIGHT : NEXT_NEIGHBOR_JEU_LEFT;
     }
   }
   return positions;
 }
 
 /**
- * Angle (rotation.y) de chaque livre non désigné : pas tous à plat sur la
- * tranche (Math.PI / 2) - seul le premier voisin de chaque côté penche
- * (FAN_TILT_ANGLE), comme s'il s'affaissait dans l'espace laissé par le
- * livre désigné jusqu'à sembler reposer sur le suivant. Les voisins
- * au-delà restent droits, non déplacés par ce blanc.
+ * Angle (rotation.y, en profondeur) de chaque livre : 0 pour le désigné
+ * (couverture face caméra), Math.PI / 2 pour tous les autres (tranche à
+ * plat) - le penché des voisins n'est plus porté par cet axe (voir
+ * pushedTilts, rotation.z) pour ne pas révéler leurs plats de couverture.
  */
 function pushedRotations(count: number, selectedIndex: number): number[] {
   const ranks = bookRanks(count, selectedIndex);
-  return ranks.map((rank) => (rank === 0 ? 0 : rank === 1 ? FAN_TILT_ANGLE : Math.PI / 2));
+  return ranks.map((rank) => (rank === 0 ? 0 : Math.PI / 2));
+}
+
+/**
+ * Inclinaison (rotation.z) de chaque livre non désigné : seul le premier
+ * voisin de chaque côté penche, du côté opposé au livre désigné - comme s'il
+ * s'affaissait dans l'espace laissé par lui jusqu'à sembler reposer sur le
+ * suivant. Les voisins au-delà restent droits (0), non déplacés par ce
+ * blanc.
+ */
+function pushedTilts(count: number, selectedIndex: number): number[] {
+  const ranks = bookRanks(count, selectedIndex);
+  return nodesSigns(count, selectedIndex).map((sign, i) =>
+    ranks[i] === 1 ? -sign * FAN_TILT_ANGLE_Z : 0,
+  );
+}
+
+/** Côté (1 = à droite, -1 = à gauche, 0 = le désigné lui-même) de chaque livre. */
+function nodesSigns(count: number, selectedIndex: number): number[] {
+  return Array.from({ length: count }, (_, i) =>
+    i === selectedIndex ? 0 : i > selectedIndex ? 1 : -1,
+  );
+}
+
+/**
+ * Position (x, y) du groupe d'un livre penché (rotation.z = tiltZ) pour que
+ * son pied reste posé au sol (y = 0) à l'abscisse x visée, plutôt que de
+ * pivoter sur son centre (l'origine du groupe, voir group.position.set plus
+ * bas) - ce qui ferait plonger son bas sous l'étagère et son haut s'envoler
+ * au-dessus, au lieu de sembler s'appuyer sur le voisin. Un livre droit
+ * (tiltZ = 0) retombe exactement sur (x, BOOK.h / 2), la pose d'avant.
+ */
+function groundedPose(x: number, tiltZ: number): { x: number; y: number } {
+  const halfH = BOOK.h / 2;
+  return { x: x - halfH * Math.sin(tiltZ), y: halfH * Math.cos(tiltZ) };
 }
 /**
  * Profondeur de repos d'un livre non désigné, tranche tournée vers la caméra. La
@@ -444,6 +481,12 @@ export function createScene(
     const restX = (i - (comics.length - 1) / 2) * (BOOK.t + GAP);
 
     const group = new THREE.Group();
+    // Ordre Z-Y-X (pas XYZ par défaut) : rotation.z (le penché, voir
+    // pushedTilts) doit s'appliquer en dernier, autour de l'axe caméra fixe -
+    // pas en premier, dans le repère d'origine du livre, où il finirait
+    // recomposé par le yaw (rotation.y) en un pivot en profondeur au lieu
+    // d'un simple roulis en façade.
+    group.rotation.order = "ZYX";
     group.rotation.y = Math.PI / 2; // le dos fait face à la caméra
     group.position.set(restX, BOOK.h / 2, 0);
 
@@ -1045,6 +1088,7 @@ export function createScene(
     void ensureCover(nodes[index]);
     const xs = pushedPositions(nodes.length, index);
     const rots = pushedRotations(nodes.length, index);
+    const tilts = pushedTilts(nodes.length, index);
 
     // La désignation suit la pose engagée dès l'appel : elle ne doit jamais
     // dépendre d'un soulèvement de survol en cours.
@@ -1052,7 +1096,8 @@ export function createScene(
       if (i === index) {
         setPickPose(node.pick, 0, BOOK.h / 2, HOVER_OUT, 0);
       } else {
-        setPickPose(node.pick, xs[i], BOOK.h / 2, SPINE_REST_Z, rots[i]);
+        const pose = groundedPose(xs[i], tilts[i]);
+        setPickPose(node.pick, pose.x, pose.y, SPINE_REST_Z, rots[i]);
       }
     });
 
@@ -1065,15 +1110,16 @@ export function createScene(
       if (i === index) {
         tl.to(node.group.position, { x: 0, y: BOOK.h / 2, z: HOVER_OUT, duration: d }, 0).to(
           node.group.rotation,
-          { y: 0, duration: d },
+          { y: 0, z: 0, duration: d },
           0,
         );
       } else {
+        const pose = groundedPose(xs[i], tilts[i]);
         tl.to(
           node.group.position,
-          { x: xs[i], y: BOOK.h / 2, z: SPINE_REST_Z, duration: d },
+          { x: pose.x, y: pose.y, z: SPINE_REST_Z, duration: d },
           0,
-        ).to(node.group.rotation, { y: rots[i], duration: d }, 0);
+        ).to(node.group.rotation, { y: rots[i], z: tilts[i], duration: d }, 0);
       }
     });
 
