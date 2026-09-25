@@ -54,7 +54,7 @@ const FIRST_NEIGHBOR_JEU_LEFT = 0.47;
  * Calibré pixel par pixel (mesure d'écran) des deux côtés.
  */
 const NEXT_NEIGHBOR_JEU_RIGHT = 0.16;
-const NEXT_NEIGHBOR_JEU_LEFT = 1.1;
+const NEXT_NEIGHBOR_JEU_LEFT = 0.75;
 /**
  * Inclinaison (rotation.z, dans le plan de l'image - pas rotation.y qui
  * pivoterait le livre en profondeur) du seul premier voisin de chaque côté,
