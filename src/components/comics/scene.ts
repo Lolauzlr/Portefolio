@@ -66,7 +66,7 @@ const NEXT_NEIGHBOR_JEU_LEFT = 1.1;
  * pivot en profondeur. Les voisins au-delà restent droits, non déplacés par
  * ce blanc.
  */
-const FAN_TILT_ANGLE_Z = (9 * Math.PI) / 180;
+const FAN_TILT_ANGLE_Z = (5 * Math.PI) / 180;
 
 /**
  * Rang de chaque livre non désigné, en éventail de part et d'autre du livre
@@ -128,12 +128,15 @@ function pushedRotations(count: number, selectedIndex: number): number[] {
  * voisin de chaque côté penche, du côté opposé au livre désigné - comme s'il
  * s'affaissait dans l'espace laissé par lui jusqu'à sembler reposer sur le
  * suivant. Les voisins au-delà restent droits (0), non déplacés par ce
- * blanc.
+ * blanc. "À venir" (le dernier de l'étagère, voir comics.ts) fait toujours
+ * exception : le panneau d'info est posé juste à sa droite (refreshCardGap
+ * dans ShelfShell), et un penché y empiéterait - il reste donc droit même
+ * en rang 1, qu'il ait ou non un second voisin sur qui reposer.
  */
 function pushedTilts(count: number, selectedIndex: number): number[] {
   const ranks = bookRanks(count, selectedIndex);
   return nodesSigns(count, selectedIndex).map((sign, i) =>
-    ranks[i] === 1 ? -sign * FAN_TILT_ANGLE_Z : 0,
+    ranks[i] === 1 && i !== count - 1 ? -sign * FAN_TILT_ANGLE_Z : 0,
   );
 }
 
