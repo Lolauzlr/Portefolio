@@ -49,6 +49,14 @@ const WHEEL_LINE_PX = 16;
 const CARD_GAP_PX = 40;
 /** Écart voulu entre le pied des livres et le curseur (BookSlider), en desktop. */
 const SLIDER_GAP_PX = 6;
+/**
+ * Écart voulu entre le filet sous "Pick a story" et le sommet des livres : la
+ * caméra les cadre par défaut à mi-hauteur du canevas (voir camTarget dans
+ * scene.ts), ce qui laisse un vide bien plus grand que ça au-dessus d'eux -
+ * un `margin-top` négatif sur le bloc canevas (voir refreshCardGap) le résorbe
+ * au lieu de retoucher le cadrage 3D, partagé avec la lecture.
+ */
+const HEADER_GAP_PX = 60;
 
 /** L'adresse telle que le routeur la donne, réduite à ce dont la coquille a besoin. */
 type Route = { slug: string | null; reading: boolean; spread: number };
@@ -77,6 +85,9 @@ export default function ShelfShell({
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const sceneRef = useRef<SceneHandle | null>(null);
+  /** Bloc plein écran (canevas + card + curseur) : recalé sous l'en-tête par
+   *  refreshCardGap, voir HEADER_GAP_PX. */
+  const heroRef = useRef<HTMLDivElement | null>(null);
   /** Enfant de flux (pas de position fixe) : décalé à la main (transform) sur
    *  la position réelle des livres, voir refreshCardGap. */
   const panelWrapperRef = useRef<HTMLDivElement | null>(null);
@@ -334,7 +345,18 @@ export default function ShelfShell({
     const wrapper = panelWrapperRef.current;
     const slider = sliderWrapperRef.current;
     const canvas = canvasRef.current;
-    if (!scene || !wrapper || !canvas) return;
+    const hero = heroRef.current;
+    if (!scene || !canvas) return;
+    if (!wrapper) {
+      // Hors SHELF/SELECTED (lecture, ou pas encore monté) : le bloc plein
+      // écran doit rester pile sur le viewport, jamais décalé par le
+      // margin-top ci-dessous (voir HEADER_GAP_PX).
+      if (hero) hero.style.marginTop = "";
+      return;
+    }
+    // contentTopY() est mesuré depuis le sommet du canevas, indépendant de ce
+    // margin-top : pas de boucle de rétroaction, un seul calcul suffit.
+    if (hero) hero.style.marginTop = `${HEADER_GAP_PX - scene.contentTopY()}px`;
     const edge = scene.contentRightEdge();
     // La card est posée en absolute par-dessus le canevas (voir le rendu plus
     // bas) : le canevas garde ainsi toute la largeur de la page, et les livres
@@ -730,56 +752,66 @@ export default function ShelfShell({
           par-dessus, à l'écart voulu des livres (voir refreshCardGap), sans
           jamais peser sur la largeur du canevas. Sur mobile le panneau garde
           sa propre position fixe (voir ShelfInfoPanel) : l'absolute ne
-          s'applique qu'à partir de `md:`. */}
-      <div
-        className={
-          immersive
-            ? "fixed inset-0 flex flex-col md:block"
-            : "relative flex h-screen w-full flex-col md:block"
-        }
-      >
-        <canvas
-          ref={canvasRef}
-          aria-hidden
-          className="min-h-0 w-full flex-1 md:absolute md:inset-0 md:h-full"
-          style={{
-            display: canvasHidden ? "none" : "block",
-            pointerEvents: canInteract(state) || canTurn(state) ? "auto" : "none",
-          }}
-        />
+          s'applique qu'à partir de `md:`. Hors lecture, ce conteneur rogne
+          (overflow-hidden) le haut du bloc suivant, remonté d'un margin-top
+          négatif par refreshCardGap (voir HEADER_GAP_PX) : la caméra cadre
+          les livres à mi-hauteur du canevas, avec un vide bien plus grand
+          que voulu au-dessus - sans ce rognage, remonter le bloc entier
+          recouvrirait l'en-tête d'un fond de scène opaque au lieu de
+          simplement resserrer l'écart. En lecture le bloc passe en `fixed`,
+          qui échappe de toute façon à cet overflow-hidden. */}
+      <div className={immersive ? "" : "relative h-screen w-full overflow-hidden"}>
+        <div
+          ref={heroRef}
+          className={
+            immersive
+              ? "fixed inset-0 flex flex-col md:block"
+              : "relative flex h-screen w-full flex-col md:block"
+          }
+        >
+          <canvas
+            ref={canvasRef}
+            aria-hidden
+            className="min-h-0 w-full flex-1 md:absolute md:inset-0 md:h-full"
+            style={{
+              display: canvasHidden ? "none" : "block",
+              pointerEvents: canInteract(state) || canTurn(state) ? "auto" : "none",
+            }}
+          />
 
-        {/* Panneau d'info façon "Pick a story" : reflète le survol puis la
-            désignation, toutes deux à la même échelle (voir select() dans
-            scene.ts) - le clic garde son propre effet range/sors et son
-            ouverture, inchangés (voir handlePick). READ rejoue la même
-            ouverture animée qu'un second clic sur le livre. `left` (desktop)
-            est posé à la main par refreshCardGap, pas en CSS : un `gap` fixe
-            laisserait un vide qui varie avec la largeur de fenêtre, les
-            livres n'occupant centrés qu'une fraction d'un canevas maintenant
-            plein cadre. */}
-        {ready && (state === "SHELF" || state === "SELECTED") && highlightIndex !== null && (
-          <>
-            <div
-              ref={panelWrapperRef}
-              className="flex flex-col items-center gap-4 md:absolute md:top-1/2 md:-translate-y-1/2"
-            >
-              <ShelfInfoPanel comic={highlightedComic} onRead={() => void readFromPanel(highlightIndex)} />
-            </div>
-            {/* Garde la façon dont on changeait de livre côté "Pick a story" :
-                un contrôle dédié, en plus du clic direct sur un livre. Posé
-                sous les livres eux-mêmes (contentCenterX/contentBottomY, voir
-                refreshCardGap), pas sous la card : un élément distinct, en
-                absolute par-dessus le canevas comme elle, pas empilé dessous
-                en flux. `top`, pas un `bottom` CSS, voir refreshCardGap. */}
-            <div ref={sliderWrapperRef} className="mt-4 flex justify-center md:absolute md:mt-0">
-              <BookSlider
-                items={COMICS.map((comic, i) => ({ key: comic.slug ?? `upcoming-${i}`, label: comic.title }))}
-                active={highlightIndex}
-                onSelect={handlePick}
-              />
-            </div>
-          </>
-        )}
+          {/* Panneau d'info façon "Pick a story" : reflète le survol puis la
+              désignation, toutes deux à la même échelle (voir select() dans
+              scene.ts) - le clic garde son propre effet range/sors et son
+              ouverture, inchangés (voir handlePick). READ rejoue la même
+              ouverture animée qu'un second clic sur le livre. `left` (desktop)
+              est posé à la main par refreshCardGap, pas en CSS : un `gap` fixe
+              laisserait un vide qui varie avec la largeur de fenêtre, les
+              livres n'occupant centrés qu'une fraction d'un canevas maintenant
+              plein cadre. */}
+          {ready && (state === "SHELF" || state === "SELECTED") && highlightIndex !== null && (
+            <>
+              <div
+                ref={panelWrapperRef}
+                className="flex flex-col items-center gap-4 md:absolute md:top-1/2 md:-translate-y-1/2"
+              >
+                <ShelfInfoPanel comic={highlightedComic} onRead={() => void readFromPanel(highlightIndex)} />
+              </div>
+              {/* Garde la façon dont on changeait de livre côté "Pick a story" :
+                  un contrôle dédié, en plus du clic direct sur un livre. Posé
+                  sous les livres eux-mêmes (contentCenterX/contentBottomY, voir
+                  refreshCardGap), pas sous la card : un élément distinct, en
+                  absolute par-dessus le canevas comme elle, pas empilé dessous
+                  en flux. `top`, pas un `bottom` CSS, voir refreshCardGap. */}
+              <div ref={sliderWrapperRef} className="mt-4 flex justify-center md:absolute md:mt-0">
+                <BookSlider
+                  items={COMICS.map((comic, i) => ({ key: comic.slug ?? `upcoming-${i}`, label: comic.title }))}
+                  active={highlightIndex}
+                  onSelect={handlePick}
+                />
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Reste affiché pendant un tourne-page pour ne pas clignoter : la machine

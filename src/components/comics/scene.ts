@@ -181,6 +181,11 @@ export type SceneHandle = {
    *  l'étagère - sert à centrer le curseur (BookSlider) sous les livres,
    *  pas sous la card (voir ShelfShell). */
   contentCenterX(): number;
+  /** Ordonnée, en pixels CSS depuis le sommet du canevas, du sommet des livres
+   *  (le pire cas des trois désignations, comme contentRightEdge) - sert à
+   *  rapprocher tout le bloc canevas de l'en-tête "Pick a story" d'un écart
+   *  constant plutôt que de la moitié fixe de l'écran (voir ShelfShell). */
+  contentTopY(): number;
   /** Ordonnée, en pixels CSS depuis le sommet du canevas, du pied des livres
    *  (là où ils posent sur l'étagère) - sert à poser le curseur juste sous
    *  eux, pas sous un bord du conteneur qui peut déborder l'écran (voir
@@ -1147,7 +1152,7 @@ export function createScene(
    * (contentRightEdge) et le curseur (contentCenterX) restent ainsi à une
    * position constante plutôt que recalée au gré des désignations.
    */
-  function contentBoundsPx(): { minPx: number; maxPx: number; bottomPx: number } {
+  function contentBoundsPx(): { minPx: number; maxPx: number; topPx: number; bottomPx: number } {
     const w = canvas.clientWidth || window.innerWidth;
     const h = canvas.clientHeight || window.innerHeight;
     // updateMatrixWorld: .project() lit la matrice caméra telle qu'elle était au
@@ -1156,6 +1161,7 @@ export function createScene(
     camera.updateMatrixWorld();
     let minPx = Infinity;
     let maxPx = -Infinity;
+    let topPx = Infinity;
     let bottomPx = -Infinity;
     const corner = new THREE.Vector3();
     for (let selectedIndex = 0; selectedIndex < nodes.length; selectedIndex++) {
@@ -1171,13 +1177,15 @@ export function createScene(
               maxPx = Math.max(maxPx, px);
               // NDC y = -1 en bas, +1 en haut - inverse de l'axe écran, qui
               // grandit vers le bas depuis le sommet du canevas.
-              if (y === 0) bottomPx = Math.max(bottomPx, ((1 - corner.y) / 2) * h);
+              const py = ((1 - corner.y) / 2) * h;
+              if (y === 0) bottomPx = Math.max(bottomPx, py);
+              if (y === BOOK.h) topPx = Math.min(topPx, py);
             }
           }
         }
       });
     }
-    return { minPx, maxPx, bottomPx };
+    return { minPx, maxPx, topPx, bottomPx };
   }
 
   /** Voir SceneHandle.contentRightEdge. */
@@ -1189,6 +1197,11 @@ export function createScene(
   function contentCenterX(): number {
     const { minPx, maxPx } = contentBoundsPx();
     return (minPx + maxPx) / 2;
+  }
+
+  /** Voir SceneHandle.contentTopY. */
+  function contentTopY(): number {
+    return contentBoundsPx().topPx;
   }
 
   /** Voir SceneHandle.contentBottomY. */
@@ -1250,6 +1263,7 @@ export function createScene(
     resize,
     contentRightEdge,
     contentCenterX,
+    contentTopY,
     contentBottomY,
     dispose() {
       disposed = true;
