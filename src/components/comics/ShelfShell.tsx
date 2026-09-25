@@ -788,9 +788,13 @@ export default function ShelfShell({
         <button
           type="button"
           onClick={() => void exit({ navigate: true })}
-          className="fixed bottom-16 right-4 z-20 rounded-[40px] border-2 border-[#0fd1ea] bg-black/40 px-[32px] py-[20px] font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-[#0fd1ea] backdrop-blur-[5px] transition-colors hover:bg-[#0fd1ea]/10 md:right-[120px]"
+          aria-label="Fermer la lecture"
+          className="fixed top-4 right-4 z-20 flex h-[56px] w-[56px] items-center justify-center rounded-full border-2 border-[#0fd1ea] bg-black/40 text-[#0fd1ea] backdrop-blur-[5px] transition-colors hover:bg-[#0fd1ea]/10 md:top-6 md:right-6"
         >
-          Sortir
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+            <line x1="6" y1="6" x2="18" y2="18" />
+            <line x1="18" y1="6" x2="6" y2="18" />
+          </svg>
         </button>
       )}
 
