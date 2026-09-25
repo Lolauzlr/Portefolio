@@ -38,22 +38,30 @@ const SELECT_OUT = 0.9;
  * vers la droite, un voisin à gauche s'en écarte bien plus qu'un voisin à
  * droite - il cesse d'être vu tranche pile face, laissant deviner en biais
  * un peu de son plat, ce qui grignote l'écart voulu s'il n'est pas plus
- * généreux de ce côté. Calibré pixel par pixel (mesure d'écran, pas de
- * formule) pour un écart visible de 40px à la largeur de référence (2000px).
+ * généreux de ce côté. Le premier voisin étant aussi celui qui penche
+ * (FAN_TILT_ANGLE, voir pushedRotations), ce plat se révèle davantage qu'à
+ * plat sur la tranche : recalibré pixel par pixel (mesure d'écran, pas de
+ * formule) en conséquence pour garder un écart net (~25-35px à la largeur
+ * de référence de 2000px) des deux côtés.
  */
-const FIRST_NEIGHBOR_JEU_RIGHT = 0.118;
-const FIRST_NEIGHBOR_JEU_LEFT = 0.47;
+const FIRST_NEIGHBOR_JEU_RIGHT = 0.27;
+const FIRST_NEIGHBOR_JEU_LEFT = 0.62;
 /**
- * Écart pour chaque voisin suivant, au-delà du premier - volontairement plus
- * resserré (12px à la largeur de référence, contre 40px pour le premier
- * voisin) : calibré de la même façon (mesure d'écran) côté droit ; réutilisé
- * côté gauche à défaut d'un troisième livre pour l'y calibrer séparément.
+ * Écart pour le second voisin d'un côté (celui qui reste droit, au-delà du
+ * premier qui penche) - n'entre en jeu que lorsque le livre désigné est à
+ * une extrémité de l'étagère (Old Knight ou À venir), le seul cas avec deux
+ * voisins du même côté. Calibré de la même façon (mesure d'écran) côté
+ * droit, pour un écart net comparable à celui du premier voisin ; réutilisé
+ * tel quel côté gauche.
  */
-const NEXT_NEIGHBOR_JEU = 0.147;
-/** Perdu par chaque rang au-delà du premier, en éventail (voir pushedRotations). */
-const FAN_ROTATION_STEP = (25 * Math.PI) / 180;
-/** Jamais en dessous de cet angle, même très loin du livre désigné (couverture jamais pleinement ouverte). */
-const FAN_ROTATION_MIN = (45 * Math.PI) / 180;
+const NEXT_NEIGHBOR_JEU = 0.29;
+/**
+ * Angle du seul premier voisin de chaque côté - comme s'il penchait dans
+ * l'espace laissé par le livre désigné, jusqu'à sembler reposer sur le
+ * suivant (voir pushedRotations). Les voisins au-delà restent droits
+ * (Math.PI / 2, tranche à plat), non déplacés par ce blanc.
+ */
+const FAN_TILT_ANGLE = (65 * Math.PI) / 180;
 
 /**
  * Rang de chaque livre non désigné, en éventail de part et d'autre du livre
@@ -101,17 +109,15 @@ function pushedPositions(count: number, selectedIndex: number): number[] {
 }
 
 /**
- * Angle (rotation.y) de chaque livre non désigné : en éventail, pas tous à
- * plat sur la tranche (Math.PI / 2) - le premier voisin de chaque côté reste
- * presque de dos (proche de la tranche pure), les suivants pivotent un peu
- * moins à chaque rang, laissant deviner une part croissante de leur
- * couverture, comme des cartes qu'on éventille.
+ * Angle (rotation.y) de chaque livre non désigné : pas tous à plat sur la
+ * tranche (Math.PI / 2) - seul le premier voisin de chaque côté penche
+ * (FAN_TILT_ANGLE), comme s'il s'affaissait dans l'espace laissé par le
+ * livre désigné jusqu'à sembler reposer sur le suivant. Les voisins
+ * au-delà restent droits, non déplacés par ce blanc.
  */
 function pushedRotations(count: number, selectedIndex: number): number[] {
   const ranks = bookRanks(count, selectedIndex);
-  return ranks.map((rank) =>
-    rank === 0 ? 0 : Math.max(FAN_ROTATION_MIN, Math.PI / 2 - (rank - 1) * FAN_ROTATION_STEP),
-  );
+  return ranks.map((rank) => (rank === 0 ? 0 : rank === 1 ? FAN_TILT_ANGLE : Math.PI / 2));
 }
 /**
  * Profondeur de repos d'un livre non désigné, tranche tournée vers la caméra. La

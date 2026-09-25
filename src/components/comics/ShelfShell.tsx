@@ -13,7 +13,7 @@ import {
 import BookSlider from "@/components/comics/BookSlider";
 import type { SceneHandle } from "@/components/comics/scene";
 import ShelfInfoPanel from "@/components/comics/ShelfInfoPanel";
-import { COMICS, comicBySlug } from "@/lib/comics";
+import { COMICS } from "@/lib/comics";
 
 /**
  * Livre désigné par défaut, avant tout clic. select() ne fait plus de gros
@@ -344,7 +344,6 @@ export default function ShelfShell({
       if (!scene) return;
       const current = stateRef.current;
       if (!canInteract(current)) return;
-      if (!COMICS[index]?.slug) return; // album à venir
 
       if (current === "SELECTED" && selectedRef.current === index) {
         void enterReading(index);
@@ -593,7 +592,7 @@ export default function ShelfShell({
       }
       if (!canInteract(stateRef.current)) return;
 
-      const playable = COMICS.map((comic, i) => (comic.slug ? i : -1)).filter((i) => i >= 0);
+      const playable = COMICS.map((_, i) => i);
       if (playable.length === 0) return;
 
       if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
@@ -674,8 +673,10 @@ export default function ShelfShell({
   // seulement pendant le survol - la désignation l'emporte sur un survol
   // ultérieur (ex. la souris qui traîne sur l'autre livre sans cliquer).
   const highlightIndex = selected ?? hoveredIndex;
-  const highlightedSlug = highlightIndex !== null ? (COMICS[highlightIndex]?.slug ?? null) : null;
-  const highlightedComic = highlightedSlug ? (comicBySlug(highlightedSlug) ?? null) : null;
+  // COMICS directement, pas comicBySlug : un album "à venir" (slug à null)
+  // reste désignable - voir handlePick - et doit donc lui aussi montrer sa
+  // card (titre seul, sans bouton READ, voir ShelfInfoPanel).
+  const highlightedComic = highlightIndex !== null ? (COMICS[highlightIndex] ?? null) : null;
 
   // Filet : recale la card dès qu'elle apparaît ou qu'un livre change (les
   // tweens animés se rattrapent eux-mêmes via leur propre .then(refreshCardGap),
