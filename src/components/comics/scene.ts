@@ -54,7 +54,7 @@ const FIRST_NEIGHBOR_JEU_LEFT = 0.47;
  * Calibré pixel par pixel (mesure d'écran) des deux côtés.
  */
 const NEXT_NEIGHBOR_JEU_RIGHT = 0.16;
-const NEXT_NEIGHBOR_JEU_LEFT = 1.25;
+const NEXT_NEIGHBOR_JEU_LEFT = 0.75;
 /**
  * Inclinaison (rotation.z, dans le plan de l'image - pas rotation.y qui
  * pivoterait le livre en profondeur) du seul premier voisin de chaque côté,
@@ -64,13 +64,13 @@ const NEXT_NEIGHBOR_JEU_LEFT = 1.25;
  * révèle un coin de ses plats de couverture (un losange), pas le simple
  * penché à plat de la référence - d'où ce roulis en façade plutôt qu'un
  * pivot en profondeur. Les voisins au-delà restent droits, non déplacés par
- * ce blanc. Angle distinct par côté (comme les écarts ci-dessus) : à droite
- * (No Finder vers À venir), calibré fin pour ne pas passer devant lui ; à
- * gauche (No Finder vers Old Knight, seul cas restant puisque À venir
- * n'incline jamais), plus prononcé - rien au-delà pour lui faire ombrage.
+ * ce blanc. Même angle des deux côtés (No Finder vers À venir, No Finder
+ * vers Old Knight) : un angle plus marqué à gauche a été tenté, mais son
+ * empiètement (le haut du livre penché, pied ancré, voir groundedPose)
+ * imposait soit un écart qui poussait Old Knight hors cadre - et hors de
+ * portée du clic - soit un passage devant lui une fois rapproché.
  */
-const FAN_TILT_ANGLE_Z_RIGHT = (5 * Math.PI) / 180;
-const FAN_TILT_ANGLE_Z_LEFT = (14 * Math.PI) / 180;
+const FAN_TILT_ANGLE_Z = (5 * Math.PI) / 180;
 
 /**
  * Rang de chaque livre non désigné, en éventail de part et d'autre du livre
@@ -140,9 +140,7 @@ function pushedRotations(count: number, selectedIndex: number): number[] {
 function pushedTilts(count: number, selectedIndex: number): number[] {
   const ranks = bookRanks(count, selectedIndex);
   return nodesSigns(count, selectedIndex).map((sign, i) =>
-    ranks[i] === 1 && i !== count - 1
-      ? -sign * (sign === 1 ? FAN_TILT_ANGLE_Z_RIGHT : FAN_TILT_ANGLE_Z_LEFT)
-      : 0,
+    ranks[i] === 1 && i !== count - 1 ? -sign * FAN_TILT_ANGLE_Z : 0,
   );
 }
 
