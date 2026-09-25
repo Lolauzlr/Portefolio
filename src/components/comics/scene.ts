@@ -49,12 +49,15 @@ const FIRST_NEIGHBOR_JEU_LEFT = 0.47;
  * à une extrémité de l'étagère (Old Knight ou À venir), le seul cas avec
  * deux voisins du même côté. Le premier voisin penche justement vers ce
  * second, pied ancré mais haut basculé dans son espace (voir groundedPose) :
- * un écart droit/gauche distinct comme pour FIRST_NEIGHBOR_JEU_*, pas juste
- * plus généreux qu'un simple contact - la même asymétrie caméra s'y ajoute.
- * Calibré pixel par pixel (mesure d'écran) des deux côtés.
+ * un écart droit/gauche distinct comme pour FIRST_NEIGHBOR_JEU_*. À gauche
+ * (Old Knight, quand À venir est désigné) volontairement resserré : Old
+ * Knight doit rester collé à No Finder et dans le cadre, cliquable - un
+ * écart généreux (comme l'asymétrie caméra le suggérerait, cf.
+ * FIRST_NEIGHBOR_JEU_*) le pousse hors champ sans vraiment supprimer le
+ * plat de couverture qu'on devine en biais à cette distance.
  */
 const NEXT_NEIGHBOR_JEU_RIGHT = 0.16;
-const NEXT_NEIGHBOR_JEU_LEFT = 0.75;
+const NEXT_NEIGHBOR_JEU_LEFT = 0.2;
 /**
  * Inclinaison (rotation.z, dans le plan de l'image - pas rotation.y qui
  * pivoterait le livre en profondeur) du seul premier voisin de chaque côté,
