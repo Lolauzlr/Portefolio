@@ -50,6 +50,30 @@ const FIRST_NEIGHBOR_JEU_LEFT = 0.47;
  * côté gauche à défaut d'un troisième livre pour l'y calibrer séparément.
  */
 const NEXT_NEIGHBOR_JEU = 0.147;
+/** Perdu par chaque rang au-delà du premier, en éventail (voir pushedRotations). */
+const FAN_ROTATION_STEP = (25 * Math.PI) / 180;
+/** Jamais en dessous de cet angle, même très loin du livre désigné (couverture jamais pleinement ouverte). */
+const FAN_ROTATION_MIN = (45 * Math.PI) / 180;
+
+/**
+ * Rang de chaque livre non désigné, en éventail de part et d'autre du livre
+ * désigné (rang 0) : 1 pour le premier voisin de chaque côté, 2 pour le
+ * suivant, etc. Sert à graduer aussi bien l'écart (pushedPositions) que la
+ * rotation (pushedRotations) selon la distance au livre désigné.
+ */
+function bookRanks(count: number, selectedIndex: number): number[] {
+  const ranks = new Array<number>(count).fill(0);
+  for (const sign of [1, -1] as const) {
+    const indices =
+      sign === 1
+        ? Array.from({ length: Math.max(0, count - selectedIndex - 1) }, (_, k) => selectedIndex + 1 + k)
+        : Array.from({ length: Math.max(0, selectedIndex) }, (_, k) => selectedIndex - 1 - k);
+    indices.forEach((i, k) => {
+      ranks[i] = k + 1;
+    });
+  }
+  return ranks;
+}
 
 /**
  * Abscisse de chaque livre non désigné, en éventail de part et d'autre du
@@ -74,6 +98,20 @@ function pushedPositions(count: number, selectedIndex: number): number[] {
     }
   }
   return positions;
+}
+
+/**
+ * Angle (rotation.y) de chaque livre non désigné : en éventail, pas tous à
+ * plat sur la tranche (Math.PI / 2) - le premier voisin de chaque côté reste
+ * presque de dos (proche de la tranche pure), les suivants pivotent un peu
+ * moins à chaque rang, laissant deviner une part croissante de leur
+ * couverture, comme des cartes qu'on éventille.
+ */
+function pushedRotations(count: number, selectedIndex: number): number[] {
+  const ranks = bookRanks(count, selectedIndex);
+  return ranks.map((rank) =>
+    rank === 0 ? 0 : Math.max(FAN_ROTATION_MIN, Math.PI / 2 - (rank - 1) * FAN_ROTATION_STEP),
+  );
 }
 /**
  * Profondeur de repos d'un livre non désigné, tranche tournée vers la caméra. La
@@ -1000,6 +1038,7 @@ export function createScene(
     selected = index;
     void ensureCover(nodes[index]);
     const xs = pushedPositions(nodes.length, index);
+    const rots = pushedRotations(nodes.length, index);
 
     // La désignation suit la pose engagée dès l'appel : elle ne doit jamais
     // dépendre d'un soulèvement de survol en cours.
@@ -1007,7 +1046,7 @@ export function createScene(
       if (i === index) {
         setPickPose(node.pick, 0, BOOK.h / 2, HOVER_OUT, 0);
       } else {
-        setPickPose(node.pick, xs[i], BOOK.h / 2, SPINE_REST_Z, Math.PI / 2);
+        setPickPose(node.pick, xs[i], BOOK.h / 2, SPINE_REST_Z, rots[i]);
       }
     });
 
@@ -1028,7 +1067,7 @@ export function createScene(
           node.group.position,
           { x: xs[i], y: BOOK.h / 2, z: SPINE_REST_Z, duration: d },
           0,
-        ).to(node.group.rotation, { y: Math.PI / 2, duration: d }, 0);
+        ).to(node.group.rotation, { y: rots[i], duration: d }, 0);
       }
     });
 

@@ -321,14 +321,21 @@ export default function ShelfShell({
   const refreshCardGap = useCallback(() => {
     const scene = sceneRef.current;
     const wrapper = panelWrapperRef.current;
-    if (!scene || !wrapper) return;
+    const canvas = canvasRef.current;
+    if (!scene || !wrapper || !canvas) return;
     const edge = scene.contentRightEdge();
     // La card est posée en absolute par-dessus le canevas (voir le rendu plus
     // bas) : le canevas garde ainsi toute la largeur de la page, et les livres
     // se centrent sur la page réelle, pas sur la largeur amputée d'une card
     // voisine. `left`, pas un `transform` : la card doit rester ancrée à
     // l'écart voulu des livres même si le conteneur change de taille.
-    wrapper.style.left = `${edge + CARD_GAP_PX}px`;
+    const desired = edge + CARD_GAP_PX;
+    // Sur une fenêtre trop étroite pour cet écart (l'éventail des livres non
+    // désignés peut s'étaler assez loin, voir pushedRotations), la card se
+    // rapproche du bord plutôt que de sortir du champ - jamais au point de
+    // chevaucher les livres.
+    const maxLeft = canvas.clientWidth - wrapper.offsetWidth - CARD_GAP_PX;
+    wrapper.style.left = `${Math.min(desired, maxLeft)}px`;
   }, []);
 
   const handlePick = useCallback(
