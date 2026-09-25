@@ -54,6 +54,16 @@ const SELECT_PUSH = BOOK.w / 2 + BOOK.t / 2 + 0.089 - (BOOK.t + GAP) / 2;
  * profondeur que la couverture désignée à son propre repos (HOVER_OUT).
  */
 const SPINE_REST_Z = HOVER_OUT + (BOOK.t - BOOK.w) / 2;
+/**
+ * Décalage de la caméra (et de sa cible, pour ne pas l'incliner) au repos de
+ * l'étagère : la déplacer vers la droite (x positif) fait paraître tout ce
+ * qui reste à x = 0 - la composition livre désigné + tranche écartée -
+ * décalé vers la GAUCHE du canevas, qui occupe maintenant toute la largeur
+ * de la page (voir ShelfShell). Ça laisse un espace vide à droite, pour un
+ * troisième livre à venir, plutôt que de centrer exactement les deux livres
+ * actuels.
+ */
+const SHELF_CENTER_X = 0.55;
 const OPEN_ANGLE = -2.3;
 /** Hauteur du centre du livre engagé : la lecture cadre sur elle, pas sur BOOK.h / 2. */
 const SELECT_Y = BOOK.h / 2 + 0.15;
@@ -234,8 +244,8 @@ export function createScene(
   scene.background = new THREE.Color("#15161b");
 
   const camera = new THREE.PerspectiveCamera(45, 1, 0.01, 50);
-  camera.position.set(0, BOOK.h * 0.55, 3.4);
-  const camTarget = new THREE.Vector3(0, BOOK.h * 0.5, 0);
+  camera.position.set(SHELF_CENTER_X, BOOK.h * 0.55, 3.4);
+  const camTarget = new THREE.Vector3(SHELF_CENTER_X, BOOK.h * 0.5, 0);
 
   // --- environnement -------------------------------------------------------
   // Fond non éclairé à dessein : un matériau standard prendrait la tache du
@@ -967,7 +977,8 @@ export function createScene(
 
     const d = animate ? dur(900) : 0;
     const tl = timeline();
-    tl.to(camera.position, { x: 0, y: BOOK.h * 0.55, z: 3.4, duration: d }, 0);
+    tl.to(camera.position, { x: SHELF_CENTER_X, y: BOOK.h * 0.55, z: 3.4, duration: d }, 0);
+    tl.to(camTarget, { x: SHELF_CENTER_X, duration: d }, 0);
 
     nodes.forEach((node, i) => {
       if (i === index) {
@@ -1013,8 +1024,12 @@ export function createScene(
       },
     });
     if (animate && !opts.reducedMotion) {
-      tl.to(camera.position, { x: 0, z: 3.4 - 0.6, y: BOOK.h * 0.55, duration: dur(1000), ease: "power2.out" }, 0)
-        .to(camTarget, { x: 0, y: BOOK.h * 0.5, z: 0, duration: dur(1000) }, 0)
+      tl.to(
+        camera.position,
+        { x: SHELF_CENTER_X, z: 3.4 - 0.6, y: BOOK.h * 0.55, duration: dur(1000), ease: "power2.out" },
+        0,
+      )
+        .to(camTarget, { x: SHELF_CENTER_X, y: BOOK.h * 0.5, z: 0, duration: dur(1000) }, 0)
         .to(camera, { fov: 45, duration: dur(1000), onUpdate: () => camera.updateProjectionMatrix() }, 0)
         .to(
           key.position,
@@ -1022,8 +1037,8 @@ export function createScene(
           0,
         );
     } else {
-      camera.position.set(0, BOOK.h * 0.55, 3.4 - 0.6);
-      camTarget.set(0, BOOK.h * 0.5, 0);
+      camera.position.set(SHELF_CENTER_X, BOOK.h * 0.55, 3.4 - 0.6);
+      camTarget.set(SHELF_CENTER_X, BOOK.h * 0.5, 0);
       camera.fov = 45;
       camera.updateProjectionMatrix();
       key.position.copy(KEY_SHELF);

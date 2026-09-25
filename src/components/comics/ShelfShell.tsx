@@ -40,14 +40,20 @@ const WHEEL_IDLE_MS = 180;
 /** `deltaMode` 1 compte en lignes : hauteur de ligne usuelle des navigateurs. */
 const WHEEL_LINE_PX = 16;
 /**
- * Écart voulu entre le livre le plus à droite et la card d'info, en desktop. Le
- * canevas garde toute la largeur que la rangée flexbox lui laisse (voir le rendu
- * plus bas) : les livres n'en occupent qu'une fraction, centrée dedans, si bien
- * qu'un simple `gap` de rangée laisserait un vide qui varie avec la largeur de
- * fenêtre. La card est donc décalée (transform) sur la position réelle des
- * livres (voir refreshCardGap) plutôt que posée au bord du canevas.
+ * Écart voulu entre le livre le plus à droite et la card d'info, en desktop.
+ * Le canevas occupe toute la largeur de la page (voir le rendu plus bas) : un
+ * simple `gap` CSS laisserait un vide qui varie avec la largeur de fenêtre.
+ * La card est donc posée (voir refreshCardGap) à un écart constant de la
+ * position réelle des livres, plutôt qu'au bord du canevas.
  */
 const CARD_GAP_PX = 40;
+/**
+ * Écart supplémentaire, avant la card, réservé à un troisième livre à venir
+ * (voir data/comics.ts et scene.ts SHELF_CENTER_X) - sans lui la card
+ * viendrait border les deux livres actuels, ne laissant aucune place pour
+ * l'ajout d'une troisième tranche entre eux.
+ */
+const THIRD_BOOK_RESERVE_PX = 120;
 
 /** L'adresse telle que le routeur la donne, réduite à ce dont la coquille a besoin. */
 type Route = { slug: string | null; reading: boolean; spread: number };
@@ -321,17 +327,23 @@ export default function ShelfShell({
    */
   const refreshCardGap = useCallback(() => {
     const scene = sceneRef.current;
-    const canvas = canvasRef.current;
     const wrapper = panelWrapperRef.current;
-    if (!scene || !canvas || !wrapper) return;
+    const canvas = canvasRef.current;
+    if (!scene || !wrapper || !canvas) return;
     const edge = scene.contentRightEdge();
-    // Un transform, jamais une marge : une marge négative libère de la place pour
-    // le canevas voisin (flex-1) dans le calcul même qui doit rester stable - la
-    // card et le canevas se rétroagissaient alors l'un l'autre, chacun grandissant
-    // à la mesure suivante (boucle de rétroaction). Un transform ne participe pas
-    // à la mise en page : il déplace la card sans jamais changer la largeur que
-    // flex-1 accorde au canevas.
-    wrapper.style.transform = `translateX(${edge + CARD_GAP_PX - canvas.clientWidth}px)`;
+    // La card est posée en absolute par-dessus le canevas (voir le rendu plus
+    // bas) : le canevas garde ainsi toute la largeur de la page, et les livres
+    // se centrent sur la page réelle, pas sur la largeur amputée d'une card
+    // voisine. `left`, pas un `transform` : la card doit rester ancrée à
+    // l'écart voulu des livres même si le conteneur change de taille.
+    const minLeft = edge + CARD_GAP_PX;
+    // Le plein écart réservé (voir THIRD_BOOK_RESERVE_PX) suppose une fenêtre
+    // assez large pour l'accueillir sans pousser la card hors champ : sur une
+    // fenêtre plus étroite (le canevas plein-page n'a plus de largeur de card
+    // à céder pour compenser), il se réduit jusqu'à tenir, jamais au point de
+    // chevaucher les livres.
+    const maxLeft = canvas.clientWidth - wrapper.offsetWidth - CARD_GAP_PX;
+    wrapper.style.left = `${Math.max(minLeft, Math.min(minLeft + THIRD_BOOK_RESERVE_PX, maxLeft))}px`;
   }, []);
 
   const handlePick = useCallback(
@@ -695,46 +707,49 @@ export default function ShelfShell({
   const showAround = !slugSegment && !immersive;
 
   return (
-    <div className="relative min-h-screen bg-[#15161b] text-white" style={{ overflowAnchor: "none" }}>
+    <div className="relative min-h-screen bg-[#15161b] pt-[95px] text-white" style={{ overflowAnchor: "none" }}>
       {showAround && header}
 
-      {/* Rangée plein écran (verrouillée pendant la lecture, en flux sinon) :
-          le canevas cède la largeur qu'occupe la card au lieu de rester plein
-          cadre sous elle - la card cesse ainsi d'être posée en position fixe
-          par-dessus les livres, et redevient un enfant de flux (voir
-          refreshCardGap pour l'écart qui les sépare). Sur mobile le panneau
-          garde sa propre position fixe (voir ShelfInfoPanel) : cette rangée
-          ne le contraint alors pas, `flex` n'y agissant qu'à partir de `md:`. */}
+      {/* Bloc plein écran (verrouillé pendant la lecture, en flux sinon) : le
+          canevas garde toute la largeur de la page (jamais amputée par la
+          card voisine) afin que la caméra, qui vise toujours le centre de la
+          scène, centre bien les livres sur la page réelle - pas sur une
+          largeur réduite par la card. La card est donc posée en absolute
+          par-dessus, à l'écart voulu des livres (voir refreshCardGap), sans
+          jamais peser sur la largeur du canevas. Sur mobile le panneau garde
+          sa propre position fixe (voir ShelfInfoPanel) : l'absolute ne
+          s'applique qu'à partir de `md:`. */}
       <div
         className={
           immersive
-            ? "fixed inset-0 flex flex-col md:flex-row"
-            : "relative flex h-screen w-full flex-col md:flex-row"
+            ? "fixed inset-0 flex flex-col md:block"
+            : "relative flex h-screen w-full flex-col md:block"
         }
       >
-        <div className="relative min-h-0 min-w-0 flex-1">
-          <canvas
-            ref={canvasRef}
-            aria-hidden
-            className="h-full min-h-0 w-full min-w-0"
-            style={{
-              display: canvasHidden ? "none" : "block",
-              pointerEvents: canInteract(state) || canTurn(state) ? "auto" : "none",
-            }}
-          />
-        </div>
+        <canvas
+          ref={canvasRef}
+          aria-hidden
+          className="min-h-0 w-full flex-1 md:absolute md:inset-0 md:h-full"
+          style={{
+            display: canvasHidden ? "none" : "block",
+            pointerEvents: canInteract(state) || canTurn(state) ? "auto" : "none",
+          }}
+        />
 
         {/* Panneau d'info façon "Pick a story" : reflète le survol puis la
             désignation, toutes deux à la même échelle (voir select() dans
             scene.ts) - le clic garde son propre effet range/sors et son
             ouverture, inchangés (voir handlePick). READ rejoue la même
-            ouverture animée qu'un second clic sur le livre. Le décalage
-            (desktop) est posé à la main par refreshCardGap, pas en CSS : un
-            `gap` fixe laisserait un vide qui varie avec la largeur de fenêtre,
-            le canevas cédant plus de place à la card qu'il n'en faut vu que
-            les livres n'en occupent centrés qu'une fraction. */}
+            ouverture animée qu'un second clic sur le livre. `left` (desktop)
+            est posé à la main par refreshCardGap, pas en CSS : un `gap` fixe
+            laisserait un vide qui varie avec la largeur de fenêtre, les
+            livres n'occupant centrés qu'une fraction d'un canevas maintenant
+            plein cadre. */}
         {ready && (state === "SHELF" || state === "SELECTED") && highlightIndex !== null && (
-          <div ref={panelWrapperRef} className="flex flex-col gap-4 md:shrink-0 md:items-center md:justify-center md:pr-[60px]">
+          <div
+            ref={panelWrapperRef}
+            className="flex flex-col items-center gap-4 md:absolute md:top-1/2 md:-translate-y-1/2"
+          >
             <ShelfInfoPanel comic={highlightedComic} onRead={() => void readFromPanel(highlightIndex)} />
             {/* Garde la façon dont on changeait de livre côté "Pick a story" :
                 un contrôle dédié, en plus du clic direct sur un livre. */}
