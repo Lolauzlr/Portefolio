@@ -25,6 +25,7 @@ describe("export statique de la section", () => {
   it("produit une page de lecture par album publié", () => {
     expect(existsSync(`${OUT}/storyboard/old-knight/lire.html`)).toBe(true);
     expect(existsSync(`${OUT}/storyboard/no-finder/lire.html`)).toBe(true);
+    expect(existsSync(`${OUT}/storyboard/mazou/lire.html`)).toBe(true);
   });
 
   it("ne produit aucune page pour les albums à venir", () => {

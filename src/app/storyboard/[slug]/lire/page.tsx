@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: PageProps<"/storyboard/[slug]
   const { slug } = await params;
   const comic = comicBySlug(slug);
   if (!comic) return {};
-  const total = buildSpreads(comic.plates).length;
+  const total = buildSpreads(comic.plates, comic.overlappingPlates).length;
   return { title: `${comic.title} — page 1 sur ${total} | Marie Chalandre` };
 }
 

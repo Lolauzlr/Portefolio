@@ -29,7 +29,7 @@ export default function ReaderSpread({
   comic: PublishedComic;
   index: number;
 }) {
-  const spreads = buildSpreads(comic.plates);
+  const spreads = buildSpreads(comic.plates, comic.overlappingPlates);
   const spread = spreads[index];
   const shown = presentSpread(spread, comic.reverseReading ?? false);
   const previous = index > 0 ? index - 1 : null;

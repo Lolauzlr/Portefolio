@@ -196,6 +196,8 @@ type BookNode = {
   spineMaterial: THREE.MeshBasicMaterial;
   coverMaterial: THREE.MeshBasicMaterial;
   firstPlateMaterial: THREE.MeshBasicMaterial;
+  /** Partagé (boardsMat) sauf si comic.boardsColor le remplace par une instance propre. */
+  boardsMaterial: THREE.MeshBasicMaterial;
   restX: number;
   comic: Comic;
   coverLoaded: boolean;
@@ -430,6 +432,11 @@ export function createScene(
     const firstPlateMaterial = new THREE.MeshBasicMaterial({
       color: 0xefe7d6,
     });
+    // Un livre à tranche sombre laisse voir ce blanc partagé à ses chants et à son
+    // dos (plat 4, sans image dédiée) : une instance propre le remplace alors.
+    const boardsMaterial = comic.boardsColor
+      ? new THREE.MeshBasicMaterial({ color: comic.boardsColor })
+      : boardsMat;
 
     const pages = new THREE.Mesh(pagesGeo, [
       pagesMat,
@@ -443,19 +450,19 @@ export function createScene(
     pages.castShadow = true;
     group.add(pages);
 
-    const back = new THREE.Mesh(plateGeo, boardsMat);
+    const back = new THREE.Mesh(plateGeo, boardsMaterial);
     back.position.set(0, 0, -(BOOK.t / 2 - COVER_T / 2) + 0.001);
     back.castShadow = true;
     group.add(back);
 
     // L'ordre des matériaux d'une BoxGeometry est [+X, -X, +Y, -Y, +Z, -Z].
     const spine = new THREE.Mesh(spineGeo, [
-      boardsMat,
+      boardsMaterial,
       spineMaterial,
-      boardsMat,
-      boardsMat,
-      boardsMat,
-      boardsMat,
+      boardsMaterial,
+      boardsMaterial,
+      boardsMaterial,
+      boardsMaterial,
     ]);
     spine.position.x = -(BOOK.w / 2 - COVER_T / 2);
     spine.castShadow = true;
@@ -467,12 +474,12 @@ export function createScene(
     // la couverture un arc qui la décolle du livre.
     coverPivot.position.set(-BOOK.w / 2 + PLATE_INSET, 0, BOOK.t / 2 - COVER_T / 2 + 0.001);
     const cover = new THREE.Mesh(plateGeo, [
-      boardsMat,
-      boardsMat,
-      boardsMat,
-      boardsMat,
+      boardsMaterial,
+      boardsMaterial,
+      boardsMaterial,
+      boardsMaterial,
       coverMaterial,
-      boardsMat,
+      boardsMaterial,
     ]);
     cover.position.set((BOOK.w - 2 * PLATE_INSET) / 2, 0, 0);
     cover.castShadow = true;
@@ -495,6 +502,7 @@ export function createScene(
       spineMaterial,
       coverMaterial,
       firstPlateMaterial,
+      boardsMaterial,
       restX,
       comic,
       coverLoaded: false,
@@ -712,7 +720,7 @@ export function createScene(
     returnFirstPlate();
     selected = index;
     readingNode = node;
-    readingSpreads = buildSpreads(node.comic.plates);
+    readingSpreads = buildSpreads(node.comic.plates, node.comic.overlappingPlates);
     readingIndex = clampSpreadIndex(spread, readingSpreads.length);
 
     node.group.add(readingGroup);
@@ -1263,6 +1271,9 @@ export function createScene(
         n.spineMaterial.dispose();
         n.coverMaterial.dispose();
         n.firstPlateMaterial.dispose();
+        // boardsMat (partagé) est déjà disposé ci-dessus : seule une instance
+        // propre à comic.boardsColor reste à disposer ici.
+        if (n.boardsMaterial !== boardsMat) n.boardsMaterial.dispose();
       });
       key.dispose();
       readLight.dispose();

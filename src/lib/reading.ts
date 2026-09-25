@@ -12,9 +12,23 @@ export type Spread = {
 /**
  * Un livre relié s'ouvre sur une garde face à sa première planche, d'où le null
  * de tête. La séquence est complétée par une garde finale si elle est impaire.
+ *
+ * `overlap` sert les planches conçues comme des doubles pages glissantes (une
+ * illustration continue plutôt que des pages disjointes) : chaque planche reste
+ * affichée pour la double page suivante au lieu d'être consommée par paires -
+ * pas de garde de tête, la première planche ouvre directement le livre.
  */
-export function buildSpreads(plates: string[]): Spread[] {
+export function buildSpreads(plates: string[], overlap = false): Spread[] {
   if (plates.length === 0) return [];
+
+  if (overlap) {
+    const spreads: Spread[] = [];
+    for (let i = 0; i < plates.length - 1; i++) {
+      spreads.push({ index: spreads.length, left: plates[i], right: plates[i + 1] });
+    }
+    return spreads;
+  }
+
   const pages: (string | null)[] = [null, ...plates];
   if (pages.length % 2 === 1) pages.push(null);
 
