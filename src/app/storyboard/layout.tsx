@@ -5,7 +5,7 @@ import StoryboardsSection from "@/components/storyboard/StoryboardsSection";
 export const metadata: Metadata = {
   title: "Storytelling | Marie Chalandre",
   description:
-    "Les bandes dessinées de Marie Chalandre — Old Knight, No Finder — et ses storyboards : Nabil Harrow, The source, The Twins, Rose, The Untamed.",
+    "Les bandes dessinées de Marie Chalandre — Old Knight, No Finder — et ses storyboards : Nabil Harlow, The source, The Twins, Rose, The Untamed.",
 };
 
 const pickAStoryHeader = (

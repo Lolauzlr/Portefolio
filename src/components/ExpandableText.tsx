@@ -8,8 +8,10 @@ export default function ExpandableText({ children }: { children: string }) {
 
   return (
     <div className="flex flex-col items-start gap-3 w-full">
+      {/* whitespace-pre-line : les descriptions multi-paragraphes utilisent des
+          sauts de ligne doubles comme séparateurs plutôt qu'un tableau. */}
       <p
-        className={`font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white ${
+        className={`font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white whitespace-pre-line ${
           expanded ? "" : "line-clamp-3 md:line-clamp-none"
         }`}
       >
