@@ -47,13 +47,6 @@ const WHEEL_LINE_PX = 16;
  * position réelle des livres, plutôt qu'au bord du canevas.
  */
 const CARD_GAP_PX = 40;
-/**
- * Écart supplémentaire, avant la card, réservé à un troisième livre à venir
- * (voir data/comics.ts et scene.ts SHELF_CENTER_X) - sans lui la card
- * viendrait border les deux livres actuels, ne laissant aucune place pour
- * l'ajout d'une troisième tranche entre eux.
- */
-const THIRD_BOOK_RESERVE_PX = 120;
 
 /** L'adresse telle que le routeur la donne, réduite à ce dont la coquille a besoin. */
 type Route = { slug: string | null; reading: boolean; spread: number };
@@ -328,22 +321,14 @@ export default function ShelfShell({
   const refreshCardGap = useCallback(() => {
     const scene = sceneRef.current;
     const wrapper = panelWrapperRef.current;
-    const canvas = canvasRef.current;
-    if (!scene || !wrapper || !canvas) return;
+    if (!scene || !wrapper) return;
     const edge = scene.contentRightEdge();
     // La card est posée en absolute par-dessus le canevas (voir le rendu plus
     // bas) : le canevas garde ainsi toute la largeur de la page, et les livres
     // se centrent sur la page réelle, pas sur la largeur amputée d'une card
     // voisine. `left`, pas un `transform` : la card doit rester ancrée à
     // l'écart voulu des livres même si le conteneur change de taille.
-    const minLeft = edge + CARD_GAP_PX;
-    // Le plein écart réservé (voir THIRD_BOOK_RESERVE_PX) suppose une fenêtre
-    // assez large pour l'accueillir sans pousser la card hors champ : sur une
-    // fenêtre plus étroite (le canevas plein-page n'a plus de largeur de card
-    // à céder pour compenser), il se réduit jusqu'à tenir, jamais au point de
-    // chevaucher les livres.
-    const maxLeft = canvas.clientWidth - wrapper.offsetWidth - CARD_GAP_PX;
-    wrapper.style.left = `${Math.max(minLeft, Math.min(minLeft + THIRD_BOOK_RESERVE_PX, maxLeft))}px`;
+    wrapper.style.left = `${edge + CARD_GAP_PX}px`;
   }, []);
 
   const handlePick = useCallback(

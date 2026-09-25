@@ -32,17 +32,49 @@ const HOVER_OUT = 0.09;
 const HOVER_OUT_UNSELECTED = HOVER_OUT;
 const SELECT_OUT = 0.9;
 /**
- * Écart du livre non désigné, au-delà de son restX. La désignation tourne le
- * livre choisi vers la caméra : sa tranche (BOOK.t, ~0.26) cède la place à sa
- * pleine largeur (BOOK.w, ~1.02), et 0.25 - qui suffisait à l'écarter du
- * livre resté tranche sur tranche - le laisse alors chevauché. La marge vise
- * le bord du livre choisi (BOOK.w / 2) plus la moitié de la tranche de
- * l'autre (BOOK.t / 2) plus un jeu, moins son propre restX déjà écarté. Le
- * jeu (0.089) est calibré pour un écart visible de 40px entre les deux
- * livres à la largeur de référence (2000px) - 24px valait 0.05, 80px valait
- * 0.1866.
+ * Écart (au-delà du contact tranche à tranche/couverture) entre le livre
+ * désigné et son premier voisin, à droite puis à gauche. La caméra n'étant
+ * plus centrée sur la scène au repos (SHELF_CENTER_X, plus bas) mais décalée
+ * vers la droite, un voisin à gauche s'en écarte bien plus qu'un voisin à
+ * droite - il cesse d'être vu tranche pile face, laissant deviner en biais
+ * un peu de son plat, ce qui grignote l'écart voulu s'il n'est pas plus
+ * généreux de ce côté. Calibré pixel par pixel (mesure d'écran, pas de
+ * formule) pour un écart visible de 40px à la largeur de référence (2000px).
  */
-const SELECT_PUSH = BOOK.w / 2 + BOOK.t / 2 + 0.089 - (BOOK.t + GAP) / 2;
+const FIRST_NEIGHBOR_JEU_RIGHT = 0.118;
+const FIRST_NEIGHBOR_JEU_LEFT = 0.47;
+/**
+ * Écart pour chaque voisin suivant, au-delà du premier - plus généreux
+ * encore : lui aussi s'écarte de l'axe de la caméra, un peu plus à chaque
+ * pas. Calibré de la même façon (mesure d'écran) côté droit ; réutilisé côté
+ * gauche à défaut d'un troisième livre pour l'y calibrer séparément.
+ */
+const NEXT_NEIGHBOR_JEU = 0.235;
+
+/**
+ * Abscisse de chaque livre non désigné, en éventail de part et d'autre du
+ * livre désigné (toujours posé à x = 0) : le premier de chaque côté à
+ * FIRST_NEIGHBOR_JEU_* de sa couverture, les suivants à NEXT_NEIGHBOR_JEU
+ * les uns des autres.
+ */
+function pushedPositions(count: number, selectedIndex: number): number[] {
+  const positions = new Array<number>(count).fill(0);
+  for (const sign of [1, -1] as const) {
+    let edge = sign * (BOOK.w / 2); // bord du livre désigné, côté sign.
+    let jeu = sign === 1 ? FIRST_NEIGHBOR_JEU_RIGHT : FIRST_NEIGHBOR_JEU_LEFT;
+    const indices =
+      sign === 1
+        ? Array.from({ length: Math.max(0, count - selectedIndex - 1) }, (_, k) => selectedIndex + 1 + k)
+        : Array.from({ length: Math.max(0, selectedIndex) }, (_, k) => selectedIndex - 1 - k);
+    for (const i of indices) {
+      const x = edge + sign * (jeu + BOOK.t / 2);
+      positions[i] = x;
+      edge = x + sign * (BOOK.t / 2);
+      jeu = NEXT_NEIGHBOR_JEU;
+    }
+  }
+  return positions;
+}
 /**
  * Profondeur de repos d'un livre non désigné, tranche tournée vers la caméra. La
  * tranche est postée au bord du livre (voir spine.position.x plus bas), pas en son
@@ -376,9 +408,13 @@ export function createScene(
     // les faisait varier avec l'éclairage de la scène (projecteur, ambiante) -
     // ombrées, voire quasi noires en bord de cône - alors qu'elles doivent rendre
     // exactement les couleurs des images fournies, comme une reproduction fidèle.
-    const spineMaterial = new THREE.MeshBasicMaterial({
-      color: comic.spine ? 0xffffff : 0x1b1d22,
-    });
+    // Toujours blanc, jamais 0x1b1d22 comme coverMaterial plus bas : à la
+    // différence de la couverture, la tranche reçoit TOUJOURS une texture
+    // (l'image fournie, ou à défaut le dos peint par paintUpcomingSpine plus
+    // bas) - une teinte sombre ici l'assombrirait doublement (`map` se
+    // multiplie à `color`), quand paintUpcomingSpine dessine déjà son propre
+    // fond sombre sur la texture elle-même.
+    const spineMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
     const coverMaterial = new THREE.MeshBasicMaterial({
       color: comic.cover ? 0xffffff : 0x1b1d22,
     });
@@ -963,6 +999,7 @@ export function createScene(
   async function select(index: number, animate: boolean): Promise<void> {
     selected = index;
     void ensureCover(nodes[index]);
+    const xs = pushedPositions(nodes.length, index);
 
     // La désignation suit la pose engagée dès l'appel : elle ne doit jamais
     // dépendre d'un soulèvement de survol en cours.
@@ -970,8 +1007,7 @@ export function createScene(
       if (i === index) {
         setPickPose(node.pick, 0, BOOK.h / 2, HOVER_OUT, 0);
       } else {
-        const push = node.restX < nodes[index].restX ? -SELECT_PUSH : SELECT_PUSH;
-        setPickPose(node.pick, node.restX + push, BOOK.h / 2, SPINE_REST_Z, Math.PI / 2);
+        setPickPose(node.pick, xs[i], BOOK.h / 2, SPINE_REST_Z, Math.PI / 2);
       }
     });
 
@@ -988,10 +1024,9 @@ export function createScene(
           0,
         );
       } else {
-        const push = node.restX < nodes[index].restX ? -SELECT_PUSH : SELECT_PUSH;
         tl.to(
           node.group.position,
-          { x: node.restX + push, y: BOOK.h / 2, z: SPINE_REST_Z, duration: d },
+          { x: xs[i], y: BOOK.h / 2, z: SPINE_REST_Z, duration: d },
           0,
         ).to(node.group.rotation, { y: Math.PI / 2, duration: d }, 0);
       }
@@ -1060,6 +1095,7 @@ export function createScene(
     applyReadingLighting(false);
     selected = index;
     void ensureCover(nodes[index]);
+    const xs = pushedPositions(nodes.length, index);
     nodes.forEach((node, i) => {
       if (i === index) {
         setPickPose(node.pick, 0, BOOK.h / 2 + 0.15, SELECT_OUT, 0);
@@ -1067,9 +1103,8 @@ export function createScene(
         node.group.rotation.y = 0;
         node.coverPivot.rotation.y = OPEN_ANGLE;
       } else {
-        const push = node.restX < nodes[index].restX ? -0.25 : 0.25;
-        setPickPose(node.pick, node.restX + push, BOOK.h / 2, SPINE_REST_Z, Math.PI / 2);
-        node.group.position.set(node.restX + push, BOOK.h / 2, SPINE_REST_Z);
+        setPickPose(node.pick, xs[i], BOOK.h / 2, SPINE_REST_Z, Math.PI / 2);
+        node.group.position.set(xs[i], BOOK.h / 2, SPINE_REST_Z);
       }
     });
     camera.position.set(0, BOOK.h * 0.52, SELECT_OUT + 0.16);
