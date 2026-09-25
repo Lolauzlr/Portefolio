@@ -73,6 +73,21 @@ export const COMICS: Comic[] = [
     ),
     synopsis: placeholderSynopsis,
   },
+  {
+    // Troisième emplacement de l'étagère, prévu à droite de No Finder (voir
+    // SHELF_CENTER_X dans scene.ts) - pas encore de couverture ni de pages,
+    // slug à null en attendant : ni cliquable ni route générée (comme les
+    // autres albums "à venir", voir ShelfFallback).
+    slug: null,
+    title: "À venir",
+    year: null,
+    status: "upcoming",
+    cover: null,
+    spine: null,
+    accent: "#8ec9ff",
+    meta: { format: "Bande dessinée", pages: null, technique: "" },
+    plates: [],
+  },
 ];
 
 export function publishedComics(): PublishedComic[] {
