@@ -620,7 +620,7 @@ export function createScene(
    */
   const readBackdrop = new THREE.Mesh(
     new THREE.PlaneGeometry(1, 1),
-    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.25 }),
+    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.6 }),
   );
   readBackdrop.scale.set(40, 40, 1);
   readBackdrop.visible = false;
@@ -1114,21 +1114,21 @@ export function createScene(
         markDirty();
       },
     });
-    // Réduits de moitié environ par rapport à l'ouverture (dur(1100)/dur(1000)+dur(900)) :
+    // Fermeture totale visée à 1s (dur(200) + dur(800), la branche la plus longue) :
     // en sortie de lecture l'œil n'a plus rien de nouveau à découvrir, contrairement à
-    // l'ouverture qui révèle la double page - une fermeture aussi lente ne faisait
+    // l'ouverture qui révèle la double page - une fermeture plus lente ne faisait
     // que retarder le retour à l'étagère, perçu comme mou plutôt que soigné.
     if (animate && !opts.reducedMotion) {
       tl.to(
         camera.position,
-        { x: SHELF_CENTER_X, z: 3.4 - 0.6, y: BOOK.h * 0.55, duration: dur(550), ease: "power2.out" },
+        { x: SHELF_CENTER_X, z: 3.4 - 0.6, y: BOOK.h * 0.55, duration: dur(800), ease: "power2.out" },
         0,
       )
-        .to(camTarget, { x: SHELF_CENTER_X, y: BOOK.h * 0.5, z: 0, duration: dur(550) }, 0)
-        .to(camera, { fov: 45, duration: dur(550), onUpdate: () => camera.updateProjectionMatrix() }, 0)
+        .to(camTarget, { x: SHELF_CENTER_X, y: BOOK.h * 0.5, z: 0, duration: dur(800) }, 0)
+        .to(camera, { fov: 45, duration: dur(800), onUpdate: () => camera.updateProjectionMatrix() }, 0)
         .to(
           key.position,
-          { x: KEY_SHELF.x, y: KEY_SHELF.y, z: KEY_SHELF.z, duration: dur(550) },
+          { x: KEY_SHELF.x, y: KEY_SHELF.y, z: KEY_SHELF.z, duration: dur(800) },
           0,
         );
     } else {
@@ -1140,8 +1140,8 @@ export function createScene(
     }
     tl.to(
       node.coverPivot.rotation,
-      { y: 0, duration: animate ? dur(500) : 0, ease: "power2.inOut" },
-      animate ? dur(150) : 0,
+      { y: 0, duration: animate ? dur(800) : 0, ease: "power2.inOut" },
+      animate ? dur(200) : 0,
     );
     await tl;
     stow(); // filet : une durée nulle n'émet aucun onUpdate
