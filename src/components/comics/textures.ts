@@ -15,6 +15,26 @@ export function fitSize(srcW: number, srcH: number, maxW: number): { w: number; 
   return { w, h };
 }
 
+/**
+ * Cale une texture sur une face dont les proportions ne correspondent pas
+ * exactement à l'image fournie (`object-fit: cover` en CSS) : agrandit
+ * l'image de façon uniforme jusqu'à couvrir toute la face, puis recadre le
+ * surplus au centre sur un seul axe, plutôt que de l'étirer et déformer le
+ * dessin d'origine pour remplir la face telle quelle.
+ */
+export function coverTexture(texture: THREE.Texture, faceAspect: number): void {
+  const image = texture.image as { width: number; height: number } | undefined;
+  if (!image?.width || !image?.height) return;
+  const imageAspect = image.width / image.height;
+  if (imageAspect > faceAspect) {
+    texture.repeat.set(faceAspect / imageAspect, 1);
+    texture.offset.set((1 - faceAspect / imageAspect) / 2, 0);
+  } else {
+    texture.repeat.set(1, imageAspect / faceAspect);
+    texture.offset.set(0, (1 - imageAspect / faceAspect) / 2);
+  }
+}
+
 function loadImage(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();

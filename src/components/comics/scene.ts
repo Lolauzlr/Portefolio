@@ -3,6 +3,7 @@ import * as THREE from "three";
 import type { Comic } from "@/lib/comics";
 import { createTurnPage } from "@/components/comics/page-turn";
 import {
+  coverTexture,
   headingFontFamily,
   loadCoverTexture,
   paintUpcomingSpine,
@@ -18,6 +19,8 @@ import {
 import { buildSpreads, clampSpreadIndex, presentSpread, type Spread } from "@/lib/reading";
 
 const BOOK = { w: 1.02, h: 1.5, t: 0.26 };
+/** Largeur:hauteur de la face de tranche (spineGeo) - voir coverTexture dans textures.ts. */
+const SPINE_FACE_ASPECT = BOOK.t / BOOK.h;
 const COVER_T = 0.022;
 const HOVER_OUT = 0.09;
 /**
@@ -526,6 +529,10 @@ export function createScene(
         if (disposed) { tex.dispose(); return; }
         tex.colorSpace = THREE.SRGBColorSpace;
         tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        // Les proportions de l'image fournie ne correspondent pas toujours à
+        // celles de la face de tranche (ex. Mazou) : un recadrage centré
+        // plutôt qu'un étirement qui déformerait le dessin d'origine.
+        coverTexture(tex, SPINE_FACE_ASPECT);
         spineMaterial.map = tex;
         spineMaterial.needsUpdate = true;
         markDirty();
