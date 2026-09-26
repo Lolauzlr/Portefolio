@@ -92,9 +92,7 @@ export const COMICS: Comic[] = [
     spine: asset("/images/book/Tranche-MAZOU-BD-typo.webp"),
     accent: "#8ec9ff",
     meta: { format: "Bande dessinée", pages: null, technique: "" },
-    // Chaque planche est un croquis double page : la 002 ouvre sur la 003, puis
-    // chaque planche suivante glisse d'un cran (003+004, 004+005, ...) plutôt que
-    // de se paginer par paires disjointes - voir overlappingPlates.
+    // Planches disjointes : 002+003, puis 004+005, puis 006+007.
     plates: [
       "MAZOU-BD-moto-jungle-sketch-002.webp",
       "MAZOU-BD-moto-jungle-sketch-003.webp",
@@ -103,7 +101,6 @@ export const COMICS: Comic[] = [
       "MAZOU-BD-wash-clothes-sketch-006.webp",
       "MAZOU-BD-wash-clothes-sketch-007.webp",
     ].map((f) => asset(`/images/book/${f}`)),
-    overlappingPlates: true,
     synopsis:
       "Mazou is an original travel comic inspired by my year travelling around the world. I spent a year travelling around the world, backpack on my shoulders and pens in my pockets. Along the way, I filled a sketchbook with Mazou’s adventures, many of which grew out of my own experiences.\n\nFast-paced and full of discoveries, the story is above all an attempt to capture something deeply human. In the discomfort, confusion and loss of familiar landmarks, there is also the beauty of awkwardness, the joy of doing silly things, and the spontaneity of wonder.\n\nAdventure is as much a part of us as it is something we find out in the world. And there is nothing quite like a few mishaps to remind us of that.\n\nThrough humour and a touch of poetry, I wanted to share the discovery of other cultures through surprise, misunderstanding and the unexpected.",
     // La tranche est sombre : le blanc partagé de boardsMat débordait sur ses
