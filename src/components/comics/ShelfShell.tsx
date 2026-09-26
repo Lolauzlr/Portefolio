@@ -48,7 +48,7 @@ const WHEEL_LINE_PX = 16;
  */
 const CARD_GAP_PX = 40;
 /** Écart voulu entre le pied des livres et le curseur (BookSlider), en desktop. */
-const SLIDER_GAP_PX = 6;
+const SLIDER_GAP_PX = 16;
 /**
  * Écart voulu entre le filet sous "Pick a story" et le sommet des livres : la
  * caméra les cadre par défaut à mi-hauteur du canevas (voir camTarget dans
@@ -57,6 +57,18 @@ const SLIDER_GAP_PX = 6;
  * au lieu de retoucher le cadrage 3D, partagé avec la lecture.
  */
 const HEADER_GAP_PX = 60;
+/**
+ * Écart voulu sous le contenu le plus bas (card ou curseur) avant la section
+ * suivante, en desktop. Le canevas (et le cadrage 3D qu'il porte) reste en
+ * hauteur d'écran pleine - y toucher rejouerait le cadrage de la lecture, qui
+ * le partage (voir HEADER_GAP_PX). Seul le bloc visible (viewportRef,
+ * `overflow-hidden`) est raccourci pour épouser le contenu, comme le
+ * `margin-top` négatif le fait déjà en haut.
+ */
+const BOTTOM_GAP_PX = 60;
+/** En dessous, la card reprend sa position fixe en bas d'écran (ShelfInfoPanel) :
+ *  pas de hero à raccourcir sur mobile. Correspond au breakpoint `md` de Tailwind. */
+const DESKTOP_BREAKPOINT_PX = 768;
 
 /** L'adresse telle que le routeur la donne, réduite à ce dont la coquille a besoin. */
 type Route = { slug: string | null; reading: boolean; spread: number };
@@ -85,6 +97,10 @@ export default function ShelfShell({
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const sceneRef = useRef<SceneHandle | null>(null);
+  /** Fenêtre visible (`overflow-hidden`) au-dessus du bloc plein écran : à
+   *  hauteur d'écran par défaut (CSS), raccourcie en desktop pour épouser le
+   *  contenu, voir BOTTOM_GAP_PX dans refreshCardGap. */
+  const viewportRef = useRef<HTMLDivElement | null>(null);
   /** Bloc plein écran (canevas + card + curseur) : recalé sous l'en-tête par
    *  refreshCardGap, voir HEADER_GAP_PX. */
   const heroRef = useRef<HTMLDivElement | null>(null);
@@ -346,17 +362,21 @@ export default function ShelfShell({
     const slider = sliderWrapperRef.current;
     const canvas = canvasRef.current;
     const hero = heroRef.current;
+    const viewport = viewportRef.current;
     if (!scene || !canvas) return;
     if (!wrapper) {
       // Hors SHELF/SELECTED (lecture, ou pas encore monté) : le bloc plein
       // écran doit rester pile sur le viewport, jamais décalé par le
-      // margin-top ci-dessous (voir HEADER_GAP_PX).
+      // margin-top ci-dessous (voir HEADER_GAP_PX), ni raccourci par
+      // BOTTOM_GAP_PX ci-dessous.
       if (hero) hero.style.marginTop = "";
+      if (viewport) viewport.style.height = "";
       return;
     }
     // contentTopY() est mesuré depuis le sommet du canevas, indépendant de ce
     // margin-top : pas de boucle de rétroaction, un seul calcul suffit.
-    if (hero) hero.style.marginTop = `${HEADER_GAP_PX - scene.contentTopY()}px`;
+    const heroMarginTop = HEADER_GAP_PX - scene.contentTopY();
+    if (hero) hero.style.marginTop = `${heroMarginTop}px`;
     const edge = scene.contentRightEdge();
     // La card est posée en absolute par-dessus le canevas (voir le rendu plus
     // bas) : le canevas garde ainsi toute la largeur de la page, et les livres
@@ -376,6 +396,27 @@ export default function ShelfShell({
       // affichage - un `bottom` y ancrerait le curseur hors champ. contentBottomY
       // vise le pied des livres tel qu'il est réellement rendu par la caméra.
       slider.style.top = `${scene.contentBottomY() + SLIDER_GAP_PX}px`;
+    }
+    // En desktop, la fenêtre visible (h-screen par défaut, voir le rendu plus
+    // bas) est raccourcie pour épouser le contenu le plus bas - la card
+    // (centrée par transform, donc à `offsetTop + offsetHeight / 2` de son
+    // pied réel) ou le curseur, selon lequel descend le plus - plutôt que de
+    // laisser un vide qui varie avec la hauteur de la fenêtre. Le bloc plein
+    // écran (hero) garde sa hauteur : seule cette fenêtre le rogne en plus,
+    // par overflow-hidden, jamais le cadrage 3D lui-même (voir BOTTOM_GAP_PX).
+    // `offsetTop` de la card/du curseur est mesuré depuis le sommet du hero,
+    // pas de cette fenêtre : il faut donc réintégrer heroMarginTop (souvent
+    // négatif) pour retomber dans le repère de la fenêtre elle-même. Sur
+    // mobile la card reprend sa position fixe (ShelfInfoPanel) : rien à
+    // raccourcir.
+    if (viewport) {
+      if (window.innerWidth >= DESKTOP_BREAKPOINT_PX) {
+        const cardBottom = heroMarginTop + wrapper.offsetTop + wrapper.offsetHeight / 2;
+        const sliderBottom = slider ? heroMarginTop + slider.offsetTop + slider.offsetHeight : 0;
+        viewport.style.height = `${Math.max(cardBottom, sliderBottom) + BOTTOM_GAP_PX}px`;
+      } else {
+        viewport.style.height = "";
+      }
     }
   }, []);
 
@@ -758,9 +799,15 @@ export default function ShelfShell({
           les livres à mi-hauteur du canevas, avec un vide bien plus grand
           que voulu au-dessus - sans ce rognage, remonter le bloc entier
           recouvrirait l'en-tête d'un fond de scène opaque au lieu de
-          simplement resserrer l'écart. En lecture le bloc passe en `fixed`,
-          qui échappe de toute façon à cet overflow-hidden. */}
-      <div className={immersive ? "" : "relative h-screen w-full overflow-hidden"}>
+          simplement resserrer l'écart. Il rogne de la même façon le bas, en
+          desktop : sa hauteur (h-screen par défaut) est raccourcie par
+          refreshCardGap pour épouser le contenu plutôt que de toujours
+          remplir l'écran (voir BOTTOM_GAP_PX). En lecture le bloc passe en
+          `fixed`, qui échappe de toute façon à cet overflow-hidden. */}
+      <div
+        ref={viewportRef}
+        className={immersive ? "" : "relative h-screen w-full overflow-hidden"}
+      >
         <div
           ref={heroRef}
           className={
