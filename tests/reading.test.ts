@@ -11,32 +11,32 @@ const plates = (n: number): string[] =>
   Array.from({ length: n }, (_, i) => `p${i + 1}`);
 
 describe("pagination en doubles pages", () => {
-  it("place une page de garde en vis-à-vis de la première planche", () => {
+  it("ouvre directement sur les deux premières planches, sans garde", () => {
     const s = buildSpreads(plates(52));
-    expect(s[0]).toEqual({ index: 0, left: null, right: "p1" });
+    expect(s[0]).toEqual({ index: 0, left: "p1", right: "p2" });
   });
 
-  it("compte vingt-sept doubles pages pour cinquante-deux planches", () => {
-    expect(buildSpreads(plates(52))).toHaveLength(27);
+  it("compte vingt-six doubles pages pour cinquante-deux planches", () => {
+    expect(buildSpreads(plates(52))).toHaveLength(26);
   });
 
-  it("compte huit doubles pages pour quatorze planches", () => {
-    expect(buildSpreads(plates(14))).toHaveLength(8);
+  it("compte sept doubles pages pour quatorze planches", () => {
+    expect(buildSpreads(plates(14))).toHaveLength(7);
   });
 
-  it("complète la dernière double page par une garde quand il le faut", () => {
+  it("complète la dernière double page par une garde quand le compte est impair", () => {
+    const s = buildSpreads(plates(3));
+    expect(s[s.length - 1]).toEqual({ index: 1, left: "p3", right: null });
+  });
+
+  it("apparie les planches deux à deux", () => {
     const s = buildSpreads(plates(52));
-    expect(s[s.length - 1]).toEqual({ index: 26, left: "p52", right: null });
+    expect(s[1]).toEqual({ index: 1, left: "p3", right: "p4" });
+    expect(s[2]).toEqual({ index: 2, left: "p5", right: "p6" });
   });
 
-  it("apparie les planches intérieures deux à deux", () => {
-    const s = buildSpreads(plates(52));
-    expect(s[1]).toEqual({ index: 1, left: "p2", right: "p3" });
-    expect(s[2]).toEqual({ index: 2, left: "p4", right: "p5" });
-  });
-
-  it("ne produit qu'une double page pour une seule planche", () => {
-    expect(buildSpreads(plates(1))).toEqual([{ index: 0, left: null, right: "p1" }]);
+  it("complète par une garde finale pour une seule planche", () => {
+    expect(buildSpreads(plates(1))).toEqual([{ index: 0, left: "p1", right: null }]);
   });
 
   it("ne produit aucune double page sans planche", () => {
@@ -45,7 +45,7 @@ describe("pagination en doubles pages", () => {
 
   it("numérote les doubles pages à partir de zéro, sans trou", () => {
     const s = buildSpreads(plates(14));
-    expect(s.map((x) => x.index)).toEqual([0, 1, 2, 3, 4, 5, 6, 7]);
+    expect(s.map((x) => x.index)).toEqual([0, 1, 2, 3, 4, 5, 6]);
   });
 });
 
@@ -106,8 +106,8 @@ describe("bornes et correspondance", () => {
 
   it("trouve la double page qui porte une planche donnée", () => {
     expect(spreadIndexForPlate(0)).toBe(0);
-    expect(spreadIndexForPlate(1)).toBe(1);
+    expect(spreadIndexForPlate(1)).toBe(0);
     expect(spreadIndexForPlate(2)).toBe(1);
-    expect(spreadIndexForPlate(3)).toBe(2);
+    expect(spreadIndexForPlate(3)).toBe(1);
   });
 });

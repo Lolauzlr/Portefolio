@@ -3,6 +3,7 @@ import * as THREE from "three";
 import type { Comic } from "@/lib/comics";
 import { createTurnPage } from "@/components/comics/page-turn";
 import {
+  coverTexture,
   headingFontFamily,
   loadCoverTexture,
   paintUpcomingSpine,
@@ -18,6 +19,8 @@ import {
 import { buildSpreads, clampSpreadIndex, presentSpread, type Spread } from "@/lib/reading";
 
 const BOOK = { w: 1.02, h: 1.5, t: 0.26 };
+/** Largeur:hauteur de la face de tranche (spineGeo) - voir coverTexture dans textures.ts. */
+const SPINE_FACE_ASPECT = BOOK.t / BOOK.h;
 const COVER_T = 0.022;
 const HOVER_OUT = 0.09;
 /**
@@ -95,6 +98,14 @@ const SPINE_REST_Z = HOVER_OUT + (BOOK.t - BOOK.w) / 2;
  */
 const SHELF_CENTER_X = 0.55;
 const OPEN_ANGLE = -2.3;
+/**
+ * Profondeur du fond assombri posé derrière le livre en lecture (voir
+ * readBackdrop plus bas) : entre le repos des livres voisins (SPINE_REST_Z
+ * ≈ -0.29, HOVER_OUT_UNSELECTED au plus près) et la double page elle-même
+ * (SELECT_OUT = 0.9), pour couvrir l'étagère et la pièce sans jamais mordre
+ * sur la page en cours de lecture.
+ */
+const READ_BACKDROP_Z = 0.35;
 /** Hauteur du centre du livre engagé : la lecture cadre sur elle, pas sur BOOK.h / 2. */
 const SELECT_Y = BOOK.h / 2 + 0.15;
 const READ_FOV = 42;
@@ -518,6 +529,10 @@ export function createScene(
         if (disposed) { tex.dispose(); return; }
         tex.colorSpace = THREE.SRGBColorSpace;
         tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        // Les proportions de l'image fournie ne correspondent pas toujours à
+        // celles de la face de tranche (ex. Mazou) : un recadrage centré
+        // plutôt qu'un étirement qui déformerait le dessin d'origine.
+        coverTexture(tex, SPINE_FACE_ASPECT);
         spineMaterial.map = tex;
         spineMaterial.needsUpdate = true;
         markDirty();
@@ -554,6 +569,10 @@ export function createScene(
         lent.plate = tex;
         return;
       }
+      // Sans ce blanc, la planche restait multipliée par le crème posé plus haut
+      // comme couleur de base (pour la page nue, avant planche) - jaunissant
+      // toute image chargée par-dessus au lieu de rendre ses couleurs vraies.
+      node.firstPlateMaterial.color.set(0xffffff);
       node.firstPlateMaterial.map = tex;
       node.firstPlateMaterial.needsUpdate = true;
       markDirty();
@@ -598,6 +617,21 @@ export function createScene(
   const turnPage = createTurnPage(BOOK.w, BOOK.h, GUTTER_DEPTH);
   turnPage.pivot.position.set(0, 0, BOOK.t / 2 + 0.006);
   readingGroup.add(turnPage.pivot);
+
+  /**
+   * Fond assombri (25% de noir) posé entre le livre en lecture et le reste de
+   * l'étagère (voir READ_BACKDROP_Z) : sans lui, les livres voisins et la
+   * pièce restent visibles et pleinement éclairés autour de la double page,
+   * qui devrait pourtant seule occuper l'attention. Un plan du monde, pas un
+   * enfant du livre : il ne doit ni tourner ni avancer avec lui.
+   */
+  const readBackdrop = new THREE.Mesh(
+    new THREE.PlaneGeometry(1, 1),
+    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.6 }),
+  );
+  readBackdrop.scale.set(40, 40, 1);
+  readBackdrop.visible = false;
+  scene.add(readBackdrop);
 
   let readingNode: BookNode | null = null;
   let readingSpreads: Spread[] = [];
@@ -672,6 +706,11 @@ export function createScene(
    * Une page sans texture rend le crème du papier, que le lecteur lit comme une page
    * blanche. Une planche attendue mais pas encore là laisse donc la page telle quelle ;
    * seule une page de garde, qui n'a pas de planche, se montre nue.
+   *
+   * `color` doit suivre `map` : posé au crème par défaut pour cette page nue, il
+   * jaunissait sinon toute planche chargée par-dessus (`map` se multiplie à
+   * `color`) au lieu de rendre ses couleurs vraies - blanc dès qu'une texture
+   * est là, crème seulement quand la page reste nue.
    */
   function showPlate(
     material: THREE.MeshStandardMaterial,
@@ -680,6 +719,7 @@ export function createScene(
   ) {
     if (url !== null && texture === null) return;
     material.map = texture;
+    material.color.set(texture ? 0xffffff : 0xefe7d6);
     material.needsUpdate = true;
   }
 
@@ -734,6 +774,8 @@ export function createScene(
     leftPage.visible = false;
     applyReadingLighting(true);
     turnPage.setVisible(false);
+    readBackdrop.position.set(node.group.position.x + HINGE_X, SELECT_Y, READ_BACKDROP_Z);
+    readBackdrop.visible = true;
 
     // Les planches d'abord : montrées avant, les deux pages nues remplissent le cadre
     // d'un aplat crème, la caméra étant encore à la distance de la pose engagée.
@@ -1069,6 +1111,7 @@ export function createScene(
       if (readingNode === node) lendRightPage(node, true);
       stopReading();
       applyReadingLighting(false);
+      readBackdrop.visible = false;
     };
     if (readingNode === null) stow();
 
@@ -1078,17 +1121,21 @@ export function createScene(
         markDirty();
       },
     });
+    // Fermeture totale visée à 1s (dur(200) + dur(800), la branche la plus longue) :
+    // en sortie de lecture l'œil n'a plus rien de nouveau à découvrir, contrairement à
+    // l'ouverture qui révèle la double page - une fermeture plus lente ne faisait
+    // que retarder le retour à l'étagère, perçu comme mou plutôt que soigné.
     if (animate && !opts.reducedMotion) {
       tl.to(
         camera.position,
-        { x: SHELF_CENTER_X, z: 3.4 - 0.6, y: BOOK.h * 0.55, duration: dur(1000), ease: "power2.out" },
+        { x: SHELF_CENTER_X, z: 3.4 - 0.6, y: BOOK.h * 0.55, duration: dur(800), ease: "power2.out" },
         0,
       )
-        .to(camTarget, { x: SHELF_CENTER_X, y: BOOK.h * 0.5, z: 0, duration: dur(1000) }, 0)
-        .to(camera, { fov: 45, duration: dur(1000), onUpdate: () => camera.updateProjectionMatrix() }, 0)
+        .to(camTarget, { x: SHELF_CENTER_X, y: BOOK.h * 0.5, z: 0, duration: dur(800) }, 0)
+        .to(camera, { fov: 45, duration: dur(800), onUpdate: () => camera.updateProjectionMatrix() }, 0)
         .to(
           key.position,
-          { x: KEY_SHELF.x, y: KEY_SHELF.y, z: KEY_SHELF.z, duration: dur(1000) },
+          { x: KEY_SHELF.x, y: KEY_SHELF.y, z: KEY_SHELF.z, duration: dur(800) },
           0,
         );
     } else {
@@ -1100,8 +1147,8 @@ export function createScene(
     }
     tl.to(
       node.coverPivot.rotation,
-      { y: 0, duration: animate ? dur(900) : 0, ease: "power2.inOut" },
-      animate ? dur(300) : 0,
+      { y: 0, duration: animate ? dur(800) : 0, ease: "power2.inOut" },
+      animate ? dur(200) : 0,
     );
     await tl;
     stow(); // filet : une durée nulle n'émet aucun onUpdate
@@ -1113,6 +1160,7 @@ export function createScene(
     returnFirstPlate(); // une fermeture interrompue ne rend jamais la planche 1
     stopReading();
     applyReadingLighting(false);
+    readBackdrop.visible = false;
     selected = index;
     void ensureCover(nodes[index]);
     const xs = pushedPositions(nodes.length, index);
@@ -1276,6 +1324,8 @@ export function createScene(
       turnPage.dispose();
       readerPageGeo.dispose();
       [leftPageMaterial, rightPageMaterial].forEach((m) => m.dispose());
+      readBackdrop.geometry.dispose();
+      (readBackdrop.material as THREE.Material).dispose();
       [pagesGeo, plateGeo, spineGeo, pickGeo, wallGeo].forEach((g) => g.dispose());
       [pagesMat, boardsMat, pickMat, wallMat].forEach((m) => m.dispose());
       nodes.forEach((n) => {

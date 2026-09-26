@@ -26,34 +26,38 @@ describe("routes de lecture", () => {
     }
   });
 
-  it("génère les huit doubles pages d'Old Knight", () => {
-    for (let i = 0; i < 8; i += 1) {
+  it("génère les sept doubles pages d'Old Knight", () => {
+    for (let i = 0; i < 7; i += 1) {
       expect(existsSync(`${OUT}/storyboard/old-knight/lire/${i}.html`), `double page ${i}`).toBe(true);
     }
   });
 
   it("ne génère pas de double page au-delà de la dernière", () => {
     expect(existsSync(`${OUT}/storyboard/no-finder/lire/25.html`)).toBe(false);
-    expect(existsSync(`${OUT}/storyboard/old-knight/lire/8.html`)).toBe(false);
-    expect(existsSync(`${OUT}/storyboard/mazou/lire/5.html`)).toBe(false);
+    expect(existsSync(`${OUT}/storyboard/old-knight/lire/7.html`)).toBe(false);
+    expect(existsSync(`${OUT}/storyboard/mazou/lire/3.html`)).toBe(false);
   });
 
-  it("chevauche les planches de Mazou d'une double page à l'autre", () => {
-    for (let i = 0; i < 5; i += 1) {
+  it("pagine les planches de Mazou par paires disjointes, sans doublon", () => {
+    for (let i = 0; i < 3; i += 1) {
       expect(existsSync(`${OUT}/storyboard/mazou/lire/${i}.html`), `double page ${i}`).toBe(true);
     }
     const first = readFileSync(`${OUT}/storyboard/mazou/lire/0.html`, "utf8");
     expect(first).toContain("MAZOU-BD-moto-jungle-sketch-002.webp");
     expect(first).toContain("MAZOU-BD-moto-jungle-sketch-003.webp");
     const second = readFileSync(`${OUT}/storyboard/mazou/lire/1.html`, "utf8");
-    expect(second).toContain("MAZOU-BD-moto-jungle-sketch-003.webp");
+    expect(second).not.toContain("MAZOU-BD-moto-jungle-sketch-003.webp");
     expect(second).toContain("MAZOU-BD-spicy-food-sketch-004.webp");
+    expect(second).toContain("MAZOU-BD-spicy-food-sketch-005.webp");
+    const third = readFileSync(`${OUT}/storyboard/mazou/lire/2.html`, "utf8");
+    expect(third).toContain("MAZOU-BD-wash-clothes-sketch-006.webp");
+    expect(third).toContain("MAZOU-BD-wash-clothes-sketch-007.webp");
   });
 
   it("met les deux planches et les liens dans le HTML pré-rendu", () => {
     const html = readFileSync(`${OUT}/storyboard/no-finder/lire/1.html`, "utf8");
-    expect(html).toContain("NO_FINDER-02.webp");
     expect(html).toContain("NO_FINDER-03.webp");
+    expect(html).toContain("NO_FINDER-04.webp");
     expect(html).toContain("/storyboard/no-finder/lire/0");
     expect(html).toContain("/storyboard/no-finder/lire/2");
   });
@@ -61,6 +65,15 @@ describe("routes de lecture", () => {
   it("n'offre pas de page précédente sur la première double page", () => {
     const html = readFileSync(`${OUT}/storyboard/no-finder/lire/0.html`, "utf8");
     expect(html).not.toContain("/storyboard/no-finder/lire/-1");
+  });
+
+  it("ouvre directement sur les deux premières planches, sans garde vierge", () => {
+    const noFinder = readFileSync(`${OUT}/storyboard/no-finder/lire/0.html`, "utf8");
+    expect(noFinder).toContain("NO_FINDER-01.webp");
+    expect(noFinder).toContain("NO_FINDER-02.webp");
+    const oldKnight = readFileSync(`${OUT}/storyboard/old-knight/lire/0.html`, "utf8");
+    expect(oldKnight).toContain("OLD_KNIGHT-02.webp");
+    expect(oldKnight).toContain("OLD_KNIGHT-03.webp");
   });
 
   it("renvoie vers l'étagère depuis la page de lecture", () => {

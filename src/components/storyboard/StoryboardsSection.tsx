@@ -5,9 +5,6 @@ import ExpandableText from "@/components/ExpandableText";
 import VideoCard from "@/components/VideoCard";
 import { nabilHarrowSlides } from "@/data/storytelling";
 
-const loremIpsum =
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque. Vivamus dapibus semper justo, interdum tincidunt tellus placerat a. Quisque vel orci et nulla vestibulum interdum.";
-
 const placeholderSlides = (count: number): CarouselSlide[] =>
   Array.from({ length: count }, (_, i) => ({ label: `Image ${i + 1}/${count}` }));
 
@@ -108,7 +105,9 @@ function StoryProject({
   title: string;
   // Yellow subtitle under the title (e.g. "VIDEO CLIP", "SHORT FILM").
   label?: string;
-  description: string;
+  // "The Twins" carries no description of its own here - its real copy lives
+  // in the StorySpot next to the video further down.
+  description?: string;
   // Overrides the default 3-image placeholder with real carousel images.
   slides?: CarouselSlide[];
 }) {
@@ -123,7 +122,7 @@ function StoryProject({
       <div className="flex flex-col gap-4 md:gap-[16px] items-start w-full">
         <SectionTitle>{title}</SectionTitle>
         {label && <SubLabel>{label}</SubLabel>}
-        <ExpandableText>{description}</ExpandableText>
+        {description && <ExpandableText>{description}</ExpandableText>}
       </div>
       {/* Fixed height (desktop) instead of stretching full-width, which made
           these carousels dominate the page. Mobile keeps the original
@@ -153,7 +152,14 @@ export default function StoryboardsSection() {
           "Storyboards" heading above stays at the section's own padding,
           unconstrained, matching every other page's section title. */}
       <div className="flex flex-col gap-8 md:gap-[40px] items-start w-full max-w-[1200px] mx-auto">
-        <StoryProject title="Nabil Harrow" label="Video clip" description={loremIpsum} slides={nabilHarrowSlides} />
+        <StoryProject
+          title="Nabil Harlow"
+          label={'Music Video: Nabil Harlow "C’est pas vrai"'}
+          description={
+            "Sometimes I work alone, sometimes alongside other artists on a shared project. Either way, I adapt my approach to what the piece needs. I enjoy collaboration, each artist brings their own sensibility to the work. Finding a common visual language while letting those different personalities come through is something I find really exciting.\n\nCreated the storyboard for Nabil Harlow’s music video. My role focused on camera framing and detailed line art, working in close collaboration with storyboarder and illustrator Cyril Mornet, who finalized the boards with lighting and shading."
+          }
+          slides={nabilHarrowSlides}
+        />
 
         {/* Capped to the same 990px width as every other block in this
             section (matching the single-carousel projects) and centered
@@ -163,7 +169,11 @@ export default function StoryboardsSection() {
             inset, rather than being its own slightly different width. */}
         <div className="flex flex-col gap-6 md:gap-[24px] items-start w-full md:max-w-[990px] md:mx-auto">
           <SectionTitle>The source</SectionTitle>
-          <ExpandableText>{loremIpsum}</ExpandableText>
+          <ExpandableText>
+            {
+              "Commissioned by the creative agency The Source to design two dynamic and engaging storyboards for advertising campaigns promoting the energy drink brand, V Energy.\n\nI worked on developing the sequence, exploring framing, composition and rhythm to build the story from one shot to the next."
+            }
+          </ExpandableText>
           {/* Content-sized columns (not flex-1) in a row — flex-1 columns
               each centering their own fixed-width carousel independently
               made the real visual gap between the two carousels balloon
@@ -192,17 +202,33 @@ export default function StoryboardsSection() {
         </div>
 
         <div className="flex flex-col gap-6 md:gap-[24px] items-start w-full">
-          <StoryProject title="The Twins" description={loremIpsum} slides={theTwinsSlides} />
+          <StoryProject title="The Twins" slides={theTwinsSlides} />
           <StorySpot
-            label="Video clip"
-            description={loremIpsum}
+            label={'Branded Music Video: Les Twins x Hennessy "Mirror"'}
+            description={
+              "Developed the visual storyboard for \"Mirror\", a high-energy music video featuring the acclaimed dance duo Les Twins, produced in official partnership with Hennessy.\n\nI worked on the shots and explored framing, composition, mood and the overall flow of the sequence."
+            }
             media={<VideoCard videoId="3gWXENcQ_VU" title="Les Twins • Mirror" />}
             className="md:max-w-[990px] md:mx-auto"
           />
         </div>
 
-        <StoryProject title="Rose" label="Short film" description={loremIpsum} slides={roseSlides} />
-        <StoryProject title="The Untamed" label="Short film" description={loremIpsum} slides={theUntamedSlides} />
+        <StoryProject
+          title="Rose"
+          label="Short film"
+          description={
+            "Rose is a stop motion animated short film about grief, memory and the bond between a daughter and her father. As an adult, Rose returns to her family home after her father’s death. Going through his belongings brings her back to a childhood memory, when she was seven years old and followed her father into the forest as he left for a hunting trip, determined to bring him home. What happened that day became her first encounter with loss, and a memory she has carried with her ever since.\n\nI worked on the storyboards and explored the film from Rose’s point of view, using framing, composition and scale to reflect her changing emotions. The story moves between the safety of the house and the uncertainty of the forest, with the environment gradually becoming part of Rose’s imagination. I was particularly interested in playing with the contrast between her small figure and the vastness of the landscapes around her, and in using the camera to express both her vulnerability and her determination.\n\nThe stop motion technique brings a tactile quality to the film, with handmade sets, puppets and materials giving the world a physical presence. I found that contrast between the very tangible nature of the sets and Rose’s increasingly unreal perception particularly interesting."
+          }
+          slides={roseSlides}
+        />
+        <StoryProject
+          title="The Untamed"
+          label="Short film"
+          description={
+            "Storyboard research for Untamed, an animated short film about a father and his teenage daughter reaching a breaking point. I explored their relationship through contrasts in framing, movement and mood, playing with the difference between Romain’s heavy presence and Alma’s restless energy.\n\nThe story moves between enclosed, almost suffocating spaces and moments of freedom. I liked using the storyboard to make this tension visible, gradually pushing the compositions and the rhythm towards the final rupture.\n\nThe 2D animation technique allows the characters to feel expressive and alive, while the more structured backgrounds create a contrast with their movements."
+          }
+          slides={theUntamedSlides}
+        />
       </div>
     </section>
   );

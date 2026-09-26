@@ -13,7 +13,7 @@ const loremIpsum =
 
 const storytellingCards = [
   { title: "OLD KNIGHT", label: "Manga", slides: oldKnightSlides, widthClassName: "md:w-[372px]", aspectClassName: "aspect-[372/525]" },
-  { title: "Nabil Harrow", label: "Video clip", slides: nabilHarrowSlides, widthClassName: "md:flex-1", aspectClassName: "aspect-[788/525]" },
+  { title: "Nabil Harlow", label: "Video clip", slides: nabilHarrowSlides, widthClassName: "md:flex-1", aspectClassName: "aspect-[788/525]" },
 ];
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
