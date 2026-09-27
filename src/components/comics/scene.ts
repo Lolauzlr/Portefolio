@@ -40,72 +40,57 @@ const FIRST_NEIGHBOR_GAP = 0.16;
 const NEXT_NEIGHBOR_GAP = 0.015;
 
 /**
- * Abscisse (desktop) de chaque livre, désigné toujours posé à x = 0, les
- * autres en éventail de part et d'autre : le premier de chaque côté à
- * `gaps.first` de sa couverture (large), les suivants à `gaps.next` les uns
- * des autres, tranche contre tranche. Recalculée à chaque désignation (voir
- * select()) - contrairement aux abscisses de repos (restX) d'avant toute
- * désignation, purement décoratives une fois l'étagère montée, un livre y
- * étant toujours désigné. Sur mobile, indexOrderedPositions (ci-dessous) lui
- * est préférée : épingler le désigné à x = 0 fait varier la largeur ET le
- * centre de la composition selon lequel est désigné (tout à droite s'il
- * s'agit du premier livre, tout à gauche s'il s'agit du dernier) - un livre
- * de bord n'ayant alors des voisins que d'un seul côté - ce que
- * SHELF_CENTER_X_DESKTOP compense tant bien que mal en décalant la caméra,
- * mais sans jamais centrer exactement ni tenir des proportions d'écran
- * précises.
- */
-function pushedPositions(
-  count: number,
-  selectedIndex: number,
-  gaps: { first: number; next: number },
-): number[] {
-  const positions = new Array<number>(count).fill(0);
-  for (const sign of [1, -1] as const) {
-    let edge = sign * (BOOK.w / 2); // bord du livre désigné, côté sign.
-    let gap = gaps.first;
-    const indices =
-      sign === 1
-        ? Array.from({ length: Math.max(0, count - selectedIndex - 1) }, (_, k) => selectedIndex + 1 + k)
-        : Array.from({ length: Math.max(0, selectedIndex) }, (_, k) => selectedIndex - 1 - k);
-    for (const i of indices) {
-      const x = edge + sign * (gap + BOOK.t / 2);
-      positions[i] = x;
-      edge = x + sign * (BOOK.t / 2);
-      gap = gaps.next;
-    }
-  }
-  return positions;
-}
-/**
- * Abscisse (mobile) de chaque livre, dans l'ORDRE DU TABLEAU plutôt que
- * relative au livre désigné (voir pushedPositions ci-dessus, réservée au
- * desktop) : chaque livre garde sa place dans l'alignement d'une
+ * Abscisse de chaque livre, dans l'ORDRE DU TABLEAU plutôt que relative au
+ * livre désigné : chaque livre garde sa place dans l'alignement d'une
  * désignation à l'autre, seule sa largeur change (BOOK.w, couverture, s'il
  * est désigné - BOOK.t, tranche, sinon). La largeur totale de la
  * composition (une couverture + le reste en tranches + les écarts) ne
  * dépend donc pas de l'index désigné : ses bords extrêmes, centrés sur
- * `centerX`, ne bougent jamais - contrairement à pushedPositions, où le
- * livre désigné pousse ses voisins d'un seul côté quand c'est un livre de
- * bord qui est désigné. C'est ce qui garde la composition centrée et
- * immobile pendant la désignation (voir select()), et fait tenir les
- * proportions d'écran voulues (voir MOBILE_COVER_FRACTION) quel que soit le
- * livre désigné.
+ * `centerX`, ne bougent jamais.
+ *
+ * Avant cette fonction, le livre désigné était toujours posé à x = 0, les
+ * autres en éventail de part et d'autre (le premier de chaque côté à
+ * `gaps.first`, large, les suivants à `gaps.next`, tranche contre tranche) :
+ * un livre de bord (premier ou dernier du tableau) n'avait alors des voisins
+ * que d'un seul côté, et la composition entière - largeur et centre -
+ * variait donc selon lequel était désigné et se décalait pendant la
+ * transition. Ordonner par index plutôt que par distance au désigné fixe
+ * une fois pour toutes la largeur totale (elle ne dépend plus que du nombre
+ * de livres, pas de la désignation) : la composition reste donc centrée et
+ * immobile pendant la désignation (voir select()), sur desktop comme sur
+ * mobile - qui vise en plus des proportions d'écran précises (couverture à
+ * MOBILE_COVER_FRACTION de la largeur, voir shelfPositions). `centerX` vaut
+ * toujours 0 dans shelfPositions (l'origine du monde, jamais shelfCenterX) :
+ * sur desktop la caméra vise elle un point décalé (voir shelfCenterX,
+ * SHELF_CENTER_X_DESKTOP) pour laisser la place à la card, posée à droite -
+ * recentrer la composition sur ce même point annulerait ce décalage voulu
+ * entre elle et ce que regarde la caméra.
+ *
+ * `gaps.first` s'applique de part et d'autre du livre désigné (sa
+ * couverture, large, appelle un vrai vide pour s'en distinguer), `gaps.next`
+ * entre deux tranches voisines (un simple filet, pas une séparation - voir
+ * FIRST_NEIGHBOR_GAP/NEXT_NEIGHBOR_GAP sur desktop) ; les deux valent la
+ * même chose sur mobile (voir shelfPositions), où cette distinction n'a plus
+ * lieu d'être.
  */
 function indexOrderedPositions(
   count: number,
   selectedIndex: number,
-  gap: number,
+  gaps: { first: number; next: number },
   centerX: number,
 ): number[] {
   const widths = Array.from({ length: count }, (_, i) => (i === selectedIndex ? BOOK.w : BOOK.t));
-  const totalWidth = widths.reduce((sum, w) => sum + w, 0) + Math.max(count - 1, 0) * gap;
+  const gapAfter = (i: number) =>
+    i === selectedIndex || i + 1 === selectedIndex ? gaps.first : gaps.next;
+  let totalWidth = widths.reduce((sum, w) => sum + w, 0);
+  for (let i = 0; i < count - 1; i++) totalWidth += gapAfter(i);
   let cursor = centerX - totalWidth / 2;
-  return widths.map((w) => {
-    const x = cursor + w / 2;
-    cursor += w + gap;
-    return x;
-  });
+  const positions: number[] = [];
+  for (let i = 0; i < count; i++) {
+    positions.push(cursor + widths[i] / 2);
+    cursor += widths[i] + (i < count - 1 ? gapAfter(i) : 0);
+  }
+  return positions;
 }
 /**
  * Bond du livre non désigné au survol, ajouté à son repos (SPINE_REST_Z, pas
@@ -130,13 +115,11 @@ const SELECT_OUT = 0.9;
 const SPINE_REST_Z = HOVER_OUT + (BOOK.t - BOOK.w) / 2;
 /**
  * Décalage (desktop) de la caméra (et de sa cible, pour ne pas l'incliner)
- * au repos de l'étagère : la déplacer vers la droite (x positif) fait
- * paraître tout ce qui reste à x = 0 - la composition livre désigné +
- * tranche écartée - décalé vers la GAUCHE du canevas, qui occupe toute la
- * largeur de la page (voir ShelfShell). Ça laissait un espace vide à
- * droite, pour un troisième livre à venir - les trois existent désormais,
- * donc plus de réserve à faire sur mobile (voir shelfCenterX ci-dessous),
- * seul desktop garde ce décalage historique, non revalidé ici.
+ * au repos de l'étagère : la card d'info occupe la moitié droite du canevas
+ * (absolue, voir refreshCardGap dans ShelfShell), qui reste lui pleine
+ * largeur de page ; sans ce décalage, une composition centrée sur l'axe
+ * optique (comme sur mobile, voir shelfCenterX) se retrouverait à cheval
+ * sous la card plutôt que dans l'espace resté libre à sa gauche.
  */
 const SHELF_CENTER_X_DESKTOP = 0.55;
 /** Distance (desktop) caméra/étagère au repos - voir shelfRestZ. */
@@ -391,10 +374,14 @@ export function createScene(
   }
 
   /**
-   * Abscisse de la caméra (et de sa cible) au repos de l'étagère - voir
-   * SHELF_CENTER_X_DESKTOP. Sur mobile, indexOrderedPositions centre déjà la
-   * composition entière sur ce point (voir shelfPositions) : il reste donc
-   * à 0, l'axe optique par défaut.
+   * Abscisse de la caméra (et de sa cible) au repos de l'étagère.
+   * indexOrderedPositions centre toute la composition sur ce point (voir
+   * shelfPositions) : sur mobile, où le canevas est la seule chose affichée,
+   * ce point est donc le centre de l'écran, à 0. Sur desktop, la card
+   * occupant la moitié droite d'un canevas resté pleine largeur (voir
+   * SHELF_CENTER_X_DESKTOP), ce même 0 mettrait la composition à cheval
+   * sous elle : le décalage historique reste donc nécessaire là, seul le
+   * pushedPositions qu'il compensait ayant disparu.
    */
   function shelfCenterX(): number {
     const w = canvas.clientWidth || window.innerWidth;
@@ -403,25 +390,37 @@ export function createScene(
 
   /**
    * Abscisses des `count` livres pour la désignation `selectedIndex` -
-   * pushedPositions (desktop) ou indexOrderedPositions (mobile), selon la
-   * largeur du canevas. L'écart mobile (uniforme, voir indexOrderedPositions)
-   * est déduit du même calcul que shelfRestZ, pour rester cohérent avec la
-   * largeur de couverture qu'il vise (voir MOBILE_GAP_PX/MOBILE_COVER_FRACTION).
+   * indexOrderedPositions, desktop comme mobile (voir sa documentation) ;
+   * seul l'écart diffère : les deux paliers fixes FIRST_NEIGHBOR_GAP/
+   * NEXT_NEIGHBOR_GAP sur desktop, un écart uniforme recalculé pour tenir
+   * MOBILE_GAP_PX à l'écran sur mobile - déduit du même calcul que
+   * shelfRestZ, pour rester cohérent avec la largeur de couverture qu'il
+   * vise (voir MOBILE_COVER_FRACTION).
    */
   function shelfPositions(count: number, selectedIndex: number): number[] {
     const w = canvas.clientWidth || window.innerWidth;
     const h = canvas.clientHeight || window.innerHeight;
     const restZ = mobileRestZ(w, h);
+    // Toujours centrée sur l'origine du monde (0), jamais sur shelfCenterX() :
+    // sur desktop, la caméra vise elle un point décalé (voir shelfCenterX)
+    // pour laisser l'espace de la card à droite - un décalage entre le
+    // centre de la composition et celui que vise la caméra, qui la fait
+    // paraître décalée à l'écran. La recentrer ici sur ce même point
+    // annulerait ce décalage voulu (la composition suivrait la caméra au
+    // pixel près, plus aucun écart visible). Sur mobile, shelfCenterX() vaut
+    // déjà 0 : les deux se confondent, sans changement de comportement.
     if (restZ === null) {
-      return pushedPositions(count, selectedIndex, {
-        first: FIRST_NEIGHBOR_GAP,
-        next: NEXT_NEIGHBOR_GAP,
-      });
+      return indexOrderedPositions(
+        count,
+        selectedIndex,
+        { first: FIRST_NEIGHBOR_GAP, next: NEXT_NEIGHBOR_GAP },
+        0,
+      );
     }
     const halfFovRad = (SHELF_FOV * Math.PI) / 360;
     const pxPerWorldUnit = h / 2 / (restZ * Math.tan(halfFovRad));
     const gap = MOBILE_GAP_PX / pxPerWorldUnit;
-    return indexOrderedPositions(count, selectedIndex, gap, shelfCenterX());
+    return indexOrderedPositions(count, selectedIndex, { first: gap, next: gap }, 0);
   }
 
   renderer.setPixelRatio(pixelRatio());
@@ -552,7 +551,7 @@ export function createScene(
 
   comics.forEach((comic, i) => {
     // Pose initiale seulement : select() (toujours appelé au montage, un
-    // livre étant toujours désigné) la remplace aussitôt par pushedPositions.
+    // livre étant toujours désigné) la remplace aussitôt par shelfPositions.
     const restX = (i - (comics.length - 1) / 2) * (BOOK.t + NEXT_NEIGHBOR_GAP);
 
     const group = new THREE.Group();
@@ -1182,10 +1181,11 @@ export function createScene(
   /**
    * La désignation reste à l'échelle du survol (HOVER_OUT, pas SELECT_OUT) et
    * ne bouge pas la caméra vers le livre : elle se contente de tourner le
-   * livre vers la caméra et de refermer l'étagère autour de lui - le livre
-   * désigné toujours posé à x = 0, les autres resserrés tranche contre
-   * tranche (voir pushedPositions), pas chacun à une abscisse de repos figée.
-   * Le gros plan (SELECT_OUT + zoom caméra) est réservé à l'ouverture (open /
+   * livre vers la caméra et de resserrer l'étagère autour de lui, sans
+   * jamais faire varier la place de chacun dans l'alignement (voir
+   * shelfPositions/indexOrderedPositions), plutôt que de le pousser sur une
+   * abscisse de repos figée d'avant toute désignation. Le gros plan
+   * (SELECT_OUT + zoom caméra) est réservé à l'ouverture (open /
    * openForReading), pas à la simple désignation. Elle ramène en revanche
    * toujours la caméra à sa distance de repos (shelfRestZ) : c'est désormais
    * le seul point d'entrée du repos de l'étagère, un livre y étant toujours
@@ -1328,15 +1328,17 @@ export function createScene(
   }
 
   /**
-   * Boîte englobante du pire cas, en pixels CSS depuis le bord gauche du
-   * canevas, pas celle des livres tels qu'ils sont en ce moment
-   * (nodes[].group) : la désignation resserre l'étagère autour du livre
-   * désigné (voir pushedPositions dans select()), donc la largeur occupée -
-   * et son centre - varient déjà selon lequel est désigné. On énumère donc
-   * les trois désignations possibles (un seul livre à la fois, jamais plus
-   * de trois sur cette étagère) et on retient les extrêmes : la card
-   * (contentRightEdge) et le curseur (contentCenterX) restent ainsi à une
-   * position constante plutôt que recalée au gré des désignations.
+   * Boîte englobante, en pixels CSS depuis le bord gauche du canevas, pas
+   * celle des livres tels qu'ils sont en ce moment (nodes[].group) : un
+   * mouvement de la caméra ou une désignation en cours n'a donc pas à être
+   * terminé pour lire une position à jour. La largeur occupée et son centre
+   * ne dépendent plus de quel livre est désigné (voir indexOrderedPositions
+   * dans shelfPositions) - les trois désignations possibles (un seul livre à
+   * la fois, jamais plus de trois sur cette étagère) donnent donc la même
+   * boîte ; les énumérer quand même coûte peu et évite de supposer que
+   * `selected` reflète toujours la désignation voulue par l'appelant. La
+   * card (contentRightEdge) et le curseur (contentCenterX) restent ainsi à
+   * une position constante.
    */
   function contentBoundsPx(): { minPx: number; maxPx: number; topPx: number; bottomPx: number } {
     const w = canvas.clientWidth || window.innerWidth;
