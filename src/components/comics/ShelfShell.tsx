@@ -813,12 +813,14 @@ export default function ShelfShell({
           className={
             immersive
               ? "fixed inset-0 flex flex-col md:block"
-              // px-3 : sur mobile les livres prennent le même gutter que le
-              // reste du contenu de la page (en-tête "Pick a story", card,
-              // section "Storyboards") plutôt qu'un canevas plein bord.
-              // Annulé dès `md:`, où le canevas doit rester pleine largeur
-              // (voir le commentaire plus haut).
-              : "relative flex h-screen w-full flex-col px-3 md:px-0 md:block"
+              // Le canevas des livres reste pleine largeur d'écran, y compris
+              // sur mobile (maquette Figma : le bloc carrousel occupe tout le
+              // frame, contrairement au reste du contenu qui garde un gutter
+              // - voir le px-3 sur ShelfInfoPanel, posé sur la card elle-même
+              // plutôt qu'ici). La caméra visant toujours SHELF_CENTER_X, les
+              // livres restent centrés sur ce canevas plein largeur, donc sur
+              // l'écran, quel que soit l'appareil.
+              : "relative flex h-screen w-full flex-col md:block"
           }
         >
           <canvas
