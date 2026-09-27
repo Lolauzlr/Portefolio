@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { CaretCircleDownIcon, CaretCircleUpIcon } from "@/components/CarouselIcons";
 import PentagonCard from "@/components/PentagonCard";
 import type { Comic } from "@/lib/comics";
 
@@ -42,6 +43,17 @@ export default function ShelfInfoPanel({
     };
   }, [comic, panelComic]);
 
+  // Le synopsis tronqué (mobile) repart replié à chaque changement de livre -
+  // un synopsis déjà déplié ne doit pas rester ouvert sur le livre suivant.
+  // Ajusté pendant le rendu (pas dans un effet) : voir "you might not need
+  // an effect" dans la doc React pour ce repli sur changement de prop dérivée.
+  const [expanded, setExpanded] = useState(false);
+  const [expandedForComic, setExpandedForComic] = useState(panelComic);
+  if (panelComic !== expandedForComic) {
+    setExpandedForComic(panelComic);
+    setExpanded(false);
+  }
+
   const visible = comic === panelComic;
 
   if (!panelComic) return null;
@@ -53,7 +65,7 @@ export default function ShelfInfoPanel({
   };
 
   return (
-    <div className="relative z-20 mx-auto w-[calc(100%-32px)] max-w-[400px] md:static md:left-auto md:mx-0 md:w-auto md:max-w-none md:translate-x-0 md:translate-y-0">
+    <div className="relative z-20 mx-auto w-full max-w-[400px] md:static md:left-auto md:mx-0 md:w-auto md:max-w-none md:translate-x-0 md:translate-y-0">
       <PentagonCard
         className="h-auto w-full md:h-[535px] md:w-[510px] backdrop-blur-[5px]"
         contentClassName="!p-[16px] flex flex-col gap-[20px] h-full items-start"
@@ -66,14 +78,34 @@ export default function ShelfInfoPanel({
             {panelComic.title}
           </h3>
           {panelComic.synopsis && (
-            // whitespace-pre-line : les synopsis multi-paragraphes utilisent des
-            // sauts de ligne doubles comme séparateurs plutôt qu'un tableau, un seul
-            // champ texte suffit. min-h-0 + overflow-y-auto : la card garde sa
-            // hauteur fixe sur desktop (voir PentagonCard plus haut) - un texte plus
-            // long qu'elle défile plutôt que de déborder par-dessus le bouton READ.
-            <p className="font-[family-name:var(--font-body)] text-[14px] tracking-[2.24px] text-white w-full min-h-0 flex-1 overflow-y-auto whitespace-pre-line">
-              {panelComic.synopsis}
-            </p>
+            <>
+              {/* whitespace-pre-line : les synopsis multi-paragraphes utilisent des
+                  sauts de ligne doubles comme séparateurs plutôt qu'un tableau, un
+                  seul champ texte suffit. min-h-0 + md:overflow-y-auto : la card
+                  garde sa hauteur fixe sur desktop (voir PentagonCard plus haut) -
+                  un texte plus long qu'elle défile plutôt que de déborder par-dessus
+                  le bouton READ. Sur mobile la card est en hauteur libre : le
+                  synopsis est plutôt tronqué à 4 lignes (line-clamp-4), à replier/
+                  déplier via le bouton SEE MORE/LESS ci-dessous - jamais les deux
+                  en même temps qu'un défilement. */}
+              <p
+                className={`font-[family-name:var(--font-body)] text-[14px] tracking-[2.24px] text-white w-full min-h-0 flex-1 whitespace-pre-line md:overflow-y-auto md:line-clamp-none ${
+                  expanded ? "" : "line-clamp-4"
+                }`}
+              >
+                {panelComic.synopsis}
+              </p>
+              <button
+                type="button"
+                onClick={() => setExpanded((v) => !v)}
+                className="md:hidden flex items-center gap-2 text-[#0FD1EA] hover:text-[#7FECFB] transition-colors"
+              >
+                <span className="font-[family-name:var(--font-body)] font-semibold text-[14px] tracking-[1.12px] uppercase">
+                  {expanded ? "See less" : "See more"}
+                </span>
+                {expanded ? <CaretCircleUpIcon className="w-6 h-6" /> : <CaretCircleDownIcon className="w-6 h-6" />}
+              </button>
+            </>
           )}
         </div>
         {/* Un album "à venir" (slug à null) reste désignable - voir handlePick

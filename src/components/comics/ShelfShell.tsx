@@ -813,7 +813,12 @@ export default function ShelfShell({
           className={
             immersive
               ? "fixed inset-0 flex flex-col md:block"
-              : "relative flex h-screen w-full flex-col md:block"
+              // px-3 : sur mobile les livres prennent le même gutter que le
+              // reste du contenu de la page (en-tête "Pick a story", card,
+              // section "Storyboards") plutôt qu'un canevas plein bord.
+              // Annulé dès `md:`, où le canevas doit rester pleine largeur
+              // (voir le commentaire plus haut).
+              : "relative flex h-screen w-full flex-col px-3 md:px-0 md:block"
           }
         >
           <canvas
