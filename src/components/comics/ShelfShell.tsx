@@ -471,16 +471,12 @@ export default function ShelfShell({
       const current = stateRef.current;
       if (!canInteract(current)) return;
 
-      // Sur mobile la card et le curseur ("Pick a story") restent masqués
-      // (voir le rendu plus bas, DESKTOP_BREAKPOINT_PX) : il n'y a donc rien
-      // à désigner avant d'ouvrir - un tap sur un livre l'ouvre directement,
-      // sans le détour par SELECTED qu'impose le second clic en desktop.
-      if (window.innerWidth < DESKTOP_BREAKPOINT_PX) {
-        void readFromPanel(index);
-        return;
-      }
-
-      if (current === "SELECTED" && selectedRef.current === index) {
+      // Sur mobile, cliquer sur le livre déjà désigné ne l'ouvre plus : seul
+      // le bouton READ du panneau (toujours affiché, voir ShelfInfoPanel)
+      // ouvre la lecture - ce raccourci du second clic reste réservé au
+      // desktop, où rien d'autre ne permet d'ouvrir le livre.
+      const isMobile = window.innerWidth < DESKTOP_BREAKPOINT_PX;
+      if (!isMobile && current === "SELECTED" && selectedRef.current === index) {
         void enterReading(index);
         return;
       }
@@ -489,7 +485,7 @@ export default function ShelfShell({
       setSelected(index);
       void scene.select(index, true).then(refreshCardGap);
     },
-    [enterReading, setPhase, setSelected, refreshCardGap, readFromPanel],
+    [enterReading, setPhase, setSelected, refreshCardGap],
   );
 
   /**
@@ -853,10 +849,9 @@ export default function ShelfShell({
           scène, centre bien les livres sur la page réelle - pas sur une
           largeur réduite par la card. La card est donc posée en absolute
           par-dessus, à l'écart voulu des livres (voir refreshCardGap), sans
-          jamais peser sur la largeur du canevas. Sur mobile la card et le
-          curseur restent masqués (voir plus bas, `hidden md:...`) : un tap
-          sur un livre l'ouvre directement, sans étape de désignation à y
-          montrer. Hors lecture, ce conteneur rogne
+          jamais peser sur la largeur du canevas. Sur mobile le panneau garde
+          sa propre position fixe (voir ShelfInfoPanel) : l'absolute ne
+          s'applique qu'à partir de `md:`. Hors lecture, ce conteneur rogne
           (overflow-hidden) le haut du bloc suivant, remonté d'un margin-top
           négatif par refreshCardGap (voir HEADER_GAP_PX) : la caméra cadre
           les livres à mi-hauteur du canevas, avec un vide bien plus grand
@@ -912,19 +907,18 @@ export default function ShelfShell({
                   sous les livres eux-mêmes (contentCenterX/contentBottomY, voir
                   refreshCardGap), pas sous la card : un élément distinct, en
                   absolute par-dessus le canevas comme elle - desktop ET mobile
-                  côté positionnement (`left`/`top` posés à la main par
-                  refreshCardGap, voir CARD_GUTTER_PX_MOBILE), mais masqué sur
-                  mobile (`hidden md:...`) : un tap sur un livre l'ouvre
-                  directement (voir handlePick), cette désignation
-                  intermédiaire n'a donc plus de raison d'y être montrée. */}
-              <div ref={sliderWrapperRef} className="hidden md:absolute md:flex md:justify-center">
+                  désormais, `left`/`top` posés à la main par refreshCardGap
+                  (voir CARD_GUTTER_PX_MOBILE : un écart en flux ne peut pas se
+                  corriger du vide que le canevas laisse sous les livres sur un
+                  écran étroit). */}
+              <div ref={sliderWrapperRef} className="absolute flex justify-center">
                 <BookSlider
                   items={COMICS.map((comic, i) => ({ key: comic.slug ?? `upcoming-${i}`, label: comic.title }))}
                   active={highlightIndex}
                   onSelect={handlePick}
                 />
               </div>
-              <div ref={panelWrapperRef} className="hidden md:absolute md:top-1/2 md:-translate-y-1/2">
+              <div ref={panelWrapperRef} className="absolute md:top-1/2 md:-translate-y-1/2">
                 <ShelfInfoPanel comic={highlightedComic} onRead={() => void readFromPanel(highlightIndex)} />
               </div>
             </>
