@@ -36,20 +36,3 @@ body[data-reading="true"] footer {
 body[data-reading="true"] {
   overflow: hidden;
 }
-
-/* Icône de l'invite "Turn your phone" (ShelfShell) : le téléphone dessiné
-   bascule doucement en paysage puis revient, en boucle, pour mimer le geste
-   attendu plutôt que de rester figé. */
-@keyframes rotate-hint {
-  0%,
-  20% {
-    transform: rotate(0deg);
-  }
-  50%,
-  70% {
-    transform: rotate(-90deg);
-  }
-  100% {
-    transform: rotate(0deg);
-  }
-}
