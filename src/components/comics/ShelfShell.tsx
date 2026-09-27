@@ -73,6 +73,8 @@ const SLIDER_GAP_PX_MOBILE = 12;
  * au lieu de retoucher le cadrage 3D, partagé avec la lecture.
  */
 const HEADER_GAP_PX = 60;
+/** Même écart, sur mobile : 24px, pas 60. */
+const HEADER_GAP_PX_MOBILE = 24;
 /**
  * Écart voulu sous le contenu le plus bas (card ou curseur) avant la section
  * suivante, en desktop. Le canevas (et le cadrage 3D qu'il porte) reste en
@@ -390,12 +392,12 @@ export default function ShelfShell({
       if (viewport) viewport.style.height = "";
       return;
     }
+    const isMobile = window.innerWidth < DESKTOP_BREAKPOINT_PX;
+
     // contentTopY() est mesuré depuis le sommet du canevas, indépendant de ce
     // margin-top : pas de boucle de rétroaction, un seul calcul suffit.
-    const heroMarginTop = HEADER_GAP_PX - scene.contentTopY();
+    const heroMarginTop = (isMobile ? HEADER_GAP_PX_MOBILE : HEADER_GAP_PX) - scene.contentTopY();
     if (hero) hero.style.marginTop = `${heroMarginTop}px`;
-
-    const isMobile = window.innerWidth < DESKTOP_BREAKPOINT_PX;
 
     if (slider) {
       slider.style.left = `${scene.contentCenterX() - slider.offsetWidth / 2}px`;

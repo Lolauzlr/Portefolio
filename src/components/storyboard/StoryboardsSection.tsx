@@ -156,7 +156,7 @@ function StoryProject({
 
 export default function StoryboardsSection() {
   return (
-    <section className="bg-[#131313] flex flex-col gap-[40px] md:gap-[60px] items-start py-6 md:py-[60px] px-3 md:px-[120px] w-full">
+    <section className="bg-[#131313] flex flex-col gap-[24px] md:gap-[60px] items-start py-6 md:py-[60px] px-3 md:px-[120px] w-full">
       <div className="flex flex-col gap-[4px] items-start w-full">
         <h2 className="font-[family-name:var(--font-heading)] text-[40px] tracking-[3.2px] text-white uppercase">
           Storyboards
