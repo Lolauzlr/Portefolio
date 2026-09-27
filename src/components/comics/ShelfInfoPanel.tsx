@@ -13,8 +13,8 @@ const CROSSFADE_MS = 220;
  * pages read as one family - but the shelf itself keeps its own 3D look and
  * its own put-away/pull-out and open-on-click interactions, unlike
  * Storyboard's flat flip-card carousel. On mobile it flows in the page below
- * the books (see the mt-4 on its wrapper in ShelfShell); on desktop it's
- * absolutely positioned beside them by refreshCardGap.
+ * the slider (see the mt-4 on its wrapper in ShelfShell); on desktop it's
+ * absolutely positioned beside the books by refreshCardGap.
  */
 export default function ShelfInfoPanel({
   comic,
