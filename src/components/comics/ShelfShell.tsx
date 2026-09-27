@@ -299,7 +299,8 @@ export default function ShelfShell({
     [router, setPhase],
   );
 
-  /** Tourne-page sans navigation : sert aussi au retour du navigateur. */
+  /** Tourne-page sans navigation : sert aussi au retour du navigateur, direct
+   *  vers une double page pas forcément adjacente. */
   const goTo = useCallback(
     async (target: number, animate: boolean) => {
       const scene = sceneRef.current;
@@ -308,30 +309,37 @@ export default function ShelfShell({
       if (target === scene.currentSpread()) return;
       if (!advance("turn")) return;
 
-      await scene.goToSpread(target, animate);
+      await scene.goToSpreadDirect(target, animate);
       if (!mountedRef.current) return;
       advance("done");
     },
     [advance],
   );
 
+  /**
+   * Geste utilisateur (clic, molette, clavier) : la scène décide seule si ça
+   * tourne une double page (paysage) ou juste un côté (portrait, voir
+   * setReadingOrientation) - un simple changement de côté ne touche ni
+   * readingIndex ni l'URL, turnReading rend alors faux et cette fonction
+   * s'arrête là.
+   */
   const turn = useCallback(
     async (direction: -1 | 1) => {
       const scene = sceneRef.current;
       if (!scene) return;
-      if (nextState(stateRef.current, "turn") === null) return;
+      if (!advance("turn")) return;
 
-      const target = scene.currentSpread() + direction;
-      if (target < 0 || target >= scene.spreadCount()) return;
-
-      await goTo(target, true);
+      const movedSpread = await scene.turnReading(direction, true);
       if (!mountedRef.current) return;
+      advance("done");
+      if (!movedSpread) return;
+
       const slug = COMICS[selectedRef.current ?? -1]?.slug;
       if (!slug) return;
       selfNavigatedRef.current += 1;
-      router.push(readingHref(slug, target));
+      router.push(readingHref(slug, scene.currentSpread()));
     },
-    [goTo, router],
+    [advance, router],
   );
 
   /** Chemin du lien profond : la double page est posée sans rejouer l'ouverture. */
@@ -507,12 +515,13 @@ export default function ShelfShell({
 
   useEffect(() => {
     turnRef.current = (direction) => {
-      // Un clic à gauche de la première double page, c'est rabattre la couverture :
-      // le livre se referme et retourne sur l'étagère.
+      // Un clic à gauche de la toute première page (readingIndex 0, côté
+      // gauche même en portrait - voir isAtBookStart), c'est rabattre la
+      // couverture : le livre se referme et retourne sur l'étagère.
       if (
         direction === -1 &&
         canTurn(stateRef.current) &&
-        sceneRef.current?.currentSpread() === 0
+        sceneRef.current?.isAtBookStart()
       ) {
         void exit({ navigate: true });
         return;
@@ -649,6 +658,10 @@ export default function ShelfShell({
             onTurn: (direction) => turnRef.current(direction),
           });
           sceneRef.current = handle;
+          // Une seule fois, pour que la toute première lecture parte déjà du bon
+          // format - resize() dans scene.ts bascule seul les suivantes (voir sa
+          // documentation, ainsi que celle de setReadingOrientation).
+          handle.setReadingOrientation(window.innerHeight > window.innerWidth);
 
           const first = initialSegmentRef.current;
           const index = first ? COMICS.findIndex((comic) => comic.slug === first) : -1;

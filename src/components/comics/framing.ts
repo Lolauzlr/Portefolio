@@ -7,6 +7,14 @@
 export const SPREAD_HALF_WIDTH = 1.02;
 export const SPREAD_HALF_HEIGHT = 0.75;
 
+/**
+ * Demi-largeur d'une seule page (mode portrait mobile, voir ShelfShell) :
+ * exactement la moitié d'une double page, l'autre moitié n'étant simplement
+ * pas cadrée. La hauteur ne change pas (une page a la même hauteur que la
+ * double page) - seul readingBack en tient compte via ce second argument.
+ */
+export const PAGE_HALF_WIDTH = SPREAD_HALF_WIDTH / 2;
+
 /** Épaisseur du bloc de pages entre la pose engagée du livre et le plan des planches. */
 export const PAGE_PLANE_Z = 0.132;
 
@@ -26,11 +34,15 @@ export const READ_BACK_MIN = 2.3;
  * insuffisant en largeur : la double page fait deux pages, elle est plus large que
  * haute, et elle sortirait des deux bords. Le recul est alors repoussé jusqu'à ce
  * que la largeur visible la contienne avec le même air qu'en hauteur.
+ *
+ * `halfWidth` vaut SPREAD_HALF_WIDTH par défaut (double page) ; scene.ts y
+ * passe PAGE_HALF_WIDTH en mode portrait mobile (une seule page à cadrer,
+ * voir sa documentation) - la hauteur, elle, ne change jamais.
  */
-export function readingBack(aspect: number, fovDeg: number): number {
+export function readingBack(aspect: number, fovDeg: number, halfWidth = SPREAD_HALF_WIDTH): number {
   const halfAngle = Math.tan((fovDeg * Math.PI) / 360);
   const safeAspect = Number.isFinite(aspect) && aspect > 0 ? aspect : 1;
-  const forWidth = SPREAD_HALF_WIDTH / (FRAME_FILL * halfAngle * safeAspect);
+  const forWidth = halfWidth / (FRAME_FILL * halfAngle * safeAspect);
   return Math.max(READ_BACK_MIN, PAGE_PLANE_Z + forWidth);
 }
 

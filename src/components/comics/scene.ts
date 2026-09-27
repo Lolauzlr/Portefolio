@@ -10,7 +10,7 @@ import {
   pickTextureWidth,
 } from "@/components/comics/textures";
 import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
-import { readingBack } from "@/components/comics/framing";
+import { PAGE_HALF_WIDTH, SPREAD_HALF_WIDTH, readingBack } from "@/components/comics/framing";
 import {
   renderPixelRatio,
   renderedPixels,
@@ -247,7 +247,40 @@ export type SceneHandle = {
   close(animate: boolean): Promise<void>;
   enterImmediate(index: number): void;
   openForReading(index: number, spread: number, animate: boolean): Promise<void>;
-  goToSpread(spread: number, animate: boolean): Promise<void>;
+  /**
+   * Lien profond / retour navigateur : saute directement à la double page
+   * demandée, pas forcément adjacente (contrairement à turnReading). Rend
+   * vrai si la double page a changé (toujours vrai sauf cible déjà
+   * affichée) - même convention que turnReading, pour un usage symétrique
+   * côté ShelfShell.
+   */
+  goToSpreadDirect(target: number, animate: boolean): Promise<boolean>;
+  /**
+   * Tourne-page pour un geste utilisateur (clic, molette, clavier) : ± une
+   * double page en mode paysage, ± une page en mode portrait (voir
+   * setReadingOrientation) - où deux appels peuvent donc être nécessaires
+   * pour avancer d'une double page. Rend vrai seulement si la double page a
+   * changé (readingIndex) : c'est le seul cas où l'appelant doit répercuter
+   * l'URL, un simple changement de côté n'en affichant pas une nouvelle.
+   */
+  turnReading(direction: -1 | 1, animate: boolean): Promise<boolean>;
+  /**
+   * Vrai à la toute première page du livre (jamais au milieu d'une double
+   * page en mode portrait) : sert à décider si un tourne-page vers l'arrière
+   * doit plutôt refermer le livre (voir ShelfShell).
+   */
+  isAtBookStart(): boolean;
+  /**
+   * Format de lecture : paysage cadre la double page entière (comportement
+   * historique) ; portrait cadre une seule page à la fois, pour remplir un
+   * écran de téléphone sans avoir à zoomer (voir PAGE_HALF_WIDTH). À
+   * n'appeler qu'une fois, juste après la construction de la scène : la
+   * prochaine ouverture (openForReading) part de cet appel, ensuite c'est
+   * resize() qui bascule seul le format en cours de lecture (un rattrapage
+   * séparé ici, sur le même redimensionnement, se serait disputé la caméra
+   * avec lui).
+   */
+  setReadingOrientation(portrait: boolean): void;
   currentSpread(): number;
   spreadCount(): number;
   setPickingEnabled(enabled: boolean): void;
@@ -747,15 +780,19 @@ export function createScene(
   readingGroup.add(turnPage.pivot);
 
   /**
-   * Fond assombri (25% de noir) posé entre le livre en lecture et le reste de
-   * l'étagère (voir READ_BACKDROP_Z) : sans lui, les livres voisins et la
-   * pièce restent visibles et pleinement éclairés autour de la double page,
-   * qui devrait pourtant seule occuper l'attention. Un plan du monde, pas un
-   * enfant du livre : il ne doit ni tourner ni avancer avec lui.
+   * Fond assombri posé entre le livre en lecture et le reste de l'étagère
+   * (voir READ_BACKDROP_Z) : sans lui, les livres voisins et la pièce
+   * restent visibles et pleinement éclairés autour de la double page, qui
+   * devrait pourtant seule occuper l'attention. Un plan du monde, pas un
+   * enfant du livre : il ne doit ni tourner ni avancer avec lui. Quasiment
+   * opaque (pas tout à fait, pour garder un soupçon de voile plutôt qu'un
+   * aplat) : en mode single (voir frameMode), le cadrage serré sur une seule
+   * page rapproche assez la caméra pour qu'un voile plus léger laisse
+   * deviner le livre voisin en transparence.
    */
   const readBackdrop = new THREE.Mesh(
     new THREE.PlaneGeometry(1, 1),
-    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.6 }),
+    new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.95 }),
   );
   readBackdrop.scale.set(40, 40, 1);
   readBackdrop.visible = false;
@@ -767,6 +804,31 @@ export function createScene(
   const reverse = () => readingNode?.comic.reverseReading ?? false;
 
   /**
+   * Format demandé par ShelfShell (setReadingOrientation) - portrait cadre
+   * une seule page. `frameMode` est le cadrage RÉELLEMENT appliqué en ce
+   * moment : le temps qu'une vraie double page tourne (turnReading), il
+   * repasse en "spread" le temps du geste - la feuille qui tourne balaie
+   * toute la largeur d'une double page, un cadrage à la largeur d'une seule
+   * page la couperait aux deux tiers de l'animation. `pageSide` ne vaut
+   * qu'en mode "single" : quelle moitié de readingSpreads[readingIndex] est
+   * cadrée.
+   */
+  let preferSingle = false;
+  let frameMode: "spread" | "single" = "spread";
+  let pageSide: "left" | "right" = "left";
+
+  function frameHalfWidth(mode: "spread" | "single"): number {
+    return mode === "single" ? PAGE_HALF_WIDTH : SPREAD_HALF_WIDTH;
+  }
+
+  /** Écart (unités de scène) entre le pli et le centre de la page cadrée - nul
+   *  en mode spread, ± une demi-page en mode single (voir BOOK.w, qui vaut
+   *  justement SPREAD_HALF_WIDTH : la largeur d'une page). */
+  function frameOffsetX(mode: "spread" | "single", side: "left" | "right"): number {
+    return mode === "single" ? (side === "left" ? -1 : 1) * (BOOK.w / 2) : 0;
+  }
+
+  /**
    * Le pli de la double page est l'origine du livre : la caméra et sa cible le visent,
    * plutôt qu'un x fixe. La mise en avant peut n'être pas finie quand la lecture
    * s'ouvre — le livre glisse alors encore depuis sa case d'étagère, et un x fixe
@@ -774,9 +836,16 @@ export function createScene(
    */
   function aimAtFold(node: BookNode, reach = 1) {
     // `reach` fait glisser la visée du centre du livre fermé vers le pli pendant
-    // l'ouverture, au lieu de l'y sauter d'une demi-page.
-    camera.position.x = node.group.position.x + HINGE_X * reach;
+    // l'ouverture, au lieu de l'y sauter d'une demi-page - et avec elle, en mode
+    // single, vers le centre de la page cadrée plutôt que le pli lui-même.
+    const offset = frameOffsetX(frameMode, pageSide) * reach;
+    camera.position.x = node.group.position.x + HINGE_X * reach + offset;
     camTarget.x = camera.position.x;
+    // Suit la caméra plutôt que de rester fixé sur le pli : en mode single, où
+    // la caméra vise le centre d'une page plutôt que le pli, un fond resté
+    // centré sur ce dernier laissait paraître le livre voisin à l'écart de
+    // cadrage qui en résulte.
+    readBackdrop.position.x = camera.position.x;
   }
 
   const plateCache = new Map<string, THREE.Texture>();
@@ -895,6 +964,11 @@ export function createScene(
     readingNode = node;
     readingSpreads = buildSpreads(node.comic.plates, node.comic.overlappingPlates);
     readingIndex = clampSpreadIndex(spread, readingSpreads.length);
+    // Toute ouverture repart sur la première page du bon côté : readBack()
+    // et aimAtFold, appelés plus bas dans ce même tween, en tiennent déjà
+    // compte dès le premier cadre.
+    frameMode = preferSingle ? "single" : "spread";
+    pageSide = "left";
 
     node.group.add(readingGroup);
     node.coverPivot.add(leftPage);
@@ -1023,6 +1097,83 @@ export function createScene(
   }
 
   /**
+   * Anime la caméra vers un cadrage donné (format + côté), sans toucher à
+   * readingIndex ni aux planches affichées - utilisé aussi bien pour un
+   * simple changement de côté (mode single, pas de double page à tourner)
+   * que pour l'écart/rapprochement autour d'une vraie double page tournée
+   * (voir advanceSpread).
+   */
+  async function reframe(mode: "spread" | "single", side: "left" | "right", animate: boolean): Promise<void> {
+    const node = readingNode;
+    if (!node) return;
+    frameMode = mode;
+    pageSide = side;
+    const targetX = node.group.position.x + HINGE_X + frameOffsetX(mode, side);
+    const targetZ = SELECT_OUT + readBack();
+    const d = animate && !opts.reducedMotion ? dur(350) : 0;
+    await Promise.all([
+      gsap.to(camera.position, {
+        x: targetX,
+        z: targetZ,
+        duration: d,
+        ease: "power2.inOut",
+        // Suit la caméra, voir aimAtFold pour le pourquoi.
+        onUpdate: () => {
+          readBackdrop.position.x = camera.position.x;
+          markDirty();
+        },
+      }),
+      gsap.to(camTarget, { x: targetX, duration: d, ease: "power2.inOut" }),
+    ]);
+  }
+
+  /**
+   * Vraie double page à tourner (readingIndex change). En mode single, la
+   * caméra s'écarte d'abord en cadrage plein spread - la feuille qui tourne
+   * (goToSpread) balaie toute la largeur d'une double page, un cadrage à la
+   * largeur d'une seule page la couperait en cours de geste - puis se
+   * recadre sur la page opposée de la double page d'arrivée une fois le
+   * tourne-page terminé.
+   */
+  async function advanceSpread(target: number, animate: boolean): Promise<boolean> {
+    const next = clampSpreadIndex(target, readingSpreads.length);
+    if (next === readingIndex) return false;
+    const forward = next > readingIndex;
+    if (frameMode === "single") await reframe("spread", pageSide, animate);
+    await goToSpread(next, animate);
+    if (preferSingle) await reframe("single", forward ? "left" : "right", animate);
+    return true;
+  }
+
+  /** Voir SceneHandle.turnReading. */
+  async function turnReading(direction: -1 | 1, animate: boolean): Promise<boolean> {
+    if (frameMode === "single") {
+      if (direction === 1 && pageSide === "left") {
+        await reframe("single", "right", animate);
+        return false;
+      }
+      if (direction === -1 && pageSide === "right") {
+        await reframe("single", "left", animate);
+        return false;
+      }
+    }
+    return advanceSpread(readingIndex + direction, animate);
+  }
+
+  /** Voir SceneHandle.isAtBookStart. */
+  function isAtBookStart(): boolean {
+    return readingIndex === 0 && (frameMode !== "single" || pageSide === "left");
+  }
+
+  /** Voir SceneHandle.setReadingOrientation. */
+  function setReadingOrientation(portrait: boolean): void {
+    preferSingle = portrait;
+    const wantMode: "spread" | "single" = portrait ? "single" : "spread";
+    if (!readingNode || wantMode === frameMode) return;
+    void reframe(wantMode, pageSide, true);
+  }
+
+  /**
    * Une fois les pages de lecture rangées, c'est la face avant du bloc de pages qui
    * paraît dans l'entrebâillement de la couverture : elle y montrerait la planche 1.
    * Le temps de la fermeture, elle porte la page de droite qu'on quittait.
@@ -1072,6 +1223,8 @@ export function createScene(
     readingNode = null;
     readingSpreads = [];
     readingIndex = 0;
+    frameMode = "spread";
+    pageSide = "left";
     for (const tex of plateCache.values()) tex.dispose();
     plateCache.clear();
     leftPageMaterial.map = null;
@@ -1322,9 +1475,9 @@ export function createScene(
   }
 
   /** Recul de lecture : le format de la fenêtre décide si c'est la hauteur ou la largeur
-   *  de la double page qui commande. */
+   *  du sujet cadré (double page ou une seule page, voir frameMode) qui commande. */
   function readBack(): number {
-    return readingBack(camera.aspect, READ_FOV);
+    return readingBack(camera.aspect, READ_FOV, frameHalfWidth(frameMode));
   }
 
   /**
@@ -1410,6 +1563,15 @@ export function createScene(
     // Sauf en lecture, où le recul dépend du format : une fenêtre étroite couperait
     // la double page par les côtés.
     if (readingNode) {
+      // Rattrapage sans animation, pour la même raison que shelfRestZ ci-dessous
+      // (et dans le même passage, pas dans un effet séparé côté ShelfShell : les
+      // deux tourneraient sur le même redimensionnement sans se coordonner,
+      // l'un animé et l'autre non, l'un pouvant écraser l'autre en cours de
+      // geste). Une rotation d'écran doit donc aussi basculer le format de
+      // lecture ici - voir setReadingOrientation, qui ne sert plus qu'à poser
+      // preferSingle avant toute lecture, avant que readingNode n'existe.
+      preferSingle = h > w;
+      frameMode = preferSingle ? "single" : "spread";
       camera.position.z = SELECT_OUT + readBack();
       aimAtFold(readingNode);
     } else if (selected !== null) {
@@ -1445,7 +1607,10 @@ export function createScene(
     close,
     enterImmediate,
     openForReading,
-    goToSpread,
+    goToSpreadDirect: advanceSpread,
+    turnReading,
+    isAtBookStart,
+    setReadingOrientation,
     currentSpread() {
       return readingIndex;
     },
