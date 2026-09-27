@@ -88,13 +88,19 @@ function StorySpot({
 }) {
   return (
     <div className={`flex flex-col md:flex-row gap-6 md:gap-[24px] items-start w-full ${reversed ? "md:flex-row-reverse" : ""} ${className}`}>
-      <div className="flex flex-col gap-6 md:gap-[24px] items-start flex-1 w-full min-w-0">
-        <div className="flex flex-col gap-4 items-start w-full">
+      {/* contents (mobile) : label et description deviennent des enfants
+          flex directs du conteneur, pour intercaler le storyboard entre les
+          deux (order-* plus bas) sans recomposer leur propre mise en page.
+          À partir de `md`, redevient une vraie colonne (flex-col) à côté du
+          storyboard, comme avant - gap-4, l'écart d'origine entre label et
+          description, pas le gap-[24px] de la ligne entière. */}
+      <div className="contents md:flex md:flex-col md:gap-4 md:items-start md:flex-1 md:w-full md:min-w-0">
+        <div className="order-1 md:order-none w-full">
           <SubLabel>{label}</SubLabel>
-          <ExpandableText>{description}</ExpandableText>
         </div>
+        <ExpandableText className="order-3 md:order-none">{description}</ExpandableText>
       </div>
-      <div className="w-full md:w-[469px] shrink-0">
+      <div className="w-full md:w-[469px] shrink-0 order-2 md:order-none">
         {media ?? <ImageCarousel slides={placeholderSlides(3)} alt={label} aspectClassName="aspect-[469/663]" />}
       </div>
     </div>
@@ -127,18 +133,23 @@ function StoryProject({
     // the section's own padding while the carousel sits centered on its
     // own further right.
     <div className="flex flex-col gap-6 md:gap-[24px] items-start w-full md:max-w-[990px] md:mx-auto">
-      <div className="flex flex-col gap-4 md:gap-[16px] items-start w-full">
+      <div className="flex flex-col gap-4 md:gap-[16px] items-start w-full order-1">
         <SectionTitle underlineWidth={titleUnderlineWidth}>{title}</SectionTitle>
         {label && <SubLabel>{label}</SubLabel>}
-        {description && <ExpandableText>{description}</ExpandableText>}
       </div>
       {/* Fixed height (desktop) instead of stretching full-width, which made
           these carousels dominate the page. Mobile keeps the original
           full-width behavior, since a 660px-tall carousel would take over
-          most of a phone screen. */}
-      <div className="w-full md:h-[660px] aspect-[1199/799]">
+          most of a phone screen. order-2/md:order-3 : sur mobile le
+          storyboard précède la description (voir order-3/md:order-2
+          ci-dessous), desktop garde l'ordre d'origine (description, puis
+          storyboard). */}
+      <div className="w-full md:h-[660px] aspect-[1199/799] order-2 md:order-3">
         <ImageCarousel slides={slides ?? placeholderSlides(3)} alt={title} aspectClassName="h-full" />
       </div>
+      {description && (
+        <ExpandableText className="order-3 md:order-2">{description}</ExpandableText>
+      )}
     </div>
   );
 }
@@ -199,18 +210,15 @@ export default function StoryboardsSection() {
             inset, rather than being its own slightly different width. */}
         <div className="flex flex-col gap-6 md:gap-[24px] items-start w-full md:max-w-[990px] md:mx-auto">
           <SectionTitle>The source</SectionTitle>
-          <ExpandableText>
-            {
-              "Commissioned by the creative agency The Source to design two dynamic and engaging storyboards for advertising campaigns promoting the energy drink brand, V Energy.\n\nI worked on developing the sequence, exploring framing, composition and rhythm to build the story from one shot to the next."
-            }
-          </ExpandableText>
           {/* Content-sized columns (not flex-1) in a row — flex-1 columns
               each centering their own fixed-width carousel independently
               made the real visual gap between the two carousels balloon
               well past the declared gap value on wide viewports, since it
               was really (gap + leftover column space on each side), not
-              just the gap. */}
-          <div className="flex flex-col md:flex-row md:justify-center gap-6 md:gap-[40px] items-center w-full">
+              just the gap. order-2/md:order-3 : sur mobile les storyboards
+              précèdent la description (voir order-3/md:order-2 plus bas),
+              desktop garde l'ordre d'origine. */}
+          <div className="flex flex-col md:flex-row md:justify-center gap-6 md:gap-[40px] items-center w-full order-2 md:order-3">
             {/* items-start (not items-center): the label is wider than
                 the 467px carousel, so centering the two within the
                 column — which is only as wide as its widest child, the
@@ -229,6 +237,11 @@ export default function StoryboardsSection() {
               </div>
             </div>
           </div>
+          <ExpandableText className="order-3 md:order-2">
+            {
+              "Commissioned by the creative agency The Source to design two dynamic and engaging storyboards for advertising campaigns promoting the energy drink brand, V Energy.\n\nI worked on developing the sequence, exploring framing, composition and rhythm to build the story from one shot to the next."
+            }
+          </ExpandableText>
         </div>
         <StoryProject
           title="The Untamed"
