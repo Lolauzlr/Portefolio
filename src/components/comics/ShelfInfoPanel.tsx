@@ -9,6 +9,59 @@ import type { Comic } from "@/lib/comics";
 const CROSSFADE_MS = 220;
 
 /**
+ * CTA READ (ou son repli "BIENTÔT" pour un album sans pages, voir plus bas) -
+ * rendue deux fois par le panneau : à côté du titre sur mobile (`compact`,
+ * taille reprise du même barème que les autres pilules du site, voir
+ * Navbar.tsx/cv/page.tsx - `text-[20px]`/`px-[20px]`/`py-[10px]`), tout en
+ * bas de la card sur desktop (taille d'origine, `md:hidden`/`hidden md:flex`
+ * partagent l'affichage entre les deux plutôt que de les empiler).
+ */
+function ReadAction({
+  comic,
+  onRead,
+  compact,
+}: {
+  comic: Comic;
+  onRead: () => void;
+  compact: boolean;
+}) {
+  const textSize = compact ? "text-[20px] tracking-[1.6px]" : "text-[24px] tracking-[1.92px]";
+  const padding = compact ? "px-[20px] py-[10px]" : "px-[40px] py-[20px]";
+
+  if (!comic.slug) {
+    return (
+      <span className={`border-2 border-[#555] flex items-center shrink-0 rounded-[40px] ${padding}`}>
+        <span className={`font-[family-name:var(--font-heading)] text-[#8b9099] whitespace-nowrap ${textSize}`}>
+          BIENTÔT
+        </span>
+      </span>
+    );
+  }
+
+  return (
+    <Link
+      href={`/storyboard/${comic.slug}/lire`}
+      // Plain navigation would jump straight to the reader with no transition -
+      // this replays the same animated opening as a second click on the book
+      // itself (see readFromPanel in ShelfShell). The href stays real (right
+      // click, open in a new tab, no-JS) for anything but a plain left click.
+      onClick={(e) => {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+        e.preventDefault();
+        onRead();
+      }}
+      className={`bg-black/40 border-2 border-[#0fd1ea] flex items-center shrink-0 rounded-[40px] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] transition-colors cursor-pointer ${padding}`}
+    >
+      <span
+        className={`font-[family-name:var(--font-heading)] text-[#0fd1ea] whitespace-nowrap hover:text-[#7FECFB] transition-colors ${textSize}`}
+      >
+        READ
+      </span>
+    </Link>
+  );
+}
+
+/**
  * Panel beside the 3D shelf, mirroring the Storyboard "Pick a story" info
  * card (same PentagonCard, same title/description/READ layout) so the two
  * pages read as one family - but the shelf itself keeps its own 3D look and
@@ -77,9 +130,18 @@ export default function ShelfInfoPanel({
           className="flex min-h-0 flex-1 flex-col gap-[12px] items-start w-full"
           style={panelStyle}
         >
-          <h3 className="font-[family-name:var(--font-heading)] text-[32px] md:text-[40px] tracking-[3.2px] text-white w-full flex-none">
-            {panelComic.title}
-          </h3>
+          {/* READ rejoint le titre sur la même ligne en mobile (maquette) - en
+              desktop ce conteneur redevient un simple bloc (`md:block`) et le
+              titre reprend sa pleine largeur, READ restant réservé au bloc du
+              bas (`md:hidden` ci-dessous). */}
+          <div className="flex w-full flex-none items-center justify-between gap-4 md:block">
+            <h3 className="font-[family-name:var(--font-heading)] min-w-0 flex-1 text-[32px] tracking-[3.2px] text-white md:w-full md:text-[40px]">
+              {panelComic.title}
+            </h3>
+            <div className="md:hidden">
+              <ReadAction comic={panelComic} onRead={onRead} compact />
+            </div>
+          </div>
           {panelComic.synopsis && (
             <>
               {/* whitespace-pre-line : les synopsis multi-paragraphes utilisent des
@@ -114,29 +176,10 @@ export default function ShelfInfoPanel({
         {/* Un album "à venir" (slug à null) reste désignable - voir handlePick
             dans ShelfShell - mais n'a encore ni pages ni route de lecture :
             READ cède alors la place à une mention, plutôt que de proposer un
-            lien mort. */}
-        <div className="flex flex-col items-start w-full" style={panelStyle}>
-          {panelComic.slug ? (
-            <Link
-              href={`/storyboard/${panelComic.slug}/lire`}
-              onClick={(e) => {
-                if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
-                e.preventDefault();
-                onRead();
-              }}
-              className="bg-black/40 border-2 border-[#0fd1ea] flex items-center px-[40px] py-[20px] rounded-[40px] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] transition-colors cursor-pointer"
-            >
-              <span className="font-[family-name:var(--font-heading)] text-[#0fd1ea] text-[24px] tracking-[1.92px] whitespace-nowrap hover:text-[#7FECFB] transition-colors">
-                READ
-              </span>
-            </Link>
-          ) : (
-            <span className="border-2 border-[#555] flex items-center px-[40px] py-[20px] rounded-[40px]">
-              <span className="font-[family-name:var(--font-heading)] text-[#8b9099] text-[24px] tracking-[1.92px] whitespace-nowrap">
-                BIENTÔT
-              </span>
-            </span>
-          )}
+            lien mort. Réservé au desktop (`hidden md:flex`) : sur mobile la
+            même action est déjà rendue à côté du titre ci-dessus. */}
+        <div className="hidden w-full items-start md:flex md:flex-col" style={panelStyle}>
+          <ReadAction comic={panelComic} onRead={onRead} compact={false} />
         </div>
       </PentagonCard>
     </div>
