@@ -807,6 +807,30 @@ export default function ShelfShell({
     };
   }, [readingChrome]);
 
+  /**
+   * Un livre ne se lit qu'en paysage sur téléphone (comme une vidéo plein
+   * écran) : la double page y est dessinée pour occuper tout l'écran une
+   * fois tourné, sans avoir à zoomer. Mesuré sur la plus petite dimension de
+   * la fenêtre (pas innerWidth seul) pour qu'un téléphone déjà tourné en
+   * paysage - où innerWidth dépasse alors DESKTOP_BREAKPOINT_PX - reste
+   * reconnu comme un téléphone plutôt que pris pour une fenêtre desktop.
+   */
+  const [smallPortrait, setSmallPortrait] = useState(false);
+  useEffect(() => {
+    const update = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      setSmallPortrait(h > w && Math.min(w, h) < DESKTOP_BREAKPOINT_PX);
+    };
+    update();
+    window.addEventListener("resize", update);
+    window.addEventListener("orientationchange", update);
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("orientationchange", update);
+    };
+  }, []);
+
   // La désignation reste à l'échelle du survol (voir select() dans scene.ts) :
   // le panneau peut donc rester affiché une fois un livre désigné, pas
   // seulement pendant le survol - la désignation l'emporte sur un survol
@@ -837,6 +861,10 @@ export default function ShelfShell({
   // "Storyboards" par-dessous. `readingChrome` couvre toute l'animation, pas
   // seulement l'état READING stable.
   const showAround = !slugSegment && !immersive;
+  // Couvre toute l'immersion (voir `immersive` ci-dessus), pas seulement
+  // l'état READING stable : un lien profond de lecture ouvert directement en
+  // portrait doit lui aussi rester masqué avant toute interaction.
+  const showRotatePrompt = readingChrome && smallPortrait;
 
   return (
     <div
@@ -929,13 +957,16 @@ export default function ShelfShell({
       </div>
 
       {/* Reste affiché pendant un tourne-page pour ne pas clignoter : la machine
-          refuse `close` depuis TURNING, le bouton y est donc sans effet. */}
+          refuse `close` depuis TURNING, le bouton y est donc sans effet.
+          z-50 : reste joignable par-dessus l'invite de rotation (z-40,
+          voir plus bas), pour permettre de ressortir sans avoir à tourner
+          le téléphone. */}
       {ready && (state === "READING" || state === "TURNING") && (
         <button
           type="button"
           onClick={() => void exit({ navigate: true })}
           aria-label="Fermer la lecture"
-          className="fixed top-4 right-4 z-20 flex h-[56px] w-[56px] items-center justify-center rounded-full border-2 border-[#0fd1ea] bg-black/40 text-[#0fd1ea] backdrop-blur-[5px] transition-colors hover:bg-[#0fd1ea]/10 md:top-6 md:right-6"
+          className="fixed top-4 right-4 z-50 flex h-[56px] w-[56px] items-center justify-center rounded-full border-2 border-[#0fd1ea] bg-black/40 text-[#0fd1ea] backdrop-blur-[5px] transition-colors hover:bg-[#0fd1ea]/10 md:top-6 md:right-6"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
             <line x1="6" y1="6" x2="18" y2="18" />
@@ -949,6 +980,43 @@ export default function ShelfShell({
         className="pointer-events-none fixed inset-0 z-30 bg-[#131313] transition-opacity duration-300"
         style={{ opacity: overlay }}
       />
+
+      {/* Sur téléphone, la double page se lit en paysage plein écran (comme
+          une vidéo) plutôt qu'en portrait réduit à zoomer : tant que le
+          téléphone n'est pas tourné, cette invite recouvre la lecture (qui
+          continue de se dessiner en dessous, prête dès la rotation) - voir
+          `smallPortrait` plus haut. z-40, sous le bouton de fermeture
+          (z-50) mais au-dessus de tout le reste. */}
+      {showRotatePrompt && (
+        <div className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-4 bg-[#131313] px-8 text-center">
+          <svg
+            width="64"
+            height="64"
+            viewBox="0 0 40 40"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden
+            className="text-[#0fd1ea]"
+          >
+            <circle cx="20" cy="20" r="19" fill="currentColor" fillOpacity="0.2" />
+            <g
+              style={{
+                transformOrigin: "20px 20px",
+                animation: "rotate-hint 2.4s ease-in-out infinite",
+              }}
+            >
+              <rect x="14" y="9" width="12" height="22" rx="2.5" stroke="currentColor" strokeWidth="2" />
+              <path d="M18 27h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </g>
+          </svg>
+          <h2 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px] text-white uppercase">
+            Turn your phone
+          </h2>
+          <p className="font-[family-name:var(--font-body)] text-[14px] tracking-[1.12px] text-white/70">
+            Rotate to landscape for the best reading experience
+          </p>
+        </div>
+      )}
 
       {/* La grille reste visible tant que la scène n'a pas réellement pris la
           main (`ready`) ; elle ne passe en `sr-only` qu'une fois la 3D montée. */}
