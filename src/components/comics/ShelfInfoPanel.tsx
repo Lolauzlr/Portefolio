@@ -8,11 +8,13 @@ import type { Comic } from "@/lib/comics";
 const CROSSFADE_MS = 220;
 
 /**
- * Fixed panel beside the 3D shelf, mirroring the Storyboard "Pick a story"
- * info card (same PentagonCard, same title/description/READ layout) so the
- * two pages read as one family - but the shelf itself keeps its own 3D
- * look and its own put-away/pull-out and open-on-click interactions,
- * unlike Storyboard's flat flip-card carousel.
+ * Panel beside the 3D shelf, mirroring the Storyboard "Pick a story" info
+ * card (same PentagonCard, same title/description/READ layout) so the two
+ * pages read as one family - but the shelf itself keeps its own 3D look and
+ * its own put-away/pull-out and open-on-click interactions, unlike
+ * Storyboard's flat flip-card carousel. On mobile it flows in the page below
+ * the books (see the mt-4 on its wrapper in ShelfShell); on desktop it's
+ * absolutely positioned beside them by refreshCardGap.
  */
 export default function ShelfInfoPanel({
   comic,
@@ -51,7 +53,7 @@ export default function ShelfInfoPanel({
   };
 
   return (
-    <div className="fixed bottom-16 left-1/2 z-20 w-[calc(100%-32px)] max-w-[400px] -translate-x-1/2 md:static md:left-auto md:w-auto md:max-w-none md:translate-x-0 md:translate-y-0">
+    <div className="relative z-20 mx-auto w-[calc(100%-32px)] max-w-[400px] md:static md:left-auto md:mx-0 md:w-auto md:max-w-none md:translate-x-0 md:translate-y-0">
       <PentagonCard
         className="h-auto w-full md:h-[535px] md:w-[510px] backdrop-blur-[5px]"
         contentClassName="!p-[16px] flex flex-col gap-[20px] h-full items-start"

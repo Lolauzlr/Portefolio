@@ -839,7 +839,7 @@ export default function ShelfShell({
             <>
               <div
                 ref={panelWrapperRef}
-                className="flex flex-col items-center gap-4 md:absolute md:top-1/2 md:-translate-y-1/2"
+                className="mt-4 flex flex-col items-center gap-4 md:mt-0 md:absolute md:top-1/2 md:-translate-y-1/2"
               >
                 <ShelfInfoPanel comic={highlightedComic} onRead={() => void readFromPanel(highlightIndex)} />
               </div>
