@@ -59,8 +59,8 @@ const CARD_GAP_PX = 40;
  */
 const CARD_GUTTER_PX_MOBILE = 24;
 const CARD_MAX_WIDTH_PX_MOBILE = 400;
-/** Écart voulu sous la card, en mobile - inutile en desktop (centrée à part). */
-const CARD_GAP_PX_MOBILE = 16;
+/** Écart voulu entre le curseur et la card, en mobile - inutile en desktop (centrée à part). */
+const CARD_GAP_PX_MOBILE = 24;
 /** Écart voulu entre le pied des livres et le curseur (BookSlider), en desktop. */
 const SLIDER_GAP_PX = 16;
 /** Même écart, sur mobile : 12px, pas 16 (voir CARD_GUTTER_PX_MOBILE ci-dessus). */
