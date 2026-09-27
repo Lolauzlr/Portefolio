@@ -427,6 +427,15 @@ export default function ShelfShell({
       const current = stateRef.current;
       if (!canInteract(current)) return;
 
+      // Sur mobile la card et le curseur ("Pick a story") restent masqués
+      // (voir le rendu plus bas, DESKTOP_BREAKPOINT_PX) : il n'y a donc rien
+      // à désigner avant d'ouvrir - un tap sur un livre l'ouvre directement,
+      // sans le détour par SELECTED qu'impose le second clic en desktop.
+      if (window.innerWidth < DESKTOP_BREAKPOINT_PX) {
+        void readFromPanel(index);
+        return;
+      }
+
       if (current === "SELECTED" && selectedRef.current === index) {
         void enterReading(index);
         return;
@@ -436,7 +445,7 @@ export default function ShelfShell({
       setSelected(index);
       void scene.select(index, true).then(refreshCardGap);
     },
-    [enterReading, setPhase, setSelected, refreshCardGap],
+    [enterReading, setPhase, setSelected, refreshCardGap, readFromPanel],
   );
 
   /**
@@ -855,11 +864,11 @@ export default function ShelfShell({
                   sous les livres eux-mêmes (contentCenterX/contentBottomY, voir
                   refreshCardGap), pas sous la card : un élément distinct, en
                   absolute par-dessus le canevas comme elle, pas empilé dessous
-                  en flux. `top`, pas un `bottom` CSS, voir refreshCardGap. Sur
-                  mobile il précède la card en flux (mt-3, soit 12px sous les
-                  livres) : voir le mt-4 (16px) de la card ci-dessous, qui le
-                  suit. */}
-              <div ref={sliderWrapperRef} className="mt-3 flex justify-center md:absolute md:mt-0">
+                  en flux. `top`, pas un `bottom` CSS, voir refreshCardGap.
+                  Masqué sur mobile (`hidden md:...`) : un tap y ouvre le livre
+                  directement (voir handlePick), cette désignation intermédiaire
+                  n'a donc plus de raison d'y être montrée. */}
+              <div ref={sliderWrapperRef} className="hidden md:absolute md:mt-0 md:flex md:justify-center">
                 <BookSlider
                   items={COMICS.map((comic, i) => ({ key: comic.slug ?? `upcoming-${i}`, label: comic.title }))}
                   active={highlightIndex}
@@ -868,7 +877,7 @@ export default function ShelfShell({
               </div>
               <div
                 ref={panelWrapperRef}
-                className="mt-4 flex flex-col items-center gap-4 md:mt-0 md:absolute md:top-1/2 md:-translate-y-1/2"
+                className="hidden md:absolute md:top-1/2 md:mt-0 md:flex md:-translate-y-1/2 md:flex-col md:items-center md:gap-4"
               >
                 <ShelfInfoPanel comic={highlightedComic} onRead={() => void readFromPanel(highlightIndex)} />
               </div>
