@@ -13,12 +13,12 @@ const CROSSFADE_MS = 220;
  * card (same PentagonCard, same title/description/READ layout) so the two
  * pages read as one family - but the shelf itself keeps its own 3D look and
  * its own put-away/pull-out and open-on-click interactions, unlike
- * Storyboard's flat flip-card carousel. On mobile it flows in the page below
- * the slider (see the mt-4 on its wrapper in ShelfShell), with its own px-3
- * gutter - the 3D canvas behind it stays full-bleed (maquette Figma), so the
- * card carries the page's usual mobile margin itself instead of inheriting
- * one from its non-padded ancestors. On desktop it's absolutely positioned
- * beside the books by refreshCardGap.
+ * Storyboard's flat flip-card carousel. Absolutely positioned over the books
+ * by refreshCardGap in ShelfShell, on mobile as much as desktop (the 3D
+ * canvas behind it stays full-bleed, maquette Figma) - width, gutter and
+ * centering all live on its wrapper there too (see CARD_GUTTER_PX_MOBILE /
+ * CARD_MAX_WIDTH_PX_MOBILE), this component only fills that frame (`w-full`)
+ * rather than sizing itself.
  */
 export default function ShelfInfoPanel({
   comic,
@@ -68,7 +68,7 @@ export default function ShelfInfoPanel({
   };
 
   return (
-    <div className="relative z-20 mx-auto w-full max-w-[400px] px-3 md:static md:left-auto md:mx-0 md:w-auto md:max-w-none md:translate-x-0 md:translate-y-0 md:px-0">
+    <div className="relative z-20 w-full md:static md:left-auto md:w-auto">
       <PentagonCard
         className="h-auto w-full md:h-[535px] md:w-[510px] backdrop-blur-[5px]"
         contentClassName="!p-[16px] flex flex-col gap-[20px] h-full items-start"

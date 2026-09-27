@@ -47,8 +47,24 @@ const WHEEL_LINE_PX = 16;
  * position réelle des livres, plutôt qu'au bord du canevas.
  */
 const CARD_GAP_PX = 40;
+/**
+ * Largeur (mobile) de la card, gutter de page (12px de chaque côté, comme le
+ * reste du contenu) déduit, plafonnée à 400px - voir refreshCardGap, où le
+ * curseur et la card sont désormais posés en absolute sur mobile aussi
+ * (comme en desktop), plutôt qu'en flux : un écart en flux (`margin-top`)
+ * ne peut pas se corriger du vide que le canevas laisse sous les livres sur
+ * un écran étroit sans nourrir une boucle de rétroaction avec sa propre
+ * hauteur flex (le canevas grandirait pour combler la marge négative
+ * du curseur, changeant le cadrage 3D, qui changerait à son tour ce vide).
+ */
+const CARD_GUTTER_PX_MOBILE = 24;
+const CARD_MAX_WIDTH_PX_MOBILE = 400;
+/** Écart voulu entre le curseur et la card, en mobile - inutile en desktop (centrée à part). */
+const CARD_GAP_PX_MOBILE = 24;
 /** Écart voulu entre le pied des livres et le curseur (BookSlider), en desktop. */
 const SLIDER_GAP_PX = 16;
+/** Même écart, sur mobile : 12px, pas 16 (voir CARD_GUTTER_PX_MOBILE ci-dessus). */
+const SLIDER_GAP_PX_MOBILE = 12;
 /**
  * Écart voulu entre le filet sous "Pick a story" et le sommet des livres : la
  * caméra les cadre par défaut à mi-hauteur du canevas (voir camTarget dans
@@ -353,8 +369,9 @@ export default function ShelfShell({
    * écart constant, jamais recalé au gré des désignations. Recale de la même
    * façon le curseur (BookSlider), mais centré sous les livres eux-mêmes
    * (contentCenterX), pas sous la card - ce sont deux éléments distincts,
-   * chacun posé en absolute par-dessus le canevas, pas l'un sous l'autre en
-   * flux. Sans effet si la card n'est pas montée (hors SHELF/SELECTED).
+   * chacun posé en absolute par-dessus le canevas (desktop ET mobile
+   * désormais), jamais l'un sous l'autre en flux - voir CARD_GUTTER_PX_MOBILE.
+   * Sans effet si la card n'est pas montée (hors SHELF/SELECTED).
    */
   const refreshCardGap = useCallback(() => {
     const scene = sceneRef.current;
@@ -377,46 +394,73 @@ export default function ShelfShell({
     // margin-top : pas de boucle de rétroaction, un seul calcul suffit.
     const heroMarginTop = HEADER_GAP_PX - scene.contentTopY();
     if (hero) hero.style.marginTop = `${heroMarginTop}px`;
-    const edge = scene.contentRightEdge();
-    // La card est posée en absolute par-dessus le canevas (voir le rendu plus
-    // bas) : le canevas garde ainsi toute la largeur de la page, et les livres
-    // se centrent sur la page réelle, pas sur la largeur amputée d'une card
-    // voisine. `left`, pas un `transform` : la card doit rester ancrée à
-    // l'écart voulu des livres même si le conteneur change de taille.
-    const desired = edge + CARD_GAP_PX;
-    // Sur une fenêtre trop étroite pour cet écart, la card se rapproche du
-    // bord plutôt que de sortir du champ - jamais au point de chevaucher les
-    // livres.
-    const maxLeft = canvas.clientWidth - wrapper.offsetWidth - CARD_GAP_PX;
-    wrapper.style.left = `${Math.min(desired, maxLeft)}px`;
+
+    const isMobile = window.innerWidth < DESKTOP_BREAKPOINT_PX;
+
     if (slider) {
       slider.style.left = `${scene.contentCenterX() - slider.offsetWidth / 2}px`;
       // `top`, pas `bottom` : le conteneur (h-screen) commence sous l'en-tête
       // et le titre de page, donc déborde l'écran par le bas au premier
       // affichage - un `bottom` y ancrerait le curseur hors champ. contentBottomY
-      // vise le pied des livres tel qu'il est réellement rendu par la caméra.
-      slider.style.top = `${scene.contentBottomY() + SLIDER_GAP_PX}px`;
+      // vise le pied des livres tel qu'il est réellement rendu par la caméra -
+      // jamais le bord du canevas, bien plus bas sur un écran étroit (voir
+      // CARD_GUTTER_PX_MOBILE).
+      slider.style.top = `${scene.contentBottomY() + (isMobile ? SLIDER_GAP_PX_MOBILE : SLIDER_GAP_PX)}px`;
     }
-    // En desktop, la fenêtre visible (h-screen par défaut, voir le rendu plus
-    // bas) est raccourcie pour épouser le contenu le plus bas - la card
-    // (centrée par transform, donc à `offsetTop + offsetHeight / 2` de son
-    // pied réel) ou le curseur, selon lequel descend le plus - plutôt que de
-    // laisser un vide qui varie avec la hauteur de la fenêtre. Le bloc plein
-    // écran (hero) garde sa hauteur : seule cette fenêtre le rogne en plus,
-    // par overflow-hidden, jamais le cadrage 3D lui-même (voir BOTTOM_GAP_PX).
-    // `offsetTop` de la card/du curseur est mesuré depuis le sommet du hero,
-    // pas de cette fenêtre : il faut donc réintégrer heroMarginTop (souvent
-    // négatif) pour retomber dans le repère de la fenêtre elle-même. Sur
-    // mobile la card reprend sa position fixe (ShelfInfoPanel) : rien à
-    // raccourcir.
+
+    if (isMobile) {
+      // Largeur/centrage posés ici plutôt que sur ShelfInfoPanel (qui ne fait
+      // plus que remplir ce cadre, comme en desktop où PentagonCard porte
+      // déjà sa propre largeur fixe) : un gutter de 12px de chaque côté,
+      // comme le reste du contenu mobile, plafonné à CARD_MAX_WIDTH_PX_MOBILE.
+      const width = Math.min(canvas.clientWidth - CARD_GUTTER_PX_MOBILE, CARD_MAX_WIDTH_PX_MOBILE);
+      wrapper.style.width = `${width}px`;
+      wrapper.style.left = `${(canvas.clientWidth - width) / 2}px`;
+      // Sous le curseur, pas sous les livres directement : reste correct que
+      // le curseur soit ou non monté (highlightIndex !== null les monte
+      // toujours ensemble, mais aucune raison de coupler les deux calculs).
+      const sliderBottom = slider
+        ? scene.contentBottomY() + SLIDER_GAP_PX_MOBILE + slider.offsetHeight
+        : scene.contentBottomY();
+      wrapper.style.top = `${sliderBottom + CARD_GAP_PX_MOBILE}px`;
+    } else {
+      // Rattrapage à la traversée du seuil desktop → mobile → desktop : sans
+      // lui, une largeur/`top` fixés côté mobile resteraient collés sur la
+      // card une fois `md:` repris par le CSS (position, elle, sans ambiguïté
+      // puisque la classe `absolute` seule ne fixe que ça).
+      wrapper.style.width = "";
+      wrapper.style.top = "";
+      const edge = scene.contentRightEdge();
+      // La card est posée en absolute par-dessus le canevas (voir le rendu plus
+      // bas) : le canevas garde ainsi toute la largeur de la page, et les livres
+      // se centrent sur la page réelle, pas sur la largeur amputée d'une card
+      // voisine. `left`, pas un `transform` : la card doit rester ancrée à
+      // l'écart voulu des livres même si le conteneur change de taille.
+      const desired = edge + CARD_GAP_PX;
+      // Sur une fenêtre trop étroite pour cet écart, la card se rapproche du
+      // bord plutôt que de sortir du champ - jamais au point de chevaucher les
+      // livres.
+      const maxLeft = canvas.clientWidth - wrapper.offsetWidth - CARD_GAP_PX;
+      wrapper.style.left = `${Math.min(desired, maxLeft)}px`;
+    }
+
+    // La fenêtre visible (h-screen par défaut, voir le rendu plus bas) est
+    // raccourcie pour épouser le contenu le plus bas - la card ou le curseur,
+    // selon lequel descend le plus - plutôt que de laisser un vide qui varie
+    // avec la hauteur de la fenêtre. Le bloc plein écran (hero) garde sa
+    // hauteur : seule cette fenêtre le rogne en plus, par overflow-hidden,
+    // jamais le cadrage 3D lui-même (voir BOTTOM_GAP_PX). `offsetTop` de la
+    // card/du curseur est mesuré depuis le sommet du hero, pas de cette
+    // fenêtre : il faut donc réintégrer heroMarginTop (souvent négatif) pour
+    // retomber dans le repère de la fenêtre elle-même. La card se centre par
+    // transform en desktop (donc à `offsetTop + offsetHeight / 2` de son pied
+    // réel) mais est ancrée par le haut en mobile (`offsetTop + offsetHeight`).
     if (viewport) {
-      if (window.innerWidth >= DESKTOP_BREAKPOINT_PX) {
-        const cardBottom = heroMarginTop + wrapper.offsetTop + wrapper.offsetHeight / 2;
-        const sliderBottom = slider ? heroMarginTop + slider.offsetTop + slider.offsetHeight : 0;
-        viewport.style.height = `${Math.max(cardBottom, sliderBottom) + BOTTOM_GAP_PX}px`;
-      } else {
-        viewport.style.height = "";
-      }
+      const cardBottom = isMobile
+        ? heroMarginTop + wrapper.offsetTop + wrapper.offsetHeight
+        : heroMarginTop + wrapper.offsetTop + wrapper.offsetHeight / 2;
+      const sliderBottom = slider ? heroMarginTop + slider.offsetTop + slider.offsetHeight : 0;
+      viewport.style.height = `${Math.max(cardBottom, sliderBottom) + BOTTOM_GAP_PX}px`;
     }
   }, []);
 
@@ -797,7 +841,10 @@ export default function ShelfShell({
   const showAround = !slugSegment && !immersive;
 
   return (
-    <div className="relative min-h-screen bg-[#15161b] pt-[95px] text-white" style={{ overflowAnchor: "none" }}>
+    <div
+      className="relative min-h-screen bg-[#15161b] pt-12 md:pt-[95px] text-white"
+      style={{ overflowAnchor: "none" }}
+    >
       {showAround && header}
 
       {/* Bloc plein écran (verrouillé pendant la lecture, en flux sinon) : le
@@ -806,9 +853,10 @@ export default function ShelfShell({
           scène, centre bien les livres sur la page réelle - pas sur une
           largeur réduite par la card. La card est donc posée en absolute
           par-dessus, à l'écart voulu des livres (voir refreshCardGap), sans
-          jamais peser sur la largeur du canevas. Sur mobile le panneau garde
-          sa propre position fixe (voir ShelfInfoPanel) : l'absolute ne
-          s'applique qu'à partir de `md:`. Hors lecture, ce conteneur rogne
+          jamais peser sur la largeur du canevas. Sur mobile la card et le
+          curseur restent masqués (voir plus bas, `hidden md:...`) : un tap
+          sur un livre l'ouvre directement, sans étape de désignation à y
+          montrer. Hors lecture, ce conteneur rogne
           (overflow-hidden) le haut du bloc suivant, remonté d'un margin-top
           négatif par refreshCardGap (voir HEADER_GAP_PX) : la caméra cadre
           les livres à mi-hauteur du canevas, avec un vide bien plus grand
@@ -863,22 +911,20 @@ export default function ShelfShell({
                   un contrôle dédié, en plus du clic direct sur un livre. Posé
                   sous les livres eux-mêmes (contentCenterX/contentBottomY, voir
                   refreshCardGap), pas sous la card : un élément distinct, en
-                  absolute par-dessus le canevas comme elle, pas empilé dessous
-                  en flux. `top`, pas un `bottom` CSS, voir refreshCardGap.
-                  Masqué sur mobile (`hidden md:...`) : un tap y ouvre le livre
-                  directement (voir handlePick), cette désignation intermédiaire
-                  n'a donc plus de raison d'y être montrée. */}
-              <div ref={sliderWrapperRef} className="hidden md:absolute md:mt-0 md:flex md:justify-center">
+                  absolute par-dessus le canevas comme elle - desktop ET mobile
+                  côté positionnement (`left`/`top` posés à la main par
+                  refreshCardGap, voir CARD_GUTTER_PX_MOBILE), mais masqué sur
+                  mobile (`hidden md:...`) : un tap sur un livre l'ouvre
+                  directement (voir handlePick), cette désignation
+                  intermédiaire n'a donc plus de raison d'y être montrée. */}
+              <div ref={sliderWrapperRef} className="hidden md:absolute md:flex md:justify-center">
                 <BookSlider
                   items={COMICS.map((comic, i) => ({ key: comic.slug ?? `upcoming-${i}`, label: comic.title }))}
                   active={highlightIndex}
                   onSelect={handlePick}
                 />
               </div>
-              <div
-                ref={panelWrapperRef}
-                className="hidden md:absolute md:top-1/2 md:mt-0 md:flex md:-translate-y-1/2 md:flex-col md:items-center md:gap-4"
-              >
+              <div ref={panelWrapperRef} className="hidden md:absolute md:top-1/2 md:-translate-y-1/2">
                 <ShelfInfoPanel comic={highlightedComic} onRead={() => void readFromPanel(highlightIndex)} />
               </div>
             </>
