@@ -477,14 +477,20 @@ export default function ShelfShell({
     };
   }, []);
 
-  // Posé une seule fois, à l'entrée sur /storyboard (jamais rejoué pendant la
-  // navigation interne étagère <-> lecture, la coquille restant montée d'un
-  // bout à l'autre) : évite qu'un défilement resté du chargement précédent,
-  // ou un rattrapage du navigateur pendant le premier rendu, ne laisse la
-  // page ouverte plus bas que le haut de l'étagère.
+  // Rejoué à chaque entrée sur l'étagère nue (pas de slug, pas de lecture) -
+  // au tout premier montage, mais aussi à chaque retour depuis un lien
+  // profond ou la lecture, la coquille restant montée d'un bout à l'autre
+  // (jamais démontée pendant ces navigations internes) : sans le redéclencher
+  // à chaque retour, un défilement resté d'avant l'entrée dans un livre (ou
+  // du chargement précédent) laissait la page rouverte plus bas que le haut
+  // de l'étagère - jusqu'à la section "Storyboards" du footer selon d'où on
+  // revenait - plutôt que sur "Pick a story". `behavior: "instant"` : sans
+  // lui, le `scroll-behavior: smooth` global (voir globals.css) anime ce
+  // recentrage au lieu de l'appliquer d'un coup.
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+    if (slugSegment || isReading) return;
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [slugSegment, isReading]);
 
   // --- réconciliation avec le routeur -------------------------------------
   const reconcile = useCallback(
