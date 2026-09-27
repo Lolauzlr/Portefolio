@@ -813,6 +813,13 @@ export default function ShelfShell({
           className={
             immersive
               ? "fixed inset-0 flex flex-col md:block"
+              // Le canevas des livres reste pleine largeur d'écran, y compris
+              // sur mobile (maquette Figma : le bloc carrousel occupe tout le
+              // frame, contrairement au reste du contenu qui garde un gutter
+              // - voir le px-3 sur ShelfInfoPanel, posé sur la card elle-même
+              // plutôt qu'ici). La caméra visant toujours SHELF_CENTER_X, les
+              // livres restent centrés sur ce canevas plein largeur, donc sur
+              // l'écran, quel que soit l'appareil.
               : "relative flex h-screen w-full flex-col md:block"
           }
         >
@@ -837,24 +844,27 @@ export default function ShelfShell({
               plein cadre. */}
           {ready && (state === "SHELF" || state === "SELECTED") && highlightIndex !== null && (
             <>
-              <div
-                ref={panelWrapperRef}
-                className="flex flex-col items-center gap-4 md:absolute md:top-1/2 md:-translate-y-1/2"
-              >
-                <ShelfInfoPanel comic={highlightedComic} onRead={() => void readFromPanel(highlightIndex)} />
-              </div>
               {/* Garde la façon dont on changeait de livre côté "Pick a story" :
                   un contrôle dédié, en plus du clic direct sur un livre. Posé
                   sous les livres eux-mêmes (contentCenterX/contentBottomY, voir
                   refreshCardGap), pas sous la card : un élément distinct, en
                   absolute par-dessus le canevas comme elle, pas empilé dessous
-                  en flux. `top`, pas un `bottom` CSS, voir refreshCardGap. */}
-              <div ref={sliderWrapperRef} className="mt-4 flex justify-center md:absolute md:mt-0">
+                  en flux. `top`, pas un `bottom` CSS, voir refreshCardGap. Sur
+                  mobile il précède la card en flux (mt-3, soit 12px sous les
+                  livres) : voir le mt-4 (16px) de la card ci-dessous, qui le
+                  suit. */}
+              <div ref={sliderWrapperRef} className="mt-3 flex justify-center md:absolute md:mt-0">
                 <BookSlider
                   items={COMICS.map((comic, i) => ({ key: comic.slug ?? `upcoming-${i}`, label: comic.title }))}
                   active={highlightIndex}
                   onSelect={handlePick}
                 />
+              </div>
+              <div
+                ref={panelWrapperRef}
+                className="mt-4 flex flex-col items-center gap-4 md:mt-0 md:absolute md:top-1/2 md:-translate-y-1/2"
+              >
+                <ShelfInfoPanel comic={highlightedComic} onRead={() => void readFromPanel(highlightIndex)} />
               </div>
             </>
           )}
