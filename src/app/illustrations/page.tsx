@@ -1,6 +1,7 @@
 import { asset } from "@/lib/asset";
 
 const i = (n: number) => `/images/illustrations/illus-${n}.webp`;
+const laitiere = "/images/illustrations/reproduction-tableau-la-laitière-photoshop.webp";
 
 const heroSlides: { src: string; alt: string; title: string; description: React.ReactNode }[] = [
   { src: i(25), alt: "Arcane", title: "ARCANE", description: "Digital Painting • Adobe Photoshop" },
@@ -187,7 +188,7 @@ export default function IllustrationsPage() {
               <img src={asset(i(13))} alt="" className="w-full h-[322px] object-cover" />
             </div>
             <div className="flex-1 md:self-stretch">
-              <img src={asset(i(17))} alt="" className="w-full h-full object-cover" />
+              <img src={asset(i(15))} alt="" className="w-full h-full object-cover" />
             </div>
           </div>
 
@@ -202,15 +203,9 @@ export default function IllustrationsPage() {
             </div>
           </div>
 
-          {/* Row 7: left col (2×322px) + right tall */}
-          <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px]">
-            <div className="w-full md:w-[44%] shrink-0 flex flex-col gap-[24px] md:gap-[40px] md:justify-center">
-              <img src={asset(i(4))} alt="" className="w-full h-[322px] object-cover" />
-              <img src={asset(i(24))} alt="" className="w-full h-[322px] object-cover" />
-            </div>
-            <div className="flex-1">
-              <img src={asset(i(15))} alt="" className="w-full h-full object-cover" />
-            </div>
+          {/* Row 7: single full-width image */}
+          <div>
+            <img src={asset(i(15))} alt="" className="w-full h-[662px] object-cover" />
           </div>
 
           {/* Row 8: 3 equal columns */}
@@ -237,16 +232,16 @@ export default function IllustrationsPage() {
               <img src={asset(i(22))} alt="" className="w-full h-[264px] object-cover" />
               <img src={asset(i(4))} alt="" className="w-full h-[264px] object-cover" />
               <img src={asset(i(2))} alt="" className="w-full h-[264px] object-cover" />
+              <img src={asset(i(24))} alt="" className="w-full h-[264px] object-cover" />
             </div>
             <div className="flex-1">
               <img src={asset(i(28))} alt="" className="w-full h-full object-cover" />
             </div>
           </div>
 
-          {/* Row 11: 2 equal columns */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] md:gap-[40px]">
-            <img src={asset(i(19))} alt="" className="w-full h-[764px] object-cover" />
-            <img src={asset(i(17))} alt="" className="w-full h-[764px] object-cover" />
+          {/* Row 11: single full-width image */}
+          <div>
+            <img src={asset(i(15))} alt="" className="w-full h-[764px] object-cover" />
           </div>
 
           {/* Row 12: left image + right col (title/text top, image bottom) */}
@@ -263,13 +258,13 @@ export default function IllustrationsPage() {
           {/* Row 13: 2 equal columns */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] md:gap-[40px]">
             <img src={asset(i(9))} alt="" className="w-full h-[1031px] object-cover" />
-            <img src={asset(i(20))} alt="" className="w-full h-[1031px] object-cover" />
+            <img src={asset(i(29))} alt="" className="w-full h-[1031px] object-cover" />
           </div>
 
           {/* Row 14: left square image + right col (title/text top, image bottom) */}
           <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] items-start">
             <div className="w-full md:w-[44%] shrink-0">
-              <img src={asset(i(29))} alt="" className="w-full h-[572px] object-cover" />
+              <img src={asset(laitiere)} alt="" className="w-full h-[572px] object-cover" />
             </div>
             <div className="flex-1 flex flex-col gap-6 md:gap-0 md:justify-between md:self-stretch">
               <TitleBlock />
