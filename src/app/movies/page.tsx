@@ -182,7 +182,7 @@ export default function MoviesPage() {
   return (
     <div className="pt-[95px] bg-[#15161b] text-white min-h-screen">
       {/* Features Films */}
-      <section className="px-3 md:px-[120px] py-16">
+      <section className="px-3 md:px-[120px] pt-6 pb-16 md:py-16">
         <h2 className="text-[40px] font-[family-name:var(--font-heading)] tracking-[4.8px] mb-2">
           FEATURES FILMS
         </h2>
