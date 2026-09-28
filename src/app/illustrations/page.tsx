@@ -2,6 +2,28 @@ import { asset } from "@/lib/asset";
 
 const i = (n: number) => `/images/illustrations/illus-${n}.webp`;
 
+const heroSlides: { src: string; alt: string; title: string; description: React.ReactNode }[] = [
+  { src: i(25), alt: "Arcane", title: "ARCANE", description: "Digital Painting • Adobe Photoshop" },
+  {
+    src: i(34),
+    alt: "Drunked Monster",
+    title: "DRUNKED MONSTER",
+    description: "Illustration : Cyril Mornet / Digital Painting : Marie Chalandre",
+  },
+  {
+    src: i(32),
+    alt: "Mazou BD",
+    title: "MAZOU BD",
+    description: (
+      <>
+        Comic Book Project • A visual diary of a journey around the world
+        <br />
+        Pen drawing on paper, digitally colored in Adobe Photoshop
+      </>
+    ),
+  },
+];
+
 const loremLong =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula. Ut sit amet vestibulum nulla. Sed at pellentesque mi, a varius massa. Praesent nec faucibus felis, in vestibulum dui. Nunc pulvinar ac purus vitae pellentesque. Vivamus dapibus semper justo, interdum tincidunt tellus placerat a. Quisque vel orci et nulla vestibulum interdum.";
 
@@ -29,14 +51,51 @@ function TitleBlock() {
 
 export default function IllustrationsPage() {
   return (
-    <div className="pt-[95px] bg-[#15161b] text-white min-h-screen">
+    <div className="pt-[48px] md:pt-[95px] bg-[#15161b] text-white min-h-screen">
 
       {/* ── LES PLUS RÉCENTES ── */}
-      <section className="py-[60px]">
+      <section className="pt-[24px] pb-[24px] md:pt-[60px] md:pb-[60px]">
 
-        <div className="flex gap-[16px] md:gap-[24px] overflow-x-auto pb-3 md:pb-4 items-start scrollbar-hide mx-auto w-fit px-3 md:px-[120px]">
+        {/* Mobile: swipeable carousel, caption overlaid on each image */}
+        <div className="md:hidden flex flex-col gap-[20px]">
+          <div className="flex flex-col gap-[4px] px-[16px]">
+            <h2 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-white">
+              LES PLUS RÉCENTES
+            </h2>
+            <div className="w-[80px] h-[4px] bg-[#ddff6e]" />
+          </div>
+
+          <div className="flex gap-[24px] overflow-x-auto pb-3 snap-x snap-mandatory scrollbar-hide cursor-pointer px-[16px]">
+            {heroSlides.map((slide, index) => (
+              <div key={slide.title} className="flex-shrink-0 w-[calc(100vw-32px)] snap-center flex flex-col gap-[16px]">
+                <div className="relative w-full aspect-[2/3]">
+                  <img src={asset(slide.src)} alt={slide.alt} className="absolute inset-0 w-full h-full object-cover" />
+                  <div className="absolute left-[12px] right-[12px] bottom-[12px] backdrop-blur-[5px] bg-black/40 p-[8px] flex flex-col gap-[8px]">
+                    <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-white">
+                      {slide.title}
+                    </p>
+                    <p className="font-[family-name:var(--font-body)] text-[14px] tracking-[1.12px] text-white">
+                      {slide.description}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-[4px] items-center justify-center">
+                  {heroSlides.map((_, dotIndex) => (
+                    <div
+                      key={dotIndex}
+                      className={`h-[6px] w-[20px] ${dotIndex === index ? "bg-[#0fd1ea]" : "bg-[#555]"}`}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop: side-by-side layout, title/text alongside image */}
+        <div className="hidden md:flex gap-[24px] overflow-x-auto pb-4 items-start scrollbar-hide mx-auto w-fit px-[120px]">
           {/* ARCANE — title on top, image below */}
-          <div className="flex-shrink-0 flex flex-col gap-[12px] md:gap-[16px] w-[303px]">
+          <div className="flex-shrink-0 flex flex-col gap-[16px] w-[303px]">
             <div className="flex flex-col gap-[12px]">
               <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">ARCANE</p>
               <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px]">
@@ -47,7 +106,7 @@ export default function IllustrationsPage() {
           </div>
 
           {/* MONSTER IN A BOTTLE — image on top, title below */}
-          <div className="flex-shrink-0 flex flex-col gap-[12px] md:gap-[16px] w-[382px]">
+          <div className="flex-shrink-0 flex flex-col gap-[16px] w-[382px]">
             <img src={asset(i(34))} alt="Drunked Monster" className="w-full h-[679px] object-cover" />
             <div className="flex flex-col gap-[12px]">
               <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">DRUNKED MONSTER</p>
@@ -58,7 +117,7 @@ export default function IllustrationsPage() {
           </div>
 
           {/* MAZOU BD — title on top, image below */}
-          <div className="flex-shrink-0 flex flex-col gap-[12px] md:gap-[16px] w-[303px]">
+          <div className="flex-shrink-0 flex flex-col gap-[16px] w-[303px]">
             <div className="flex flex-col gap-[12px]">
               <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">MAZOU BD</p>
               <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px]">
@@ -72,11 +131,11 @@ export default function IllustrationsPage() {
         </div>
       </section>
 
-      {/* ── VRIC À VRAC ── */}
-      <section className="bg-[#131313] py-[60px] px-3 md:px-[120px]">
-        <div className="mb-[60px]">
+      {/* ── ILLUSTRATION & VISUAL EXPLORATION ── */}
+      <section className="bg-[#131313] pt-[24px] pb-[24px] md:py-[60px] px-3 md:px-[120px]">
+        <div className="mb-[24px] md:mb-[60px]">
           <h2 className="font-[family-name:var(--font-heading)] text-[40px] tracking-[4.8px] uppercase text-white">
-            VRIC À VRAC
+            Illustration & visual exploration
           </h2>
           <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-[4px]" />
         </div>
@@ -168,7 +227,7 @@ export default function IllustrationsPage() {
               <img src={asset(i(5))} alt="" className="w-full h-[350px] object-cover" />
             </div>
             <div className="w-full md:w-[44%] shrink-0">
-              <img src={asset(i(11))} alt="" className="w-full h-[554px] object-contain" />
+              <img src={asset(i(11))} alt="" className="w-full aspect-[2958/3389] md:aspect-auto md:h-[554px] object-contain" />
             </div>
           </div>
 
@@ -221,7 +280,7 @@ export default function IllustrationsPage() {
           {/* Row 15: 2 equal columns */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] md:gap-[40px]">
             <img src={asset(i(12))} alt="" className="w-full h-[960px] object-cover" />
-            <img src={asset(i(31))} alt="" className="w-full h-[960px] object-contain" />
+            <img src={asset(i(31))} alt="" className="w-full aspect-[1075/1483] md:aspect-auto md:h-[960px] object-contain" />
           </div>
 
         </div>
