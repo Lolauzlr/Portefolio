@@ -1271,7 +1271,14 @@ export function createScene(
     const centerX = shelfCenterX();
     const tl = timeline();
     tl.to(camera.position, { x: centerX, y: BOOK.h * 0.55, z: shelfRestZ(), duration: d }, 0);
-    tl.to(camTarget, { x: centerX, duration: d }, 0);
+    // Reprend x ET y/z de la cible : depuis une fermeture de lecture, celle-ci
+    // est encore sur SELECT_Y - select() est le seul point d'entrée du repos
+    // de l'étagère (voir plus haut), c'est donc elle qui doit la reposer, tout
+    // comme la focale et la position de la clé d'éclairage ci-dessous (que
+    // close() ne touche plus du tout, voir sa documentation).
+    tl.to(camTarget, { x: centerX, y: BOOK.h * 0.5, z: 0, duration: d }, 0);
+    tl.to(camera, { fov: SHELF_FOV, duration: d, onUpdate: () => camera.updateProjectionMatrix() }, 0);
+    tl.to(key.position, { x: KEY_SHELF.x, y: KEY_SHELF.y, z: KEY_SHELF.z, duration: d }, 0);
 
     nodes.forEach((node, i) => {
       const isSelected = i === index;
@@ -1309,44 +1316,14 @@ export function createScene(
         markDirty();
       },
     });
-    // Fermeture totale visée à 1s (dur(200) + dur(800), la branche la plus longue) :
-    // en sortie de lecture l'œil n'a plus rien de nouveau à découvrir, contrairement à
-    // l'ouverture qui révèle la double page - une fermeture plus lente ne faisait
-    // que retarder le retour à l'étagère, perçu comme mou plutôt que soigné.
-    // Pose transitoire (légèrement plus proche que le repos) avant que
-    // select(), appelé juste après par ShelfShell, ne ramène la caméra à
-    // shelfRestZ() : le -0.6 reste relatif à cette distance de repos plutôt
-    // qu'à l'ancienne constante fixe, pour garder le même effet de recul
-    // quel que soit le cadrage (desktop ou mobile).
-    //
-    // L'abscisse (caméra ET cible) n'est PAS reprise ici, volontairement :
-    // elle reste sur l'axe de lecture (aimAtFold) tout le temps que la
-    // couverture se rabat, pour que cette fermeture se lise comme un seul
-    // geste net plutôt qu'un panoramique latéral doublé d'une rotation.
-    // C'est select(), appelé ensuite par ShelfShell derrière un voile, qui la
-    // ramène sur shelfCenterX() - jamais perçu comme un décalage puisque
-    // masqué.
-    const restZ = shelfRestZ();
-    if (animate && !opts.reducedMotion) {
-      tl.to(
-        camera.position,
-        { z: restZ - 0.6, y: BOOK.h * 0.55, duration: dur(800), ease: "power2.out" },
-        0,
-      )
-        .to(camTarget, { y: BOOK.h * 0.5, z: 0, duration: dur(800) }, 0)
-        .to(camera, { fov: SHELF_FOV, duration: dur(800), onUpdate: () => camera.updateProjectionMatrix() }, 0)
-        .to(
-          key.position,
-          { x: KEY_SHELF.x, y: KEY_SHELF.y, z: KEY_SHELF.z, duration: dur(800) },
-          0,
-        );
-    } else {
-      camera.position.set(camera.position.x, BOOK.h * 0.55, restZ - 0.6);
-      camTarget.set(camTarget.x, BOOK.h * 0.5, 0);
-      camera.fov = SHELF_FOV;
-      camera.updateProjectionMatrix();
-      key.position.copy(KEY_SHELF);
-    }
+    // Ne rabat plus que la couverture : ni panoramique, ni dézoom, ni
+    // changement de focale - la caméra reste immobile, à sa distance et son
+    // cadrage de lecture, tout le temps que dure ce geste, pour qu'il se lise
+    // comme la fermeture du livre et rien d'autre (le livre ne doit ni se
+    // décaler ni changer de taille à l'écran). Le retour au cadrage de
+    // l'étagère (position, cible, focale, clé d'éclairage) est entièrement
+    // porté par select(), toujours appelé ensuite par ShelfShell derrière un
+    // voile - jamais perçu ici comme un zoom ou un décalage puisque masqué.
     tl.to(
       node.coverPivot.rotation,
       { y: 0, duration: animate ? dur(800) : 0, ease: "power2.inOut" },
