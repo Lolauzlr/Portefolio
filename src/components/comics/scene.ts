@@ -904,6 +904,14 @@ export function createScene(
     turnPage.setVisible(false);
     readBackdrop.position.set(node.group.position.x + HINGE_X, SELECT_Y, READ_BACKDROP_Z);
     readBackdrop.visible = true;
+    // Le livre ouvert doit rester seul à l'écran : ses voisins, encore dans le
+    // cadre pendant que la caméra n'a pas fini son avancée, ne doivent jamais
+    // se voir derrière lui - un fond assombri (readBackdrop) les estompait
+    // sans les effacer. Ils ne reparaissent qu'au retour sur l'étagère, voir
+    // select() plus bas, le seul point d'entrée du repos de l'étagère.
+    nodes.forEach((other, i) => {
+      if (i !== index) other.group.visible = false;
+    });
 
     // Les planches d'abord : montrées avant, les deux pages nues remplissent le cadre
     // d'un aplat crème, la caméra étant encore à la distance de la pose engagée.
@@ -1237,6 +1245,13 @@ export function createScene(
   async function select(index: number, animate: boolean): Promise<void> {
     selected = index;
     void ensureCover(nodes[index]);
+    // Repos de l'étagère : tous les livres y sont visibles, y compris ceux
+    // qu'une lecture venait de masquer (voir openForReading) - select() étant
+    // le seul point d'entrée de ce repos, les rendre ici couvre tous les
+    // retours (fermeture, lien profond, désignation initiale).
+    nodes.forEach((node) => {
+      node.group.visible = true;
+    });
     const xs = shelfPositions(nodes.length, index);
 
     // La désignation suit la pose engagée dès l'appel : elle ne doit jamais
@@ -1352,6 +1367,10 @@ export function createScene(
     void ensureCover(nodes[index]);
     const xs = shelfPositions(nodes.length, index);
     nodes.forEach((node, i) => {
+      // Filet : une lecture interrompue en cours de route (openForReading)
+      // peut avoir masqué les voisins - toute pose posée ici (étagère ou
+      // article INSIDE) les montre tous.
+      node.group.visible = true;
       if (i === index) {
         setPickPose(node.pick, 0, BOOK.h / 2 + 0.15, SELECT_OUT, 0);
         node.group.position.set(0, BOOK.h / 2 + 0.15, SELECT_OUT);
