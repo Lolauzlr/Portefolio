@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { asset } from "@/lib/asset";
 import { useSupportsHover } from "@/hooks/useSupportsHover";
+import VideoModal from "@/components/VideoModal";
 
 function VideoCard({
   youtubeId,
@@ -253,30 +254,7 @@ export default function MoviesPage() {
 
       {/* Video Modal */}
       {videoModal && (
-        <div
-          className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setVideoModal(null);
-          }}
-        >
-          <button
-            onClick={() => setVideoModal(null)}
-            className="absolute top-6 right-6 md:top-10 md:right-10 text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer z-10"
-            aria-label="Fermer"
-          >
-            ✕
-          </button>
-          <div className="w-full h-full max-w-[90vw] max-h-[90vh] md:max-w-[85vw] md:max-h-[85vh] aspect-video">
-            <iframe
-              className="w-full h-full"
-              src={videoModal.url}
-              title={videoModal.title}
-              allow="autoplay; encrypted-media; fullscreen"
-              allowFullScreen
-              style={{ border: 0 }}
-            />
-          </div>
-        </div>
+        <VideoModal src={videoModal.url} title={videoModal.title} onClose={() => setVideoModal(null)} />
       )}
     </div>
   );
