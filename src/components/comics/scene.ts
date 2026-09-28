@@ -1104,6 +1104,21 @@ export function createScene(
   let hovered: number | null = null;
   let selected: number | null = null;
 
+  /**
+   * Au tactile, poser le doigt sur le canevas est aussi le premier geste d'un
+   * défilement de la page : réagir dès pointerdown (comme le fait la souris,
+   * où down/up sont quasi confondus) ouvrirait le livre désigné sous le doigt
+   * qui ne fait que commencer à scroller. La désignation/l'ouverture tactile
+   * n'a donc lieu qu'au retrait du doigt (pointerup), et seulement s'il n'a
+   * ni assez bougé depuis (TAP_MAX_MOVE_PX - un défilement) ni trop attendu
+   * (TAP_MAX_DURATION_MS - un appui long) ; pointercancel (le navigateur
+   * reconnaît lui-même un défilement et reprend la main) l'annule aussi.
+   * La souris garde son comportement au pointerdown, inchangé.
+   */
+  const TAP_MAX_MOVE_PX = 10;
+  const TAP_MAX_DURATION_MS = 500;
+  let pendingTap: { pointerId: number; x: number; y: number; time: number } | null = null;
+
   function pickIndex(event: PointerEvent): number | null {
     const rect = canvas.getBoundingClientRect();
     pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
@@ -1116,6 +1131,10 @@ export function createScene(
   }
 
   function onPointerMove(event: PointerEvent) {
+    if (pendingTap && event.pointerId === pendingTap.pointerId) {
+      const moved = Math.hypot(event.clientX - pendingTap.x, event.clientY - pendingTap.y);
+      if (moved > TAP_MAX_MOVE_PX) pendingTap = null; // défilement : le tap en attente est annulé
+    }
     if (!picking) return;
     const index = pickIndex(event);
     if (index === hovered) return;
@@ -1133,13 +1152,36 @@ export function createScene(
       return;
     }
     if (!picking) return;
+
+    if (event.pointerType === "touch") {
+      pendingTap = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, time: performance.now() };
+      return;
+    }
+
     const index = pickIndex(event);
     if (index !== null) opts.onPick(index);
     else opts.onDismiss();
   }
 
+  function onPointerUp(event: PointerEvent) {
+    if (!pendingTap || event.pointerId !== pendingTap.pointerId) return;
+    const tap = pendingTap;
+    pendingTap = null;
+    if (!picking || turning) return;
+    if (performance.now() - tap.time > TAP_MAX_DURATION_MS) return; // appui long : pas de désignation/ouverture
+    const index = pickIndex(event);
+    if (index !== null) opts.onPick(index);
+    else opts.onDismiss();
+  }
+
+  function onPointerCancel(event: PointerEvent) {
+    if (pendingTap && event.pointerId === pendingTap.pointerId) pendingTap = null;
+  }
+
   canvas.addEventListener("pointermove", onPointerMove);
   canvas.addEventListener("pointerdown", onPointerDown);
+  canvas.addEventListener("pointerup", onPointerUp);
+  canvas.addEventListener("pointercancel", onPointerCancel);
 
   function setHover(index: number | null) {
     hovered = index;
@@ -1481,6 +1523,8 @@ export function createScene(
       renderer.setAnimationLoop(null);
       canvas.removeEventListener("pointermove", onPointerMove);
       canvas.removeEventListener("pointerdown", onPointerDown);
+      canvas.removeEventListener("pointerup", onPointerUp);
+      canvas.removeEventListener("pointercancel", onPointerCancel);
       returnFirstPlate();
       stopReading();
       turnPage.dispose();

@@ -620,12 +620,12 @@ export default function ShelfShell({
       const current = stateRef.current;
       if (!canInteract(current)) return;
 
-      // Sur mobile, cliquer sur le livre déjà désigné ne l'ouvre plus : seul
-      // le bouton READ du panneau (toujours affiché, voir ShelfInfoPanel)
-      // ouvre la lecture - ce raccourci du second clic reste réservé au
-      // desktop, où rien d'autre ne permet d'ouvrir le livre.
-      const isMobile = window.innerWidth < DESKTOP_BREAKPOINT_PX;
-      if (!isMobile && current === "SELECTED" && selectedRef.current === index) {
+      // Cliquer sur le livre déjà désigné l'ouvre, mobile compris désormais
+      // (voir la distinction tap/défilement/appui long portée par la scène
+      // elle-même, dans onPointerDown/onPointerUp de scene.ts - handlePick
+      // n'est appelé ici qu'une fois ce tri fait, jamais pour un défilement
+      // ou un appui long).
+      if (current === "SELECTED" && selectedRef.current === index) {
         void enterReading(index);
         return;
       }
