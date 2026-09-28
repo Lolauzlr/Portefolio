@@ -51,7 +51,7 @@ function TitleBlock() {
 
 export default function IllustrationsPage() {
   return (
-    <div className="pt-[95px] bg-[#15161b] text-white min-h-screen">
+    <div className="pt-[48px] md:pt-[95px] bg-[#15161b] text-white min-h-screen">
 
       {/* ── LES PLUS RÉCENTES ── */}
       <section className="pt-[24px] pb-[60px] md:pt-[60px]">
