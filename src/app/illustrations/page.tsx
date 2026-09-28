@@ -54,7 +54,7 @@ export default function IllustrationsPage() {
     <div className="pt-[48px] md:pt-[95px] bg-[#15161b] text-white min-h-screen">
 
       {/* ── LES PLUS RÉCENTES ── */}
-      <section className="pt-[24px] pb-[60px] md:pt-[60px]">
+      <section className="pt-[24px] pb-[24px] md:pt-[60px] md:pb-[60px]">
 
         {/* Mobile: swipeable carousel, caption overlaid on each image */}
         <div className="md:hidden flex flex-col gap-[20px]">
@@ -131,11 +131,11 @@ export default function IllustrationsPage() {
         </div>
       </section>
 
-      {/* ── VRIC À VRAC ── */}
-      <section className="bg-[#131313] py-[60px] px-3 md:px-[120px]">
-        <div className="mb-[60px]">
+      {/* ── ILLUSTRATION & VISUAL EXPLORATION ── */}
+      <section className="bg-[#131313] pt-[24px] pb-[24px] md:py-[60px] px-3 md:px-[120px]">
+        <div className="mb-[24px] md:mb-[60px]">
           <h2 className="font-[family-name:var(--font-heading)] text-[40px] tracking-[4.8px] uppercase text-white">
-            VRIC À VRAC
+            Illustration & visual exploration
           </h2>
           <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-[4px]" />
         </div>
