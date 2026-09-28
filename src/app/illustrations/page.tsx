@@ -54,7 +54,7 @@ export default function IllustrationsPage() {
     <div className="pt-[95px] bg-[#15161b] text-white min-h-screen">
 
       {/* ── LES PLUS RÉCENTES ── */}
-      <section className="py-[60px]">
+      <section className="pt-[24px] pb-[60px] md:pt-[60px]">
 
         {/* Mobile: swipeable carousel, caption overlaid on each image */}
         <div className="md:hidden flex flex-col gap-[20px]">
