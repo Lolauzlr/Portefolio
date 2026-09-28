@@ -143,7 +143,7 @@ export default function IllustrationsPage() {
           {/* Row 1: big left image + right col (title/text top, image bottom) */}
           <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] items-start">
             <div className="w-full md:w-[44%] shrink-0">
-              <img src={asset(i(35))} alt="" className="w-full aspect-[9/16] object-cover md:aspect-auto md:h-[662px]" />
+              <img src={asset(i(35))} alt="" className="w-full md:aspect-auto md:h-[662px] md:object-cover" />
             </div>
             <div className="flex-1 flex flex-col gap-6 md:gap-0 md:justify-between md:self-stretch">
               <TitleBlock
@@ -161,7 +161,7 @@ export default function IllustrationsPage() {
               <img src={asset(i(26))} alt="" className="w-full md:aspect-auto md:h-[322px] md:object-cover" />
             </div>
             <div className="flex-1">
-              <img src={asset(i(30))} alt="" className="w-full aspect-[9/16] object-cover md:aspect-auto md:h-full" />
+              <img src={asset(i(30))} alt="" className="w-full md:aspect-auto md:h-full md:object-cover" />
             </div>
           </div>
 
@@ -175,7 +175,7 @@ export default function IllustrationsPage() {
               <img src={asset(i(6))} alt="" className="w-full md:aspect-auto md:h-[322px] md:object-cover" />
             </div>
             <div className="w-full md:w-[44%] shrink-0">
-              <img src={asset(i(33))} alt="" className="w-full aspect-[9/16] object-cover md:aspect-auto md:h-[662px]" />
+              <img src={asset(i(33))} alt="" className="w-full md:aspect-auto md:h-[662px] md:object-cover" />
             </div>
           </div>
 
@@ -187,18 +187,18 @@ export default function IllustrationsPage() {
           {/* Row 5: left col stacked + right tall */}
           <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] md:items-stretch">
             <div className="w-full md:w-[44%] shrink-0 flex flex-col gap-[24px] md:gap-[40px] md:self-stretch">
-              <img src={asset(i(23))} alt="" className="w-full aspect-[9/16] object-cover md:flex-1 md:aspect-auto" />
+              <img src={asset(i(23))} alt="" className="w-full md:flex-1 md:aspect-auto md:object-cover" />
               <img src={asset(i(13))} alt="" className="w-full md:aspect-auto md:h-[322px] md:object-cover" />
             </div>
             <div className="flex-1 md:self-stretch">
-              <img src={asset(i(15))} alt="" className="w-full aspect-[9/16] object-cover md:aspect-auto md:h-full" />
+              <img src={asset(i(15))} alt="" className="w-full md:aspect-auto md:h-full md:object-cover" />
             </div>
           </div>
 
           {/* Row 6: left tall image (930px) + right col (title/text top, aspect image bottom) */}
           <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] items-start">
             <div className="w-full md:w-[56%] shrink-0">
-              <img src={asset(i(27))} alt="" className="w-full aspect-[9/16] object-cover md:aspect-auto md:h-[930px]" />
+              <img src={asset(i(27))} alt="" className="w-full md:aspect-auto md:h-[930px] md:object-cover" />
             </div>
             <div className="flex-1 flex flex-col gap-6 md:gap-0 md:justify-between md:self-stretch">
               <TitleBlock
@@ -211,9 +211,9 @@ export default function IllustrationsPage() {
 
           {/* Row 7: 3 equal columns */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-[16px] md:gap-[24px]">
-            <img src={asset(i(18))} alt="" className="w-full aspect-[9/16] object-cover md:aspect-auto md:h-[682px]" />
+            <img src={asset(i(18))} alt="" className="w-full md:aspect-auto md:h-[682px] md:object-cover" />
             <img src={asset(i(8))} alt="" className="w-full md:aspect-auto md:h-[682px] md:object-cover" />
-            <img src={asset(i(3))} alt="" className="w-full aspect-[9/16] object-cover md:aspect-auto md:h-[682px]" />
+            <img src={asset(i(3))} alt="" className="w-full md:aspect-auto md:h-[682px] md:object-cover" />
           </div>
 
           {/* Row 8: left col (title/text top, image bottom) + right single image */}
@@ -239,7 +239,7 @@ export default function IllustrationsPage() {
               <img src={asset(i(24))} alt="" className="w-full md:aspect-auto md:h-[264px] md:object-cover" />
             </div>
             <div className="flex-1">
-              <img src={asset(i(28))} alt="" className="w-full aspect-[9/16] object-cover md:aspect-auto md:h-full" />
+              <img src={asset(i(28))} alt="" className="w-full md:aspect-auto md:h-full md:object-cover" />
             </div>
           </div>
 
@@ -259,14 +259,14 @@ export default function IllustrationsPage() {
 
           {/* Row 11: 2 equal columns */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] md:gap-[40px]">
-            <img src={asset(i(9))} alt="" className="w-full aspect-[9/16] object-cover md:aspect-auto md:h-[1031px]" />
-            <img src={asset(i(29))} alt="" className="w-full aspect-[9/16] object-cover md:aspect-auto md:h-[1031px]" />
+            <img src={asset(i(9))} alt="" className="w-full md:aspect-auto md:h-[1031px] md:object-cover" />
+            <img src={asset(i(29))} alt="" className="w-full md:aspect-auto md:h-[1031px] md:object-cover" />
           </div>
 
           {/* Row 12: left square image + right col (title/text top, image bottom) */}
           <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] items-start">
             <div className="w-full md:w-[44%] shrink-0">
-              <img src={asset(laitiere)} alt="" className="w-full aspect-[9/16] object-cover md:aspect-auto md:h-[572px]" />
+              <img src={asset(laitiere)} alt="" className="w-full md:aspect-auto md:h-[572px] md:object-cover" />
             </div>
             <div className="flex-1 flex flex-col gap-6 md:gap-0 md:justify-between md:self-stretch">
               <TitleBlock
@@ -279,7 +279,7 @@ export default function IllustrationsPage() {
 
           {/* Row 13: 2 equal columns */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] md:gap-[40px]">
-            <img src={asset(i(12))} alt="" className="w-full aspect-[9/16] object-cover md:aspect-auto md:h-[960px]" />
+            <img src={asset(i(12))} alt="" className="w-full md:aspect-auto md:h-[960px] md:object-cover" />
             <img src={asset(i(31))} alt="" className="w-full aspect-[1075/1483] md:aspect-auto md:h-[960px] object-contain" />
           </div>
 
