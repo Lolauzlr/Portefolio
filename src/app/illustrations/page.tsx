@@ -150,15 +150,15 @@ export default function IllustrationsPage() {
                 title="Cinematic Approach to Illustration"
                 text="My background in cinematic art still comes through in the way I approach illustration. I pay a lot of attention to composition, color, light and rhythm, even in a single frame. For me, visual storytelling is about creating an image that can communicate something without saying a word."
               />
-              <img src={asset(i(1))} alt="" className="w-full aspect-[16/9] object-cover md:aspect-auto md:h-[322px]" />
+              <img src={asset(i(1))} alt="" className="w-full md:aspect-auto md:h-[322px] md:object-cover" />
             </div>
           </div>
 
           {/* Row 2: left col stacked (aspect + 322px) + right tall */}
           <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px]">
             <div className="w-full md:w-[44%] shrink-0 flex flex-col gap-[24px] md:gap-[40px]">
-              <img src={asset(i(16))} alt="" className="w-full aspect-[16/9] object-cover md:aspect-[1548/1473]" />
-              <img src={asset(i(26))} alt="" className="w-full aspect-[16/9] object-cover md:aspect-auto md:h-[322px]" />
+              <img src={asset(i(16))} alt="" className="w-full md:aspect-[1548/1473] md:object-cover" />
+              <img src={asset(i(26))} alt="" className="w-full md:aspect-auto md:h-[322px] md:object-cover" />
             </div>
             <div className="flex-1">
               <img src={asset(i(30))} alt="" className="w-full aspect-[9/16] object-cover md:aspect-auto md:h-full" />
@@ -172,7 +172,7 @@ export default function IllustrationsPage() {
                 title="Versatility in Illustration"
                 text="I enjoy moving between different artistic styles and ways of working. My visual style can change quite a lot depending on the project, and I see that versatility as a useful part of the process. It gives me more ways to adapt an image to the story and find the right direction."
               />
-              <img src={asset(i(6))} alt="" className="w-full aspect-[16/9] object-cover md:aspect-auto md:h-[322px]" />
+              <img src={asset(i(6))} alt="" className="w-full md:aspect-auto md:h-[322px] md:object-cover" />
             </div>
             <div className="w-full md:w-[44%] shrink-0">
               <img src={asset(i(33))} alt="" className="w-full aspect-[9/16] object-cover md:aspect-auto md:h-[662px]" />
@@ -181,14 +181,14 @@ export default function IllustrationsPage() {
 
           {/* Row 4: single full-width image */}
           <div>
-            <img src={asset(i(10))} alt="" className="w-full aspect-[16/9] object-cover md:aspect-auto md:h-[607px]" />
+            <img src={asset(i(10))} alt="" className="w-full md:aspect-auto md:h-[607px] md:object-cover" />
           </div>
 
           {/* Row 5: left col stacked + right tall */}
           <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] md:items-stretch">
             <div className="w-full md:w-[44%] shrink-0 flex flex-col gap-[24px] md:gap-[40px] md:self-stretch">
               <img src={asset(i(23))} alt="" className="w-full aspect-[9/16] object-cover md:flex-1 md:aspect-auto" />
-              <img src={asset(i(13))} alt="" className="w-full aspect-[16/9] object-cover md:aspect-auto md:h-[322px]" />
+              <img src={asset(i(13))} alt="" className="w-full md:aspect-auto md:h-[322px] md:object-cover" />
             </div>
             <div className="flex-1 md:self-stretch">
               <img src={asset(i(15))} alt="" className="w-full aspect-[9/16] object-cover md:aspect-auto md:h-full" />
@@ -205,14 +205,14 @@ export default function IllustrationsPage() {
                 title="Traditional & Digital Techniques"
                 text="I switch between traditional and digital techniques depending on what I want to express. Sometimes it is watercolor and ink, sometimes pencil and pen, sometimes digital painting in Photoshop. I like not being locked into one way of working and letting the technique adapt to the idea."
               />
-              <img src={asset(i(14))} alt="" className="w-full aspect-[16/9] object-cover md:aspect-[1548/1473]" />
+              <img src={asset(i(14))} alt="" className="w-full md:aspect-[1548/1473] md:object-cover" />
             </div>
           </div>
 
           {/* Row 7: 3 equal columns */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-[16px] md:gap-[24px]">
             <img src={asset(i(18))} alt="" className="w-full aspect-[9/16] object-cover md:aspect-auto md:h-[682px]" />
-            <img src={asset(i(8))} alt="" className="w-full aspect-[16/9] object-cover md:aspect-auto md:h-[682px]" />
+            <img src={asset(i(8))} alt="" className="w-full md:aspect-auto md:h-[682px] md:object-cover" />
             <img src={asset(i(3))} alt="" className="w-full aspect-[9/16] object-cover md:aspect-auto md:h-[682px]" />
           </div>
 
@@ -223,7 +223,7 @@ export default function IllustrationsPage() {
                 title="Visual Development & Character Design"
                 text="Some days I am designing a character, other days I am sketching a comic panel or working on an environment concept. I tend to have ideas for all kinds of things, so I enjoy moving between different formats and exploring where each one can take me. It keeps my visual development varied and my curiosity moving."
               />
-              <img src={asset(i(5))} alt="" className="w-full aspect-[16/9] object-cover md:aspect-auto md:h-[350px]" />
+              <img src={asset(i(5))} alt="" className="w-full md:aspect-auto md:h-[350px] md:object-cover" />
             </div>
             <div className="w-full md:w-[44%] shrink-0">
               <img src={asset(i(11))} alt="" className="w-full aspect-[2958/3389] md:aspect-auto md:h-[554px] object-contain" />
@@ -233,10 +233,10 @@ export default function IllustrationsPage() {
           {/* Row 9: left col (3×264px) + right tall */}
           <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px]">
             <div className="w-full md:w-[44%] shrink-0 flex flex-col gap-[12px]">
-              <img src={asset(i(22))} alt="" className="w-full aspect-[16/9] object-cover md:aspect-auto md:h-[264px]" />
-              <img src={asset(i(4))} alt="" className="w-full aspect-[16/9] object-cover md:aspect-auto md:h-[264px]" />
-              <img src={asset(i(2))} alt="" className="w-full aspect-[16/9] object-cover md:aspect-auto md:h-[264px]" />
-              <img src={asset(i(24))} alt="" className="w-full aspect-[16/9] object-cover md:aspect-auto md:h-[264px]" />
+              <img src={asset(i(22))} alt="" className="w-full md:aspect-auto md:h-[264px] md:object-cover" />
+              <img src={asset(i(4))} alt="" className="w-full md:aspect-auto md:h-[264px] md:object-cover" />
+              <img src={asset(i(2))} alt="" className="w-full md:aspect-auto md:h-[264px] md:object-cover" />
+              <img src={asset(i(24))} alt="" className="w-full md:aspect-auto md:h-[264px] md:object-cover" />
             </div>
             <div className="flex-1">
               <img src={asset(i(28))} alt="" className="w-full aspect-[9/16] object-cover md:aspect-auto md:h-full" />
@@ -246,14 +246,14 @@ export default function IllustrationsPage() {
           {/* Row 10: left image + right col (title/text top, image bottom) */}
           <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] items-start">
             <div className="w-full md:w-[44%] shrink-0 md:self-stretch">
-              <img src={asset(i(36))} alt="" className="w-full aspect-[16/9] object-cover md:aspect-auto md:h-[670px]" />
+              <img src={asset(i(36))} alt="" className="w-full md:aspect-auto md:h-[670px] md:object-cover" />
             </div>
             <div className="flex-1 flex flex-col gap-6 md:gap-0 md:justify-between md:self-stretch">
               <TitleBlock
                 title="Color, Light & Composition"
                 text="I pay a lot of attention to color and lighting when I work. A change in palette, contrast or light can completely change the mood of an image. I like using these elements as part of the visual language, not just to make an image look good, but to reinforce its meaning."
               />
-              <img src={asset(i(21))} alt="" className="w-full aspect-[16/9] object-cover md:aspect-auto md:h-[500px]" />
+              <img src={asset(i(21))} alt="" className="w-full md:aspect-auto md:h-[500px] md:object-cover" />
             </div>
           </div>
 
@@ -273,7 +273,7 @@ export default function IllustrationsPage() {
                 title="Inspiration from Around the World"
                 text="Travel has always been a big source of inspiration for me. I have travelled around the world and developed a strong curiosity for different cultures, their art, folklore, history and ways of seeing the world. I draw inspiration from all sorts of places, from dance and cinema to manga, embroidery, video games, sculpture, photography and other things. I like bringing these different influences together and seeing how they find their way into my work."
               />
-              <img src={asset(i(7))} alt="" className="w-full aspect-[16/9] object-cover md:aspect-auto md:h-[350px]" />
+              <img src={asset(i(7))} alt="" className="w-full md:aspect-auto md:h-[350px] md:object-cover" />
             </div>
           </div>
 
