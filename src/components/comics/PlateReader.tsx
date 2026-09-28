@@ -2,9 +2,6 @@
 
 import type { Comic } from "@/lib/comics";
 
-const ARROW_BUTTON_CLASSES =
-  "pointer-events-auto absolute top-1/2 z-10 flex h-[48px] w-[48px] -translate-y-1/2 items-center justify-center rounded-full bg-black/50 backdrop-blur-sm transition-colors hover:bg-black/70 cursor-pointer";
-
 /**
  * Lecture portrait : une planche à la fois, plein écran, comme le lightbox
  * des carrousels du site (ImageCarousel) plutôt que la double page 3D
@@ -36,9 +33,9 @@ export default function PlateReader({
         className="max-h-full max-w-full object-contain"
       />
 
-      {/* Zones de clic pleine hauteur - la moitié de l'écran, pas seulement
-          les flèches ci-dessous, comme le tapotement sur le canevas 3D en
-          paysage (voir onPointerDown dans scene.ts). */}
+      {/* Zones de clic pleine hauteur, la moitié de l'écran chacune, comme
+          le tapotement sur le canevas 3D en paysage (voir onPointerDown
+          dans scene.ts) - plus de flèches visibles, seul le geste reste. */}
       <button
         type="button"
         onClick={onPrev}
@@ -55,33 +52,6 @@ export default function PlateReader({
       <span className="pointer-events-none absolute top-4 left-4 font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white/70">
         {plateIndex + 1}/{comic.plates.length}
       </span>
-
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          onPrev();
-        }}
-        aria-label="Page précédente"
-        className={`${ARROW_BUTTON_CLASSES} left-4`}
-      >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="15,18 9,12 15,6" />
-        </svg>
-      </button>
-      <button
-        type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          onNext();
-        }}
-        aria-label="Page suivante"
-        className={`${ARROW_BUTTON_CLASSES} right-4`}
-      >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="9,6 15,12 9,18" />
-        </svg>
-      </button>
     </div>
   );
 }
