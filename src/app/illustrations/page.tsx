@@ -203,19 +203,14 @@ export default function IllustrationsPage() {
             </div>
           </div>
 
-          {/* Row 7: single full-width image */}
-          <div>
-            <img src={asset(i(15))} alt="" className="w-full h-[662px] object-cover" />
-          </div>
-
-          {/* Row 8: 3 equal columns */}
+          {/* Row 7: 3 equal columns */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-[16px] md:gap-[24px]">
             <img src={asset(i(18))} alt="" className="w-full h-[682px] object-cover" />
             <img src={asset(i(8))} alt="" className="w-full h-[682px] object-cover" />
             <img src={asset(i(3))} alt="" className="w-full h-[682px] object-cover" />
           </div>
 
-          {/* Row 9: left col (title/text top, image bottom) + right single image */}
+          {/* Row 8: left col (title/text top, image bottom) + right single image */}
           <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] items-start">
             <div className="flex-1 flex flex-col gap-6 md:gap-0 md:justify-between md:self-stretch">
               <TitleBlock />
@@ -226,7 +221,7 @@ export default function IllustrationsPage() {
             </div>
           </div>
 
-          {/* Row 10: left col (3×264px) + right tall */}
+          {/* Row 9: left col (3×264px) + right tall */}
           <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px]">
             <div className="w-full md:w-[44%] shrink-0 flex flex-col gap-[12px]">
               <img src={asset(i(22))} alt="" className="w-full h-[264px] object-cover" />
@@ -239,12 +234,7 @@ export default function IllustrationsPage() {
             </div>
           </div>
 
-          {/* Row 11: single full-width image */}
-          <div>
-            <img src={asset(i(15))} alt="" className="w-full h-[764px] object-cover" />
-          </div>
-
-          {/* Row 12: left image + right col (title/text top, image bottom) */}
+          {/* Row 10: left image + right col (title/text top, image bottom) */}
           <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] items-start">
             <div className="w-full md:w-[44%] shrink-0 md:self-stretch">
               <img src={asset(i(36))} alt="" className="w-full h-[400px] md:h-full object-cover" />
@@ -255,13 +245,13 @@ export default function IllustrationsPage() {
             </div>
           </div>
 
-          {/* Row 13: 2 equal columns */}
+          {/* Row 11: 2 equal columns */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] md:gap-[40px]">
             <img src={asset(i(9))} alt="" className="w-full h-[1031px] object-cover" />
             <img src={asset(i(29))} alt="" className="w-full h-[1031px] object-cover" />
           </div>
 
-          {/* Row 14: left square image + right col (title/text top, image bottom) */}
+          {/* Row 12: left square image + right col (title/text top, image bottom) */}
           <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] items-start">
             <div className="w-full md:w-[44%] shrink-0">
               <img src={asset(laitiere)} alt="" className="w-full h-[572px] object-cover" />
@@ -272,7 +262,7 @@ export default function IllustrationsPage() {
             </div>
           </div>
 
-          {/* Row 15: 2 equal columns */}
+          {/* Row 13: 2 equal columns */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] md:gap-[40px]">
             <img src={asset(i(12))} alt="" className="w-full h-[960px] object-cover" />
             <img src={asset(i(31))} alt="" className="w-full aspect-[1075/1483] md:aspect-auto md:h-[960px] object-contain" />
