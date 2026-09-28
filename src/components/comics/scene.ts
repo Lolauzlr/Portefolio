@@ -1303,15 +1303,22 @@ export function createScene(
     // shelfRestZ() : le -0.6 reste relatif à cette distance de repos plutôt
     // qu'à l'ancienne constante fixe, pour garder le même effet de recul
     // quel que soit le cadrage (desktop ou mobile).
-    const centerX = shelfCenterX();
+    //
+    // L'abscisse (caméra ET cible) n'est PAS reprise ici, volontairement :
+    // elle reste sur l'axe de lecture (aimAtFold) tout le temps que la
+    // couverture se rabat, pour que cette fermeture se lise comme un seul
+    // geste net plutôt qu'un panoramique latéral doublé d'une rotation.
+    // C'est select(), appelé ensuite par ShelfShell derrière un voile, qui la
+    // ramène sur shelfCenterX() - jamais perçu comme un décalage puisque
+    // masqué.
     const restZ = shelfRestZ();
     if (animate && !opts.reducedMotion) {
       tl.to(
         camera.position,
-        { x: centerX, z: restZ - 0.6, y: BOOK.h * 0.55, duration: dur(800), ease: "power2.out" },
+        { z: restZ - 0.6, y: BOOK.h * 0.55, duration: dur(800), ease: "power2.out" },
         0,
       )
-        .to(camTarget, { x: centerX, y: BOOK.h * 0.5, z: 0, duration: dur(800) }, 0)
+        .to(camTarget, { y: BOOK.h * 0.5, z: 0, duration: dur(800) }, 0)
         .to(camera, { fov: SHELF_FOV, duration: dur(800), onUpdate: () => camera.updateProjectionMatrix() }, 0)
         .to(
           key.position,
@@ -1319,8 +1326,8 @@ export function createScene(
           0,
         );
     } else {
-      camera.position.set(centerX, BOOK.h * 0.55, restZ - 0.6);
-      camTarget.set(centerX, BOOK.h * 0.5, 0);
+      camera.position.set(camera.position.x, BOOK.h * 0.55, restZ - 0.6);
+      camTarget.set(camTarget.x, BOOK.h * 0.5, 0);
       camera.fov = SHELF_FOV;
       camera.updateProjectionMatrix();
       key.position.copy(KEY_SHELF);
