@@ -343,12 +343,19 @@ export default function ShelfShell({
       const scene = sceneRef.current;
       if (!scene) return;
 
-      // Depuis la lecture tout se joue déjà sur le canvas : aucun voile à monter.
-      const veiled = stateRef.current !== "READING";
+      // Depuis la lecture, seule la couverture se referme à l'écran, sans
+      // voile : c'est la seule animation à montrer (voir close() dans
+      // scene.ts, qui ne bouge plus la caméra en abscisse pour ça - un
+      // panoramique latéral s'ajoutant à la rotation lisait comme un
+      // décalage). Le retour à l'étagère qui suit (recentrage caméra, remise
+      // en rang des livres, barre/footer) se joue lui derrière un voile, en
+      // une seule bascule masquée - jamais à découvert, pour ne pas laisser
+      // voir les livres seuls, sans la page derrière.
+      const wasReading = stateRef.current === "READING";
       setPhase("CLOSING");
       scene.setTurningEnabled(false);
 
-      if (veiled) {
+      if (!wasReading) {
         setOverlay(1);
         await wait(OVERLAY_MS);
         if (!mountedRef.current) return;
@@ -364,14 +371,39 @@ export default function ShelfShell({
       scene.renderOnce(); // sans ce cadre forcé, le canvas réapparaît noir
       setCanvasHidden(false);
 
+      if (wasReading) {
+        await scene.close(true);
+        if (!mountedRef.current) return;
+
+        // Le retour à l'étagère (recentrage caméra + remise en rang, hors
+        // champ) se joue maintenant, masqué par ce voile - jamais devant la
+        // page encore en plein écran (immersive), sans quoi on verrait les
+        // livres seuls, sans rien derrière.
+        setOverlay(1);
+        await wait(OVERLAY_MS);
+        if (!mountedRef.current) return;
+
+        const index = selectedRef.current;
+        if (index !== null) await scene.select(index, false);
+        if (!mountedRef.current) return;
+        setPhase("SELECTED");
+        setReadingChrome(false);
+
+        // Laisse le calque reprendre sa mise en page (barre, footer, canevas
+        // hors plein écran) avant de lever le voile sur le résultat posé.
+        await wait(60);
+        if (!mountedRef.current) return;
+        setOverlay(0);
+        scene.setPickingEnabled(true);
+        return;
+      }
+
       // Chevauchement volontaire : la caméra recule derrière le voile encore opaque,
       // qui ne se lève qu'une fois ce recul terminé — jamais avant.
       const closing = scene.close(true);
-      if (veiled) {
-        await wait(reducedMotionRef.current ? 160 : 450);
-        if (!mountedRef.current) return;
-        setOverlay(0);
-      }
+      await wait(reducedMotionRef.current ? 160 : 450);
+      if (!mountedRef.current) return;
+      setOverlay(0);
       await closing;
       if (!mountedRef.current) return;
       // Le livre lu reste désigné au retour : l'étagère ne doit jamais se
