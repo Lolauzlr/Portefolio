@@ -1,5 +1,16 @@
 "use client";
 
+// Mobile browsers block unmuted autoplay for cross-origin iframes even when
+// the iframe is created from a click, so an autoplay=1 embed without mute=1
+// silently fails to start and looks like it needs a second tap directly on
+// YouTube's own play button. Muted autoplay is always allowed, so the video
+// always starts on the first click; the visitor can unmute from YouTube's
+// own controls.
+function withMutedAutoplay(src: string): string {
+  if (/[?&]mute=/.test(src)) return src;
+  return `${src}${src.includes("?") ? "&" : "?"}mute=1`;
+}
+
 export default function VideoModal({
   src,
   title,
@@ -29,7 +40,7 @@ export default function VideoModal({
       <div className="w-full h-full max-w-[90vw] max-h-[90vh] md:max-w-[85vw] md:max-h-[85vh] aspect-video max-md:portrait:fixed max-md:portrait:top-1/2 max-md:portrait:left-1/2 max-md:portrait:w-[100vh] max-md:portrait:h-[100vw] max-md:portrait:max-w-none max-md:portrait:max-h-none max-md:portrait:-translate-x-1/2 max-md:portrait:-translate-y-1/2 max-md:portrait:rotate-90">
         <iframe
           className="w-full h-full"
-          src={src}
+          src={withMutedAutoplay(src)}
           title={title}
           allow="autoplay; encrypted-media; fullscreen"
           allowFullScreen
