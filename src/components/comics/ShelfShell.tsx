@@ -11,6 +11,7 @@ import {
   type ShelfState,
 } from "@/components/comics/machine";
 import BookSlider from "@/components/comics/BookSlider";
+import PlateReader from "@/components/comics/PlateReader";
 import type { SceneHandle } from "@/components/comics/scene";
 import ShelfInfoPanel from "@/components/comics/ShelfInfoPanel";
 import { COMICS } from "@/lib/comics";
@@ -73,6 +74,8 @@ const SLIDER_GAP_PX_MOBILE = 12;
  * au lieu de retoucher le cadrage 3D, partagé avec la lecture.
  */
 const HEADER_GAP_PX = 60;
+/** Même écart, sur mobile : 24px, pas 60. */
+const HEADER_GAP_PX_MOBILE = 24;
 /**
  * Écart voulu sous le contenu le plus bas (card ou curseur) avant la section
  * suivante, en desktop. Le canevas (et le cadrage 3D qu'il porte) reste en
@@ -128,6 +131,12 @@ export default function ShelfShell({
   const sliderWrapperRef = useRef<HTMLDivElement | null>(null);
   const stateRef = useRef<ShelfState>(slugSegment && !isReading ? "INSIDE" : "SHELF");
   const selectedRef = useRef<number | null>(null);
+  /**
+   * Lecture portrait (voir isPortraitRef plus bas) : indice de la planche
+   * affichée dans comic.plates, pas de la double page - PlateReader n'a
+   * plus rien à voir avec la scène 3D (buildSpreads, readingIndex).
+   */
+  const plateIndexRef = useRef(0);
   /** null : rien en attente. Sinon : adresse reçue pendant une transition. */
   const pendingRouteRef = useRef<Route | null>(null);
   /**
@@ -143,6 +152,27 @@ export default function ShelfShell({
   /** Lue une seule fois à la construction de la scène, réutilisée par `exit`. */
   const reducedMotionRef = useRef(false);
   /**
+   * Format de lecture : portrait affiche une planche à la fois en plein
+   * écran (PlateReader), sans passer par la scène 3D - paysage (et desktop)
+   * garde la double page 3D, inchangée. Sur l'orientation seule, pas sur une
+   * largeur d'appareil (voir l'effet plus bas) : une fenêtre desktop réduite
+   * à un format haut bascule donc elle aussi en planche unique. Un ref, lu
+   * dans des callbacks stables (turn, exit, enterReading...) qui ne
+   * capturent jamais une valeur périmée.
+   */
+  const isPortraitRef = useRef(false);
+  /**
+   * Format figé de la session de lecture en cours, posé une seule fois par
+   * enterReading/enterReadingDirect à partir d'isPortraitRef au moment de
+   * l'entrée. turn/exit/goTo/reconcile et le rendu de PlateReader relisent
+   * celui-ci, pas isPortraitRef en direct : une rotation de l'appareil en
+   * cours de lecture ne peut pas transposer une double page 3D en planche
+   * (ou l'inverse) sans rouvrir le livre, donc elle ne doit pas faire
+   * basculer une session déjà engagée - seule la PROCHAINE ouverture en
+   * tient compte.
+   */
+  const readingPortraitRef = useRef(false);
+  /**
    * La scène n'est construite qu'une fois et ne doit pas capturer une version périmée
    * des gestionnaires : ses rappels passent par ce relais.
    */
@@ -155,6 +185,7 @@ export default function ShelfShell({
     slugSegment && !isReading ? "INSIDE" : "SHELF",
   );
   const [selected, setSelectedValue] = useState<number | null>(null);
+  const [plateIndex, setPlateIndexValue] = useState(0);
   // Pilote uniquement le panneau d'info pendant le survol de l'étagère (rien
   // n'est encore désigné) - la désignation (clic) prend le relais une fois
   // `selected` posé.
@@ -170,6 +201,7 @@ export default function ShelfShell({
    * de navigation doit rester en place.
    */
   const [readingChrome, setReadingChrome] = useState(false);
+  const [readingPortrait, setReadingPortraitValue] = useState(false);
 
   const setPhase = useCallback((next: ShelfState) => {
     stateRef.current = next;
@@ -179,6 +211,22 @@ export default function ShelfShell({
   const setSelected = useCallback((index: number | null) => {
     selectedRef.current = index;
     setSelectedValue(index);
+  }, []);
+
+  const setPlateIndex = useCallback((index: number) => {
+    plateIndexRef.current = index;
+    setPlateIndexValue(index);
+  }, []);
+
+  // Pas de state associé : rien ne rend plus d'après l'orientation en direct
+  // (voir readingPortraitRef plus haut) - seules des callbacks lisent le ref.
+  const setIsPortrait = useCallback((value: boolean) => {
+    isPortraitRef.current = value;
+  }, []);
+
+  const setReadingPortrait = useCallback((value: boolean) => {
+    readingPortraitRef.current = value;
+    setReadingPortraitValue(value);
   }, []);
 
   /** Fait franchir une suite d'événements à la machine ; rend faux si l'un est refusé. */
@@ -205,14 +253,36 @@ export default function ShelfShell({
   /**
    * La lecture ne fait pas entrer dans le livre : ni voile, ni canvas masqué. Le livre
    * s'ouvre, la caméra recule sur la double page, et l'URL suit en silence.
+   *
+   * En portrait, pas de 3D du tout : PlateReader affiche directement la
+   * première planche par-dessus l'étagère (déjà dans la bonne pose depuis la
+   * désignation, voir handlePick/readFromPanel), sans ouverture animée à
+   * jouer ni à défaire à la fermeture (voir exit).
    */
   const enterReading = useCallback(
     async (index: number) => {
-      const scene = sceneRef.current;
       const slug = COMICS[index]?.slug;
-      if (!scene || !slug) return;
+      if (!slug) return;
+
+      if (isPortraitRef.current) {
+        if (!advance("read", "done")) return;
+        setReadingPortrait(true);
+        sceneRef.current?.setVisible(false);
+        sceneRef.current?.setPickingEnabled(false);
+        setSelected(index);
+        setPlateIndex(0);
+        setReadingChrome(true);
+        setCanvasHidden(true);
+        selfNavigatedRef.current += 1;
+        router.push(readingHref(slug, 0));
+        return;
+      }
+
+      const scene = sceneRef.current;
+      if (!scene) return;
       if (!advance("read")) return;
 
+      setReadingPortrait(false);
       setReadingChrome(true);
       scene.setPickingEnabled(false);
       await scene.openForReading(index, 0, true);
@@ -223,7 +293,7 @@ export default function ShelfShell({
       selfNavigatedRef.current += 1;
       router.push(readingHref(slug, 0));
     },
-    [advance, router, setSelected],
+    [advance, router, setPlateIndex, setReadingPortrait, setSelected],
   );
 
   /**
@@ -250,9 +320,28 @@ export default function ShelfShell({
   /** `navigate` est faux quand le navigateur a déjà changé l'URL lui-même. */
   const exit = useCallback(
     async ({ navigate }: { navigate: boolean }) => {
+      if (nextState(stateRef.current, "close") === null) return;
+
+      // Lecture portrait (PlateReader) : rien en 3D à défaire, le livre est
+      // resté dans sa pose désignée sur l'étagère pendant toute la lecture
+      // (voir enterReading) - un simple retour d'état suffit, sans voile ni
+      // recul caméra.
+      if (readingPortraitRef.current && stateRef.current !== "INSIDE") {
+        if (!advance("close", "done")) return;
+        if (navigate) {
+          selfNavigatedRef.current += 1;
+          router.push("/storyboard");
+        }
+        setReadingChrome(false);
+        sceneRef.current?.setVisible(true);
+        sceneRef.current?.renderOnce(); // sans ce cadre forcé, le canevas réapparaît noir
+        setCanvasHidden(false);
+        sceneRef.current?.setPickingEnabled(true);
+        return;
+      }
+
       const scene = sceneRef.current;
       if (!scene) return;
-      if (nextState(stateRef.current, "close") === null) return;
 
       // Depuis la lecture tout se joue déjà sur le canvas : aucun voile à monter.
       const veiled = stateRef.current !== "READING";
@@ -294,12 +383,19 @@ export default function ShelfShell({
       setReadingChrome(false);
       scene.setPickingEnabled(true);
     },
-    [router, setPhase],
+    [advance, router, setPhase],
   );
 
-  /** Tourne-page sans navigation : sert aussi au retour du navigateur. */
+  /**
+   * Tourne-page sans navigation : sert aussi au retour du navigateur. Ne
+   * concerne que le paysage/desktop (double page 3D) - en portrait, une
+   * adresse de double page pas forcément adjacente n'a pas d'équivalent
+   * utile (PlateReader tourne planche par planche, voir turn ci-dessous) ;
+   * sans effet ici, un no-op reste correct.
+   */
   const goTo = useCallback(
     async (target: number, animate: boolean) => {
+      if (readingPortraitRef.current) return;
       const scene = sceneRef.current;
       if (!scene) return;
       if (target < 0 || target >= scene.spreadCount()) return;
@@ -313,11 +409,32 @@ export default function ShelfShell({
     [advance],
   );
 
+  /**
+   * Geste utilisateur (clic, molette, clavier) : en portrait (readingPortraitRef,
+   * figé à l'entrée - voir plus haut), avance/recule d'une planche dans
+   * PlateReader - reculer avant la première planche referme le livre. En
+   * paysage/desktop, tourne une double page 3D comme avant (avec, elle, le
+   * rabattement de couverture porté par turnRef).
+   */
   const turn = useCallback(
     async (direction: -1 | 1) => {
+      if (nextState(stateRef.current, "turn") === null) return;
+
+      if (readingPortraitRef.current) {
+        const comic = COMICS[selectedRef.current ?? -1];
+        if (!comic) return;
+        const next = plateIndexRef.current + direction;
+        if (next < 0) {
+          void exit({ navigate: true });
+          return;
+        }
+        if (next >= comic.plates.length) return;
+        setPlateIndex(next);
+        return;
+      }
+
       const scene = sceneRef.current;
       if (!scene) return;
-      if (nextState(stateRef.current, "turn") === null) return;
 
       const target = scene.currentSpread() + direction;
       if (target < 0 || target >= scene.spreadCount()) return;
@@ -329,18 +446,50 @@ export default function ShelfShell({
       selfNavigatedRef.current += 1;
       router.push(readingHref(slug, target));
     },
-    [goTo, router],
+    [exit, goTo, router, setPlateIndex],
   );
 
-  /** Chemin du lien profond : la double page est posée sans rejouer l'ouverture. */
+  /**
+   * Chemin du lien profond : la double page (paysage/desktop) ou la planche
+   * (portrait) est posée sans rejouer l'ouverture.
+   */
   const enterReadingDirect = useCallback(
     async (index: number, spread: number) => {
       const scene = sceneRef.current;
       if (!scene) return;
+
+      if (isPortraitRef.current) {
+        const comic = COMICS[index];
+        if (!comic) return;
+        const entry: ShelfEvent[] =
+          stateRef.current === "INSIDE"
+            ? ["close", "done", "select", "read", "done"]
+            : ["select", "read", "done"];
+        if (!advance(...entry)) return;
+        setReadingPortrait(true);
+
+        // La pose sur l'étagère reste correcte au retour (exit, en portrait,
+        // ne la retouche plus) même pour un lien profond jamais passé par une
+        // désignation manuelle.
+        scene.enterImmediate(index);
+        scene.setVisible(false);
+        scene.setPickingEnabled(false);
+        setSelected(index);
+        const lastPlate = Math.max(comic.plates.length - 1, 0);
+        const wantedPlate = Number.isFinite(spread) ? spread * 2 : 0;
+        setPlateIndex(Math.min(Math.max(wantedPlate, 0), lastPlate));
+        setReadingChrome(true);
+        setShowArticle(false);
+        setOverlay(0);
+        setCanvasHidden(true);
+        return;
+      }
+
       const entry: ShelfEvent[] =
         stateRef.current === "INSIDE" ? ["close", "done", "select", "read"] : ["select", "read"];
       if (!advance(...entry)) return;
 
+      setReadingPortrait(false);
       setReadingChrome(true);
       scene.enterImmediate(index);
       scene.setPickingEnabled(false);
@@ -356,7 +505,7 @@ export default function ShelfShell({
       scene.setTurningEnabled(true);
       scene.renderOnce();
     },
-    [advance, setSelected],
+    [advance, setPlateIndex, setReadingPortrait, setSelected],
   );
 
   /**
@@ -390,12 +539,12 @@ export default function ShelfShell({
       if (viewport) viewport.style.height = "";
       return;
     }
+    const isMobile = window.innerWidth < DESKTOP_BREAKPOINT_PX;
+
     // contentTopY() est mesuré depuis le sommet du canevas, indépendant de ce
     // margin-top : pas de boucle de rétroaction, un seul calcul suffit.
-    const heroMarginTop = HEADER_GAP_PX - scene.contentTopY();
+    const heroMarginTop = (isMobile ? HEADER_GAP_PX_MOBILE : HEADER_GAP_PX) - scene.contentTopY();
     if (hero) hero.style.marginTop = `${heroMarginTop}px`;
-
-    const isMobile = window.innerWidth < DESKTOP_BREAKPOINT_PX;
 
     if (slider) {
       slider.style.left = `${scene.contentCenterX() - slider.offsetWidth / 2}px`;
@@ -471,7 +620,12 @@ export default function ShelfShell({
       const current = stateRef.current;
       if (!canInteract(current)) return;
 
-      if (current === "SELECTED" && selectedRef.current === index) {
+      // Sur mobile, cliquer sur le livre déjà désigné ne l'ouvre plus : seul
+      // le bouton READ du panneau (toujours affiché, voir ShelfInfoPanel)
+      // ouvre la lecture - ce raccourci du second clic reste réservé au
+      // desktop, où rien d'autre ne permet d'ouvrir le livre.
+      const isMobile = window.innerWidth < DESKTOP_BREAKPOINT_PX;
+      if (!isMobile && current === "SELECTED" && selectedRef.current === index) {
         void enterReading(index);
         return;
       }
@@ -566,7 +720,18 @@ export default function ShelfShell({
         const index = indexOfSlug(route.slug);
         if (index < 0) return;
         if (stateRef.current === "READING" && selectedRef.current === index) {
-          void goTo(route.spread, true); // le navigateur a changé de double page
+          if (readingPortraitRef.current) {
+            // Portrait ne pousse pas d'adresse par planche (voir turn) : une
+            // adresse de double page reçue ici ne peut venir que d'un lien
+            // profond ouvert à la main pendant la lecture - on y ramène
+            // PlateReader sur sa première planche.
+            const comic = COMICS[index];
+            const lastPlate = comic ? Math.max(comic.plates.length - 1, 0) : 0;
+            const wantedPlate = Number.isFinite(route.spread) ? route.spread * 2 : 0;
+            setPlateIndex(Math.min(Math.max(wantedPlate, 0), lastPlate));
+          } else {
+            void goTo(route.spread, true); // le navigateur a changé de double page
+          }
         } else {
           void enterReadingDirect(index, route.spread); // lien profond
         }
@@ -591,7 +756,7 @@ export default function ShelfShell({
         void exit({ navigate: false });
       }
     },
-    [enterReadingDirect, exit, goTo, indexOfSlug, setPhase, setSelected],
+    [enterReadingDirect, exit, goTo, indexOfSlug, setPhase, setPlateIndex, setSelected],
   );
 
   useEffect(() => {
@@ -800,6 +965,23 @@ export default function ShelfShell({
     };
   }, [readingChrome]);
 
+  // Voir isPortraitRef plus haut : suit l'orientation en continu, y compris en
+  // cours de lecture (rotation de l'appareil) - mais seule la PROCHAINE entrée
+  // en lecture (enterReading/enterReadingDirect) en tient compte, via
+  // readingPortraitRef qu'elle fige à ce moment-là. Une session déjà engagée
+  // n'en est pas affectée : une double page 3D et une planche PlateReader ne
+  // se transposent pas l'une dans l'autre sans rouvrir le livre.
+  useEffect(() => {
+    const update = () => setIsPortrait(window.innerHeight > window.innerWidth);
+    update();
+    window.addEventListener("resize", update);
+    window.addEventListener("orientationchange", update);
+    return () => {
+      window.removeEventListener("resize", update);
+      window.removeEventListener("orientationchange", update);
+    };
+  }, [setIsPortrait]);
+
   // La désignation reste à l'échelle du survol (voir select() dans scene.ts) :
   // le panneau peut donc rester affiché une fois un livre désigné, pas
   // seulement pendant le survol - la désignation l'emporte sur un survol
@@ -920,6 +1102,18 @@ export default function ShelfShell({
           )}
         </div>
       </div>
+
+      {/* Lecture portrait : une planche à la fois, par-dessus l'étagère 3D
+          masquée (voir enterReading/enterReadingDirect) - jamais TURNING,
+          cet état ne concerne que la double page 3D (voir turn). */}
+      {ready && state === "READING" && readingPortrait && selected !== null && COMICS[selected] && (
+        <PlateReader
+          comic={COMICS[selected]}
+          plateIndex={plateIndex}
+          onPrev={() => void turn(-1)}
+          onNext={() => void turn(1)}
+        />
+      )}
 
       {/* Reste affiché pendant un tourne-page pour ne pas clignoter : la machine
           refuse `close` depuis TURNING, le bouton y est donc sans effet. */}
