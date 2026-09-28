@@ -393,11 +393,11 @@ export default function TrailerPage() {
   return (
     <div className="bg-[#15161b] text-white min-h-screen">
       {/* Hero Section - no top padding, video bleeds under navbar */}
-      {/* Mobile: section is capped to 60vh (not the full 100vh, and not a
-          full 9:16 ~82vh frame) so the video and caption card don't take
-          over the whole screen - the video still covers the box fully
-          (vh-based, same cover-fill idea as desktop, just a shorter box). */}
-      <section ref={heroRef} className="relative h-[60vh] md:h-[810px] w-full overflow-hidden">
+      {/* Mobile: section is a true 9:16 frame (width-driven, so it stays
+          9:16 regardless of device height) so the video reads as a portrait
+          trailer frame and the caption card at the bottom only covers a
+          small fraction of it. */}
+      <section ref={heroRef} className="relative w-full aspect-[9/16] md:aspect-auto md:h-[810px] overflow-hidden">
         {/* YouTube video background via API */}
         <div
           ref={containerRef}
@@ -405,7 +405,7 @@ export default function TrailerPage() {
         >
           <div
             id="yt-bg-player"
-            className="absolute top-1/2 left-1/2 w-[106.67vh] h-[60vh] -translate-x-1/2 -translate-y-1/2 min-w-full md:w-[177.78vh] md:h-[100vh] md:min-w-full md:min-h-full"
+            className="absolute top-1/2 left-1/2 w-[316.05vw] h-[177.78vw] -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full md:w-[177.78vh] md:h-[100vh] md:min-w-full md:min-h-full"
           />
         </div>
 
