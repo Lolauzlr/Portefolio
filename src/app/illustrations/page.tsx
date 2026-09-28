@@ -227,7 +227,7 @@ export default function IllustrationsPage() {
               <img src={asset(i(5))} alt="" className="w-full h-[350px] object-cover" />
             </div>
             <div className="w-full md:w-[44%] shrink-0">
-              <img src={asset(i(11))} alt="" className="w-full h-[554px] object-contain" />
+              <img src={asset(i(11))} alt="" className="w-full aspect-[2958/3389] md:aspect-auto md:h-[554px] object-contain" />
             </div>
           </div>
 
@@ -280,7 +280,7 @@ export default function IllustrationsPage() {
           {/* Row 15: 2 equal columns */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] md:gap-[40px]">
             <img src={asset(i(12))} alt="" className="w-full h-[960px] object-cover" />
-            <img src={asset(i(31))} alt="" className="w-full h-[960px] object-contain" />
+            <img src={asset(i(31))} alt="" className="w-full aspect-[1075/1483] md:aspect-auto md:h-[960px] object-contain" />
           </div>
 
         </div>
