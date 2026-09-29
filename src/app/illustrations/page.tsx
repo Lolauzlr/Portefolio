@@ -1,6 +1,9 @@
 import { LightboxImg, LightboxProvider, type LightboxSlide } from "@/components/IllustrationLightbox";
 
 const i = (n: number) => `/images/illustrations/illus-${n}.webp`;
+const purpleSmile = "/images/illustrations/couverture-album-purple-smile.webp";
+const poissons = "/images/illustrations/illustration-homme-assit-dans-une-main-fond-ciel-avec-des-poissons.webp";
+const dormeur = "/images/illustrations/illustration-homme-qui-dort-sur-le-sol.webp";
 const laitiere = "/images/illustrations/reproduction-tableau-la-laitière-photoshop.webp";
 
 const heroSlides: { src: string; alt: string; title: string; description: React.ReactNode }[] = [
@@ -60,6 +63,9 @@ const lightboxSlides: LightboxSlide[] = [
   { src: i(7), alt: "" },
   { src: i(12), alt: "" },
   { src: i(31), alt: "" },
+  { src: dormeur, alt: "" },
+  { src: purpleSmile, alt: "" },
+  { src: poissons, alt: "" },
 ];
 
 function SubTitle({ children }: { children: React.ReactNode }) {
@@ -319,6 +325,17 @@ export default function IllustrationsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] md:gap-[40px]">
             <LightboxImg src={i(12)} alt="" className="w-full md:aspect-auto md:h-[960px] md:object-cover" />
             <LightboxImg src={i(31)} alt="" className="w-full aspect-[1075/1483] md:aspect-auto md:h-[960px] object-contain" />
+          </div>
+
+          {/* Row 14: single full-width image, natural ratio */}
+          <div>
+            <LightboxImg src={dormeur} alt="" className="w-full" />
+          </div>
+
+          {/* Row 15: 2 equal columns, natural ratios (square + portrait), nothing cropped */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] md:gap-[40px] md:items-center">
+            <LightboxImg src={purpleSmile} alt="" className="w-full" />
+            <LightboxImg src={poissons} alt="" className="w-full" />
           </div>
 
         </div>
