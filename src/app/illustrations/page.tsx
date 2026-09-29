@@ -261,19 +261,20 @@ export default function IllustrationsPage() {
           </div>
 
           {/* Row 8: left col (title/text top, image bottom) + right single image */}
-          <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] items-start">
-            <div className="flex-1 flex flex-col gap-6 md:gap-0 md:justify-between md:self-stretch">
+          <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px] md:items-stretch">
+            <div className="flex-1 flex flex-col gap-6 md:gap-[24px]">
               <TitleBlock
                 title="Visual Development & Character Design"
                 text="Some days I am designing a character, other days I am sketching a comic panel or working on an environment concept. I tend to have ideas for all kinds of things, so I enjoy moving between different formats and exploring where each one can take me. It keeps my visual development varied and my curiosity moving."
               />
               <div className="flex flex-col gap-[24px] md:gap-[40px]">
-                <LightboxImg src={dormeur} alt="" className="w-full" />
+                <LightboxImg src={dormeur} alt="" className="w-full aspect-[2480/1594] md:aspect-auto md:h-[322px] md:object-cover" />
                 <LightboxImg src={i(5)} alt="" className="w-full md:aspect-auto md:h-[322px] md:object-cover" />
               </div>
             </div>
-            <div className="w-full md:w-[44%] shrink-0">
-              <LightboxImg src={poissons} alt="" className="w-full aspect-[3285/4652]" />
+            {/* Stretches to the left column's full height, so its bottom edge lines up with illus-5's. */}
+            <div className="w-full md:w-[44%] shrink-0 md:self-stretch">
+              <LightboxImg src={poissons} alt="" className="w-full aspect-[3285/4652] md:aspect-auto md:h-full md:object-cover" />
             </div>
           </div>
 
