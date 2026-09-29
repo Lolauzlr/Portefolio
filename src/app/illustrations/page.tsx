@@ -64,8 +64,8 @@ const lightboxSlides: LightboxSlide[] = [
   { src: i(12), alt: "" },
   { src: i(31), alt: "" },
   { src: dormeur, alt: "" },
-  { src: i(11), alt: "" },
   { src: purpleSmile, alt: "" },
+  { src: i(11), alt: "" },
 ];
 
 function SubTitle({ children }: { children: React.ReactNode }) {
@@ -267,11 +267,10 @@ export default function IllustrationsPage() {
                 title="Visual Development & Character Design"
                 text="Some days I am designing a character, other days I am sketching a comic panel or working on an environment concept. I tend to have ideas for all kinds of things, so I enjoy moving between different formats and exploring where each one can take me. It keeps my visual development varied and my curiosity moving."
               />
-              <LightboxImg src={i(5)} alt="" className="w-full md:aspect-auto md:h-[350px] md:object-cover" />
+              <LightboxImg src={i(5)} alt="" className="w-full md:aspect-auto md:h-[322px] md:object-cover" />
             </div>
-            {/* Portrait, natural ratio: fixed height on desktop, width follows */}
-            <div className="w-full md:w-auto shrink-0">
-              <LightboxImg src={poissons} alt="" className="w-full aspect-[3285/4652] md:w-auto md:h-[554px]" />
+            <div className="w-full md:w-[44%] shrink-0">
+              <LightboxImg src={poissons} alt="" className="w-full aspect-[3285/4652]" />
             </div>
           </div>
 
@@ -337,11 +336,11 @@ export default function IllustrationsPage() {
               width/height ratio (2958/3389 ≈ 873, 7850/7874 ≈ 997), so both images share one height and are
               scaled proportionally, never cropped or stretched. */}
           <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px]">
-            <div className="w-full md:w-auto md:min-w-0 md:[flex:873_873_0%]">
-              <LightboxImg src={i(11)} alt="" className="w-full aspect-[2958/3389] block" />
-            </div>
             <div className="w-full md:w-auto md:min-w-0 md:[flex:997_997_0%]">
               <LightboxImg src={purpleSmile} alt="" className="w-full aspect-[7850/7874] block" />
+            </div>
+            <div className="w-full md:w-auto md:min-w-0 md:[flex:873_873_0%]">
+              <LightboxImg src={i(11)} alt="" className="w-full aspect-[2958/3389] block" />
             </div>
           </div>
 
