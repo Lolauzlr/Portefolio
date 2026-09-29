@@ -68,6 +68,17 @@ const lightboxSlides: LightboxSlide[] = [
   { src: i(11), alt: "" },
 ];
 
+const longestSlide = heroSlides[heroSlides.length - 1];
+
+function CaptionText({ slide }: { slide: (typeof heroSlides)[number] }) {
+  return (
+    <>
+      <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-white">{slide.title}</p>
+      <p className="font-[family-name:var(--font-body)] text-[14px] tracking-[1.12px] text-white">{slide.description}</p>
+    </>
+  );
+}
+
 function SubTitle({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-[4px]">
@@ -105,13 +116,16 @@ export default function IllustrationsPage() {
               <div key={slide.title} className="flex-shrink-0 w-[calc(100vw-32px)] snap-center flex flex-col gap-[16px] self-start">
                 <div className="relative w-full aspect-[9/16]">
                   <LightboxImg src={slide.src} alt={slide.alt} className="absolute inset-0 w-full h-full object-cover" />
-                  <div className="absolute left-[12px] right-[12px] bottom-[12px] min-h-[150px] pointer-events-none backdrop-blur-[5px] bg-black/40 p-[8px] flex flex-col gap-[8px] items-start justify-start text-left">
-                    <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-white">
-                      {slide.title}
-                    </p>
-                    <p className="font-[family-name:var(--font-body)] text-[14px] tracking-[1.12px] text-white">
-                      {slide.description}
-                    </p>
+                  {/* Caption box: an invisible copy of the longest caption sits in the
+                      same grid cell as the real one, so every card's box has the exact
+                      same height at any width and the titles line up (top-left). */}
+                  <div className="absolute left-[12px] right-[12px] bottom-[12px] pointer-events-none backdrop-blur-[5px] bg-black/40 p-[8px] grid text-left">
+                    <div aria-hidden className="invisible [grid-area:1/1] flex flex-col gap-[8px]">
+                      <CaptionText slide={longestSlide} />
+                    </div>
+                    <div className="[grid-area:1/1] flex flex-col gap-[8px] items-start self-start">
+                      <CaptionText slide={slide} />
+                    </div>
                   </div>
                 </div>
                 <div className="flex gap-[4px] items-center justify-center">
