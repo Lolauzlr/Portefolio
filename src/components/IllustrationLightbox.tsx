@@ -83,7 +83,7 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
               </button>
             )}
 
-            <img src={asset(current.src)} alt={current.alt} className="max-w-full max-h-full object-contain" />
+            <img src={asset(current.src)} alt={current.alt} className="max-w-full max-h-full w-auto h-auto object-contain" />
 
             {hasMultiple && (
               <button
@@ -108,11 +108,11 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
                     type="button"
                     onClick={() => setIndex(i)}
                     aria-label={`Image ${i + 1}`}
-                    className={`relative flex-shrink-0 w-[120px] h-[68px] overflow-hidden cursor-pointer transition-all ${
+                    className={`relative flex-shrink-0 h-[68px] overflow-hidden cursor-pointer transition-all ${
                       i === index ? "ring-2 ring-[#ddff6e]" : "opacity-50 hover:opacity-80"
                     }`}
                   >
-                    <img src={asset(slide.src)} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                    <img src={asset(slide.src)} alt="" className="h-full w-auto max-w-none block" />
                   </button>
                 ))}
               </div>
