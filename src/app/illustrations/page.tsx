@@ -95,18 +95,11 @@ export default function IllustrationsPage() {
     <LightboxProvider slides={lightboxSlides}>
     <div className="pt-[48px] md:pt-[95px] bg-[#15161b] text-white min-h-screen">
 
-      {/* ── Latest work ── */}
+      {/* ── Hero (latest work) ── */}
       <section className="pt-[24px] pb-[24px] md:pt-[60px] md:pb-[60px]">
 
         {/* Mobile: swipeable carousel, caption overlaid on each image */}
         <div className="md:hidden flex flex-col gap-[20px]">
-          <div className="flex flex-col gap-[4px] px-[16px]">
-            <h2 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px] uppercase text-white">
-              Latest work
-            </h2>
-            <div className="w-[80px] h-[4px] bg-[#ddff6e]" />
-          </div>
-
           <div className="flex gap-[24px] overflow-x-auto pb-3 snap-x snap-mandatory scrollbar-hide cursor-pointer px-[16px] items-start">
             {heroSlides.map((slide, index) => (
               <div key={slide.title} className="flex-shrink-0 w-[calc(100vw-32px)] snap-center flex flex-col gap-[16px] self-start">
