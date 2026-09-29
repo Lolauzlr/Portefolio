@@ -272,9 +272,9 @@ export default function IllustrationsPage() {
                 <LightboxImg src={i(5)} alt="" className="w-full md:aspect-auto md:h-[322px] md:object-cover" />
               </div>
             </div>
-            {/* Stretches to the left column's full height, so its bottom edge lines up with illus-5's. */}
-            <div className="w-full md:w-[44%] shrink-0 md:self-stretch">
-              <LightboxImg src={poissons} alt="" className="w-full aspect-[3285/4652] md:aspect-auto md:h-full md:object-cover" />
+            {/* Desktop: image is absolutely positioned so it never sets the row height itself; the box stretches to the left column's height (bottom edge = illus-5's) and object-cover scales it proportionally to fill. */}
+            <div className="relative w-full md:w-[44%] shrink-0 md:self-stretch">
+              <LightboxImg src={poissons} alt="" className="w-full aspect-[3285/4652] md:absolute md:inset-0 md:aspect-auto md:h-full md:object-cover" />
             </div>
           </div>
 
