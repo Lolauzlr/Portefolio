@@ -99,8 +99,9 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
             )}
           </div>
 
+          {/* Bande masquée sur téléphone en paysage (elle mangerait la hauteur de l'image). */}
           {hasMultiple && (
-            <div className="bg-[#0d0d0d] px-3 md:px-4 py-3 overflow-x-auto">
+            <div className="bg-[#0d0d0d] px-3 md:px-4 py-3 overflow-x-auto [@media(max-height:500px)_and_(orientation:landscape)]:hidden">
               <div className="flex gap-2 min-w-min mx-auto w-fit">
                 {slides.map((slide, i) => (
                   <button
