@@ -49,7 +49,7 @@ const lightboxSlides: LightboxSlide[] = [
   { src: i(8), alt: "" },
   { src: i(3), alt: "" },
   { src: i(5), alt: "" },
-  { src: i(11), alt: "" },
+  { src: poissons, alt: "" },
   { src: i(22), alt: "" },
   { src: i(4), alt: "" },
   { src: i(2), alt: "" },
@@ -64,8 +64,8 @@ const lightboxSlides: LightboxSlide[] = [
   { src: i(12), alt: "" },
   { src: i(31), alt: "" },
   { src: dormeur, alt: "" },
+  { src: i(11), alt: "" },
   { src: purpleSmile, alt: "" },
-  { src: poissons, alt: "" },
 ];
 
 function SubTitle({ children }: { children: React.ReactNode }) {
@@ -269,8 +269,9 @@ export default function IllustrationsPage() {
               />
               <LightboxImg src={i(5)} alt="" className="w-full md:aspect-auto md:h-[350px] md:object-cover" />
             </div>
-            <div className="w-full md:w-[44%] shrink-0">
-              <LightboxImg src={i(11)} alt="" className="w-full aspect-[2958/3389] md:aspect-auto md:h-[554px] object-contain" />
+            {/* Portrait, natural ratio: fixed height on desktop, width follows */}
+            <div className="w-full md:w-auto shrink-0">
+              <LightboxImg src={poissons} alt="" className="w-full aspect-[3285/4652] md:w-auto md:h-[554px]" />
             </div>
           </div>
 
@@ -332,10 +333,16 @@ export default function IllustrationsPage() {
             <LightboxImg src={dormeur} alt="" className="w-full" />
           </div>
 
-          {/* Row 15: 2 equal columns, natural ratios (square + portrait), nothing cropped */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px] md:gap-[40px] md:items-center">
-            <LightboxImg src={purpleSmile} alt="" className="w-full" />
-            <LightboxImg src={poissons} alt="" className="w-full" />
+          {/* Row 15: same height on desktop. Each column's flex-grow is its own
+              width/height ratio (2958/3389 ≈ 873, 7850/7874 ≈ 997), so both images share one height and are
+              scaled proportionally, never cropped or stretched. */}
+          <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px]">
+            <div className="w-full md:w-auto md:min-w-0 md:[flex:873_873_0%]">
+              <LightboxImg src={i(11)} alt="" className="w-full aspect-[2958/3389] block" />
+            </div>
+            <div className="w-full md:w-auto md:min-w-0 md:[flex:997_997_0%]">
+              <LightboxImg src={purpleSmile} alt="" className="w-full aspect-[7850/7874] block" />
+            </div>
           </div>
 
         </div>
