@@ -107,12 +107,12 @@ export default function IllustrationsPage() {
             <div className="w-[80px] h-[4px] bg-[#ddff6e]" />
           </div>
 
-          <div className="flex gap-[24px] overflow-x-auto pb-3 snap-x snap-mandatory scrollbar-hide cursor-pointer px-[16px]">
+          <div className="flex gap-[24px] overflow-x-auto pb-3 snap-x snap-mandatory scrollbar-hide cursor-pointer px-[16px] items-start">
             {heroSlides.map((slide, index) => (
-              <div key={slide.title} className="flex-shrink-0 w-[calc(100vw-32px)] snap-center flex flex-col gap-[16px]">
+              <div key={slide.title} className="flex-shrink-0 w-[calc(100vw-32px)] snap-center flex flex-col gap-[16px] self-start">
                 <div className="relative w-full aspect-[9/16]">
                   <LightboxImg src={slide.src} alt={slide.alt} className="absolute inset-0 w-full h-full object-cover" />
-                  <div className="absolute left-[12px] right-[12px] bottom-[12px] backdrop-blur-[5px] bg-black/40 p-[8px] flex flex-col gap-[8px]">
+                  <div className="absolute left-[12px] right-[12px] top-[12px] pointer-events-none backdrop-blur-[5px] bg-black/40 p-[8px] flex flex-col gap-[8px] items-start text-left">
                     <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-white">
                       {slide.title}
                     </p>
