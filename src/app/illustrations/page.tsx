@@ -95,14 +95,14 @@ export default function IllustrationsPage() {
     <LightboxProvider slides={lightboxSlides}>
     <div className="pt-[48px] md:pt-[95px] bg-[#15161b] text-white min-h-screen">
 
-      {/* ── LES PLUS RÉCENTES ── */}
+      {/* ── Latest work ── */}
       <section className="pt-[24px] pb-[24px] md:pt-[60px] md:pb-[60px]">
 
         {/* Mobile: swipeable carousel, caption overlaid on each image */}
         <div className="md:hidden flex flex-col gap-[20px]">
           <div className="flex flex-col gap-[4px] px-[16px]">
             <h2 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px] uppercase text-white">
-              LES PLUS RÉCENTES
+              Latest work
             </h2>
             <div className="w-[80px] h-[4px] bg-[#ddff6e]" />
           </div>
