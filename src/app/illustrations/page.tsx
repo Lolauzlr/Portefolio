@@ -7,7 +7,7 @@ const dormeur = "/images/illustrations/illustration-homme-qui-dort-sur-le-sol.we
 const laitiere = "/images/illustrations/reproduction-tableau-la-laitière-photoshop.webp";
 
 const heroSlides: { src: string; alt: string; title: string; description: React.ReactNode }[] = [
-  { src: i(25), alt: "Arcane", title: "ARCANE", description: "Digital Painting • Adobe Photoshop" },
+  { src: i(25), alt: "Rose", title: "ROSE", description: "Digital Painting • Adobe Photoshop" },
   {
     src: i(34),
     alt: "Drunked Monster",
@@ -29,7 +29,7 @@ const heroSlides: { src: string; alt: string; title: string; description: React.
 ];
 
 const lightboxSlides: LightboxSlide[] = [
-  { src: i(25), alt: "Arcane" },
+  { src: i(25), alt: "Rose" },
   { src: i(34), alt: "Drunked Monster" },
   { src: i(32), alt: "Mazou BD" },
   { src: i(35), alt: "" },
@@ -136,15 +136,15 @@ export default function IllustrationsPage() {
 
         {/* Desktop: side-by-side layout, title/text alongside image */}
         <div className="hidden md:flex gap-[24px] overflow-x-auto pb-4 items-start scrollbar-hide mx-auto w-fit px-[120px]">
-          {/* ARCANE — title on top, image below */}
+          {/* ROSE — title on top, image below */}
           <div className="flex-shrink-0 flex flex-col gap-[16px] w-[303px]">
             <div className="flex flex-col gap-[12px]">
-              <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">ARCANE</p>
+              <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">ROSE</p>
               <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px]">
                 Digital Painting • Adobe Photoshop
               </p>
             </div>
-            <LightboxImg src={i(25)} alt="Arcane" className="w-full h-[539px] object-cover" />
+            <LightboxImg src={i(25)} alt="Rose" className="w-full h-[539px] object-cover" />
           </div>
 
           {/* MONSTER IN A BOTTLE — image on top, title below */}
