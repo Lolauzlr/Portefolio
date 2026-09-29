@@ -105,7 +105,7 @@ export default function IllustrationsPage() {
               <div key={slide.title} className="flex-shrink-0 w-[calc(100vw-32px)] snap-center flex flex-col gap-[16px] self-start">
                 <div className="relative w-full aspect-[9/16]">
                   <LightboxImg src={slide.src} alt={slide.alt} className="absolute inset-0 w-full h-full object-cover" />
-                  <div className="absolute left-[12px] right-[12px] top-[12px] pointer-events-none backdrop-blur-[5px] bg-black/40 p-[8px] flex flex-col gap-[8px] items-start text-left">
+                  <div className="absolute left-[12px] right-[12px] bottom-[12px] min-h-[150px] pointer-events-none backdrop-blur-[5px] bg-black/40 p-[8px] flex flex-col gap-[8px] items-start justify-start text-left">
                     <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-white">
                       {slide.title}
                     </p>
