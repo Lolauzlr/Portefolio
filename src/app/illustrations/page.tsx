@@ -48,6 +48,7 @@ const lightboxSlides: LightboxSlide[] = [
   { src: i(18), alt: "" },
   { src: i(8), alt: "" },
   { src: i(3), alt: "" },
+  { src: dormeur, alt: "" },
   { src: i(5), alt: "" },
   { src: poissons, alt: "" },
   { src: i(22), alt: "" },
@@ -63,7 +64,6 @@ const lightboxSlides: LightboxSlide[] = [
   { src: i(7), alt: "" },
   { src: i(12), alt: "" },
   { src: i(31), alt: "" },
-  { src: dormeur, alt: "" },
   { src: purpleSmile, alt: "" },
   { src: i(11), alt: "" },
 ];
@@ -267,7 +267,10 @@ export default function IllustrationsPage() {
                 title="Visual Development & Character Design"
                 text="Some days I am designing a character, other days I am sketching a comic panel or working on an environment concept. I tend to have ideas for all kinds of things, so I enjoy moving between different formats and exploring where each one can take me. It keeps my visual development varied and my curiosity moving."
               />
-              <LightboxImg src={i(5)} alt="" className="w-full md:aspect-auto md:h-[322px] md:object-cover" />
+              <div className="flex flex-col gap-[24px] md:gap-[40px]">
+                <LightboxImg src={dormeur} alt="" className="w-full" />
+                <LightboxImg src={i(5)} alt="" className="w-full md:aspect-auto md:h-[322px] md:object-cover" />
+              </div>
             </div>
             <div className="w-full md:w-[44%] shrink-0">
               <LightboxImg src={poissons} alt="" className="w-full aspect-[3285/4652]" />
@@ -327,12 +330,7 @@ export default function IllustrationsPage() {
             <LightboxImg src={i(31)} alt="" className="w-full aspect-[1075/1483] md:aspect-auto md:h-[960px] object-contain" />
           </div>
 
-          {/* Row 14: single full-width image, natural ratio */}
-          <div>
-            <LightboxImg src={dormeur} alt="" className="w-full" />
-          </div>
-
-          {/* Row 15: same height on desktop. Each column's flex-grow is its own
+          {/* Row 14: same height on desktop. Each column's flex-grow is its own
               width/height ratio (2958/3389 ≈ 873, 7850/7874 ≈ 997), so both images share one height and are
               scaled proportionally, never cropped or stretched. */}
           <div className="flex flex-col md:flex-row gap-[24px] md:gap-[40px]">
