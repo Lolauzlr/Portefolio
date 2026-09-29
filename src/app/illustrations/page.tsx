@@ -71,7 +71,7 @@ const lightboxSlides: LightboxSlide[] = [
 function SubTitle({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-[4px]">
-      <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px] text-white">
+      <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] md:text-[28px] md:tracking-[2.24px] text-white">
         {children}
       </h3>
       <div className="w-[80px] h-[4px] bg-white" />
@@ -101,7 +101,7 @@ export default function IllustrationsPage() {
         {/* Mobile: swipeable carousel, caption overlaid on each image */}
         <div className="md:hidden flex flex-col gap-[20px]">
           <div className="flex flex-col gap-[4px] px-[16px]">
-            <h2 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-white">
+            <h2 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px] uppercase text-white">
               LES PLUS RÉCENTES
             </h2>
             <div className="w-[80px] h-[4px] bg-[#ddff6e]" />
@@ -176,7 +176,7 @@ export default function IllustrationsPage() {
       {/* ── ILLUSTRATION & VISUAL EXPLORATION ── */}
       <section className="bg-[#131313] pt-[24px] pb-[24px] md:py-[60px] px-3 md:px-[120px]">
         <div className="mb-[24px] md:mb-[60px]">
-          <h2 className="font-[family-name:var(--font-heading)] text-[40px] tracking-[4.8px] uppercase text-white">
+          <h2 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px] md:text-[40px] md:tracking-[4.8px] uppercase text-white">
             Illustration & visual exploration
           </h2>
           <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-[4px]" />
