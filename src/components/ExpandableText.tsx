@@ -30,10 +30,10 @@ export default function ExpandableText({
         onClick={() => setExpanded((v) => !v)}
         className="md:hidden flex items-center gap-2 text-[#0FD1EA] hover:text-[#7FECFB] transition-colors"
       >
-        <span className="font-[family-name:var(--font-body)] font-semibold text-[14px] tracking-[1.12px] uppercase">
+        <span className="font-[family-name:var(--font-body)] font-semibold text-[16px] tracking-[1.28px] uppercase">
           {expanded ? "See less" : "See more"}
         </span>
-        {expanded ? <CaretCircleUpIcon className="w-6 h-6" /> : <CaretCircleDownIcon className="w-6 h-6" />}
+        {expanded ? <CaretCircleUpIcon className="w-4 h-4" /> : <CaretCircleDownIcon className="w-4 h-4" />}
       </button>
     </div>
   );
