@@ -36,3 +36,10 @@ body[data-reading="true"] footer {
 body[data-reading="true"] {
   overflow: hidden;
 }
+
+/* Phone in landscape: hide the trailer screenshot thumbnails strip. */
+@media (orientation: landscape) and (max-height: 500px) {
+  .trailer-thumbs {
+    display: none;
+  }
+}
