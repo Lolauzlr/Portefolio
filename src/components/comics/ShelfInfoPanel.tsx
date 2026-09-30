@@ -40,7 +40,7 @@ function ReadAction({
 
   return (
     <Link
-      href={`/storyboard/${comic.slug}/lire`}
+      href={`/storytelling/${comic.slug}/lire`}
       // Plain navigation would jump straight to the reader with no transition -
       // this replays the same animated opening as a second click on the book
       // itself (see readFromPanel in ShelfShell). The href stays real (right

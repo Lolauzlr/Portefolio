@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import ShelfShell from "@/components/comics/ShelfShell";
-import StoryboardsSection from "@/components/storyboard/StoryboardsSection";
+import StoryboardsSection from "@/components/storytelling/StoryboardsSection";
 
 export const metadata: Metadata = {
   title: "Storytelling | Marie Chalandre",
@@ -17,7 +17,7 @@ const pickAStoryHeader = (
   </div>
 );
 
-export default function StoryboardLayout({ children }: LayoutProps<"/storyboard">) {
+export default function StoryboardLayout({ children }: LayoutProps<"/storytelling">) {
   return (
     <ShelfShell header={pickAStoryHeader} footer={<StoryboardsSection />}>
       {children}
