@@ -53,7 +53,7 @@ function SectionTitle({
 }) {
   return (
     <div className={`flex flex-col gap-[4px] items-start ${underlineWidth === "fit" ? "w-fit" : "w-full"}`}>
-      <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px] text-white uppercase">
+      <h3 className="font-[family-name:var(--font-heading)] text-[24px] md:text-[28px] tracking-[2.24px] text-white uppercase">
         {children}
       </h3>
       <div className={`h-[4px] ${underlineWidth === "fit" ? "w-full" : "w-[80px]"} ${underlineClassName}`} />
@@ -63,7 +63,7 @@ function SectionTitle({
 
 function SubLabel({ children }: { children: React.ReactNode }) {
   return (
-    <h4 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-[#ddff6e] uppercase">
+    <h4 className="font-[family-name:var(--font-heading)] text-[20px] md:text-[24px] tracking-[1.92px] text-[#ddff6e] uppercase">
       {children}
     </h4>
   );
@@ -158,7 +158,7 @@ export default function StoryboardsSection() {
   return (
     <section className="bg-[#131313] flex flex-col gap-[24px] md:gap-[60px] items-start py-6 md:py-[60px] px-3 md:px-[120px] w-full">
       <div className="flex flex-col gap-[4px] items-start w-full">
-        <h2 className="font-[family-name:var(--font-heading)] text-[40px] tracking-[3.2px] text-white uppercase">
+        <h2 className="font-[family-name:var(--font-heading)] text-[28px] md:text-[40px] tracking-[3.2px] text-white uppercase">
           Storyboards
         </h2>
         <div className="bg-[#ddff6e] h-[4px] w-[80px]" />

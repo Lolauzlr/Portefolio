@@ -40,7 +40,7 @@ function ReadAction({
 
   return (
     <Link
-      href={`/storyboard/${comic.slug}/lire`}
+      href={`/storytelling/${comic.slug}/lire`}
       // Plain navigation would jump straight to the reader with no transition -
       // this replays the same animated opening as a second click on the book
       // itself (see readFromPanel in ShelfShell). The href stays real (right
@@ -135,7 +135,7 @@ export default function ShelfInfoPanel({
               titre reprend sa pleine largeur, READ restant réservé au bloc du
               bas (`md:hidden` ci-dessous). */}
           <div className="flex w-full flex-none items-center justify-between gap-4 md:block">
-            <h3 className="font-[family-name:var(--font-heading)] min-w-0 flex-1 text-[32px] tracking-[3.2px] text-white md:w-full md:text-[40px]">
+            <h3 className="font-[family-name:var(--font-heading)] min-w-0 flex-1 text-[24px] tracking-[3.2px] text-white md:w-full md:text-[40px]">
               {panelComic.title}
             </h3>
             <div className="md:hidden">
@@ -165,10 +165,10 @@ export default function ShelfInfoPanel({
                 onClick={() => setExpanded((v) => !v)}
                 className="md:hidden flex items-center gap-2 text-[#0FD1EA] hover:text-[#7FECFB] transition-colors"
               >
-                <span className="font-[family-name:var(--font-body)] font-semibold text-[14px] tracking-[1.12px] uppercase">
+                <span className="font-[family-name:var(--font-body)] font-semibold text-[16px] tracking-[1.28px] uppercase">
                   {expanded ? "See less" : "See more"}
                 </span>
-                {expanded ? <CaretCircleUpIcon className="w-6 h-6" /> : <CaretCircleDownIcon className="w-6 h-6" />}
+                {expanded ? <CaretCircleUpIcon className="w-4 h-4" /> : <CaretCircleDownIcon className="w-4 h-4" />}
               </button>
             </>
           )}

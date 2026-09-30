@@ -130,7 +130,7 @@ export default function Home() {
             </div>
           ))}
         </div>
-        <ToutVoirLink href="/storyboard" />
+        <ToutVoirLink href="/storytelling" />
       </section>
 
       {/* About Me */}

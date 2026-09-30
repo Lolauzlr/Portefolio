@@ -93,7 +93,7 @@ const DESKTOP_BREAKPOINT_PX = 768;
 type Route = { slug: string | null; reading: boolean; spread: number };
 
 function readingHref(slug: string, spread: number): string {
-  return spread === 0 ? `/storyboard/${slug}/lire` : `/storyboard/${slug}/lire/${spread}`;
+  return spread === 0 ? `/storytelling/${slug}/lire` : `/storytelling/${slug}/lire/${spread}`;
 }
 
 export default function ShelfShell({
@@ -105,7 +105,7 @@ export default function ShelfShell({
   /** Affiché en permanence au-dessus de l'étagère, seulement sur la page
    *  index (jamais pendant la lecture, qui passe l'étagère en plein écran). */
   header?: React.ReactNode;
-  /** Idem, en dessous — la section "Storyboards" sur /storyboard. */
+  /** Idem, en dessous — la section "Storyboards" sur /storytelling. */
   footer?: React.ReactNode;
 }) {
   const segments = useSelectedLayoutSegments();
@@ -330,7 +330,7 @@ export default function ShelfShell({
         if (!advance("close", "done")) return;
         if (navigate) {
           selfNavigatedRef.current += 1;
-          router.push("/storyboard");
+          router.push("/storytelling");
         }
         setReadingChrome(false);
         sceneRef.current?.setVisible(true);
@@ -364,7 +364,7 @@ export default function ShelfShell({
 
       if (navigate) {
         selfNavigatedRef.current += 1;
-        router.push("/storyboard");
+        router.push("/storytelling");
       }
 
       scene.setVisible(true);

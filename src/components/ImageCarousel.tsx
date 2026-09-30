@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { asset } from "@/lib/asset";
 import { CaretCircleLeftIcon, CaretCircleRightIcon, CornersOutIcon } from "@/components/CarouselIcons";
 import { useLightboxBehavior } from "@/components/ScreenshotGallery";
@@ -40,6 +40,41 @@ function SlideContent({
   );
 }
 
+// Horizontal swipe detection, same sensitivity as IllustrationLightbox: a
+// short quick flick (12px+ in under 300ms) or a slower 30px+ drag counts, as
+// long as it is mostly horizontal. `swiped` lets click handlers ignore the
+// click some browsers fire right after a swipe.
+function useSwipe(onPrev: () => void, onNext: () => void, enabled: boolean) {
+  const start = useRef<{ x: number; y: number; t: number } | null>(null);
+  const swiped = useRef(false);
+  return {
+    swiped,
+    handlers: {
+      onTouchStart: (e: React.TouchEvent) => {
+        const t = e.touches[0];
+        start.current = e.touches.length === 1 ? { x: t.clientX, y: t.clientY, t: Date.now() } : null;
+      },
+      onTouchCancel: () => {
+        start.current = null;
+      },
+      onTouchEnd: (e: React.TouchEvent) => {
+        const s = start.current;
+        start.current = null;
+        if (!s || !enabled) return;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - s.x;
+        const ax = Math.abs(dx);
+        const quick = Date.now() - s.t < 300;
+        if (ax < (quick ? 12 : 30) || ax < Math.abs(t.clientY - s.y)) return;
+        swiped.current = true;
+        setTimeout(() => { swiped.current = false; }, 400);
+        if (dx < 0) onNext();
+        else onPrev();
+      },
+    },
+  };
+}
+
 export default function ImageCarousel({
   slides,
   alt,
@@ -61,6 +96,8 @@ export default function ImageCarousel({
   function goNext() {
     setIndex((i) => (i + 1) % slides.length);
   }
+
+  const swipe = useSwipe(goPrev, goNext, hasMultiple);
 
   useLightboxBehavior(
     lightboxOpen,
@@ -90,7 +127,8 @@ export default function ImageCarousel({
       // from inside the already-open lightbox (its own close/prev/next/
       // thumbnail buttons) never re-trigger this. The prev/next arrows
       // below stop propagation so they advance the slide instead.
-      onClick={() => !lightboxOpen && setLightboxOpen(true)}
+      onClick={() => !lightboxOpen && !swipe.swiped.current && setLightboxOpen(true)}
+      {...(lightboxOpen ? {} : swipe.handlers)}
     >
       <SlideContent slide={current} alt={alt} />
 
@@ -151,7 +189,9 @@ export default function ImageCarousel({
             ✕
           </button>
 
-          <div className="relative flex-1 min-h-0 flex items-center justify-center p-4 md:p-12">
+          <div className="relative flex-1 min-h-0 flex items-center justify-center p-4 md:p-12 touch-pan-y"
+            {...swipe.handlers}
+          >
             <span className="absolute top-4 left-4 md:top-6 md:left-6 font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white z-10">
               {index + 1}/{slides.length}
             </span>
@@ -194,7 +234,9 @@ export default function ImageCarousel({
           </div>
 
           {hasMultiple && (
-            <div className="bg-[#0d0d0d] px-3 md:px-4 py-3 overflow-x-auto">
+            // Hidden on a phone held in landscape (short viewport) so the
+            // image gets the full height.
+            <div className="bg-[#0d0d0d] px-3 md:px-4 py-3 overflow-x-auto [@media(orientation:landscape)_and_(max-height:500px)]:hidden">
               <div className="flex gap-2 justify-center min-w-min mx-auto">
                 {slides.map((slide, i) => (
                   <button
