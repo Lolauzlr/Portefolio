@@ -194,7 +194,9 @@ export default function ImageCarousel({
           </div>
 
           {hasMultiple && (
-            <div className="bg-[#0d0d0d] px-3 md:px-4 py-3 overflow-x-auto">
+            // Hidden on a phone held in landscape (short viewport) so the
+            // image gets the full height.
+            <div className="bg-[#0d0d0d] px-3 md:px-4 py-3 overflow-x-auto [@media(orientation:landscape)_and_(max-height:500px)]:hidden">
               <div className="flex gap-2 justify-center min-w-min mx-auto">
                 {slides.map((slide, i) => (
                   <button
