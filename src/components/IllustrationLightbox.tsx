@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useRef, useState } from "react";
 import { asset } from "@/lib/asset";
 import { useLightboxBehavior } from "@/components/ScreenshotGallery";
 
@@ -14,6 +14,7 @@ const LightboxContext = createContext<{ open: (src: string) => void } | null>(nu
 // thumbnail strip, close).
 export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]; children: React.ReactNode }) {
   const [index, setIndex] = useState<number | null>(null);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
   const isOpen = index !== null;
   const hasMultiple = slides.length > 1;
 
@@ -61,7 +62,24 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
           </button>
 
           <div
-            className="relative flex-1 min-h-0 flex items-center justify-center p-4 md:p-12"
+            className="relative flex-1 min-h-0 flex items-center justify-center p-4 md:p-12 touch-pan-y"
+            // Swipe left/right on touch screens to change image (mostly-horizontal
+            // gestures of 50px+ only, so vertical scrolls/taps are left alone).
+            onTouchStart={(e) => {
+              const t = e.touches[0];
+              touchStart.current = e.touches.length === 1 ? { x: t.clientX, y: t.clientY } : null;
+            }}
+            onTouchEnd={(e) => {
+              const start = touchStart.current;
+              touchStart.current = null;
+              if (!start || !hasMultiple) return;
+              const t = e.changedTouches[0];
+              const dx = t.clientX - start.x;
+              const dy = t.clientY - start.y;
+              if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+              if (dx < 0) goNext();
+              else goPrev();
+            }}
             onClick={(e) => {
               if (e.target === e.currentTarget) close();
             }}
