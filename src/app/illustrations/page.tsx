@@ -7,7 +7,7 @@ const dormeur = "/images/illustrations/illustration-homme-qui-dort-sur-le-sol.we
 const laitiere = "/images/illustrations/reproduction-tableau-la-laitière-photoshop.webp";
 
 const heroSlides: { src: string; alt: string; title: string; description: React.ReactNode }[] = [
-  { src: i(25), alt: "Rose", title: "ROSE", description: "Digital Painting • Adobe Photoshop" },
+  { src: i(25), alt: "Rose", title: "ROSE", description: "Concept Art for a short film • Digital Painting in Adobe Photoshop" },
   {
     src: i(34),
     alt: "Drunked Monster",
@@ -148,7 +148,7 @@ export default function IllustrationsPage() {
             <div className="flex flex-col gap-[12px]">
               <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">ROSE</p>
               <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px]">
-                Digital Painting • Adobe Photoshop
+                Concept Art for a short film • Digital Painting in Adobe Photoshop
               </p>
             </div>
             <LightboxImg src={i(25)} alt="Rose" className="w-full h-[539px] object-cover" />
