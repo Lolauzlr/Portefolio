@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import ShelfShell from "@/components/comics/ShelfShell";
-import StoryboardsSection from "@/components/storytelling/StoryboardsSection";
+import StoryboardsSection from "@/components/storyboard/StoryboardsSection";
 
 export const metadata: Metadata = {
   title: "Storytelling | Marie Chalandre",
