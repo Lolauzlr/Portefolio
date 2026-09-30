@@ -18,13 +18,8 @@ const heroSlides: { src: string; alt: string; title: string; description: React.
     src: i(32),
     alt: "Mazou BD",
     title: "MAZOU BD",
-    description: (
-      <>
-        Comic Book Project • A visual diary of a journey around the world
-        <br />
-        Pen drawing on paper, digitally colored in Adobe Photoshop
-      </>
-    ),
+    description:
+      "Comic Book Project • A visual diary of a journey around the world • Pen drawing on paper, digitally colored in Adobe Photoshop",
   },
 ];
 
@@ -170,9 +165,7 @@ export default function IllustrationsPage() {
             <div className="flex flex-col gap-[12px]">
               <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">MAZOU BD</p>
               <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px]">
-                Comic Book Project • A visual diary of a journey around the world
-                <br />
-                Pen drawing on paper, digitally colored in Adobe Photoshop
+                Comic Book Project • A visual diary of a journey around the world • Pen drawing on paper, digitally colored in Adobe Photoshop
               </p>
             </div>
             <LightboxImg src={i(32)} alt="Mazou BD" className="w-full h-[539px] object-cover" />
