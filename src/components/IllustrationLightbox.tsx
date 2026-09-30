@@ -14,7 +14,7 @@ const LightboxContext = createContext<{ open: (src: string) => void } | null>(nu
 // thumbnail strip, close).
 export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]; children: React.ReactNode }) {
   const [index, setIndex] = useState<number | null>(null);
-  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const touchStart = useRef<{ x: number; y: number; t: number } | null>(null);
   const isOpen = index !== null;
   const hasMultiple = slides.length > 1;
 
@@ -64,10 +64,13 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
           <div
             className="relative flex-1 min-h-0 flex items-center justify-center p-4 md:p-12 touch-pan-y"
             // Swipe left/right on touch screens to change image (mostly-horizontal
-            // gestures of 50px+ only, so vertical scrolls/taps are left alone).
+            // gestures only, so vertical scrolls/taps are left alone).
             onTouchStart={(e) => {
               const t = e.touches[0];
-              touchStart.current = e.touches.length === 1 ? { x: t.clientX, y: t.clientY } : null;
+              touchStart.current = e.touches.length === 1 ? { x: t.clientX, y: t.clientY, t: Date.now() } : null;
+            }}
+            onTouchCancel={() => {
+              touchStart.current = null;
             }}
             onTouchEnd={(e) => {
               const start = touchStart.current;
@@ -76,7 +79,11 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
               const t = e.changedTouches[0];
               const dx = t.clientX - start.x;
               const dy = t.clientY - start.y;
-              if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+              const ax = Math.abs(dx);
+              // Forgiving: a short quick flick (12px+ in under 300ms) or a slower
+              // drag of 30px+ both count, as long as it is mostly horizontal.
+              const quick = Date.now() - start.t < 300;
+              if (ax < (quick ? 12 : 30) || ax < Math.abs(dy)) return;
               if (dx < 0) goNext();
               else goPrev();
             }}
