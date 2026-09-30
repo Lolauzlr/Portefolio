@@ -778,8 +778,8 @@ export default function TrailerPage() {
                   </p>
                 </div>
 
-                {/* Mobile-only caption, overlaid on the bottom of the image */}
-                <p className="md:hidden absolute left-3 right-3 bottom-3 z-[5] pointer-events-none backdrop-blur-[5px] bg-black/40 p-2 font-[family-name:var(--font-body)] text-[12px] font-normal text-white">
+                {/* Mobile landscape caption, overlaid on the bottom of the image */}
+                <p className="trailer-caption-overlay absolute left-3 right-3 bottom-3 z-[5] pointer-events-none backdrop-blur-[5px] bg-black/40 p-2 font-[family-name:var(--font-body)] text-[12px] font-normal text-white">
                   {screenshotsData.screenshots[screenshotIndex].description}
                 </p>
 
@@ -796,6 +796,11 @@ export default function TrailerPage() {
                   </button>
                 )}
               </div>
+
+              {/* Mobile portrait caption, below the filled image */}
+              <p className="trailer-caption-below px-3 pt-2 font-[family-name:var(--font-body)] text-[12px] font-normal text-[#8F8F8F]">
+                {screenshotsData.screenshots[screenshotIndex].description}
+              </p>
 
               {/* Thumbnails strip */}
               {screenshotsData.screenshots.length > 1 && (

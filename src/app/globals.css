@@ -37,9 +37,24 @@ body[data-reading="true"] {
   overflow: hidden;
 }
 
-/* Phone in landscape: hide the trailer screenshot thumbnails strip. */
+/* Trailer screenshot overlay on phones: in landscape the thumbnails strip is
+   hidden and the caption sits over the image; in portrait the caption stays
+   below the image. Neither applies at md and up (desktop layout). */
+.trailer-caption-overlay {
+  display: none;
+}
 @media (orientation: landscape) and (max-height: 500px) {
-  .trailer-thumbs {
+  .trailer-thumbs,
+  .trailer-caption-below {
     display: none;
+  }
+  .trailer-caption-overlay {
+    display: block;
+  }
+}
+@media (min-width: 768px) {
+  .trailer-caption-overlay,
+  .trailer-caption-below {
+    display: none !important;
   }
 }
