@@ -7,8 +7,29 @@
 // always starts on the first click; the visitor can unmute from YouTube's
 // own controls.
 function withMutedAutoplay(src: string): string {
-  if (/[?&]mute=/.test(src)) return src;
-  return `${src}${src.includes("?") ? "&" : "?"}mute=1`;
+  let out = src;
+  if (!/[?&]mute=/.test(out)) out += `${out.includes("?") ? "&" : "?"}mute=1`;
+  if (!/[?&]enablejsapi=/.test(out)) out += "&enablejsapi=1";
+  return out;
+}
+
+// Right after the muted start, ask the player to unmute through YouTube's
+// postMessage API so the sound is on by default, like on desktop. Where the
+// browser refuses (e.g. iOS), the video simply keeps playing muted and the
+// visitor can unmute from YouTube's controls.
+function sendCommand(iframe: HTMLIFrameElement, func: string, args: unknown[] = []) {
+  iframe.contentWindow?.postMessage(JSON.stringify({ event: "command", func, args }), "*");
+}
+
+function unmuteWhenReady(iframe: HTMLIFrameElement) {
+  // Register as a listener so the player starts talking to us.
+  iframe.contentWindow?.postMessage(JSON.stringify({ event: "listening", id: 1 }), "*");
+  [300, 800, 1500, 2500].forEach((delay) =>
+    window.setTimeout(() => {
+      sendCommand(iframe, "unMute");
+      sendCommand(iframe, "setVolume", [100]);
+    }, delay)
+  );
 }
 
 export default function VideoModal({
@@ -48,6 +69,7 @@ export default function VideoModal({
         <iframe
           className="w-full h-full"
           src={withMutedAutoplay(src)}
+          onLoad={(e) => unmuteWhenReady(e.currentTarget)}
           title={title}
           allow="autoplay; encrypted-media; fullscreen"
           allowFullScreen
