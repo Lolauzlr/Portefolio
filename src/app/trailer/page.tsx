@@ -596,15 +596,15 @@ export default function TrailerPage() {
                 className="relative w-full aspect-video cursor-pointer overflow-hidden bg-black"
                 onMouseEnter={() => setHoveredRecent(card.videoId)}
                 onMouseLeave={() => setHoveredRecent(null)}
-                onClick={() => setVideoModal({ videoId: card.videoId, title: card.title })}
+                onClick={() => setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true })}
               >
                 {hoveredRecent === card.videoId ? (
                   // Native YouTube controls enabled (scrub bar + seeking).
                   // YouTube's own control bar already includes a fullscreen
                   // button, so no separate expand affordance is needed here.
                   <iframe
-                    className="absolute inset-0 w-full h-full"
-                    src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&modestbranding=1&rel=0&showinfo=0`}
+                    className="absolute inset-0 w-full h-full pointer-events-none"
+                    src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
                     title={card.title}
                     allow="autoplay; encrypted-media"
                     style={{ border: 0 }}
@@ -696,7 +696,7 @@ export default function TrailerPage() {
                     style={{ aspectRatio: "16 / 9" }}
                     onMouseEnter={() => setHoveredWatch(card.videoId)}
                     onMouseLeave={() => setHoveredWatch(null)}
-                    onClick={() => setVideoModal({ videoId: card.videoId, title: card.title })}
+                    onClick={() => setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true })}
                   >
                     {hoveredWatch === card.videoId ? (
                       // Native YouTube controls enabled (scrub bar +
@@ -704,8 +704,8 @@ export default function TrailerPage() {
                       // includes a fullscreen button, so no separate expand
                       // affordance is needed here.
                       <iframe
-                        className="absolute inset-0 w-full h-full"
-                        src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&modestbranding=1&rel=0&showinfo=0`}
+                        className="absolute inset-0 w-full h-full pointer-events-none"
+                        src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
                         title={card.title}
                         allow="autoplay; encrypted-media"
                         style={{ border: 0 }}
