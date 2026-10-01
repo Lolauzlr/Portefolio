@@ -84,7 +84,7 @@ export default function VideoModal({
     >
       <button
         onClick={onClose}
-        className="absolute top-6 right-6 md:top-10 md:right-10 text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer z-10"
+        className="absolute top-6 right-6 md:top-10 md:right-10 [@media(orientation:landscape)_and_(max-height:500px)]:top-3 [@media(orientation:landscape)_and_(max-height:500px)]:left-4 [@media(orientation:landscape)_and_(max-height:500px)]:right-auto text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer z-10"
         aria-label="Fermer"
       >
         ✕
@@ -92,7 +92,7 @@ export default function VideoModal({
       {muted && (
         <button
           onClick={enableSound}
-          className="absolute top-6 left-6 md:top-10 md:left-10 z-10 rounded-full border border-white/40 bg-black/70 px-4 py-2 text-sm text-white hover:text-[#0fd1ea] hover:border-[#0fd1ea] transition-colors cursor-pointer"
+          className="absolute top-6 left-6 md:top-10 md:left-10 [@media(orientation:landscape)_and_(max-height:500px)]:top-3 [@media(orientation:landscape)_and_(max-height:500px)]:right-4 [@media(orientation:landscape)_and_(max-height:500px)]:left-auto z-10 rounded-full border border-white/40 bg-black/70 px-4 py-2 text-sm text-white hover:text-[#0fd1ea] hover:border-[#0fd1ea] transition-colors cursor-pointer"
         >
           🔇 Activer le son
         </button>
@@ -104,7 +104,7 @@ export default function VideoModal({
           in landscape immediately on open, like YouTube's mobile player,
           instead of staying small until the user physically rotates their
           phone. Desktop and mobile landscape keep the normal centered box. */}
-      <div className={`${fullWidth ? "w-[min(100vw,177.78dvh)] h-auto" : "w-full h-full max-w-[90vw] max-h-[90vh] md:max-w-[85vw] md:max-h-[85vh]"} aspect-video max-md:portrait:fixed max-md:portrait:top-1/2 max-md:portrait:left-1/2 max-md:portrait:w-[min(100dvh,177.78dvw)] max-md:portrait:h-[min(56.25dvh,100dvw)] max-md:portrait:max-w-none max-md:portrait:max-h-none max-md:portrait:-translate-x-1/2 max-md:portrait:-translate-y-1/2 max-md:portrait:rotate-90`}>
+      <div className={`${fullWidth ? "w-[min(100vw,177.78dvh)] h-auto" : "w-full h-full max-w-[90vw] max-h-[90vh] md:max-w-[85vw] md:max-h-[85vh]"} aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:w-[min(100vw,177.78dvh)] [@media(orientation:landscape)_and_(max-height:500px)]:h-auto [@media(orientation:landscape)_and_(max-height:500px)]:max-w-none [@media(orientation:landscape)_and_(max-height:500px)]:max-h-none max-md:portrait:fixed max-md:portrait:top-1/2 max-md:portrait:left-1/2 max-md:portrait:w-[min(100dvh,177.78dvw)] max-md:portrait:h-[min(56.25dvh,100dvw)] max-md:portrait:max-w-none max-md:portrait:max-h-none max-md:portrait:-translate-x-1/2 max-md:portrait:-translate-y-1/2 max-md:portrait:rotate-90`}>
         <iframe
           ref={iframeRef}
           className="w-full h-full"
