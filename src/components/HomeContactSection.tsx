@@ -261,7 +261,7 @@ export default function HomeContactSection() {
               <button
                 type="submit"
                 disabled={sendStatus === "sending"}
-                className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-[#0FD1EA] border-2 border-[#0FD1EA] rounded-[40px] px-[40px] py-[20px] hover:text-[#7FECFB] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] focus:text-[#7FECFB] focus:border-[#7FECFB] focus:bg-[rgba(15,209,234,0.1)] active:text-[#0897A9] active:border-[#0897A9] active:bg-[rgba(8,151,169,0.1)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="font-[family-name:var(--font-heading)] text-[20px] md:text-[24px] tracking-[1.6px] md:tracking-[1.92px] uppercase text-[#0FD1EA] border-2 border-[#0FD1EA] rounded-[40px] px-[20px] md:px-[40px] py-[10px] md:py-[20px] hover:text-[#7FECFB] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] focus:text-[#7FECFB] focus:border-[#7FECFB] focus:bg-[rgba(15,209,234,0.1)] active:text-[#0897A9] active:border-[#0897A9] active:bg-[rgba(8,151,169,0.1)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {sendStatus === "sending" ? "Sending..." : "Let's talk"}
               </button>
