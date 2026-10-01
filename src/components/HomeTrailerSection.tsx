@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { asset } from "@/lib/asset";
+import { useSwipeNav } from "@/hooks/useSwipeNav";
 import { useSupportsHover } from "@/hooks/useSupportsHover";
 import VideoModal from "@/components/VideoModal";
 
@@ -136,6 +137,12 @@ export default function HomeTrailerSection() {
     screenshots: { src: string; tag: string; description: string }[];
   } | null>(null);
   const [screenshotIndex, setScreenshotIndex] = useState(0);
+  const shotCount = screenshotsData?.screenshots.length ?? 0;
+  const swipeHandlers = useSwipeNav(
+    () => setScreenshotIndex((i) => (i - 1 + shotCount) % shotCount),
+    () => setScreenshotIndex((i) => (i + 1) % shotCount),
+    shotCount > 1
+  );
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -279,7 +286,7 @@ export default function HomeTrailerSection() {
                   by the info panel below or taking over the whole screen;
                   desktop keeps its original flexible-height, letterboxed
                   layout. */}
-              <div className="trailer-stage relative w-full h-[60vh] md:h-auto md:aspect-auto md:flex-1 flex items-center justify-center min-h-0">
+              <div {...swipeHandlers} className="touch-pan-y trailer-stage relative w-full h-[60vh] md:h-auto md:aspect-auto md:flex-1 flex items-center justify-center min-h-0">
                 {/* Counter */}
                 <span className="absolute top-4 left-4 md:top-6 md:left-6 font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white z-10">
                   {screenshotIndex + 1}/{screenshotsData.screenshots.length}
