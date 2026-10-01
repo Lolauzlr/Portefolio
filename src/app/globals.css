@@ -52,6 +52,11 @@ body[data-reading="true"] {
   .trailer-caption-overlay {
     display: block;
   }
+  /* Image fills the whole viewport instead of the 60vh portrait frame. */
+  .trailer-stage {
+    height: 100vh;
+    height: 100dvh;
+  }
 }
 @media (min-width: 768px) {
   .trailer-caption-overlay,

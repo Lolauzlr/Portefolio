@@ -740,7 +740,7 @@ export default function TrailerPage() {
                   by the info panel below or taking over the whole screen;
                   desktop keeps its original flexible-height, letterboxed
                   layout. */}
-              <div className="relative w-full h-[60vh] md:h-auto md:aspect-auto md:flex-1 flex items-center justify-center min-h-0">
+              <div className="trailer-stage relative w-full h-[60vh] md:h-auto md:aspect-auto md:flex-1 flex items-center justify-center min-h-0">
                 {/* Counter */}
                 <span className="absolute top-4 left-4 md:top-6 md:left-6 font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white z-10">
                   {screenshotIndex + 1}/{screenshotsData.screenshots.length}
