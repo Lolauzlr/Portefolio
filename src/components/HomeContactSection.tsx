@@ -196,10 +196,10 @@ export default function HomeContactSection() {
                 under the logo instead. */}
             <div className="hidden md:flex md:flex-col">
               <div className="flex flex-col gap-[10px] items-start self-start">
-                <h3 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
+                <h3 className="font-[family-name:var(--font-heading)] text-white text-[24px] tracking-[1.92px] md:text-[28px] md:tracking-[2.24px] uppercase">
                   CONTACT
                 </h3>
-                <div className="w-full h-[4px] bg-[#ddff6e]" />
+                <div className="w-full h-[4px] bg-[#FFFFFF]" />
               </div>
               <div className="mt-[24px] flex items-center gap-1">
                 <a
@@ -261,7 +261,7 @@ export default function HomeContactSection() {
               <button
                 type="submit"
                 disabled={sendStatus === "sending"}
-                className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-[#0FD1EA] border-2 border-[#0FD1EA] rounded-[40px] px-[40px] py-[20px] hover:text-[#7FECFB] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] focus:text-[#7FECFB] focus:border-[#7FECFB] focus:bg-[rgba(15,209,234,0.1)] active:text-[#0897A9] active:border-[#0897A9] active:bg-[rgba(8,151,169,0.1)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="font-[family-name:var(--font-heading)] text-[20px] md:text-[24px] tracking-[1.6px] md:tracking-[1.92px] uppercase text-[#0FD1EA] border-2 border-[#0FD1EA] rounded-[40px] px-[20px] md:px-[40px] py-[10px] md:py-[20px] hover:text-[#7FECFB] hover:border-[#7FECFB] hover:bg-[rgba(15,209,234,0.1)] focus:text-[#7FECFB] focus:border-[#7FECFB] focus:bg-[rgba(15,209,234,0.1)] active:text-[#0897A9] active:border-[#0897A9] active:bg-[rgba(8,151,169,0.1)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {sendStatus === "sending" ? "Sending..." : "Let's talk"}
               </button>

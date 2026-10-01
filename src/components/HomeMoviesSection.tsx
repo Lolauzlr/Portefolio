@@ -8,7 +8,7 @@ import VideoModal from "@/components/VideoModal";
 
 function CaretCircleRight() {
   return (
-    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="32" height="32" className="w-6 h-6 md:w-8 md:h-8" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="20" cy="20" r="19" stroke="currentColor" strokeWidth="2" />
       <path d="M16 12l8 8-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
@@ -156,7 +156,7 @@ export default function HomeMoviesSection() {
   return (
     <section className="bg-[#15161B] px-3 md:px-[120px]">
       <div className="mb-6 md:mb-10">
-        <h2 className="font-[family-name:var(--font-heading)] text-[40px] tracking-[4.8px] uppercase text-white">
+        <h2 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[3.36px] md:text-[40px] md:tracking-[4.8px] uppercase text-white">
           LATEST MOVIES
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-2" />
@@ -173,7 +173,7 @@ export default function HomeMoviesSection() {
               onPlay={() => setVideoModal({ url: "https://www.youtube.com/embed/BFLlIR9A8DY?autoplay=1&rel=0", title: "SAINT EX" })}
             />
             <div>
-              <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">SAINT EX</h3>
+              <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] md:text-[28px] md:tracking-[2.24px]">SAINT EX</h3>
               <div className="w-[80px] h-[4px] bg-white mt-1" />
             </div>
             <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
@@ -192,7 +192,7 @@ export default function HomeMoviesSection() {
               className="w-full"
             />
             <div>
-              <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">JERRY GRETZINGER</h3>
+              <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] md:text-[28px] md:tracking-[2.24px]">JERRY GRETZINGER</h3>
               <div className="w-[80px] h-[4px] bg-white mt-1" />
             </div>
             <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
@@ -207,7 +207,7 @@ export default function HomeMoviesSection() {
       <div className="flex justify-end mt-8">
         <Link
           href="/movies"
-          className="font-[family-name:var(--font-heading)] text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] tracking-[2.56px] uppercase transition-colors"
+          className="font-[family-name:var(--font-heading)] text-[24px] md:text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] tracking-[1.92px] md:tracking-[2.56px] uppercase transition-colors"
         >
           VIEW ALL
           <CaretCircleRight />

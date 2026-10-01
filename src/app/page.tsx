@@ -19,7 +19,7 @@ const storytellingCards = [
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div className="mb-6 md:mb-10">
-      <h2 className="font-[family-name:var(--font-heading)] text-[40px] tracking-[4.8px] uppercase text-white">
+      <h2 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[3.36px] md:text-[40px] md:tracking-[4.8px] uppercase text-white">
         {children}
       </h2>
       <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-2" />
@@ -29,7 +29,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 
 function CaretCircleRight() {
   return (
-    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="32" height="32" className="w-6 h-6 md:w-8 md:h-8" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="20" cy="20" r="19" stroke="currentColor" strokeWidth="2" />
       <path d="M16 12l8 8-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
@@ -41,7 +41,7 @@ function ToutVoirLink({ href }: { href: string }) {
     <div className="flex justify-end mt-8">
       <Link
         href={href}
-        className="font-[family-name:var(--font-heading)] text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] tracking-[2.56px] uppercase transition-colors"
+        className="font-[family-name:var(--font-heading)] text-[24px] md:text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] tracking-[1.92px] md:tracking-[2.56px] uppercase transition-colors"
       >
         VIEW ALL
         <CaretCircleRight />
@@ -82,7 +82,7 @@ export default function Home() {
             <div className="flex flex-col justify-between flex-1">
               <div className="flex flex-col gap-4 md:gap-6">
                 <div>
-                  <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">MY JOURNEY IN ILLUSTRATION</h3>
+                  <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] md:text-[28px] md:tracking-[2.24px]">MY JOURNEY IN ILLUSTRATION</h3>
                   <div className="w-[80px] h-[4px] bg-white mt-1" />
                 </div>
                 <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
@@ -113,13 +113,13 @@ export default function Home() {
               </div>
               <div className="flex flex-col gap-[24px]">
                 <div>
-                  <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px] uppercase">
+                  <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] md:text-[28px] md:tracking-[2.24px] uppercase">
                     {c.title}
                   </h3>
                   <div className="w-[80px] h-[4px] bg-white mt-1" />
                 </div>
                 <div className="flex flex-col gap-4">
-                  <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-[#ddff6e] uppercase">
+                  <p className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] md:text-[24px] md:tracking-[1.92px] text-[#ddff6e] uppercase">
                     {c.label}
                   </p>
                   <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
@@ -146,7 +146,7 @@ export default function Home() {
                   </div>
                   <div className="w-[80px] h-[4px] bg-white mt-2" />
                 </div>
-                <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-[#ddff6e]">
+                <p className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] md:text-[24px] md:tracking-[1.92px] text-[#ddff6e]">
                   CINEMATIC ARTIST &bull; CONCEPT ARTIST &bull; STORYBOARDER
                 </p>
               </div>
