@@ -51,12 +51,23 @@ export default function VideoModal({
   const [withSound] = useState(canAutoplayWithSound);
   // The "Activer le son" button shows only while the video is muted.
   const [muted, setMuted] = useState(!withSound);
-  // ...and leaves by itself after 5s if nobody taps it.
+  // ...and leaves together with YouTube's own controls, which fade ~3s after
+  // playback starts. The player doesn't report control visibility, so the
+  // timer starts on the first "playing" state, with a fallback if it never
+  // reports one.
   const [hintExpired, setHintExpired] = useState(false);
+  const hideTimer = useRef<number>(0);
+  const armHide = (ms: number) => {
+    if (hideTimer.current) return;
+    hideTimer.current = window.setTimeout(() => setHintExpired(true), ms);
+  };
 
   useEffect(() => {
-    const t = window.setTimeout(() => setHintExpired(true), 5000);
-    return () => window.clearTimeout(t);
+    const fallback = window.setTimeout(() => armHide(0), 8000);
+    return () => {
+      window.clearTimeout(fallback);
+      window.clearTimeout(hideTimer.current);
+    };
   }, []);
 
   useEffect(() => {
@@ -66,6 +77,7 @@ export default function VideoModal({
         const data = JSON.parse(e.data);
         const m = data?.info?.muted;
         if (typeof m === "boolean") setMuted(m);
+        if (data?.info?.playerState === 1) armHide(3000);
       } catch {
         // not a YouTube player message
       }
@@ -94,18 +106,6 @@ export default function VideoModal({
       >
         ✕
       </button>
-      {muted && !hintExpired && (
-        <button
-          onClick={enableSound}
-          className="absolute top-6 left-6 md:top-10 md:left-10 max-md:portrait:left-[calc(100%-4rem)] max-md:portrait:origin-top-left max-md:portrait:rotate-90 [@media(orientation:landscape)_and_(max-height:500px)]:top-3 [@media(orientation:landscape)_and_(max-height:500px)]:right-4 [@media(orientation:landscape)_and_(max-height:500px)]:left-auto z-10 flex w-max items-center gap-2 whitespace-nowrap rounded-full bg-black/60 px-4 py-2 text-sm text-white cursor-pointer"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M11 5 6 9H2v6h4l5 4V5z" fill="currentColor" />
-            <path d="m23 9-6 6M17 9l6 6" />
-          </svg>
-          Activer le son
-        </button>
-      )}
       {/* Mobile portrait: rotated 90deg and sized off swapped viewport units
           (dvh/dvw, i.e. the visible area between the browser bars, never the
           larger viewport that extends behind them; 16:9 fitted so the video is
@@ -113,7 +113,7 @@ export default function VideoModal({
           in landscape immediately on open, like YouTube's mobile player,
           instead of staying small until the user physically rotates their
           phone. Desktop and mobile landscape keep the normal centered box. */}
-      <div className={`${fullWidth ? "w-[min(100vw,177.78dvh)] h-auto" : "w-full h-full max-w-[90vw] max-h-[90vh] md:max-w-[85vw] md:max-h-[85vh]"} aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:w-[min(100vw,177.78dvh)] [@media(orientation:landscape)_and_(max-height:500px)]:h-auto [@media(orientation:landscape)_and_(max-height:500px)]:max-w-none [@media(orientation:landscape)_and_(max-height:500px)]:max-h-none max-md:portrait:fixed max-md:portrait:top-1/2 max-md:portrait:left-1/2 max-md:portrait:w-[min(100dvh,177.78dvw)] max-md:portrait:h-[min(56.25dvh,100dvw)] max-md:portrait:max-w-none max-md:portrait:max-h-none max-md:portrait:-translate-x-1/2 max-md:portrait:-translate-y-1/2 max-md:portrait:rotate-90`}>
+      <div className={`${fullWidth ? "w-[min(100vw,177.78dvh)] h-auto" : "w-full h-full max-w-[90vw] max-h-[90vh] md:max-w-[85vw] md:max-h-[85vh]"} relative aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:w-[min(100vw,177.78dvh)] [@media(orientation:landscape)_and_(max-height:500px)]:h-auto [@media(orientation:landscape)_and_(max-height:500px)]:max-w-none [@media(orientation:landscape)_and_(max-height:500px)]:max-h-none max-md:portrait:fixed max-md:portrait:top-1/2 max-md:portrait:left-1/2 max-md:portrait:w-[min(100dvh,177.78dvw)] max-md:portrait:h-[min(56.25dvh,100dvw)] max-md:portrait:max-w-none max-md:portrait:max-h-none max-md:portrait:-translate-x-1/2 max-md:portrait:-translate-y-1/2 max-md:portrait:rotate-90`}>
         <iframe
           ref={iframeRef}
           className="w-full h-full"
@@ -124,6 +124,18 @@ export default function VideoModal({
           allowFullScreen
           style={{ border: 0 }}
         />
+        {muted && !hintExpired && (
+          <button
+            onClick={enableSound}
+            className="absolute bottom-14 right-3 z-10 flex w-max items-center gap-2 whitespace-nowrap rounded-full bg-black/60 px-4 py-2 text-sm text-white cursor-pointer"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M11 5 6 9H2v6h4l5 4V5z" fill="currentColor" />
+              <path d="m23 9-6 6M17 9l6 6" />
+            </svg>
+            Activer le son
+          </button>
+        )}
       </div>
     </div>
   );
