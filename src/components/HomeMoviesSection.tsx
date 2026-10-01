@@ -49,12 +49,12 @@ function VideoCard({
       }}
     >
       {youtubeId && hovered ? (
-        // Native YouTube controls enabled (scrub bar + seeking). YouTube's
-        // own control bar already includes a fullscreen button, so no
-        // separate expand affordance is needed here.
+        // Preview only: no native controls and no pointer capture, so a
+        // click anywhere on the video opens the full-width modal (same as
+        // the /trailer page).
         <iframe
-          className="w-full h-full"
-          src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&modestbranding=1&rel=0&showinfo=0`}
+          className="w-full h-full pointer-events-none"
+          src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
           title={title}
           allow="autoplay; encrypted-media"
           style={{ border: 0 }}
@@ -216,7 +216,7 @@ export default function HomeMoviesSection() {
 
       {/* Video Modal */}
       {videoModal && (
-        <VideoModal src={videoModal.url} title={videoModal.title} onClose={() => setVideoModal(null)} />
+        <VideoModal src={videoModal.url} title={videoModal.title} fullWidth onClose={() => setVideoModal(null)} />
       )}
     </section>
   );
