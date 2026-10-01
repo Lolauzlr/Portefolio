@@ -577,8 +577,8 @@ export default function TrailerPage() {
       {/* Les Plus Récents */}
       <section className="px-3 md:px-[120px] py-[60px]">
         <div className="mb-6 md:mb-10">
-          <h2 className="text-[40px] font-[family-name:var(--font-heading)] tracking-[3.2px] mb-1">
-            LES PLUS RÉCENTS
+          <h2 className="text-[28px] md:text-[40px] font-[family-name:var(--font-heading)] tracking-[3.2px] mb-1">
+            LATEST TRAILERS
           </h2>
           <div className="w-[80px] h-[4px] bg-[#ddff6e]" />
         </div>
@@ -637,11 +637,11 @@ export default function TrailerPage() {
         </div>
       </section>
 
-      {/* À Regarder */}
+      {/* Featured Trailers */}
       <section className="bg-[#131313] px-3 md:px-[120px] py-[60px]">
         <div className="mb-6 md:mb-10">
-          <h2 className="text-[40px] font-[family-name:var(--font-heading)] tracking-[3.2px] mb-1">
-            À REGARDER
+          <h2 className="text-[28px] md:text-[40px] font-[family-name:var(--font-heading)] tracking-[3.2px] mb-1">
+            FEATURED TRAILERS
           </h2>
           <div className="w-[80px] h-[4px] bg-[#ddff6e]" />
         </div>
@@ -715,7 +715,7 @@ export default function TrailerPage() {
                   <div className="flex flex-col gap-4 md:gap-6 pt-4 md:pt-6 pl-4 md:pl-6 justify-between flex-1">
                     <div className="flex flex-col gap-4 md:gap-6">
                       <div>
-                        <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px]">
+                        <h3 className="text-[24px] md:text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px]">
                           {card.title}
                         </h3>
                         <div className="w-[80px] h-[4px] bg-white mt-1" />
