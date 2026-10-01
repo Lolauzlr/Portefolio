@@ -21,6 +21,8 @@ declare namespace YT {
       elementId: string,
       config: {
         videoId: string;
+        width?: string | number;
+        height?: string | number;
         playerVars?: Record<string, number | string>;
         events?: {
           onReady?: (event: PlayerEvent) => void;

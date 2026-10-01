@@ -1,14 +1,72 @@
 "use client";
 
-// Mobile browsers block unmuted autoplay for cross-origin iframes even when
-// the iframe is created from a click, so an autoplay=1 embed without mute=1
-// silently fails to start and looks like it needs a second tap directly on
-// YouTube's own play button. Muted autoplay is always allowed, so the video
-// always starts on the first click; the visitor can unmute from YouTube's
-// own controls.
+import { useEffect, useRef } from "react";
+import { loadYouTubeApi } from "@/lib/youtubeApi";
+
+// The video starts with sound: the modal is always opened by a click, which
+// grants the user activation YouTube needs to autoplay unmuted. Some mobile
+// browsers still refuse unmuted autoplay in a cross-origin iframe, though, and
+// would leave a paused player needing a second tap — so if playback hasn't
+// started shortly after load, fall back to muted autoplay (the viewer can
+// unmute from YouTube's own controls, which stay available either way).
+const AUTOPLAY_CHECK_MS = 1500;
+
+function youtubeIdFromSrc(src: string): string | null {
+  const m = src.match(/youtube\.com\/embed\/([\w-]+)/);
+  return m ? m[1] : null;
+}
+
 function withMutedAutoplay(src: string): string {
   if (/[?&]mute=/.test(src)) return src;
   return `${src}${src.includes("?") ? "&" : "?"}mute=1`;
+}
+
+function YouTubePlayer({ videoId, title }: { videoId: string; title: string }) {
+  const hostRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    let player: YT.Player | null = null;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const host = hostRef.current;
+    if (!host) return;
+
+    loadYouTubeApi().then(() => {
+      if (cancelled) return;
+      // The API replaces its target element, so give it a throwaway child.
+      const target = document.createElement("div");
+      host.appendChild(target);
+      player = new YT.Player(target as unknown as string, {
+        videoId,
+        width: "100%",
+        height: "100%",
+        playerVars: { autoplay: 1, rel: 0, playsinline: 1, modestbranding: 1 },
+        events: {
+          onReady: (e) => {
+            e.target.playVideo();
+            timer = setTimeout(() => {
+              const state = e.target.getPlayerState();
+              if (state !== YT.PlayerState.PLAYING && state !== YT.PlayerState.BUFFERING) {
+                e.target.mute();
+                e.target.playVideo();
+              }
+            }, AUTOPLAY_CHECK_MS);
+          },
+        },
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+      player?.destroy();
+      host.replaceChildren();
+    };
+  }, [videoId]);
+
+  return (
+    <div ref={hostRef} className="w-full h-full [&_iframe]:w-full [&_iframe]:h-full" aria-label={title} />
+  );
 }
 
 export default function VideoModal({
@@ -25,6 +83,7 @@ export default function VideoModal({
   // 90vw/85vw box.
   fullWidth?: boolean;
 }) {
+  const videoId = youtubeIdFromSrc(src);
   return (
     <div
       className="fixed top-0 left-0 w-full h-screen h-dvh z-[100] bg-black/95 flex items-center justify-center"
@@ -45,14 +104,18 @@ export default function VideoModal({
           instead of staying small until the user physically rotates their
           phone. Desktop and mobile landscape keep the normal centered box. */}
       <div className={`${fullWidth ? "w-[min(100vw,177.78dvh)] h-auto" : "w-full h-full max-w-[90vw] max-h-[90vh] md:max-w-[85vw] md:max-h-[85vh]"} aspect-video max-md:portrait:fixed max-md:portrait:top-1/2 max-md:portrait:left-1/2 max-md:portrait:w-[min(100dvh,177.78dvw)] max-md:portrait:h-[min(56.25dvh,100dvw)] max-md:portrait:max-w-none max-md:portrait:max-h-none max-md:portrait:-translate-x-1/2 max-md:portrait:-translate-y-1/2 max-md:portrait:rotate-90`}>
-        <iframe
-          className="w-full h-full"
-          src={withMutedAutoplay(src)}
-          title={title}
-          allow="autoplay; encrypted-media; fullscreen"
-          allowFullScreen
-          style={{ border: 0 }}
-        />
+        {videoId ? (
+          <YouTubePlayer videoId={videoId} title={title} />
+        ) : (
+          <iframe
+            className="w-full h-full"
+            src={withMutedAutoplay(src)}
+            title={title}
+            allow="autoplay; encrypted-media; fullscreen"
+            allowFullScreen
+            style={{ border: 0 }}
+          />
+        )}
       </div>
     </div>
   );
