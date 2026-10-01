@@ -19,7 +19,7 @@ const storytellingCards = [
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
     <div className="mb-6 md:mb-10">
-      <h2 className="font-[family-name:var(--font-heading)] text-[40px] tracking-[4.8px] uppercase text-white">
+      <h2 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[3.36px] md:text-[40px] md:tracking-[4.8px] uppercase text-white">
         {children}
       </h2>
       <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-2" />
@@ -82,7 +82,7 @@ export default function Home() {
             <div className="flex flex-col justify-between flex-1">
               <div className="flex flex-col gap-4 md:gap-6">
                 <div>
-                  <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">MY JOURNEY IN ILLUSTRATION</h3>
+                  <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] md:text-[28px] md:tracking-[2.24px]">MY JOURNEY IN ILLUSTRATION</h3>
                   <div className="w-[80px] h-[4px] bg-white mt-1" />
                 </div>
                 <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
@@ -113,7 +113,7 @@ export default function Home() {
               </div>
               <div className="flex flex-col gap-[24px]">
                 <div>
-                  <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px] uppercase">
+                  <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] md:text-[28px] md:tracking-[2.24px] uppercase">
                     {c.title}
                   </h3>
                   <div className="w-[80px] h-[4px] bg-white mt-1" />

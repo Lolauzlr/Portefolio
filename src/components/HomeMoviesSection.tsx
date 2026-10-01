@@ -156,7 +156,7 @@ export default function HomeMoviesSection() {
   return (
     <section className="bg-[#15161B] px-3 md:px-[120px]">
       <div className="mb-6 md:mb-10">
-        <h2 className="font-[family-name:var(--font-heading)] text-[40px] tracking-[4.8px] uppercase text-white">
+        <h2 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[3.36px] md:text-[40px] md:tracking-[4.8px] uppercase text-white">
           LATEST MOVIES
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-2" />
@@ -173,7 +173,7 @@ export default function HomeMoviesSection() {
               onPlay={() => setVideoModal({ url: "https://www.youtube.com/embed/BFLlIR9A8DY?autoplay=1&rel=0", title: "SAINT EX" })}
             />
             <div>
-              <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">SAINT EX</h3>
+              <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] md:text-[28px] md:tracking-[2.24px]">SAINT EX</h3>
               <div className="w-[80px] h-[4px] bg-white mt-1" />
             </div>
             <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
@@ -192,7 +192,7 @@ export default function HomeMoviesSection() {
               className="w-full"
             />
             <div>
-              <h3 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px]">JERRY GRETZINGER</h3>
+              <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] md:text-[28px] md:tracking-[2.24px]">JERRY GRETZINGER</h3>
               <div className="w-[80px] h-[4px] bg-white mt-1" />
             </div>
             <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
