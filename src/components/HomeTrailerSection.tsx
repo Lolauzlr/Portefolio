@@ -127,7 +127,7 @@ const trailerCards = [
 export default function HomeTrailerSection() {
   const supportsHover = useSupportsHover();
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
-  const [videoModal, setVideoModal] = useState<{ videoId: string; title: string } | null>(null);
+  const [videoModal, setVideoModal] = useState<{ videoId: string; title: string; fullWidth?: boolean } | null>(null);
   const [screenshotsData, setScreenshotsData] = useState<{
     category: string;
     title: string;
@@ -193,15 +193,15 @@ export default function HomeTrailerSection() {
                 {...(supportsHover
                   ? { onMouseEnter: () => setHoveredCard(card.videoId), onMouseLeave: () => setHoveredCard(null) }
                   : {})}
-                onClick={() => setVideoModal({ videoId: card.videoId, title: card.title })}
+                onClick={() => setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true })}
               >
                 {hoveredCard === card.videoId ? (
-                  // Native YouTube controls enabled (scrub bar + seeking).
-                  // YouTube's own control bar already includes a fullscreen
-                  // button, so no separate expand affordance is needed here.
+                  // Preview only: no native controls and no pointer capture,
+                  // so a click anywhere on the video opens the full-width
+                  // modal (same as the /trailer page).
                   <iframe
-                    className="absolute inset-0 w-full h-full"
-                    src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&modestbranding=1&rel=0&showinfo=0`}
+                    className="absolute inset-0 w-full h-full pointer-events-none"
+                    src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
                     title={card.title}
                     allow="autoplay; encrypted-media"
                     style={{ border: 0 }}
@@ -256,6 +256,7 @@ export default function HomeTrailerSection() {
         <VideoModal
           src={`https://www.youtube.com/embed/${videoModal.videoId}?autoplay=1&rel=0`}
           title={videoModal.title}
+          fullWidth={videoModal.fullWidth}
           onClose={() => setVideoModal(null)}
         />
       )}
