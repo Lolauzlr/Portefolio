@@ -127,7 +127,7 @@ export default function VideoModal({
         {muted && !hintExpired && (
           <button
             onClick={enableSound}
-            className="absolute bottom-[4.5rem] right-14 z-10 flex w-max items-center gap-2 whitespace-nowrap rounded-full bg-black/60 px-4 py-2 text-sm text-white cursor-pointer"
+            className="absolute bottom-[5.25rem] right-12 z-10 flex w-max items-center gap-2 whitespace-nowrap rounded-full bg-black/60 px-4 py-2 text-sm text-white cursor-pointer"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M11 5 6 9H2v6h4l5 4V5z" fill="currentColor" />
