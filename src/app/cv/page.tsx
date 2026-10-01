@@ -194,7 +194,7 @@ export default function CVPage() {
   }, []);
 
   return (
-    <div className="bg-[#15161b] text-white flex flex-col gap-[24px] md:gap-[60px] pt-[140px] md:pt-[175px] pb-[80px] px-3 md:px-[120px]">
+    <div className="bg-[#15161b] text-white flex flex-col gap-[24px] md:gap-[60px] pt-[128px] md:pt-[175px] pb-[24px] md:pb-[80px] px-3 md:px-[120px]">
       {/* Hero — desktop keeps the photo beside the whole content column;
           mobile pairs the photo with the title only and moves Download
           beside the social icons instead (Figma node 426-750). */}
@@ -226,7 +226,6 @@ export default function CVPage() {
           </p>
           <div className="flex flex-wrap items-center justify-between gap-4 w-full">
             <div className="flex flex-wrap gap-[12px] items-center">
-              <Tag>31 y/o</Tag>
               <Tag>Paris</Tag>
               <Tag>Driving Licence</Tag>
             </div>
@@ -270,7 +269,6 @@ export default function CVPage() {
           </p>
           <div className="flex flex-wrap items-center justify-between gap-y-[12px] w-full">
             <div className="flex flex-wrap gap-[8px] items-center">
-              <Tag>31 y/o</Tag>
               <Tag>Paris</Tag>
               <Tag>Driving Licence</Tag>
             </div>
