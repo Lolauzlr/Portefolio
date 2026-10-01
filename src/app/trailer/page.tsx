@@ -21,7 +21,7 @@ export default function TrailerPage() {
     () => setScreenshotIndex((i) => (i + 1) % shotCount),
     shotCount > 1
   );
-  const [videoModal, setVideoModal] = useState<{ videoId: string; title: string } | null>(null);
+  const [videoModal, setVideoModal] = useState<{ videoId: string; title: string; fullWidth?: boolean } | null>(null);
   const [hoveredRecent, setHoveredRecent] = useState<string | null>(null);
   const [hoveredWatch, setHoveredWatch] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -460,7 +460,7 @@ export default function TrailerPage() {
         {/* Click zone - opens overlay, or pauses on hover-visible button */}
         <button
           className="absolute inset-0 w-full h-full z-10 cursor-pointer group"
-          onClick={() => setVideoModal({ videoId: "OLEZv_Qyb6Q", title: "ELTA: DEFY ALL GODS • REVEAL TRAILER" })}
+          onClick={() => setVideoModal({ videoId: "OLEZv_Qyb6Q", title: "ELTA: DEFY ALL GODS • REVEAL TRAILER", fullWidth: true })}
           aria-label="Ouvrir la vidéo"
         />
 
@@ -757,6 +757,7 @@ export default function TrailerPage() {
         <VideoModal
           src={`https://www.youtube.com/embed/${videoModal.videoId}?autoplay=1&rel=0`}
           title={videoModal.title}
+          fullWidth={videoModal.fullWidth}
           onClose={() => setVideoModal(null)}
         />
       )}

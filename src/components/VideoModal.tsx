@@ -15,10 +15,15 @@ export default function VideoModal({
   src,
   title,
   onClose,
+  fullWidth = false,
 }: {
   src: string;
   title: string;
   onClose: () => void;
+  // Edge-to-edge: the video takes the full viewport width (shrinking only if
+  // its 16:9 height would overflow the visible height) instead of the padded
+  // 90vw/85vw box.
+  fullWidth?: boolean;
 }) {
   return (
     <div
@@ -39,7 +44,7 @@ export default function VideoModal({
           in landscape immediately on open, like YouTube's mobile player,
           instead of staying small until the user physically rotates their
           phone. Desktop and mobile landscape keep the normal centered box. */}
-      <div className="w-full h-full max-w-[90vw] max-h-[90vh] md:max-w-[85vw] md:max-h-[85vh] aspect-video max-md:portrait:fixed max-md:portrait:top-1/2 max-md:portrait:left-1/2 max-md:portrait:w-[min(100dvh,177.78dvw)] max-md:portrait:h-[min(56.25dvh,100dvw)] max-md:portrait:max-w-none max-md:portrait:max-h-none max-md:portrait:-translate-x-1/2 max-md:portrait:-translate-y-1/2 max-md:portrait:rotate-90">
+      <div className={`${fullWidth ? "w-[min(100vw,177.78dvh)] h-auto" : "w-full h-full max-w-[90vw] max-h-[90vh] md:max-w-[85vw] md:max-h-[85vh]"} aspect-video max-md:portrait:fixed max-md:portrait:top-1/2 max-md:portrait:left-1/2 max-md:portrait:w-[min(100dvh,177.78dvw)] max-md:portrait:h-[min(56.25dvh,100dvw)] max-md:portrait:max-w-none max-md:portrait:max-h-none max-md:portrait:-translate-x-1/2 max-md:portrait:-translate-y-1/2 max-md:portrait:rotate-90`}>
         <iframe
           className="w-full h-full"
           src={withMutedAutoplay(src)}
