@@ -119,7 +119,7 @@ export default function Home() {
                   <div className="w-[80px] h-[4px] bg-white mt-1" />
                 </div>
                 <div className="flex flex-col gap-4">
-                  <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-[#ddff6e] uppercase">
+                  <p className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] md:text-[24px] md:tracking-[1.92px] text-[#ddff6e] uppercase">
                     {c.label}
                   </p>
                   <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
@@ -146,7 +146,7 @@ export default function Home() {
                   </div>
                   <div className="w-[80px] h-[4px] bg-white mt-2" />
                 </div>
-                <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-[#ddff6e]">
+                <p className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] md:text-[24px] md:tracking-[1.92px] text-[#ddff6e]">
                   CINEMATIC ARTIST &bull; CONCEPT ARTIST &bull; STORYBOARDER
                 </p>
               </div>
