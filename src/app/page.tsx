@@ -29,7 +29,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 
 function CaretCircleRight() {
   return (
-    <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="32" height="32" className="w-6 h-6 md:w-8 md:h-8" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="20" cy="20" r="19" stroke="currentColor" strokeWidth="2" />
       <path d="M16 12l8 8-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
@@ -41,7 +41,7 @@ function ToutVoirLink({ href }: { href: string }) {
     <div className="flex justify-end mt-8">
       <Link
         href={href}
-        className="font-[family-name:var(--font-heading)] text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] tracking-[2.56px] uppercase transition-colors"
+        className="font-[family-name:var(--font-heading)] text-[24px] md:text-[32px] text-[#0FD1EA] flex items-center gap-3 hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] tracking-[1.92px] md:tracking-[2.56px] uppercase transition-colors"
       >
         VIEW ALL
         <CaretCircleRight />
