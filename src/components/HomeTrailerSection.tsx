@@ -256,17 +256,36 @@ export default function HomeTrailerSection() {
       {/* Screenshots Carousel Overlay */}
       {screenshotsData && (
         <div
-          className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
-          onClick={(e) => { if (e.target === e.currentTarget) setScreenshotsData(null); }}
+          className="fixed inset-0 z-[100] bg-black/95 flex items-start md:items-center justify-center overflow-y-auto md:overflow-hidden"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setScreenshotsData(null);
+          }}
         >
-          <div className="w-full h-full flex flex-col md:flex-row">
+          {/* Mobile-only close button, always reachable without scrolling
+              past the image/thumbnails/info panel below. */}
+          <button
+            onClick={() => setScreenshotsData(null)}
+            className="md:hidden fixed top-4 right-4 z-20 text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
+            aria-label="Fermer"
+          >
+            ✕
+          </button>
+
+          <div className="w-full min-h-full md:h-full flex flex-col md:flex-row">
             {/* Left: Carousel */}
-            <div className="relative flex-1 flex flex-col min-h-0">
-              <div className="relative flex-1 flex items-center justify-center min-h-0">
-                <span className="absolute top-6 left-6 font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white z-10">
+            <div className="relative w-full flex flex-col md:flex-1 md:min-h-0">
+              {/* Main image area - mobile: capped to 60vh, fully filled
+                  (object-cover, no letterboxing) instead of being squeezed
+                  by the info panel below or taking over the whole screen;
+                  desktop keeps its original flexible-height, letterboxed
+                  layout. */}
+              <div className="trailer-stage relative w-full h-[60vh] md:h-auto md:aspect-auto md:flex-1 flex items-center justify-center min-h-0">
+                {/* Counter */}
+                <span className="absolute top-4 left-4 md:top-6 md:left-6 font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white z-10">
                   {screenshotIndex + 1}/{screenshotsData.screenshots.length}
                 </span>
 
+                {/* Previous */}
                 {screenshotsData.screenshots.length > 1 && (
                   <button
                     onClick={() => setScreenshotIndex((screenshotIndex - 1 + screenshotsData.screenshots.length) % screenshotsData.screenshots.length)}
@@ -279,17 +298,31 @@ export default function HomeTrailerSection() {
                   </button>
                 )}
 
-                <div className="flex flex-col items-start h-full min-h-0 p-12">
+                {/* Image - mobile: fills the 9:16 frame edge-to-edge
+                    (object-cover, cropped); desktop: unchanged letterboxed
+                    image + caption inside a padded box. */}
+                <img
+                  src={asset(screenshotsData.screenshots[screenshotIndex].src)}
+                  alt={screenshotsData.screenshots[screenshotIndex].tag}
+                  className="absolute inset-0 w-full h-full object-cover md:hidden"
+                />
+                <div className="hidden md:flex md:flex-col md:items-start md:h-full md:min-h-0 md:p-12">
                   <img
                     src={asset(screenshotsData.screenshots[screenshotIndex].src)}
                     alt={screenshotsData.screenshots[screenshotIndex].tag}
-                    className="flex-1 min-h-0 max-w-full object-contain"
+                    className="md:flex-1 md:min-h-0 md:max-w-full object-contain"
                   />
                   <p className="mt-3 font-[family-name:var(--font-body)] text-[16px] font-normal text-[#8F8F8F]">
                     {screenshotsData.screenshots[screenshotIndex].description}
                   </p>
                 </div>
 
+                {/* Mobile landscape caption, overlaid on the bottom of the image */}
+                <p className="trailer-caption-overlay absolute left-3 right-3 bottom-3 z-[5] pointer-events-none backdrop-blur-[5px] bg-black/40 p-2 font-[family-name:var(--font-body)] text-[12px] font-normal text-white">
+                  {screenshotsData.screenshots[screenshotIndex].description}
+                </p>
+
+                {/* Next */}
                 {screenshotsData.screenshots.length > 1 && (
                   <button
                     onClick={() => setScreenshotIndex((screenshotIndex + 1) % screenshotsData.screenshots.length)}
@@ -303,8 +336,14 @@ export default function HomeTrailerSection() {
                 )}
               </div>
 
+              {/* Mobile portrait caption, below the filled image */}
+              <p className="trailer-caption-below px-3 pt-2 font-[family-name:var(--font-body)] text-[12px] font-normal text-[#8F8F8F]">
+                {screenshotsData.screenshots[screenshotIndex].description}
+              </p>
+
+              {/* Thumbnails strip */}
               {screenshotsData.screenshots.length > 1 && (
-                <div className="bg-[#0d0d0d] px-3 md:px-4 py-3 overflow-x-auto">
+                <div className="trailer-thumbs bg-[#0d0d0d] px-3 md:px-4 py-3 overflow-x-auto">
                   <div className="flex gap-2">
                     {screenshotsData.screenshots.map((shot, i) => (
                       <button
@@ -327,30 +366,35 @@ export default function HomeTrailerSection() {
             </div>
 
             {/* Right: Info panel */}
-            <div className="w-full md:w-[400px] flex flex-col p-8 md:p-10 bg-[#15161b] overflow-y-auto">
+            <div className="trailer-info w-full md:w-[400px] flex flex-col p-8 md:p-10 bg-[#15161b] overflow-y-auto">
+              {/* Close button - hidden on mobile in favor of the fixed one above */}
               <button
                 onClick={() => setScreenshotsData(null)}
-                className="self-end text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
+                className="hidden md:block self-end text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
                 aria-label="Fermer"
               >
                 ✕
               </button>
 
               <div className="flex flex-col mt-4 md:mt-6">
+                {/* Role kicker */}
                 {screenshotsData.role && (
                   <p className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.28px] text-[#8F8F8F] uppercase">
                     Cinematic artist in charge of the
                   </p>
                 )}
 
+                {/* Category */}
                 <p className={`font-[family-name:var(--font-heading)] text-[28px] tracking-[1.6px] text-[#BCBCBC] uppercase ${screenshotsData.role ? "mt-2" : ""}`}>
                   {screenshotsData.category}
                 </p>
 
+                {/* Title */}
                 <h2 className={`font-[family-name:var(--font-heading)] text-[32px] md:text-[40px] tracking-[3.2px] text-white leading-tight ${screenshotsData.role ? "" : "mt-2"}`}>
                   {screenshotsData.title}
                 </h2>
 
+                {/* Separator */}
                 <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-2" />
               </div>
 
