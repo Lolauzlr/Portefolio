@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { asset } from "@/lib/asset";
+import { useSwipeNav } from "@/hooks/useSwipeNav";
 import VideoModal from "@/components/VideoModal";
 
 export default function TrailerPage() {
@@ -14,7 +15,13 @@ export default function TrailerPage() {
     screenshots: { src: string; tag: string; description: string }[];
   } | null>(null);
   const [screenshotIndex, setScreenshotIndex] = useState(0);
-  const [videoModal, setVideoModal] = useState<{ videoId: string; title: string } | null>(null);
+  const shotCount = screenshotsData?.screenshots.length ?? 0;
+  const swipeHandlers = useSwipeNav(
+    () => setScreenshotIndex((i) => (i - 1 + shotCount) % shotCount),
+    () => setScreenshotIndex((i) => (i + 1) % shotCount),
+    shotCount > 1
+  );
+  const [videoModal, setVideoModal] = useState<{ videoId: string; title: string; fullWidth?: boolean } | null>(null);
   const [hoveredRecent, setHoveredRecent] = useState<string | null>(null);
   const [hoveredWatch, setHoveredWatch] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -23,6 +30,7 @@ export default function TrailerPage() {
   const [cadreSize, setCadreSize] = useState({ w: 792, h: 201 });
   const [watchSizes, setWatchSizes] = useState<Record<string, { w: number; h: number }>>({});
   const playerRef = useRef<YT.Player | null>(null);
+  const userPausedRef = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const cadreRef = useRef<HTMLDivElement>(null);
@@ -333,21 +341,26 @@ export default function TrailerPage() {
 
   const onPlayerReady = useCallback((event: YT.PlayerEvent) => {
     event.target.mute();
+    setIsMuted(true);
     event.target.playVideo();
   }, []);
 
+  // Keep the play/pause UI in sync with what the player is really doing:
+  // mobile browsers can refuse or interrupt autoplay, in which case the
+  // play button must show instead of a "pause" state that isn't true.
   const onPlayerStateChange = useCallback((event: YT.OnStateChangeEvent) => {
     if (event.data === YT.PlayerState.ENDED) {
       event.target.playVideo();
+    } else if (event.data === YT.PlayerState.PLAYING) {
+      setIsPlaying(true);
+    } else if (event.data === YT.PlayerState.PAUSED) {
+      setIsPlaying(false);
     }
   }, []);
 
   useEffect(() => {
-    const tag = document.createElement("script");
-    tag.src = "https://www.youtube.com/iframe_api";
-    document.head.appendChild(tag);
-
-    (window as unknown as Record<string, unknown>).onYouTubeIframeAPIReady = () => {
+    const createPlayer = () => {
+      if (playerRef.current) return;
       playerRef.current = new YT.Player("yt-bg-player", {
         videoId: "OLEZv_Qyb6Q",
         playerVars: {
@@ -369,16 +382,50 @@ export default function TrailerPage() {
         },
       });
     };
+
+    // The IFrame API script only runs its ready callback on first load, so
+    // when arriving here by client-side navigation (API already loaded) the
+    // player must be created directly or the hero video never starts.
+    if (typeof YT !== "undefined" && YT.Player) {
+      createPlayer();
+    } else {
+      (window as unknown as Record<string, unknown>).onYouTubeIframeAPIReady = createPlayer;
+      if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
+        const tag = document.createElement("script");
+        tag.src = "https://www.youtube.com/iframe_api";
+        document.head.appendChild(tag);
+      }
+    }
+
+    return () => {
+      playerRef.current?.destroy();
+      playerRef.current = null;
+    };
   }, [onPlayerReady, onPlayerStateChange]);
+
+  // Fallback when the browser blocks autoplay (e.g. iOS low-power mode):
+  // start the muted video on the first touch anywhere on the page.
+  useEffect(() => {
+    const kick = () => {
+      const player = playerRef.current;
+      if (player && player.getPlayerState?.() !== YT.PlayerState.PLAYING && !userPausedRef.current) {
+        player.mute();
+        player.playVideo();
+      }
+    };
+    window.addEventListener("touchstart", kick, { once: true, passive: true });
+    return () => window.removeEventListener("touchstart", kick);
+  }, []);
 
   const togglePlay = () => {
     if (!playerRef.current) return;
     if (isPlaying) {
+      userPausedRef.current = true;
       playerRef.current.pauseVideo();
     } else {
+      userPausedRef.current = false;
       playerRef.current.playVideo();
     }
-    setIsPlaying(!isPlaying);
   };
 
   const toggleMute = () => {
@@ -413,7 +460,7 @@ export default function TrailerPage() {
         {/* Click zone - opens overlay, or pauses on hover-visible button */}
         <button
           className="absolute inset-0 w-full h-full z-10 cursor-pointer group"
-          onClick={() => setVideoModal({ videoId: "OLEZv_Qyb6Q", title: "ELTA: DEFY ALL GODS • REVEAL TRAILER" })}
+          onClick={() => setVideoModal({ videoId: "OLEZv_Qyb6Q", title: "ELTA: DEFY ALL GODS • REVEAL TRAILER", fullWidth: true })}
           aria-label="Ouvrir la vidéo"
         />
 
@@ -505,7 +552,7 @@ export default function TrailerPage() {
           {/* Content */}
           <div className="relative z-10 p-3 md:p-4 flex flex-col gap-3">
             <div className="flex items-start justify-between">
-              <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-white uppercase">
+              <p className="font-[family-name:var(--font-heading)] text-[20px] md:text-[24px] tracking-[1.92px] text-white uppercase">
                 Reveal Trailer
               </p>
               {/* CTA - Voir les screenshots */}
@@ -516,7 +563,7 @@ export default function TrailerPage() {
                 VIEW SCREENSHOTS
               </button>
             </div>
-            <h1 className="font-[family-name:var(--font-heading)] text-[36px] md:text-[72px] leading-none tracking-[4px] md:tracking-[6.4px] uppercase w-full">
+            <h1 className="font-[family-name:var(--font-heading)] text-[28px] md:text-[72px] leading-none tracking-[4px] md:tracking-[6.4px] uppercase w-full">
               Elta: Defy All Gods
             </h1>
 
@@ -524,7 +571,7 @@ export default function TrailerPage() {
               {["Gamescom 2026", "Unreal", "3D animation", "Action cinematic"].map((tag) => (
                 <span
                   key={tag}
-                  className="font-[family-name:var(--font-body)] text-[16px] md:text-[20px] tracking-[1.6px] border border-white rounded-full px-3 py-1"
+                  className="font-[family-name:var(--font-body)] text-[14px] md:text-[20px] tracking-[1.6px] border border-white rounded-full px-3 py-1"
                 >
                   {tag}
                 </span>
@@ -537,8 +584,8 @@ export default function TrailerPage() {
       {/* Les Plus Récents */}
       <section className="px-3 md:px-[120px] py-[60px]">
         <div className="mb-6 md:mb-10">
-          <h2 className="text-[40px] font-[family-name:var(--font-heading)] tracking-[3.2px] mb-1">
-            LES PLUS RÉCENTS
+          <h2 className="text-[28px] md:text-[40px] font-[family-name:var(--font-heading)] tracking-[3.2px] mb-1">
+            LATEST TRAILERS
           </h2>
           <div className="w-[80px] h-[4px] bg-[#ddff6e]" />
         </div>
@@ -549,15 +596,15 @@ export default function TrailerPage() {
                 className="relative w-full aspect-video cursor-pointer overflow-hidden bg-black"
                 onMouseEnter={() => setHoveredRecent(card.videoId)}
                 onMouseLeave={() => setHoveredRecent(null)}
-                onClick={() => setVideoModal({ videoId: card.videoId, title: card.title })}
+                onClick={() => setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true })}
               >
                 {hoveredRecent === card.videoId ? (
                   // Native YouTube controls enabled (scrub bar + seeking).
                   // YouTube's own control bar already includes a fullscreen
                   // button, so no separate expand affordance is needed here.
                   <iframe
-                    className="absolute inset-0 w-full h-full"
-                    src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&modestbranding=1&rel=0&showinfo=0`}
+                    className="absolute inset-0 w-full h-full pointer-events-none"
+                    src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
                     title={card.title}
                     allow="autoplay; encrypted-media"
                     style={{ border: 0 }}
@@ -597,11 +644,11 @@ export default function TrailerPage() {
         </div>
       </section>
 
-      {/* À Regarder */}
+      {/* Featured Trailers */}
       <section className="bg-[#131313] px-3 md:px-[120px] py-[60px]">
         <div className="mb-6 md:mb-10">
-          <h2 className="text-[40px] font-[family-name:var(--font-heading)] tracking-[3.2px] mb-1">
-            À REGARDER
+          <h2 className="text-[28px] md:text-[40px] font-[family-name:var(--font-heading)] tracking-[3.2px] mb-1">
+            FEATURED TRAILERS
           </h2>
           <div className="w-[80px] h-[4px] bg-[#ddff6e]" />
         </div>
@@ -649,7 +696,7 @@ export default function TrailerPage() {
                     style={{ aspectRatio: "16 / 9" }}
                     onMouseEnter={() => setHoveredWatch(card.videoId)}
                     onMouseLeave={() => setHoveredWatch(null)}
-                    onClick={() => setVideoModal({ videoId: card.videoId, title: card.title })}
+                    onClick={() => setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true })}
                   >
                     {hoveredWatch === card.videoId ? (
                       // Native YouTube controls enabled (scrub bar +
@@ -657,8 +704,8 @@ export default function TrailerPage() {
                       // includes a fullscreen button, so no separate expand
                       // affordance is needed here.
                       <iframe
-                        className="absolute inset-0 w-full h-full"
-                        src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&modestbranding=1&rel=0&showinfo=0`}
+                        className="absolute inset-0 w-full h-full pointer-events-none"
+                        src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
                         title={card.title}
                         allow="autoplay; encrypted-media"
                         style={{ border: 0 }}
@@ -675,7 +722,7 @@ export default function TrailerPage() {
                   <div className="flex flex-col gap-4 md:gap-6 pt-4 md:pt-6 pl-4 md:pl-6 justify-between flex-1">
                     <div className="flex flex-col gap-4 md:gap-6">
                       <div>
-                        <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px]">
+                        <h3 className="text-[24px] md:text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px]">
                           {card.title}
                         </h3>
                         <div className="w-[80px] h-[4px] bg-white mt-1" />
@@ -710,6 +757,7 @@ export default function TrailerPage() {
         <VideoModal
           src={`https://www.youtube.com/embed/${videoModal.videoId}?autoplay=1&rel=0`}
           title={videoModal.title}
+          fullWidth={videoModal.fullWidth}
           onClose={() => setVideoModal(null)}
         />
       )}
@@ -740,7 +788,7 @@ export default function TrailerPage() {
                   by the info panel below or taking over the whole screen;
                   desktop keeps its original flexible-height, letterboxed
                   layout. */}
-              <div className="relative w-full h-[60vh] md:h-auto md:aspect-auto md:flex-1 flex items-center justify-center min-h-0">
+              <div {...swipeHandlers} className="touch-pan-y trailer-stage relative w-full h-[60vh] md:h-auto md:aspect-auto md:flex-1 flex items-center justify-center min-h-0">
                 {/* Counter */}
                 <span className="absolute top-4 left-4 md:top-6 md:left-6 font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white z-10">
                   {screenshotIndex + 1}/{screenshotsData.screenshots.length}
@@ -778,6 +826,11 @@ export default function TrailerPage() {
                   </p>
                 </div>
 
+                {/* Mobile landscape caption, overlaid on the bottom of the image */}
+                <p className="trailer-caption-overlay absolute left-3 right-3 bottom-3 z-[5] pointer-events-none backdrop-blur-[5px] bg-black/40 p-2 font-[family-name:var(--font-body)] text-[12px] font-normal text-white">
+                  {screenshotsData.screenshots[screenshotIndex].description}
+                </p>
+
                 {/* Next */}
                 {screenshotsData.screenshots.length > 1 && (
                   <button
@@ -792,14 +845,14 @@ export default function TrailerPage() {
                 )}
               </div>
 
-              {/* Mobile-only caption, below the filled image */}
-              <p className="md:hidden px-3 pt-2 font-[family-name:var(--font-body)] text-[12px] font-normal text-[#8F8F8F]">
+              {/* Mobile portrait caption, below the filled image */}
+              <p className="trailer-caption-below px-3 pt-2 font-[family-name:var(--font-body)] text-[12px] font-normal text-[#8F8F8F]">
                 {screenshotsData.screenshots[screenshotIndex].description}
               </p>
 
               {/* Thumbnails strip */}
               {screenshotsData.screenshots.length > 1 && (
-                <div className="bg-[#0d0d0d] px-3 md:px-4 py-3 overflow-x-auto">
+                <div className="trailer-thumbs bg-[#0d0d0d] px-3 md:px-4 py-3 overflow-x-auto">
                   <div className="flex gap-2">
                     {screenshotsData.screenshots.map((shot, i) => (
                       <button
@@ -822,7 +875,7 @@ export default function TrailerPage() {
             </div>
 
             {/* Right: Info panel */}
-            <div className="w-full md:w-[400px] flex flex-col p-8 md:p-10 bg-[#15161b] overflow-y-auto">
+            <div className="trailer-info w-full md:w-[400px] flex flex-col p-8 md:p-10 bg-[#15161b] overflow-y-auto">
               {/* Close button - hidden on mobile in favor of the fixed one above */}
               <button
                 onClick={() => setScreenshotsData(null)}
