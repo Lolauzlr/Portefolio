@@ -45,6 +45,7 @@ body[data-reading="true"] {
 }
 @media (orientation: landscape) and (max-height: 500px) {
   .trailer-thumbs,
+  .trailer-info,
   .trailer-caption-below {
     display: none;
   }
