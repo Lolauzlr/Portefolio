@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
+
 // Mobile browsers block unmuted autoplay for cross-origin iframes even when
 // the iframe is created from a click, so an autoplay=1 embed without mute=1
 // silently fails to start and looks like it needs a second tap directly on
@@ -16,7 +18,7 @@ function withMutedAutoplay(src: string): string {
 // Right after the muted start, ask the player to unmute through YouTube's
 // postMessage API so the sound is on by default, like on desktop. Where the
 // browser refuses (e.g. iOS), the video simply keeps playing muted and the
-// visitor can unmute from YouTube's controls.
+// visitor can tap the "Activer le son" button shown in the modal.
 function sendCommand(iframe: HTMLIFrameElement, func: string, args: unknown[] = []) {
   iframe.contentWindow?.postMessage(JSON.stringify({ event: "command", func, args }), "*");
 }
@@ -46,6 +48,35 @@ export default function VideoModal({
   // 90vw/85vw box.
   fullWidth?: boolean;
 }) {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  // Shown while the video is still muted. The auto-unmute below can be refused
+  // (iOS), and a tap on this button is a real user gesture, so it always works.
+  const [muted, setMuted] = useState(true);
+
+  useEffect(() => {
+    const onMessage = (e: MessageEvent) => {
+      if (e.source !== iframeRef.current?.contentWindow || typeof e.data !== "string") return;
+      try {
+        const data = JSON.parse(e.data);
+        const m = data?.info?.muted;
+        if (typeof m === "boolean") setMuted(m);
+      } catch {
+        // not a YouTube player message
+      }
+    };
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
+
+  const enableSound = () => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+    sendCommand(iframe, "unMute");
+    sendCommand(iframe, "setVolume", [100]);
+    sendCommand(iframe, "playVideo");
+    setMuted(false);
+  };
+
   return (
     <div
       className="fixed top-0 left-0 w-full h-screen h-dvh z-[100] bg-black/95 flex items-center justify-center"
@@ -58,6 +89,14 @@ export default function VideoModal({
       >
         ✕
       </button>
+      {muted && (
+        <button
+          onClick={enableSound}
+          className="absolute top-6 left-6 md:top-10 md:left-10 z-10 rounded-full border border-white/40 bg-black/70 px-4 py-2 text-sm text-white hover:text-[#0fd1ea] hover:border-[#0fd1ea] transition-colors cursor-pointer"
+        >
+          🔇 Activer le son
+        </button>
+      )}
       {/* Mobile portrait: rotated 90deg and sized off swapped viewport units
           (dvh/dvw, i.e. the visible area between the browser bars, never the
           larger viewport that extends behind them; 16:9 fitted so the video is
@@ -67,6 +106,7 @@ export default function VideoModal({
           phone. Desktop and mobile landscape keep the normal centered box. */}
       <div className={`${fullWidth ? "w-[min(100vw,177.78dvh)] h-auto" : "w-full h-full max-w-[90vw] max-h-[90vh] md:max-w-[85vw] md:max-h-[85vh]"} aspect-video max-md:portrait:fixed max-md:portrait:top-1/2 max-md:portrait:left-1/2 max-md:portrait:w-[min(100dvh,177.78dvw)] max-md:portrait:h-[min(56.25dvh,100dvw)] max-md:portrait:max-w-none max-md:portrait:max-h-none max-md:portrait:-translate-x-1/2 max-md:portrait:-translate-y-1/2 max-md:portrait:rotate-90`}>
         <iframe
+          ref={iframeRef}
           className="w-full h-full"
           src={withMutedAutoplay(src)}
           onLoad={(e) => unmuteWhenReady(e.currentTarget)}
