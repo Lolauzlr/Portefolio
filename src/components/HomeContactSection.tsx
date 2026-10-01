@@ -196,10 +196,10 @@ export default function HomeContactSection() {
                 under the logo instead. */}
             <div className="hidden md:flex md:flex-col">
               <div className="flex flex-col gap-[10px] items-start self-start">
-                <h3 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
+                <h3 className="font-[family-name:var(--font-heading)] text-white text-[24px] tracking-[1.92px] md:text-[28px] md:tracking-[2.24px] uppercase">
                   CONTACT
                 </h3>
-                <div className="w-full h-[4px] bg-[#ddff6e]" />
+                <div className="w-full h-[4px] bg-[#FFFFFF]" />
               </div>
               <div className="mt-[24px] flex items-center gap-1">
                 <a
