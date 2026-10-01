@@ -545,7 +545,7 @@ export default function TrailerPage() {
           {/* Content */}
           <div className="relative z-10 p-3 md:p-4 flex flex-col gap-3">
             <div className="flex items-start justify-between">
-              <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-white uppercase">
+              <p className="font-[family-name:var(--font-heading)] text-[20px] md:text-[24px] tracking-[1.92px] text-white uppercase">
                 Reveal Trailer
               </p>
               {/* CTA - Voir les screenshots */}
@@ -556,7 +556,7 @@ export default function TrailerPage() {
                 VIEW SCREENSHOTS
               </button>
             </div>
-            <h1 className="font-[family-name:var(--font-heading)] text-[36px] md:text-[72px] leading-none tracking-[4px] md:tracking-[6.4px] uppercase w-full">
+            <h1 className="font-[family-name:var(--font-heading)] text-[28px] md:text-[72px] leading-none tracking-[4px] md:tracking-[6.4px] uppercase w-full">
               Elta: Defy All Gods
             </h1>
 
@@ -564,7 +564,7 @@ export default function TrailerPage() {
               {["Gamescom 2026", "Unreal", "3D animation", "Action cinematic"].map((tag) => (
                 <span
                   key={tag}
-                  className="font-[family-name:var(--font-body)] text-[16px] md:text-[20px] tracking-[1.6px] border border-white rounded-full px-3 py-1"
+                  className="font-[family-name:var(--font-body)] text-[14px] md:text-[20px] tracking-[1.6px] border border-white rounded-full px-3 py-1"
                 >
                   {tag}
                 </span>
