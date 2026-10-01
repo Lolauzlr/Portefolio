@@ -11,6 +11,10 @@ import { useEffect, useRef, useState } from "react";
 // unmute programmatically: without a gesture the browser answers by pausing the
 // video. Desktop (hover + fine pointer) can autoplay with sound, so it is left
 // unmuted and shows no button.
+// Age-restricted videos open on YouTube's own age-confirmation screen, where
+// an "Activer le son" button makes no sense, so they never get one.
+const AGE_RESTRICTED_VIDEO_IDS = ["ZPQFsx9XXoM"]; // RESONANCE : A PLAGUE TALE LEGACY • GAMEPLAY
+
 function canAutoplayWithSound(): boolean {
   return typeof window !== "undefined" && window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 }
@@ -51,6 +55,7 @@ export default function VideoModal({
   const [withSound] = useState(canAutoplayWithSound);
   // The "Activer le son" button shows only while the video is muted.
   const [muted, setMuted] = useState(!withSound);
+  const ageRestricted = AGE_RESTRICTED_VIDEO_IDS.some((id) => src.includes(id));
   // ...and leaves together with YouTube's own controls, which fade shortly after
   // playback starts. The player doesn't report control visibility, so the
   // timer starts on the first "playing" state, with a fallback if it never
@@ -124,7 +129,7 @@ export default function VideoModal({
           allowFullScreen
           style={{ border: 0 }}
         />
-        {muted && !hintExpired && (
+        {muted && !ageRestricted && !hintExpired && (
           <button
             onClick={enableSound}
             className="absolute bottom-[5.25rem] right-[4.25rem] z-10 flex w-max items-center gap-2 whitespace-nowrap rounded-full bg-black/60 px-4 py-2 text-sm text-white cursor-pointer"
