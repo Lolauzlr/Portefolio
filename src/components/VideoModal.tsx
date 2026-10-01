@@ -2,20 +2,22 @@
 
 import { useEffect, useRef } from "react";
 
-// The embed is a plain iframe created synchronously by the click that opens
-// the modal, with autoplay delegated through `allow`, so browsers treat it as
-// user-initiated and start it with sound whenever they allow it. Some mobile
-// browsers (iOS Safari) still refuse unmuted autoplay in a cross-origin iframe
-// and would leave a paused player needing a second tap. To guarantee "click =
-// it plays", the iframe is watched through YouTube's postMessage API (no
-// script load, so the click's user activation is not lost): if playback
-// hasn't started shortly after load, it is muted and started. The viewer can
-// unmute from YouTube's own controls.
-const AUTOPLAY_CHECK_MS = 1200;
-
-function withAutoplay(src: string): string {
+// Mobile browsers block unmuted autoplay for cross-origin iframes even when
+// the iframe is created from a click, so an autoplay=1 embed without mute=1
+// silently fails to start and looks like it needs a second tap directly on
+// YouTube's own play button. Muted autoplay is always allowed, so the video
+// always starts on the first click.
+//
+// Sound is then requested on top of that, without ever risking the start:
+// once the player reports it is playing, an unMute command is sent through
+// YouTube's postMessage API. If the browser allows it (the opening click gave
+// the page user activation) the video simply carries on with sound; if the
+// browser pauses it instead, it is muted and resumed right away so the video
+// never ends up stopped. The visitor can still mute/unmute from YouTube's
+// own controls.
+function withMutedAutoplay(src: string): string {
   let out = src;
-  if (!/[?&]autoplay=/.test(out)) out += `${out.includes("?") ? "&" : "?"}autoplay=1`;
+  if (!/[?&]mute=/.test(out)) out += `${out.includes("?") ? "&" : "?"}mute=1`;
   if (!/[?&]enablejsapi=/.test(out)) out += "&enablejsapi=1";
   return out;
 }
@@ -39,41 +41,40 @@ export default function VideoModal({
   useEffect(() => {
     const frame = iframeRef.current;
     if (!frame) return;
-    let started = false;
-    let timer: ReturnType<typeof setTimeout> | undefined;
+    let unmutedAt = 0;
+    let gaveUp = false;
 
     const send = (func: string) =>
       frame.contentWindow?.postMessage(JSON.stringify({ event: "command", func, args: "" }), "*");
 
     const onMessage = (e: MessageEvent) => {
       if (e.source !== frame.contentWindow || typeof e.data !== "string") return;
+      let state: number | undefined;
       try {
         const data = JSON.parse(e.data);
-        const state = data.event === "onStateChange" ? data.info : data.info?.playerState;
-        // 1 = playing, 3 = buffering
-        if (state === 1 || state === 3) started = true;
+        state = data.event === "onStateChange" ? data.info : data.info?.playerState;
       } catch {
-        // not a YouTube player message
+        return;
+      }
+      if (state === 1 && !unmutedAt && !gaveUp) {
+        unmutedAt = Date.now();
+        send("unMute");
+      } else if (state === 2 && unmutedAt && !gaveUp && Date.now() - unmutedAt < 2000) {
+        // The browser paused the video when it was unmuted: keep it playing.
+        gaveUp = true;
+        send("mute");
+        send("playVideo");
       }
     };
     window.addEventListener("message", onMessage);
 
     const onLoad = () => {
-      // Subscribe to player state events.
       frame.contentWindow?.postMessage(JSON.stringify({ event: "listening", id: 1, channel: "widget" }), "*");
-      timer = setTimeout(() => {
-        if (!started) {
-          send("mute");
-          send("playVideo");
-        }
-      }, AUTOPLAY_CHECK_MS);
     };
     frame.addEventListener("load", onLoad);
-
     return () => {
       window.removeEventListener("message", onMessage);
       frame.removeEventListener("load", onLoad);
-      if (timer) clearTimeout(timer);
     };
   }, [src]);
 
@@ -100,10 +101,9 @@ export default function VideoModal({
         <iframe
           ref={iframeRef}
           className="w-full h-full"
-          src={withAutoplay(src)}
+          src={withMutedAutoplay(src)}
           title={title}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; fullscreen; gyroscope; picture-in-picture; web-share"
-          referrerPolicy="strict-origin-when-cross-origin"
+          allow="autoplay; encrypted-media; fullscreen"
           allowFullScreen
           style={{ border: 0 }}
         />

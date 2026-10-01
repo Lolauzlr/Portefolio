@@ -417,16 +417,6 @@ export default function TrailerPage() {
     return () => window.removeEventListener("touchstart", kick);
   }, []);
 
-  // Pause the muted hero loop while a video is open in the modal so the two
-  // never compete for playback/audio (notably on iOS); resume on close
-  // unless the visitor paused the hero themselves.
-  useEffect(() => {
-    const player = playerRef.current;
-    if (!player) return;
-    if (videoModal) player.pauseVideo();
-    else if (!userPausedRef.current) player.playVideo();
-  }, [videoModal]);
-
   const togglePlay = () => {
     if (!playerRef.current) return;
     if (isPlaying) {
