@@ -1,14 +1,17 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { loadYouTubeApi } from "@/lib/youtubeApi";
 
-// The video starts with sound: the modal is always opened by a click, which
-// grants the user activation YouTube needs to autoplay unmuted. Some mobile
-// browsers still refuse unmuted autoplay in a cross-origin iframe, though, and
-// would leave a paused player needing a second tap — so if playback hasn't
-// started shortly after load, fall back to muted autoplay (the viewer can
-// unmute from YouTube's own controls, which stay available either way).
+// Desktop: the video starts with sound — the modal is opened by a click, which
+// grants the user activation YouTube needs to autoplay unmuted. If playback
+// hasn't started shortly after load, fall back to muted autoplay.
+// Touch devices (iOS especially) never allow unmuted autoplay in a
+// cross-origin iframe, because the player becomes ready after the tap's user
+// activation has expired. There the video starts muted straight away
+// (guaranteed to play) and an "Activer le son" button — a fresh tap, so
+// allowed to unmute — turns the sound on in one touch. YouTube's own controls
+// stay available to mute/unmute either way.
 const AUTOPLAY_CHECK_MS = 1500;
 
 function youtubeIdFromSrc(src: string): string | null {
@@ -23,13 +26,17 @@ function withMutedAutoplay(src: string): string {
 
 function YouTubePlayer({ videoId, title }: { videoId: string; title: string }) {
   const hostRef = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<YT.Player | null>(null);
+  const [muted, setMuted] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     let player: YT.Player | null = null;
     let timer: ReturnType<typeof setTimeout> | undefined;
+    let poll: ReturnType<typeof setInterval> | undefined;
     const host = hostRef.current;
     if (!host) return;
+    const touch = window.matchMedia("(pointer: coarse)").matches;
 
     loadYouTubeApi().then(() => {
       if (cancelled) return;
@@ -40,17 +47,23 @@ function YouTubePlayer({ videoId, title }: { videoId: string; title: string }) {
         videoId,
         width: "100%",
         height: "100%",
-        playerVars: { autoplay: 1, rel: 0, playsinline: 1, modestbranding: 1 },
+        playerVars: { autoplay: 1, mute: touch ? 1 : 0, rel: 0, playsinline: 1, modestbranding: 1 },
         events: {
           onReady: (e) => {
+            playerRef.current = e.target;
+            if (touch) e.target.mute();
             e.target.playVideo();
-            timer = setTimeout(() => {
-              const state = e.target.getPlayerState();
-              if (state !== YT.PlayerState.PLAYING && state !== YT.PlayerState.BUFFERING) {
-                e.target.mute();
-                e.target.playVideo();
-              }
-            }, AUTOPLAY_CHECK_MS);
+            // Track mute state (also changes from YouTube's own controls).
+            poll = setInterval(() => setMuted(e.target.isMuted()), 400);
+            if (!touch) {
+              timer = setTimeout(() => {
+                const state = e.target.getPlayerState();
+                if (state !== YT.PlayerState.PLAYING && state !== YT.PlayerState.BUFFERING) {
+                  e.target.mute();
+                  e.target.playVideo();
+                }
+              }, AUTOPLAY_CHECK_MS);
+            }
           },
         },
       });
@@ -59,13 +72,36 @@ function YouTubePlayer({ videoId, title }: { videoId: string; title: string }) {
     return () => {
       cancelled = true;
       if (timer) clearTimeout(timer);
+      if (poll) clearInterval(poll);
+      playerRef.current = null;
       player?.destroy();
       host.replaceChildren();
     };
   }, [videoId]);
 
   return (
-    <div ref={hostRef} className="w-full h-full [&_iframe]:w-full [&_iframe]:h-full" aria-label={title} />
+    <div className="relative w-full h-full" aria-label={title}>
+      <div ref={hostRef} className="w-full h-full [&_iframe]:w-full [&_iframe]:h-full" />
+      {muted && (
+        <button
+          type="button"
+          onClick={() => {
+            playerRef.current?.unMute();
+            playerRef.current?.playVideo();
+            setMuted(false);
+          }}
+          className="absolute top-3 left-3 z-10 flex items-center gap-2 rounded-full bg-black/60 backdrop-blur-sm px-4 py-2 font-[family-name:var(--font-heading)] text-[16px] tracking-[1.28px] text-white uppercase hover:bg-black/80 transition-colors cursor-pointer"
+          aria-label="Activer le son"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
+            <line x1="23" y1="9" x2="17" y2="15" />
+            <line x1="17" y1="9" x2="23" y2="15" />
+          </svg>
+          Activer le son
+        </button>
+      )}
+    </div>
   );
 }
 

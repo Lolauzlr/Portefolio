@@ -34,6 +34,7 @@ declare namespace YT {
     pauseVideo(): void;
     mute(): void;
     unMute(): void;
+    isMuted(): boolean;
     getPlayerState(): number;
     destroy(): void;
   }
