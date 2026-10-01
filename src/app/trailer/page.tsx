@@ -23,6 +23,7 @@ export default function TrailerPage() {
   const [cadreSize, setCadreSize] = useState({ w: 792, h: 201 });
   const [watchSizes, setWatchSizes] = useState<Record<string, { w: number; h: number }>>({});
   const playerRef = useRef<YT.Player | null>(null);
+  const userPausedRef = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const cadreRef = useRef<HTMLDivElement>(null);
@@ -333,21 +334,26 @@ export default function TrailerPage() {
 
   const onPlayerReady = useCallback((event: YT.PlayerEvent) => {
     event.target.mute();
+    setIsMuted(true);
     event.target.playVideo();
   }, []);
 
+  // Keep the play/pause UI in sync with what the player is really doing:
+  // mobile browsers can refuse or interrupt autoplay, in which case the
+  // play button must show instead of a "pause" state that isn't true.
   const onPlayerStateChange = useCallback((event: YT.OnStateChangeEvent) => {
     if (event.data === YT.PlayerState.ENDED) {
       event.target.playVideo();
+    } else if (event.data === YT.PlayerState.PLAYING) {
+      setIsPlaying(true);
+    } else if (event.data === YT.PlayerState.PAUSED) {
+      setIsPlaying(false);
     }
   }, []);
 
   useEffect(() => {
-    const tag = document.createElement("script");
-    tag.src = "https://www.youtube.com/iframe_api";
-    document.head.appendChild(tag);
-
-    (window as unknown as Record<string, unknown>).onYouTubeIframeAPIReady = () => {
+    const createPlayer = () => {
+      if (playerRef.current) return;
       playerRef.current = new YT.Player("yt-bg-player", {
         videoId: "OLEZv_Qyb6Q",
         playerVars: {
@@ -369,16 +375,50 @@ export default function TrailerPage() {
         },
       });
     };
+
+    // The IFrame API script only runs its ready callback on first load, so
+    // when arriving here by client-side navigation (API already loaded) the
+    // player must be created directly or the hero video never starts.
+    if (typeof YT !== "undefined" && YT.Player) {
+      createPlayer();
+    } else {
+      (window as unknown as Record<string, unknown>).onYouTubeIframeAPIReady = createPlayer;
+      if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
+        const tag = document.createElement("script");
+        tag.src = "https://www.youtube.com/iframe_api";
+        document.head.appendChild(tag);
+      }
+    }
+
+    return () => {
+      playerRef.current?.destroy();
+      playerRef.current = null;
+    };
   }, [onPlayerReady, onPlayerStateChange]);
+
+  // Fallback when the browser blocks autoplay (e.g. iOS low-power mode):
+  // start the muted video on the first touch anywhere on the page.
+  useEffect(() => {
+    const kick = () => {
+      const player = playerRef.current;
+      if (player && player.getPlayerState?.() !== YT.PlayerState.PLAYING && !userPausedRef.current) {
+        player.mute();
+        player.playVideo();
+      }
+    };
+    window.addEventListener("touchstart", kick, { once: true, passive: true });
+    return () => window.removeEventListener("touchstart", kick);
+  }, []);
 
   const togglePlay = () => {
     if (!playerRef.current) return;
     if (isPlaying) {
+      userPausedRef.current = true;
       playerRef.current.pauseVideo();
     } else {
+      userPausedRef.current = false;
       playerRef.current.playVideo();
     }
-    setIsPlaying(!isPlaying);
   };
 
   const toggleMute = () => {
