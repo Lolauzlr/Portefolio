@@ -39,12 +39,11 @@ function VideoCard({
       }}
     >
       {youtubeId && hovered ? (
-        // Native YouTube controls enabled (scrub bar + seeking). YouTube's
-        // own control bar already includes a fullscreen button, so no
-        // separate expand affordance is needed here.
+        // Same as the trailer cards: the preview iframe ignores pointer
+        // events so the click reaches the card and opens the fullscreen modal.
         <iframe
-          className="w-full h-full"
-          src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&modestbranding=1&rel=0&showinfo=0`}
+          className="w-full h-full pointer-events-none"
+          src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
           title={title}
           allow="autoplay; encrypted-media"
           style={{ border: 0 }}
@@ -83,7 +82,7 @@ function VideoCard({
 }
 
 export default function MoviesPage() {
-  const [videoModal, setVideoModal] = useState<{ url: string; title: string } | null>(null);
+  const [videoModal, setVideoModal] = useState<{ url: string; title: string; fullWidth?: boolean } | null>(null);
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -192,7 +191,7 @@ export default function MoviesPage() {
           youtubeId="BFLlIR9A8DY"
           title="SAINT EX"
           className="w-full"
-          onPlay={() => setVideoModal({ url: "https://www.youtube.com/embed/BFLlIR9A8DY?autoplay=1&rel=0", title: "SAINT EX" })}
+          onPlay={() => setVideoModal({ url: "https://www.youtube.com/embed/BFLlIR9A8DY?autoplay=1&rel=0", title: "SAINT EX", fullWidth: true })}
         />
         <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px] mt-4 md:mt-6 mb-2">
           SAINT EX
@@ -230,7 +229,7 @@ export default function MoviesPage() {
                   title={doc.title}
                   externalUrl={doc.externalUrl}
                   className="w-full"
-                  onPlay={doc.embedUrl ? () => setVideoModal({ url: doc.embedUrl!, title: doc.title }) : undefined}
+                  onPlay={doc.embedUrl ? () => setVideoModal({ url: doc.embedUrl!, title: doc.title, fullWidth: true }) : undefined}
                 />
                 {doc.belowImageText && (
                   <p className="text-[#DADADA] text-base font-[family-name:var(--font-body)] tracking-[1.28px] italic">
@@ -254,7 +253,7 @@ export default function MoviesPage() {
 
       {/* Video Modal */}
       {videoModal && (
-        <VideoModal src={videoModal.url} title={videoModal.title} onClose={() => setVideoModal(null)} />
+        <VideoModal src={videoModal.url} title={videoModal.title} fullWidth={videoModal.fullWidth} onClose={() => setVideoModal(null)} />
       )}
     </div>
   );
