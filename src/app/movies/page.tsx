@@ -1,102 +1,29 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { asset } from "@/lib/asset";
-import { useSupportsHover } from "@/hooks/useSupportsHover";
-import VideoModal from "@/components/VideoModal";
+import VideoCard from "@/components/VideoCard";
 
-function VideoCard({
-  youtubeId,
-  thumbnail,
-  title,
-  externalUrl,
-  onPlay,
-  className,
-}: {
-  youtubeId?: string;
-  thumbnail?: string;
-  title: string;
-  externalUrl?: string;
-  onPlay?: () => void;
-  className?: string;
-}) {
-  const supportsHover = useSupportsHover();
-  const [hovered, setHovered] = useState(false);
-
+function ExternalCard({ thumbnail, title, externalUrl }: { thumbnail?: string; title: string; externalUrl?: string }) {
   return (
     <div
-      className={`relative aspect-video cursor-pointer group overflow-hidden ${className || ""}`}
-      // Skipping these two handlers entirely on touch-only devices (rather
-      // than attaching them and gating in onClick) matters: WebKit treats
-      // any element with a mouseenter/mouseover listener as hover-aware and
-      // eats the first tap to simulate that hover, only firing click on a
-      // second tap. With no listener attached, the first tap fires click
-      // immediately.
-      {...(supportsHover ? { onMouseEnter: () => setHovered(true), onMouseLeave: () => setHovered(false) } : {})}
-      onClick={() => {
-        if (onPlay) onPlay();
-        else if (externalUrl) window.open(externalUrl, "_blank", "noopener,noreferrer");
-      }}
+      className="relative aspect-video cursor-pointer group overflow-hidden w-full"
+      onClick={() => externalUrl && window.open(externalUrl, "_blank", "noopener,noreferrer")}
     >
-      {youtubeId && hovered ? (
-        // Same as the trailer cards: the preview iframe ignores pointer
-        // events so the click reaches the card and opens the fullscreen modal.
-        <iframe
-          className="w-full h-full pointer-events-none"
-          src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
-          title={title}
-          allow="autoplay; encrypted-media"
-          style={{ border: 0 }}
-        />
-      ) : (
-        <>
-          {youtubeId ? (
-            <img
-              src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`}
-              alt={title}
-              className="w-full h-full object-cover"
-              onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`; }}
-            />
-          ) : thumbnail ? (
-            <img
-              src={asset(thumbnail)}
-              alt={title}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full bg-[#1a1a2e] flex items-center justify-center">
-              <span className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-white/60">
-                {title}
-              </span>
-            </div>
-          )}
-          <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <svg className="w-20 h-20 text-white drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          </div>
-        </>
-      )}
+      {thumbnail && <img src={asset(thumbnail)} alt={title} className="w-full h-full object-cover" />}
+      <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+        <svg className="w-20 h-20 text-white drop-shadow-lg" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M8 5v14l11-7z" />
+        </svg>
+      </div>
     </div>
   );
 }
 
 export default function MoviesPage() {
-  const [videoModal, setVideoModal] = useState<{ url: string; title: string; fullWidth?: boolean } | null>(null);
-
-  useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && videoModal) setVideoModal(null);
-    };
-    window.addEventListener("keydown", handleEsc);
-    return () => window.removeEventListener("keydown", handleEsc);
-  }, [videoModal]);
-
   const documentaries: {
     youtubeId?: string;
     thumbnail?: string;
     title: string;
-    embedUrl?: string;
     externalUrl?: string;
     reversed: boolean;
     description: React.ReactNode;
@@ -105,7 +32,6 @@ export default function MoviesPage() {
     {
       youtubeId: "M7PfKwiQL_w",
       title: "IL ETAIT UNE FOIS LE MUSEE DU LOUVRE",
-      embedUrl: "https://www.youtube.com/embed/M7PfKwiQL_w?autoplay=1&rel=0",
       reversed: false,
       description: (
         <>
@@ -187,12 +113,7 @@ export default function MoviesPage() {
           FEATURES FILMS
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-6 md:mb-10" />
-        <VideoCard
-          youtubeId="BFLlIR9A8DY"
-          title="SAINT EX"
-          className="w-full"
-          onPlay={() => setVideoModal({ url: "https://www.youtube.com/embed/BFLlIR9A8DY?autoplay=1&rel=0", title: "SAINT EX", fullWidth: true })}
-        />
+        <VideoCard videoId="BFLlIR9A8DY" title="SAINT EX" />
         <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px] mt-4 md:mt-6 mb-2">
           SAINT EX
         </h3>
@@ -223,14 +144,11 @@ export default function MoviesPage() {
               }`}
             >
               <div className="flex flex-col gap-3 w-full md:w-[792px] flex-shrink-0">
-                <VideoCard
-                  youtubeId={doc.youtubeId}
-                  thumbnail={doc.thumbnail}
-                  title={doc.title}
-                  externalUrl={doc.externalUrl}
-                  className="w-full"
-                  onPlay={doc.embedUrl ? () => setVideoModal({ url: doc.embedUrl!, title: doc.title, fullWidth: true }) : undefined}
-                />
+                {doc.youtubeId ? (
+                  <VideoCard videoId={doc.youtubeId} title={doc.title} />
+                ) : (
+                  <ExternalCard thumbnail={doc.thumbnail} title={doc.title} externalUrl={doc.externalUrl} />
+                )}
                 {doc.belowImageText && (
                   <p className="text-[#DADADA] text-base font-[family-name:var(--font-body)] tracking-[1.28px] italic">
                     {doc.belowImageText}
@@ -250,11 +168,6 @@ export default function MoviesPage() {
           ))}
         </div>
       </section>
-
-      {/* Video Modal */}
-      {videoModal && (
-        <VideoModal src={videoModal.url} title={videoModal.title} fullWidth={videoModal.fullWidth} onClose={() => setVideoModal(null)} />
-      )}
     </div>
   );
 }
