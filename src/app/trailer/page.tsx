@@ -38,7 +38,6 @@ export default function TrailerPage() {
     () => false
   );
   const tiktokRef = useRef<HTMLIFrameElement>(null);
-  const [tiktokPlaying, setTiktokPlaying] = useState(false);
   const playerRef = useRef<YT.Player | null>(null);
   const userPausedRef = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -446,7 +445,6 @@ export default function TrailerPage() {
       if (t === "onPlayerReady") start();
       else if (t === "onStateChange" && e.data?.value === 1) {
         playing = true;
-        setTiktokPlaying(true);
       }
     };
     window.addEventListener("message", onMessage);
@@ -509,17 +507,7 @@ export default function TrailerPage() {
               src="https://www.tiktok.com/embed/v2/7678030532122266902?autoplay=1&muted=1&loop=1"
               title="ELTA: DEFY ALL GODS • REVEAL TRAILER"
               allow="autoplay; encrypted-media; fullscreen"
-              onLoad={() => setTiktokPlaying(true)}
               style={{ border: 0 }}
-            />
-          )}
-          {/* Poster shown until the TikTok embed has loaded (or reports playing), so the hero
-              is never an empty dark block if the embed is slow or blocked. */}
-          {isMobile && !tiktokPlaying && (
-            <img
-              src="https://img.youtube.com/vi/OLEZv_Qyb6Q/maxresdefault.jpg"
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover"
             />
           )}
           <div
