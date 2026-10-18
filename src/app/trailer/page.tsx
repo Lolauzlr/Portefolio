@@ -506,13 +506,14 @@ export default function TrailerPage() {
             <iframe
               ref={tiktokRef}
               className="absolute inset-0 w-full h-full"
-              src="https://www.tiktok.com/player/v1/7678030532122266902?autoplay=1&loop=1&muted=1&controls=0&music_info=0&description=0&rel=0&fullscreen_button=0&progress_bar=0&play_button=0&volume_control=0&timestamp=0"
+              src="https://www.tiktok.com/embed/v2/7678030532122266902?autoplay=1&muted=1&loop=1"
               title="ELTA: DEFY ALL GODS • REVEAL TRAILER"
-              allow="autoplay; encrypted-media"
+              allow="autoplay; encrypted-media; fullscreen"
+              onLoad={() => setTiktokPlaying(true)}
               style={{ border: 0 }}
             />
           )}
-          {/* Poster shown until the TikTok player actually plays, so the hero
+          {/* Poster shown until the TikTok embed has loaded (or reports playing), so the hero
               is never an empty dark block if the embed is slow or blocked. */}
           {isMobile && !tiktokPlaying && (
             <img
