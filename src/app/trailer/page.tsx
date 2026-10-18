@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useSyncExternalStore } from "react";
 import { asset } from "@/lib/asset";
 import { useSwipeNav } from "@/hooks/useSwipeNav";
 import VideoModal from "@/components/VideoModal";
@@ -29,6 +29,15 @@ export default function TrailerPage() {
   const [showPause, setShowPause] = useState(false);
   const [cadreSize, setCadreSize] = useState({ w: 792, h: 201 });
   const [watchSizes, setWatchSizes] = useState<Record<string, { w: number; h: number }>>({});
+  // Phones show the TikTok cut of the reveal trailer in the hero instead of the
+  // YouTube background player (which mobile browsers refuse to autoplay);
+  // tapping the hero still opens the YouTube video in the modal.
+  const isMobile = useSyncExternalStore(
+    () => () => {},
+    () => window.matchMedia("(max-width: 767px)").matches,
+    () => false
+  );
+  const tiktokRef = useRef<HTMLIFrameElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
   const userPausedRef = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -359,6 +368,7 @@ export default function TrailerPage() {
   }, []);
 
   useEffect(() => {
+    if (window.matchMedia("(max-width: 767px)").matches) return;
     const createPlayer = () => {
       if (playerRef.current) return;
       playerRef.current = new YT.Player("yt-bg-player", {
@@ -429,6 +439,14 @@ export default function TrailerPage() {
   };
 
   const toggleMute = () => {
+    if (isMobile) {
+      tiktokRef.current?.contentWindow?.postMessage(
+        { type: isMuted ? "unMute" : "mute", "x-tiktok-player": true },
+        "*"
+      );
+      setIsMuted(!isMuted);
+      return;
+    }
     if (!playerRef.current) return;
     if (isMuted) {
       playerRef.current.unMute();
@@ -451,6 +469,16 @@ export default function TrailerPage() {
           ref={containerRef}
           className="absolute inset-0 overflow-hidden pointer-events-none"
         >
+          {isMobile && (
+            <iframe
+              ref={tiktokRef}
+              className="absolute inset-0 w-full h-full"
+              src="https://www.tiktok.com/player/v1/7678030532122266902?autoplay=1&loop=1&muted=1&controls=0&music_info=0&description=0&rel=0&fullscreen_button=0&progress_bar=0&play_button=0&volume_control=0&timestamp=0"
+              title="ELTA: DEFY ALL GODS • REVEAL TRAILER"
+              allow="autoplay; encrypted-media"
+              style={{ border: 0 }}
+            />
+          )}
           <div
             id="yt-bg-player"
             className="absolute top-1/2 left-1/2 w-[316.05vw] h-[177.78vw] -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full md:w-[177.78vh] md:h-[100vh] md:min-w-full md:min-h-full"
