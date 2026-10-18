@@ -427,6 +427,35 @@ export default function TrailerPage() {
     return () => window.removeEventListener("touchstart", kick);
   }, []);
 
+  // Mobile hero (TikTok): autoplay=1 alone is not always honoured, so once the
+  // TikTok player reports ready (or on load, with retries) explicitly send it
+  // mute + play, and fall back to the first touch if the browser still blocks it.
+  useEffect(() => {
+    if (!isMobile) return;
+    const send = (type: string) =>
+      tiktokRef.current?.contentWindow?.postMessage({ type, "x-tiktok-player": true }, "*");
+    let playing = false;
+    const start = () => {
+      send("mute");
+      send("play");
+    };
+    const onMessage = (e: MessageEvent) => {
+      if (e.source !== tiktokRef.current?.contentWindow) return;
+      const t = e.data?.type;
+      if (t === "onPlayerReady") start();
+      else if (t === "onStateChange" && e.data?.value === 1) playing = true;
+    };
+    window.addEventListener("message", onMessage);
+    const timers = [500, 1500, 3000, 5000].map((ms) => window.setTimeout(() => { if (!playing) start(); }, ms));
+    const kick = () => start();
+    window.addEventListener("touchstart", kick, { once: true, passive: true });
+    return () => {
+      window.removeEventListener("message", onMessage);
+      window.removeEventListener("touchstart", kick);
+      timers.forEach(window.clearTimeout);
+    };
+  }, [isMobile]);
+
   const togglePlay = () => {
     if (!playerRef.current) return;
     if (isPlaying) {
