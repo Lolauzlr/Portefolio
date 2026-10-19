@@ -11,6 +11,14 @@ const PLAYER_W = 3840;
 const PLAYER_H = 2160;
 const TARGET_QUALITY = "hd2160";
 
+// Undocumented-but-working on many builds: lock the quality range to 4K, then
+// also use the legacy setter. Both may be ignored by YouTube, so this is
+// retried a few times after playback starts (it often resets the quality).
+function requestMaxQuality(player: YT.Player) {
+  player.setPlaybackQualityRange?.(TARGET_QUALITY, TARGET_QUALITY);
+  player.setPlaybackQuality(TARGET_QUALITY);
+}
+
 export default function HomeHeroSection() {
   const [videoModal, setVideoModal] = useState<{ videoId: string; title: string; fullWidth?: boolean } | null>(null);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -70,8 +78,7 @@ export default function HomeHeroSection() {
   const onPlayerReady = useCallback((event: YT.PlayerEvent) => {
     event.target.mute();
     setIsMuted(true);
-    // Deprecated by YouTube and often ignored, but free to try.
-    event.target.setPlaybackQuality(TARGET_QUALITY);
+    requestMaxQuality(event.target);
     event.target.playVideo();
   }, []);
 
@@ -83,7 +90,9 @@ export default function HomeHeroSection() {
       event.target.playVideo();
     } else if (event.data === YT.PlayerState.PLAYING) {
       setIsPlaying(true);
-      event.target.setPlaybackQuality(TARGET_QUALITY);
+      const player = event.target;
+      requestMaxQuality(player);
+      [1000, 3000].forEach((delay) => setTimeout(() => playerRef.current && requestMaxQuality(player), delay));
     } else if (event.data === YT.PlayerState.PAUSED) {
       setIsPlaying(false);
     }
