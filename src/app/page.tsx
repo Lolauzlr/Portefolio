@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { asset } from "@/lib/asset";
+import { LightboxImg, LightboxProvider, type LightboxSlide } from "@/components/IllustrationLightbox";
 import HomeHeroSection from "@/components/HomeHeroSection";
 import HomeMoviesSection from "@/components/HomeMoviesSection";
 import HomeTrailerSection from "@/components/HomeTrailerSection";
@@ -11,6 +12,11 @@ import { oldKnightSlides, nabilHarrowSlides } from "@/data/storytelling";
 
 const loremIpsum =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula.";
+
+const illustrationSlides: LightboxSlide[] = [
+  { src: "/images/illustrations/illus-35.webp", alt: "Illustration" },
+  { src: "/images/illustrations/illus-1.webp", alt: "Illustration" },
+];
 
 const storytellingCards = [
   { title: "OLD KNIGHT", label: "Manga", slides: oldKnightSlides, widthClassName: "md:w-[372px]", aspectClassName: "aspect-[372/525]" },
@@ -61,13 +67,14 @@ export default function Home() {
       <HomeTrailerSection />
 
       {/* Illustrations */}
+      <LightboxProvider slides={illustrationSlides}>
       <section className="py-6 md:py-[60px] bg-[#131313] px-3 md:px-[120px]">
         <SectionTitle>ILLUSTRATIONS</SectionTitle>
         <div className="flex flex-col gap-[24px] md:gap-[40px]">
           {/* Featured illustration */}
           <div className="flex flex-col md:flex-row gap-6 md:gap-10">
             <div className="relative md:w-[587px] h-[500px] md:h-[662px] shrink-0">
-              <img src={asset("/images/illustrations/illus-35.webp")} alt="Illustration" className="absolute inset-0 w-full h-full object-cover" />
+              <LightboxImg src="/images/illustrations/illus-35.webp" alt="Illustration" className="absolute inset-0 w-full h-full object-cover" />
             </div>
             <div className="flex flex-col justify-between flex-1">
               <div className="flex flex-col gap-4 md:gap-6">
@@ -81,13 +88,14 @@ export default function Home() {
                   I don&apos;t have one fixed way of working. I choose the medium depending on what I want to express, whether it&apos;s a particular mood, texture, character or atmosphere. I enjoy moving from one technique to another, experimenting and sometimes combining them. I believe the visual style should grow naturally from the story.
                 </p>
               </div>
-              <img src={asset("/images/illustrations/illus-1.webp")} alt="" className="w-full h-[322px] object-cover mt-4 md:mt-6" />
+              <LightboxImg src="/images/illustrations/illus-1.webp" alt="" className="w-full h-[322px] object-cover mt-4 md:mt-6" />
             </div>
           </div>
 
           <ToutVoirLink href="/illustrations" />
         </div>
       </section>
+      </LightboxProvider>
 
       {/* Movies */}
       <HomeMoviesSection />
