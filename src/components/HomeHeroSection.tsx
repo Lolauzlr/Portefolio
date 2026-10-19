@@ -5,6 +5,11 @@ import VideoModal from "@/components/VideoModal";
 
 const HERO_VIDEO_ID = "yfCtiQ93gis";
 const HERO_VIDEO_TITLE = "HERO VIDEO";
+// YouTube picks the stream resolution from the player's size, so the player
+// is rendered at 4K and scaled down with CSS to nudge it toward high quality.
+const PLAYER_W = 3840;
+const PLAYER_H = 2160;
+const TARGET_QUALITY = "hd2160";
 
 export default function HomeHeroSection() {
   const [videoModal, setVideoModal] = useState<{ videoId: string; title: string; fullWidth?: boolean } | null>(null);
@@ -15,6 +20,19 @@ export default function HomeHeroSection() {
   const userPausedRef = useRef(false);
   const heroRef = useRef<HTMLElement>(null);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [playerScale, setPlayerScale] = useState(0.5);
+
+  // Scale the 4K player so it covers the hero frame (same crop as object-cover).
+  useEffect(() => {
+    const hero = heroRef.current;
+    if (!hero) return;
+    const ro = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      setPlayerScale(Math.max(width / PLAYER_W, height / PLAYER_H));
+    });
+    ro.observe(hero);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     const hero = heroRef.current;
@@ -52,6 +70,8 @@ export default function HomeHeroSection() {
   const onPlayerReady = useCallback((event: YT.PlayerEvent) => {
     event.target.mute();
     setIsMuted(true);
+    // Deprecated by YouTube and often ignored, but free to try.
+    event.target.setPlaybackQuality(TARGET_QUALITY);
     event.target.playVideo();
   }, []);
 
@@ -63,6 +83,7 @@ export default function HomeHeroSection() {
       event.target.playVideo();
     } else if (event.data === YT.PlayerState.PLAYING) {
       setIsPlaying(true);
+      event.target.setPlaybackQuality(TARGET_QUALITY);
     } else if (event.data === YT.PlayerState.PAUSED) {
       setIsPlaying(false);
     }
@@ -73,6 +94,8 @@ export default function HomeHeroSection() {
       if (playerRef.current) return;
       playerRef.current = new YT.Player("yt-home-hero-player", {
         videoId: HERO_VIDEO_ID,
+        width: PLAYER_W,
+        height: PLAYER_H,
         playerVars: {
           autoplay: 1,
           mute: 1,
@@ -154,9 +177,15 @@ export default function HomeHeroSection() {
         {/* YouTube video background via API */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div
-            id="yt-home-hero-player"
-            className="absolute top-1/2 left-1/2 w-[316.05vw] h-[177.78vw] -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full md:inset-0 md:top-0 md:left-0 md:translate-x-0 md:translate-y-0 md:w-full md:h-full"
-          />
+            className="absolute top-1/2 left-1/2"
+            style={{
+              width: PLAYER_W,
+              height: PLAYER_H,
+              transform: `translate(-50%, -50%) scale(${playerScale})`,
+            }}
+          >
+            <div id="yt-home-hero-player" />
+          </div>
         </div>
 
         {/* Click zone - opens the full-width video overlay */}
