@@ -303,7 +303,18 @@ export default function HomeTrailerSection() {
                   by the info panel below or taking over the whole screen;
                   desktop keeps its original flexible-height, letterboxed
                   layout. */}
-              <div {...swipeHandlers} className="touch-pan-y trailer-stage relative w-full h-[60vh] md:h-auto md:aspect-auto md:flex-1 flex items-center justify-center min-h-0">
+              <div
+                {...swipeHandlers}
+                // Click/tap on the left or right half of the image to go to the
+                // previous / next screenshot (arrows stop propagation).
+                onClick={(e) => {
+                  if (screenshotsData.screenshots.length < 2) return;
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const count = screenshotsData.screenshots.length;
+                  if (e.clientX < rect.left + rect.width / 2) setScreenshotIndex((i) => (i - 1 + count) % count);
+                  else setScreenshotIndex((i) => (i + 1) % count);
+                }}
+                className="cursor-pointer touch-pan-y trailer-stage relative w-full h-[60vh] md:h-auto md:aspect-auto md:flex-1 flex items-center justify-center min-h-0">
                 {/* Counter */}
                 <span className="absolute top-4 left-4 md:top-6 md:left-6 font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white z-10">
                   {screenshotIndex + 1}/{screenshotsData.screenshots.length}
@@ -312,7 +323,7 @@ export default function HomeTrailerSection() {
                 {/* Previous */}
                 {screenshotsData.screenshots.length > 1 && (
                   <button
-                    onClick={() => setScreenshotIndex((screenshotIndex - 1 + screenshotsData.screenshots.length) % screenshotsData.screenshots.length)}
+                    onClick={(e) => { e.stopPropagation(); setScreenshotIndex((screenshotIndex - 1 + screenshotsData.screenshots.length) % screenshotsData.screenshots.length); }}
                     className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
                     aria-label="Précédent"
                   >
@@ -349,7 +360,7 @@ export default function HomeTrailerSection() {
                 {/* Next */}
                 {screenshotsData.screenshots.length > 1 && (
                   <button
-                    onClick={() => setScreenshotIndex((screenshotIndex + 1) % screenshotsData.screenshots.length)}
+                    onClick={(e) => { e.stopPropagation(); setScreenshotIndex((screenshotIndex + 1) % screenshotsData.screenshots.length); }}
                     className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
                     aria-label="Suivant"
                   >
