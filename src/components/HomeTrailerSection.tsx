@@ -6,6 +6,7 @@ import { asset } from "@/lib/asset";
 import { useSwipeNav } from "@/hooks/useSwipeNav";
 import { useSupportsHover } from "@/hooks/useSupportsHover";
 import VideoModal from "@/components/VideoModal";
+import { useWheelNav } from "@/components/ScreenshotGallery";
 
 function CaretCircleRight() {
   return (
@@ -142,6 +143,12 @@ export default function HomeTrailerSection() {
     () => setScreenshotIndex((i) => (i - 1 + shotCount) % shotCount),
     () => setScreenshotIndex((i) => (i + 1) % shotCount),
     shotCount > 1
+  );
+
+  useWheelNav(
+    shotCount > 1,
+    () => setScreenshotIndex((i) => (i - 1 + shotCount) % shotCount),
+    () => setScreenshotIndex((i) => (i + 1) % shotCount)
   );
 
   useEffect(() => {

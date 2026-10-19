@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { asset } from "@/lib/asset";
 import { useSwipeNav } from "@/hooks/useSwipeNav";
 import VideoModal from "@/components/VideoModal";
+import { useWheelNav } from "@/components/ScreenshotGallery";
 
 export default function TrailerPage() {
   const [screenshotsData, setScreenshotsData] = useState<{
@@ -81,6 +82,12 @@ export default function TrailerPage() {
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     };
   }, []);
+
+  useWheelNav(
+    shotCount > 1,
+    () => setScreenshotIndex((i) => (i - 1 + shotCount) % shotCount),
+    () => setScreenshotIndex((i) => (i + 1) % shotCount)
+  );
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

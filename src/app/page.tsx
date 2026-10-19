@@ -19,7 +19,7 @@ const illustrationSlides: LightboxSlide[] = [
 ];
 
 const storytellingCards = [
-  { title: "OLD KNIGHT", label: "Manga", slides: oldKnightSlides, widthClassName: "md:w-[372px]", aspectClassName: "aspect-[372/525]" },
+  { title: "OLD KNIGHT", label: "Manga", slides: oldKnightSlides, widthClassName: "md:w-[372px]", aspectClassName: "aspect-[372/525]", spreadSkip: 1 },
   { title: "Nabil Harlow", label: "Video clip", slides: nabilHarrowSlides, widthClassName: "md:flex-1", aspectClassName: "aspect-[788/525]" },
 ];
 
@@ -107,7 +107,7 @@ export default function Home() {
           {storytellingCards.map((c) => (
             <div key={c.title} className={`flex flex-col gap-4 w-full ${c.widthClassName} shrink-0`}>
               <div className={`w-full md:h-[525px] ${c.aspectClassName}`}>
-                <ImageCarousel slides={c.slides} alt={c.title} aspectClassName="h-full" />
+                <ImageCarousel slides={c.slides} alt={c.title} aspectClassName="h-full" spreadSkip={c.spreadSkip} />
               </div>
               <div className="flex flex-col gap-[24px]">
                 <div>
