@@ -598,12 +598,23 @@ export default function TrailerPage() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           {recentTrailers.map((card) => (
-            <div key={card.title} className="flex flex-col gap-3 md:gap-4">
+            <div
+              key={card.title}
+              className="flex flex-col gap-3 md:gap-4 cursor-pointer"
+              onClick={() => openScreenshots(
+                card.screenshotCategory,
+                card.screenshotTitle,
+                card.screenshots,
+                card.screenshotRole
+                  ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits! }
+                  : undefined
+              )}
+            >
               <div
                 className="relative w-full aspect-video cursor-pointer overflow-hidden bg-black"
                 onMouseEnter={() => setHoveredRecent(card.videoId)}
                 onMouseLeave={() => setHoveredRecent(null)}
-                onClick={() => setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true })}
+                onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
               >
                 {hoveredRecent === card.videoId ? (
                   // Native YouTube controls enabled (scrub bar + seeking).
@@ -633,14 +644,14 @@ export default function TrailerPage() {
                   {card.description}
                 </p>
                 <button
-                  onClick={() => openScreenshots(
+                  onClick={(e) => { e.stopPropagation(); openScreenshots(
                     card.screenshotCategory,
                     card.screenshotTitle,
                     card.screenshots,
                     card.screenshotRole
                       ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits! }
                       : undefined
-                  )}
+                  ); }}
                   className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-start hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer"
                 >
                   VIEW SCREENSHOTS
@@ -666,7 +677,15 @@ export default function TrailerPage() {
               <div
                 key={card.videoId}
                 ref={watchCardRef(card.videoId)}
-                className="relative"
+                className="relative cursor-pointer"
+                onClick={() => openScreenshots(
+                  card.screenshotCategory,
+                  card.screenshotTitle,
+                  card.screenshots,
+                  card.screenshotRole
+                    ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits! }
+                    : undefined
+                )}
               >
                 <div
                   className="absolute inset-0"
@@ -703,7 +722,7 @@ export default function TrailerPage() {
                     style={{ aspectRatio: "16 / 9" }}
                     onMouseEnter={() => setHoveredWatch(card.videoId)}
                     onMouseLeave={() => setHoveredWatch(null)}
-                    onClick={() => setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true })}
+                    onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
                   >
                     {hoveredWatch === card.videoId ? (
                       // Native YouTube controls enabled (scrub bar +
@@ -739,14 +758,14 @@ export default function TrailerPage() {
                       </p>
                     </div>
                     <button
-                      onClick={() => openScreenshots(
+                      onClick={(e) => { e.stopPropagation(); openScreenshots(
                         card.screenshotCategory,
                         card.screenshotTitle,
                         card.screenshots,
                         card.screenshotRole
                           ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits! }
                           : undefined
-                      )}
+                      ); }}
                       className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-end hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer"
                     >
                       VIEW SCREENSHOTS
