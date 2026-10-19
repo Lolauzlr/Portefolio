@@ -626,12 +626,23 @@ export default function TrailerPage() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           {recentTrailers.map((card) => (
-            <div key={card.title} className="flex flex-col gap-3 md:gap-4">
+            <div
+              key={card.title}
+              className="flex flex-col gap-3 md:gap-4 cursor-pointer"
+              onClick={() => openScreenshots(
+                card.screenshotCategory,
+                card.screenshotTitle,
+                card.screenshots,
+                card.screenshotRole
+                  ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits! }
+                  : undefined
+              )}
+            >
               <div
                 className="relative w-full aspect-video cursor-pointer overflow-hidden bg-black"
                 onMouseEnter={() => setHoveredRecent(card.videoId)}
                 onMouseLeave={() => setHoveredRecent(null)}
-                onClick={() => setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true })}
+                onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
               >
                 {hoveredRecent === card.videoId ? (
                   // Native YouTube controls enabled (scrub bar + seeking).
@@ -694,7 +705,15 @@ export default function TrailerPage() {
               <div
                 key={card.videoId}
                 ref={watchCardRef(card.videoId)}
-                className="relative"
+                className="relative cursor-pointer"
+                onClick={() => openScreenshots(
+                  card.screenshotCategory,
+                  card.screenshotTitle,
+                  card.screenshots,
+                  card.screenshotRole
+                    ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits! }
+                    : undefined
+              )}
               >
                 <div
                   className="absolute inset-0"
@@ -731,7 +750,7 @@ export default function TrailerPage() {
                     style={{ aspectRatio: "16 / 9" }}
                     onMouseEnter={() => setHoveredWatch(card.videoId)}
                     onMouseLeave={() => setHoveredWatch(null)}
-                    onClick={() => setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true })}
+                    onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
                   >
                     {hoveredWatch === card.videoId ? (
                       // Native YouTube controls enabled (scrub bar +

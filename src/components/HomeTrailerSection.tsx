@@ -181,7 +181,16 @@ export default function HomeTrailerSection() {
       <div className="relative">
         <div className="flex gap-4 md:gap-6 overflow-x-auto pb-3 md:pb-4 pr-3 md:pr-[120px] scrollbar-hide">
           {trailerCards.map((card) => (
-            <div key={card.title} className="flex-shrink-0 w-[300px] md:w-[474px] flex flex-col gap-3 md:gap-4">
+            <div
+              key={card.title}
+              className="flex-shrink-0 w-[300px] md:w-[474px] flex flex-col gap-3 md:gap-4 cursor-pointer"
+              onClick={() => openScreenshots(
+                card.screenshotCategory,
+                card.screenshotTitle,
+                card.screenshots,
+                { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities, credits: card.screenshotCredits }
+              )}
+            >
               <div
                 className="relative w-full aspect-video cursor-pointer overflow-hidden bg-black"
                 // Skipping these two handlers entirely on touch-only devices
@@ -193,7 +202,7 @@ export default function HomeTrailerSection() {
                 {...(supportsHover
                   ? { onMouseEnter: () => setHoveredCard(card.videoId), onMouseLeave: () => setHoveredCard(null) }
                   : {})}
-                onClick={() => setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true })}
+                onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
               >
                 {hoveredCard === card.videoId ? (
                   // Preview only: no native controls and no pointer capture,
