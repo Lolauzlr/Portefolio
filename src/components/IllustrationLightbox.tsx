@@ -62,7 +62,7 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
           </button>
 
           <div
-            className="relative flex-1 min-h-0 flex items-center justify-center p-4 md:p-12 touch-pan-y"
+            className="relative flex-1 min-h-0 flex items-center justify-center p-4 md:p-12 touch-pan-y cursor-pointer"
             // Swipe left/right on touch screens to change image (mostly-horizontal
             // gestures only, so vertical scrolls/taps are left alone).
             onTouchStart={(e) => {
@@ -87,8 +87,13 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
               if (dx < 0) goNext();
               else goPrev();
             }}
+            // Click/tap the left or right half of the stage to go to the
+            // previous / next image (arrow buttons stop propagation).
             onClick={(e) => {
-              if (e.target === e.currentTarget) close();
+              if (!hasMultiple) return;
+              const rect = e.currentTarget.getBoundingClientRect();
+              if (e.clientX < rect.left + rect.width / 2) goPrev();
+              else goNext();
             }}
           >
             <span className="absolute top-4 left-4 md:top-6 md:left-6 font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white z-10">
@@ -98,7 +103,7 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
             {hasMultiple && (
               <button
                 type="button"
-                onClick={goPrev}
+                onClick={(e) => { e.stopPropagation(); goPrev(); }}
                 className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
                 aria-label="Previous image"
               >
@@ -113,7 +118,7 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
             {hasMultiple && (
               <button
                 type="button"
-                onClick={goNext}
+                onClick={(e) => { e.stopPropagation(); goNext(); }}
                 className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
                 aria-label="Next image"
               >
