@@ -970,7 +970,10 @@ export default function ShelfShell({
           : event.deltaMode === 2
             ? window.innerHeight
             : 1;
-      acc += event.deltaY * unit;
+      // Pavé tactile : le balayage à deux doigts est horizontal (deltaX), la
+      // molette verticale (deltaY) - on suit l'axe dominant, vers la droite /
+      // le bas on avance.
+      acc += (Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY) * unit;
       if (Math.abs(acc) < WHEEL_STEP) return;
 
       locked = true;
@@ -1161,6 +1164,35 @@ export default function ShelfShell({
             <line x1="18" y1="6" x2="6" y2="18" />
           </svg>
         </button>
+      )}
+
+      {/* Flèches précédent / suivant, comme celles des carrousels du site : mêmes
+          actions que les flèches du clavier (voir l'effet clavier plus haut), en
+          paysage comme en portrait. Reculer depuis la première double page
+          referme le livre, comme au clavier. */}
+      {ready && (state === "READING" || state === "TURNING") && (
+        <>
+          <button
+            type="button"
+            onClick={() => void turn(-1)}
+            aria-label="Page précédente"
+            className="fixed left-4 top-1/2 z-20 flex h-[48px] w-[48px] -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/50 backdrop-blur-sm transition-colors hover:bg-black/70"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <polyline points="15,18 9,12 15,6" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={() => void turn(1)}
+            aria-label="Page suivante"
+            className="fixed right-4 top-1/2 z-20 flex h-[48px] w-[48px] -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/50 backdrop-blur-sm transition-colors hover:bg-black/70"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <polyline points="9,6 15,12 9,18" />
+            </svg>
+          </button>
+        </>
       )}
 
       <div
