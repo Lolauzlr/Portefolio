@@ -150,12 +150,12 @@ export default function HomeHeroSection() {
 
   return (
     <>
-      <section ref={heroRef} className="relative w-full aspect-[9/16] md:aspect-auto md:h-[810px] bg-[#060000] overflow-hidden">
+      <section ref={heroRef} className="relative w-full aspect-video bg-[#060000] overflow-hidden">
         {/* YouTube video background via API */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div
             id="yt-home-hero-player"
-            className="absolute top-1/2 left-1/2 w-[316.05vw] h-[177.78vw] -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full md:w-[177.78vh] md:h-[100vh] md:min-w-full md:min-h-full"
+            className="absolute inset-0 w-full h-full"
           />
         </div>
 
