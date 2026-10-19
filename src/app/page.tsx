@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { asset } from "@/lib/asset";
+import HomeHeroSection from "@/components/HomeHeroSection";
 import HomeMoviesSection from "@/components/HomeMoviesSection";
 import HomeTrailerSection from "@/components/HomeTrailerSection";
 import HomeContactSection from "@/components/HomeContactSection";
@@ -54,18 +55,7 @@ export default function Home() {
   return (
     <div className="flex flex-col gap-6 md:gap-[60px] bg-[#15161b] text-white">
       {/* Hero */}
-      <section className="relative h-[500px] md:h-[810px] bg-[#060000] overflow-hidden">
-        <img
-          src={asset("/images/imgImage31.png")}
-          alt="A Plague Tale: Requiem"
-          className="absolute right-0 top-[174px] w-[1131px] h-[636px] object-cover hidden md:block"
-        />
-        <img
-          src={asset("/images/imgImage31.png")}
-          alt="A Plague Tale: Requiem"
-          className="absolute inset-0 w-full h-full object-cover md:hidden"
-        />
-      </section>
+      <HomeHeroSection />
 
       {/* Trailer */}
       <HomeTrailerSection />
