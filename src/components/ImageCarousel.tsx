@@ -221,22 +221,22 @@ export default function ImageCarousel({
           <div className="relative flex-1 min-h-0 flex items-center justify-center p-4 md:p-12 touch-pan-y"
             {...lbSwipe.handlers}
           >
-            {/* Spread view: clicking the left / right half of the screen turns
-                the page (like the storytelling reader). The pages let clicks
-                through, the arrows, counter and close button sit above. */}
-            {spreadMode && lbMultiple && (
+            {/* Clicking the left / right half of the screen goes to the
+                previous / next image (like the storytelling reader). The
+                image lets clicks through; arrows, counter and close sit above. */}
+            {lbMultiple && (
               <>
                 <button
                   type="button"
                   tabIndex={-1}
-                  aria-label="Previous pages"
+                  aria-label="Previous"
                   onClick={() => !lbSwipe.swiped.current && lbPrev()}
                   className="absolute inset-y-0 left-0 w-1/2 cursor-pointer"
                 />
                 <button
                   type="button"
                   tabIndex={-1}
-                  aria-label="Next pages"
+                  aria-label="Next"
                   onClick={() => !lbSwipe.swiped.current && lbNext()}
                   className="absolute inset-y-0 right-0 w-1/2 cursor-pointer"
                 />
@@ -269,7 +269,7 @@ export default function ImageCarousel({
                 )}
               </div>
             ) : current.src ? (
-              <img src={asset(current.src)} alt={alt} className="max-w-full max-h-full object-contain" />
+              <img src={asset(current.src)} alt={alt} className="pointer-events-none max-w-full max-h-full object-contain" />
             ) : (
               <div className="w-[90vw] max-w-[800px] aspect-video bg-[#d9d9d9] flex items-center justify-center">
                 <span className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-[#8F8F8F] uppercase">

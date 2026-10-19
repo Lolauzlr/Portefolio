@@ -15,6 +15,7 @@ const LightboxContext = createContext<{ open: (src: string) => void } | null>(nu
 export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]; children: React.ReactNode }) {
   const [index, setIndex] = useState<number | null>(null);
   const touchStart = useRef<{ x: number; y: number; t: number } | null>(null);
+  const swiped = useRef(false);
   const isOpen = index !== null;
   const hasMultiple = slides.length > 1;
 
@@ -84,6 +85,9 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
               // drag of 30px+ both count, as long as it is mostly horizontal.
               const quick = Date.now() - start.t < 300;
               if (ax < (quick ? 12 : 30) || ax < Math.abs(dy)) return;
+              // Some browsers fire a click right after a swipe: ignore it.
+              swiped.current = true;
+              setTimeout(() => { swiped.current = false; }, 400);
               if (dx < 0) goNext();
               else goPrev();
             }}
@@ -91,6 +95,27 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
               if (e.target === e.currentTarget) close();
             }}
           >
+            {/* Left / right half of the screen = previous / next image. The
+                image lets clicks through; arrows, counter and close sit above. */}
+            {hasMultiple && (
+              <>
+                <button
+                  type="button"
+                  tabIndex={-1}
+                  aria-label="Previous"
+                  onClick={() => !swiped.current && goPrev()}
+                  className="absolute inset-y-0 left-0 w-1/2 cursor-pointer"
+                />
+                <button
+                  type="button"
+                  tabIndex={-1}
+                  aria-label="Next"
+                  onClick={() => !swiped.current && goNext()}
+                  className="absolute inset-y-0 right-0 w-1/2 cursor-pointer"
+                />
+              </>
+            )}
+
             <span className="absolute top-4 left-4 md:top-6 md:left-6 font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white z-10">
               {index + 1}/{slides.length}
             </span>
@@ -108,7 +133,7 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
               </button>
             )}
 
-            <img src={asset(current.src)} alt={current.alt} className="max-w-full max-h-full w-auto h-auto object-contain" />
+            <img src={asset(current.src)} alt={current.alt} className="pointer-events-none max-w-full max-h-full w-auto h-auto object-contain" />
 
             {hasMultiple && (
               <button
