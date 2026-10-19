@@ -125,21 +125,6 @@ export default function ImageCarousel({
     setLightboxOpen(true);
   }
 
-  // Mouse wheel / trackpad scroll in the expanded view changes page. One step
-  // per gesture: momentum scrolling keeps firing wheel events for a while, so
-  // further events are ignored for a short cooldown after each step.
-  const lastWheel = useRef(0);
-  function onLightboxWheel(e: React.WheelEvent) {
-    if (!lbMultiple) return;
-    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-    if (Math.abs(delta) < 8) return;
-    const now = Date.now();
-    if (now - lastWheel.current < 450) return;
-    lastWheel.current = now;
-    if (delta > 0) lbNext();
-    else lbPrev();
-  }
-
   const swipe = useSwipe(goPrev, goNext, hasMultiple);
   const lbSwipe = useSwipe(lbPrev, lbNext, lbMultiple);
 
@@ -235,7 +220,6 @@ export default function ImageCarousel({
 
           <div className="relative flex-1 min-h-0 flex items-center justify-center p-4 md:p-12 touch-pan-y"
             {...lbSwipe.handlers}
-            onWheel={onLightboxWheel}
           >
             <span className="absolute top-4 left-4 md:top-6 md:left-6 font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white z-10">
               {lbIndex + 1}/{lbCount}
