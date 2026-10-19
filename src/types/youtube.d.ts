@@ -35,7 +35,6 @@ declare namespace YT {
     mute(): void;
     unMute(): void;
     getPlayerState(): number;
-    getPlaybackQuality(): string;
     setPlaybackQuality(suggestedQuality: string): void;
     setPlaybackQualityRange?(min: string, max: string): void;
     destroy(): void;
