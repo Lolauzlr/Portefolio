@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { createWheelGesture } from "@/lib/wheel-gesture";
 
 // Shared by every full-screen image overlay on the site (this gallery and
 // ImageCarousel's own lightbox) so Escape-to-close, arrow-key navigation
@@ -11,13 +12,11 @@ import { useEffect, useRef } from "react";
 // nothing to navigate to.
 const WHEEL_STEP_PX = 12;
 const WHEEL_IDLE_MS = 100;
-const WHEEL_LINE_PX = 16;
 
-// Mouse wheel / trackpad scroll changes image: one step per gesture. A
-// trackpad keeps emitting inertial wheel events after the fingers lift, so
-// after each step further events are ignored until the stream has been quiet
-// for WHEEL_IDLE_MS (same approach as the storytelling shelf). Works on the
-// horizontal axis (two-finger swipe) or the vertical one, whichever dominates.
+// Mouse wheel / trackpad scroll changes image: one step per gesture, and a new
+// swipe is recognised right away even while the previous one's inertia is still
+// running (see lib/wheel-gesture). Works on the horizontal axis (two-finger
+// swipe) or the vertical one, whichever dominates.
 // The listener is non-passive so the browser's own horizontal-swipe
 // back/forward navigation doesn't fire behind the overlay.
 export function useWheelNav(active: boolean, onPrev?: () => void, onNext?: () => void) {
@@ -28,33 +27,19 @@ export function useWheelNav(active: boolean, onPrev?: () => void, onNext?: () =>
 
   useEffect(() => {
     if (!active) return;
-    let acc = 0;
-    let locked = false;
-    let idle = 0;
-
+    const gesture = createWheelGesture({
+      stepPx: WHEEL_STEP_PX,
+      idleMs: WHEEL_IDLE_MS,
+      onStep: (direction) => (direction > 0 ? handlers.current.onNext?.() : handlers.current.onPrev?.()),
+    });
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
-      window.clearTimeout(idle);
-      idle = window.setTimeout(() => {
-        locked = false;
-        acc = 0;
-      }, WHEEL_IDLE_MS);
-      if (locked) return;
-
-      const unit = e.deltaMode === 1 ? WHEEL_LINE_PX : e.deltaMode === 2 ? window.innerHeight : 1;
-      acc += (Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY) * unit;
-      if (Math.abs(acc) < WHEEL_STEP_PX) return;
-
-      locked = true;
-      if (acc > 0) handlers.current.onNext?.();
-      else handlers.current.onPrev?.();
-      acc = 0;
+      gesture.handle(e);
     };
-
     window.addEventListener("wheel", onWheel, { passive: false });
     return () => {
       window.removeEventListener("wheel", onWheel);
-      window.clearTimeout(idle);
+      gesture.dispose();
     };
   }, [active]);
 }

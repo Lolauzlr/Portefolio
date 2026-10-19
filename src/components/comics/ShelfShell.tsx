@@ -12,6 +12,7 @@ import {
 } from "@/components/comics/machine";
 import BookSlider from "@/components/comics/BookSlider";
 import PlateReader from "@/components/comics/PlateReader";
+import { createWheelGesture } from "@/lib/wheel-gesture";
 import type { SceneHandle } from "@/components/comics/scene";
 import ShelfInfoPanel from "@/components/comics/ShelfInfoPanel";
 import { COMICS } from "@/lib/comics";
@@ -38,8 +39,6 @@ const WHEEL_STEP = 15;
  * événements enchaînerait une double page.
  */
 const WHEEL_IDLE_MS = 100;
-/** `deltaMode` 1 compte en lignes : hauteur de ligne usuelle des navigateurs. */
-const WHEEL_LINE_PX = 16;
 /**
  * Écart voulu entre le livre le plus à droite et la card d'info, en desktop.
  * Le canevas occupe toute la largeur de la page (voir le rendu plus bas) : un
@@ -940,53 +939,29 @@ export default function ShelfShell({
 
   // --- molette --------------------------------------------------------------
   useEffect(() => {
-    let acc = 0;
-    let locked = false;
-    let idle = 0;
-
-    const closeGesture = () => {
-      window.clearTimeout(idle);
-      idle = window.setTimeout(function settle() {
-        // Relâcher pendant la tourne laisserait la fin du même geste en enchaîner
-        // une seconde : on attend qu'elle soit finie, puis un nouveau silence.
-        if (stateRef.current === "TURNING") {
-          idle = window.setTimeout(settle, WHEEL_IDLE_MS);
-          return;
-        }
-        locked = false;
-        acc = 0;
-      }, WHEEL_IDLE_MS);
-    };
+    // Un geste = une page ; un nouveau balayage (sens inverse ou accélération)
+    // est reconnu même pendant l'inertie du précédent, voir lib/wheel-gesture.
+    // Le verrou tient tant que la double page 3D est en train de tourner.
+    const gesture = createWheelGesture({
+      stepPx: WHEEL_STEP,
+      idleMs: WHEEL_IDLE_MS,
+      isBusy: () => stateRef.current === "TURNING",
+      // Vers le bas / la droite on avance dans le récit : `turn` raisonne en
+      // numéro de double page, et c'est la scène qui applique le sens de
+      // lecture inversé.
+      onStep: (direction) => void turn(direction),
+    });
 
     const onWheel = (event: WheelEvent) => {
       if (!canTurn(stateRef.current) && stateRef.current !== "TURNING") return;
       event.preventDefault();
-      closeGesture();
-      if (locked) return;
-
-      const unit =
-        event.deltaMode === 1
-          ? WHEEL_LINE_PX
-          : event.deltaMode === 2
-            ? window.innerHeight
-            : 1;
-      // Pavé tactile : le balayage à deux doigts est horizontal (deltaX), la
-      // molette verticale (deltaY) - on suit l'axe dominant, vers la droite /
-      // le bas on avance.
-      acc += (Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY) * unit;
-      if (Math.abs(acc) < WHEEL_STEP) return;
-
-      locked = true;
-      // Vers le bas on avance dans le récit : `turn` raisonne en numéro de double
-      // page, et c'est la scène qui applique le sens de lecture inversé.
-      void turn(acc > 0 ? 1 : -1);
-      acc = 0;
+      gesture.handle(event);
     };
 
     window.addEventListener("wheel", onWheel, { passive: false });
     return () => {
       window.removeEventListener("wheel", onWheel);
-      window.clearTimeout(idle);
+      gesture.dispose();
     };
   }, [turn]);
 
