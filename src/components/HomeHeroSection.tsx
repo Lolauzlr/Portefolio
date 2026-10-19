@@ -10,6 +10,9 @@ const HERO_VIDEO_TITLE = "HERO VIDEO";
 const PLAYER_W = 3840;
 const PLAYER_H = 2160;
 const TARGET_QUALITY = "hd2160";
+// Qualities good enough to reveal the video; below this it stays masked.
+const GOOD_QUALITIES = ["hd1080", "hd1440", "hd2160", "highres"];
+const REVEAL_TIMEOUT_MS = 6000;
 
 // Undocumented-but-working on many builds: lock the quality range to 4K, then
 // also use the legacy setter. Both may be ignored by YouTube, so this is
@@ -29,6 +32,9 @@ export default function HomeHeroSection() {
   const heroRef = useRef<HTMLElement>(null);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [playerScale, setPlayerScale] = useState(0.5);
+  // YouTube always starts at a low resolution and ramps up. The video plays
+  // under a poster mask until it reaches a good quality (or a timeout).
+  const [revealed, setRevealed] = useState(false);
 
   // Scale the 4K player so it covers the hero frame (same crop as object-cover).
   useEffect(() => {
@@ -65,6 +71,18 @@ export default function HomeHeroSection() {
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    if (revealed) return;
+    const startedAt = Date.now();
+    const id = setInterval(() => {
+      const quality = playerRef.current?.getPlaybackQuality?.();
+      if ((quality && GOOD_QUALITIES.includes(quality)) || Date.now() - startedAt > REVEAL_TIMEOUT_MS) {
+        setRevealed(true);
+      }
+    }, 250);
+    return () => clearInterval(id);
+  }, [revealed]);
 
   useEffect(() => {
     if (!videoModal) return;
@@ -196,6 +214,13 @@ export default function HomeHeroSection() {
             <div id="yt-home-hero-player" />
           </div>
         </div>
+
+        {/* Poster mask: hides the low-resolution first seconds */}
+        <img
+          src={`https://img.youtube.com/vi/${HERO_VIDEO_ID}/maxresdefault.jpg`}
+          alt=""
+          className={`absolute inset-0 w-full h-full object-cover z-[5] pointer-events-none transition-opacity duration-700 ${revealed ? "opacity-0" : "opacity-100"}`}
+        />
 
         {/* Click zone - opens the full-width video overlay */}
         <button
