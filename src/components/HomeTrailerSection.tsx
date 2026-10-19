@@ -18,6 +18,15 @@ function CaretCircleRight() {
 }
 
 const trailerCards = [
+  // Screenshots to be added: drop the images in /public/images/insurgency-sandstorm-2026/
+  // and list them here - the card and its "VIEW SCREENSHOTS" button stay inert while
+  // `screenshots` is empty.
+  { videoId: "eT8QvyGSyYU", title: "Insurgency Sandstorm : Operation Echoes Launch Trailer", description: "2026 • In-game video capture • Video editing • Sound editing",
+    screenshotCategory: "2026 · LAUNCH TRAILER", screenshotTitle: "Insurgency Sandstorm : Operation Echoes",
+    screenshotRole: "Cinematic artist in charge of The Operation Echoes Launch Trailer of Insurgency Sandstorm",
+    screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
+    screenshotCredits: [] as { label: string; value: string }[],
+    screenshots: [] as { src: string; tag: string; description: string }[] },
   { videoId: "OLEZv_Qyb6Q", title: "Elta : Defy All Gods • Reveal Trailer", description: "Gamescom 2026 • Unreal • Camera animation • Real-time combat VFX • Cinematic lighting",
     screenshotCategory: "GAMESCOM 2026 • REVEAL TRAILER", screenshotTitle: "Elta: Defy All Gods",
     screenshotRole: "Cinematic artist in charge of The Reveal Trailer of Elta: Defy All Gods",
@@ -190,8 +199,8 @@ export default function HomeTrailerSection() {
           {trailerCards.map((card) => (
             <div
               key={card.title}
-              className="flex-shrink-0 w-[300px] md:w-[474px] flex flex-col gap-3 md:gap-4 cursor-pointer"
-              onClick={() => openScreenshots(
+              className={`flex-shrink-0 w-[300px] md:w-[474px] flex flex-col gap-3 md:gap-4 ${card.screenshots.length > 0 ? "cursor-pointer" : ""}`}
+              onClick={() => card.screenshots.length > 0 && openScreenshots(
                 card.screenshotCategory,
                 card.screenshotTitle,
                 card.screenshots,
@@ -238,7 +247,7 @@ export default function HomeTrailerSection() {
                 <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
                   {card.description}
                 </p>
-                <button
+                {card.screenshots.length > 0 && <button
                   onClick={(e) => { e.stopPropagation(); openScreenshots(
                     card.screenshotCategory,
                     card.screenshotTitle,
@@ -248,7 +257,7 @@ export default function HomeTrailerSection() {
                   className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-start hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer mt-auto"
                 >
                   VIEW SCREENSHOTS
-                </button>
+                </button>}
               </div>
             </div>
           ))}
