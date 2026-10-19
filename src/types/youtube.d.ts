@@ -21,6 +21,8 @@ declare namespace YT {
       elementId: string,
       config: {
         videoId: string;
+        width?: number | string;
+        height?: number | string;
         playerVars?: Record<string, number | string>;
         events?: {
           onReady?: (event: PlayerEvent) => void;
@@ -33,6 +35,7 @@ declare namespace YT {
     mute(): void;
     unMute(): void;
     getPlayerState(): number;
+    setPlaybackQuality(suggestedQuality: string): void;
     destroy(): void;
   }
 }
