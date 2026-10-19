@@ -29,15 +29,15 @@ export default function TrailerPage() {
   const [showPause, setShowPause] = useState(false);
   const [cadreSize, setCadreSize] = useState({ w: 792, h: 201 });
   const [watchSizes, setWatchSizes] = useState<Record<string, { w: number; h: number }>>({});
-  // Phones show the TikTok cut of the reveal trailer in the hero instead of the
-  // YouTube background player (which mobile browsers refuse to autoplay);
-  // tapping the hero still opens the YouTube video in the modal.
+  // Phones play a short self-hosted muted loop of the reveal trailer in the hero
+  // instead of the YouTube background player (which mobile browsers refuse to
+  // autoplay); tapping the hero still opens the YouTube video in the modal.
   const isMobile = useSyncExternalStore(
     () => () => {},
     () => window.matchMedia("(max-width: 767px)").matches,
     () => false
   );
-  const tiktokRef = useRef<HTMLIFrameElement>(null);
+  const mobileVideoRef = useRef<HTMLVideoElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
   const userPausedRef = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -427,35 +427,16 @@ export default function TrailerPage() {
     return () => window.removeEventListener("touchstart", kick);
   }, []);
 
-  // Mobile hero (TikTok): autoplay=1 alone is not always honoured, so once the
-  // TikTok player reports ready (or on load, with retries) explicitly send it
-  // mute + play, and fall back to the first touch if the browser still blocks it.
+  // Mobile hero video: muted playsInline autoplay is allowed on iOS/Android,
+  // but low-power mode can still block it, so retry on the first touch.
   useEffect(() => {
     if (!isMobile) return;
-    const send = (type: string) =>
-      tiktokRef.current?.contentWindow?.postMessage({ type, "x-tiktok-player": true }, "*");
-    let playing = false;
-    const start = () => {
-      send("mute");
-      send("play");
-    };
-    const onMessage = (e: MessageEvent) => {
-      if (e.source !== tiktokRef.current?.contentWindow) return;
-      const t = e.data?.type;
-      if (t === "onPlayerReady") start();
-      else if (t === "onStateChange" && e.data?.value === 1) {
-        playing = true;
-      }
-    };
-    window.addEventListener("message", onMessage);
-    const timers = [500, 1500, 3000, 5000].map((ms) => window.setTimeout(() => { if (!playing) start(); }, ms));
-    const kick = () => start();
+    const video = mobileVideoRef.current;
+    if (!video) return;
+    video.play().catch(() => {});
+    const kick = () => { if (video.paused) video.play().catch(() => {}); };
     window.addEventListener("touchstart", kick, { once: true, passive: true });
-    return () => {
-      window.removeEventListener("message", onMessage);
-      window.removeEventListener("touchstart", kick);
-      timers.forEach(window.clearTimeout);
-    };
+    return () => window.removeEventListener("touchstart", kick);
   }, [isMobile]);
 
   const togglePlay = () => {
@@ -470,14 +451,6 @@ export default function TrailerPage() {
   };
 
   const toggleMute = () => {
-    if (isMobile) {
-      tiktokRef.current?.contentWindow?.postMessage(
-        { type: isMuted ? "unMute" : "mute", "x-tiktok-player": true },
-        "*"
-      );
-      setIsMuted(!isMuted);
-      return;
-    }
     if (!playerRef.current) return;
     if (isMuted) {
       playerRef.current.unMute();
@@ -501,13 +474,16 @@ export default function TrailerPage() {
           className="absolute inset-0 overflow-hidden pointer-events-none"
         >
           {isMobile && (
-            <iframe
-              ref={tiktokRef}
-              className="absolute inset-0 w-full h-full"
-              src="https://www.tiktok.com/embed/v2/7678030532122266902?autoplay=1&muted=1&loop=1"
-              title="ELTA: DEFY ALL GODS • REVEAL TRAILER"
-              allow="autoplay; encrypted-media; fullscreen"
-              style={{ border: 0 }}
+            <video
+              ref={mobileVideoRef}
+              className="absolute inset-0 w-full h-full object-cover"
+              src={asset("/videos/elta-reveal-mobile.mp4")}
+              poster={asset("/videos/elta-reveal-mobile-poster.jpg")}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
             />
           )}
           <div
@@ -553,7 +529,7 @@ export default function TrailerPage() {
         {/* Sound toggle - always visible, aligned right with ME CONTACTER, bottom with pentagon */}
         <button
           onClick={toggleMute}
-          className="absolute right-4 md:right-[24px] bottom-8 md:bottom-[24px] z-20 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+          className="absolute right-4 md:right-[24px] bottom-8 md:bottom-[24px] z-20 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm hidden md:flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
           aria-label={isMuted ? "Activer le son" : "Couper le son"}
         >
           {isMuted ? (
