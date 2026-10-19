@@ -31,13 +31,13 @@ const OVERLAY_MS = 320;
  * un pavé tactile, qui émet des dizaines d'événements de faible amplitude par geste,
  * la franchit en quelques-uns.
  */
-const WHEEL_STEP = 50;
+const WHEEL_STEP = 15;
 /**
  * Silence exigé avant d'accepter un nouveau geste : l'inertie d'un pavé tactile
  * continue d'émettre bien après que le doigt a quitté la surface, et chacun de ces
  * événements enchaînerait une double page.
  */
-const WHEEL_IDLE_MS = 180;
+const WHEEL_IDLE_MS = 100;
 /** `deltaMode` 1 compte en lignes : hauteur de ligne usuelle des navigateurs. */
 const WHEEL_LINE_PX = 16;
 /**

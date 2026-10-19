@@ -9,8 +9,8 @@ import { useEffect, useRef } from "react";
 // a gallery that only mounts while open (this component) can just pass
 // `true`. onPrev/onNext are optional since a single-image lightbox has
 // nothing to navigate to.
-const WHEEL_STEP_PX = 40;
-const WHEEL_IDLE_MS = 180;
+const WHEEL_STEP_PX = 12;
+const WHEEL_IDLE_MS = 100;
 const WHEEL_LINE_PX = 16;
 
 // Mouse wheel / trackpad scroll changes image: one step per gesture. A
