@@ -62,6 +62,9 @@ export default function VideoModal({
   // reports one.
   const [hintExpired, setHintExpired] = useState(false);
   const hideTimer = useRef<number>(0);
+  // Set once the player reports it is playing; stops the start retries below.
+  const playingRef = useRef(false);
+  const startTimers = useRef<number[]>([]);
   const armHide = (ms: number) => {
     if (hideTimer.current) return;
     hideTimer.current = window.setTimeout(() => setHintExpired(true), ms);
@@ -72,6 +75,7 @@ export default function VideoModal({
     return () => {
       window.clearTimeout(fallback);
       window.clearTimeout(hideTimer.current);
+      startTimers.current.forEach(window.clearTimeout);
     };
   }, []);
 
@@ -82,7 +86,10 @@ export default function VideoModal({
         const data = JSON.parse(e.data);
         const m = data?.info?.muted;
         if (typeof m === "boolean") setMuted(m);
-        if (data?.info?.playerState === 1) armHide(4000);
+        if (data?.info?.playerState === 1) {
+          playingRef.current = true;
+          armHide(4000);
+        }
       } catch {
         // not a YouTube player message
       }
@@ -90,6 +97,23 @@ export default function VideoModal({
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
   }, []);
+
+  // The autoplay URL parameter alone is often ignored by mobile browsers, which
+  // leaves YouTube's play button waiting for a second tap. Like the trailer
+  // hero (muted playVideo() on player ready), explicitly start the muted video
+  // through the player API; commands sent before the player is ready are
+  // dropped, so retry until it reports it is playing.
+  const startPlayback = (iframe: HTMLIFrameElement) => {
+    listen(iframe);
+    startTimers.current.forEach(window.clearTimeout);
+    startTimers.current = [0, 400, 1000, 2000, 3500].map((ms) =>
+      window.setTimeout(() => {
+        if (playingRef.current) return;
+        if (!withSound) sendCommand(iframe, "mute");
+        sendCommand(iframe, "playVideo");
+      }, ms)
+    );
+  };
 
   const enableSound = () => {
     const iframe = iframeRef.current;
@@ -123,7 +147,7 @@ export default function VideoModal({
           ref={iframeRef}
           className="w-full h-full"
           src={buildSrc(src, withSound)}
-          onLoad={(e) => listen(e.currentTarget)}
+          onLoad={(e) => startPlayback(e.currentTarget)}
           title={title}
           allow="autoplay; encrypted-media; fullscreen"
           allowFullScreen
