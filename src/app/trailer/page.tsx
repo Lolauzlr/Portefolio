@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useSyncExternalStore } from "react";
 import { asset } from "@/lib/asset";
 import { useSwipeNav } from "@/hooks/useSwipeNav";
 import { useZoomPan } from "@/hooks/useZoomPan";
@@ -35,6 +35,15 @@ export default function TrailerPage() {
   const [showPause, setShowPause] = useState(false);
   const [cadreSize, setCadreSize] = useState({ w: 792, h: 201 });
   const [watchSizes, setWatchSizes] = useState<Record<string, { w: number; h: number }>>({});
+  // Phones play a short self-hosted muted loop of the reveal trailer in the hero
+  // instead of the YouTube background player (which mobile browsers refuse to
+  // autoplay); tapping the hero still opens the YouTube video in the modal.
+  const isMobile = useSyncExternalStore(
+    () => () => {},
+    () => window.matchMedia("(max-width: 767px)").matches,
+    () => false
+  );
+  const mobileVideoRef = useRef<HTMLVideoElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
   const userPausedRef = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -387,6 +396,7 @@ export default function TrailerPage() {
   }, []);
 
   useEffect(() => {
+    if (window.matchMedia("(max-width: 767px)").matches) return;
     const createPlayer = () => {
       if (playerRef.current) return;
       playerRef.current = new YT.Player("yt-bg-player", {
@@ -445,6 +455,18 @@ export default function TrailerPage() {
     return () => window.removeEventListener("touchstart", kick);
   }, []);
 
+  // Mobile hero video: muted playsInline autoplay is allowed on iOS/Android,
+  // but low-power mode can still block it, so retry on the first touch.
+  useEffect(() => {
+    if (!isMobile) return;
+    const video = mobileVideoRef.current;
+    if (!video) return;
+    video.play().catch(() => {});
+    const kick = () => { if (video.paused) video.play().catch(() => {}); };
+    window.addEventListener("touchstart", kick, { once: true, passive: true });
+    return () => window.removeEventListener("touchstart", kick);
+  }, [isMobile]);
+
   const togglePlay = () => {
     if (!playerRef.current) return;
     if (isPlaying) {
@@ -479,6 +501,19 @@ export default function TrailerPage() {
           ref={containerRef}
           className="absolute inset-0 overflow-hidden pointer-events-none"
         >
+          {isMobile && (
+            <video
+              ref={mobileVideoRef}
+              className="absolute inset-0 w-full h-full object-cover"
+              src={asset("/videos/elta-reveal-mobile.mp4")}
+              poster={asset("/videos/elta-reveal-mobile-poster.jpg")}
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="auto"
+            />
+          )}
           <div
             id="yt-bg-player"
             className="absolute top-1/2 left-1/2 w-[316.05vw] h-[177.78vw] -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full md:w-[177.78vh] md:h-[100vh] md:min-w-full md:min-h-full"
@@ -522,7 +557,7 @@ export default function TrailerPage() {
         {/* Sound toggle - always visible, aligned right with ME CONTACTER, bottom with pentagon */}
         <button
           onClick={toggleMute}
-          className="absolute right-4 md:right-[24px] bottom-8 md:bottom-[24px] z-20 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+          className="absolute right-4 md:right-[24px] bottom-8 md:bottom-[24px] z-20 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm hidden md:flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
           aria-label={isMuted ? "Activer le son" : "Couper le son"}
         >
           {isMuted ? (
