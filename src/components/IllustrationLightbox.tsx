@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { asset } from "@/lib/asset";
 import { useLightboxBehavior } from "@/components/ScreenshotGallery";
 import ZoomControls from "@/components/ZoomControls";
@@ -8,7 +8,15 @@ import { useZoomPan } from "@/hooks/useZoomPan";
 
 export type LightboxSlide = { src: string; alt: string; caption?: string };
 
-const LightboxContext = createContext<{ open: (src: string) => void } | null>(null);
+const LightboxContext = createContext<{
+  open: (src: string) => void;
+  // Lets each <LightboxImg> declare its element so closing the carousel can
+  // scroll back to the image it was on. Returns the unregister function.
+  register: (src: string, el: HTMLElement) => () => void;
+} | null>(null);
+
+// Visible (laid out) elements only: the page keeps hidden copies per breakpoint.
+const isRendered = (el: HTMLElement) => el.getClientRects().length > 0;
 
 // One shared carousel for the whole page: clicking any <LightboxImg> opens it
 // on that image, and prev/next/thumbnails move through every image in
@@ -22,6 +30,21 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
   const zoom = useZoomPan(stage, index);
   const isOpen = index !== null;
   const hasMultiple = slides.length > 1;
+  const indexRef = useRef<number | null>(null);
+  useEffect(() => {
+    indexRef.current = index;
+  });
+  const elements = useRef(new Map<string, Set<HTMLElement>>());
+  const scrollBackTo = useRef<string | null>(null);
+
+  const register = useCallback((src: string, el: HTMLElement) => {
+    const set = elements.current.get(src) ?? new Set<HTMLElement>();
+    set.add(el);
+    elements.current.set(src, set);
+    return () => {
+      set.delete(el);
+    };
+  }, []);
 
   const open = useCallback(
     (src: string) => {
@@ -30,7 +53,13 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
     },
     [slides]
   );
-  const close = useCallback(() => setIndex(null), []);
+  const close = useCallback(() => {
+    // After browsing with the carousel, closing it brings the page back to the
+    // illustration that was on screen (see the effect below).
+    const i = indexRef.current;
+    if (i !== null) scrollBackTo.current = slides[i].src;
+    setIndex(null);
+  }, [slides]);
   const goPrev = useCallback(
     () => setIndex((i) => (i === null ? i : (i - 1 + slides.length) % slides.length)),
     [slides.length]
@@ -44,8 +73,27 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
 
   const current = index !== null ? slides[index] : null;
 
+  // Once closed (and the page unpinned by useLightboxBehavior), scroll to the
+  // illustration we were on, unless it is already mostly in view.
+  useEffect(() => {
+    if (isOpen || !scrollBackTo.current) return;
+    const src = scrollBackTo.current;
+    scrollBackTo.current = null;
+    const frame = requestAnimationFrame(() => {
+      const el = [...(elements.current.get(src) ?? [])].find(isRendered);
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const visible = Math.min(r.bottom, window.innerHeight) - Math.max(r.top, 0);
+      if (visible >= Math.min(r.height, window.innerHeight) * 0.5) return;
+      el.scrollIntoView({ block: "center", inline: "nearest" });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [isOpen]);
+
+  const ctxValue = useMemo(() => ({ open, register }), [open, register]);
+
   return (
-    <LightboxContext.Provider value={{ open }}>
+    <LightboxContext.Provider value={ctxValue}>
       {children}
       {current && index !== null && (
         <div
@@ -197,8 +245,15 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
 // `src` is the un-prefixed path, the same one listed in the provider's slides.
 export function LightboxImg({ src, alt = "", className }: { src: string; alt?: string; className?: string }) {
   const ctx = useContext(LightboxContext);
+  const ref = useRef<HTMLImageElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !ctx) return;
+    return ctx.register(src, el);
+  }, [ctx, src]);
   return (
     <img
+      ref={ref}
       src={asset(src)}
       alt={alt}
       className={`cursor-pointer ${className ?? ""}`}
