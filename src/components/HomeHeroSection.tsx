@@ -5,10 +5,13 @@ import VideoModal from "@/components/VideoModal";
 
 const HERO_VIDEO_ID = "yfCtiQ93gis";
 const HERO_VIDEO_TITLE = "HERO VIDEO";
+// Mobile: the hero is a 9:16 frame (like the trailer page), so it plays this
+// vertical Short in the background; tapping it opens HERO_VIDEO_ID full width.
+const MOBILE_HERO_VIDEO_ID = "UMobicftZ1w";
 // YouTube picks the stream resolution from the player's size, so the player
 // is rendered at 4K and scaled down with CSS to nudge it toward high quality.
-const PLAYER_W = 3840;
-const PLAYER_H = 2160;
+const DESKTOP_PLAYER = { w: 3840, h: 2160 };
+const MOBILE_PLAYER = { w: 2160, h: 3840 };
 const TARGET_QUALITY = "hd2160";
 
 // Undocumented-but-working on many builds: lock the quality range to 4K, then
@@ -29,6 +32,19 @@ export default function HomeHeroSection() {
   const heroRef = useRef<HTMLElement>(null);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [playerScale, setPlayerScale] = useState(0.5);
+  const hostRef = useRef<HTMLDivElement>(null);
+  // null until mounted, so the right player is created straight away (no
+  // desktop player briefly built then torn down on a phone).
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  const player = isMobile ? MOBILE_PLAYER : DESKTOP_PLAYER;
+  const videoId = isMobile ? MOBILE_HERO_VIDEO_ID : HERO_VIDEO_ID;
 
   // Scale the 4K player so it covers the hero frame (same crop as object-cover).
   useEffect(() => {
@@ -36,11 +52,11 @@ export default function HomeHeroSection() {
     if (!hero) return;
     const ro = new ResizeObserver(([entry]) => {
       const { width, height } = entry.contentRect;
-      setPlayerScale(Math.max(width / PLAYER_W, height / PLAYER_H));
+      setPlayerScale(Math.max(width / player.w, height / player.h));
     });
     ro.observe(hero);
     return () => ro.disconnect();
-  }, []);
+  }, [player]);
 
   useEffect(() => {
     const hero = heroRef.current;
@@ -99,17 +115,24 @@ export default function HomeHeroSection() {
   }, []);
 
   useEffect(() => {
+    const wrapper = hostRef.current;
+    if (isMobile === null || !wrapper) return;
+    // The player replaces the element it is given, so it gets a throwaway child
+    // that React doesn't own (clean to recreate when the layout switches).
+    const host = document.createElement("div");
+    wrapper.appendChild(host);
+
     const createPlayer = () => {
       if (playerRef.current) return;
-      playerRef.current = new YT.Player("yt-home-hero-player", {
-        videoId: HERO_VIDEO_ID,
-        width: PLAYER_W,
-        height: PLAYER_H,
+      playerRef.current = new YT.Player(host, {
+        videoId,
+        width: player.w,
+        height: player.h,
         playerVars: {
           autoplay: 1,
           mute: 1,
           loop: 1,
-          playlist: HERO_VIDEO_ID,
+          playlist: videoId,
           controls: 0,
           showinfo: 0,
           rel: 0,
@@ -142,8 +165,9 @@ export default function HomeHeroSection() {
     return () => {
       playerRef.current?.destroy();
       playerRef.current = null;
+      wrapper.replaceChildren();
     };
-  }, [onPlayerReady, onPlayerStateChange]);
+  }, [isMobile, videoId, player, onPlayerReady, onPlayerStateChange]);
 
   // Fallback when the browser blocks autoplay (e.g. iOS low-power mode):
   // start the muted video on the first touch anywhere on the page.
@@ -188,12 +212,12 @@ export default function HomeHeroSection() {
           <div
             className="absolute top-1/2 left-1/2"
             style={{
-              width: PLAYER_W,
-              height: PLAYER_H,
+              width: player.w,
+              height: player.h,
               transform: `translate(-50%, -50%) scale(${playerScale})`,
             }}
           >
-            <div id="yt-home-hero-player" />
+            <div ref={hostRef} />
           </div>
         </div>
 

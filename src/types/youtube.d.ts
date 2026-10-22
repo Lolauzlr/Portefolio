@@ -18,7 +18,7 @@ declare namespace YT {
 
   class Player {
     constructor(
-      elementId: string,
+      elementId: string | HTMLElement,
       config: {
         videoId: string;
         width?: number | string;
