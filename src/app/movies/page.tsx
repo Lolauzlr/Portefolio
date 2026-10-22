@@ -113,7 +113,7 @@ export default function MoviesPage() {
           FEATURES FILMS
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-6 md:mb-10" />
-        <VideoCard videoId="BFLlIR9A8DY" title="SAINT EX" />
+        <VideoCard videoId="BFLlIR9A8DY" title="SAINT EX" stickyPreview />
         <h3 className="text-[24px] tracking-[1.92px] md:text-[28px] md:tracking-[2.24px] font-[family-name:var(--font-heading)] mt-4 md:mt-6 mb-2">
           SAINT EX
         </h3>
