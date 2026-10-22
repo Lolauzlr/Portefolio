@@ -8,7 +8,7 @@ import { asset } from "@/lib/asset";
 const navLinks = [
   { label: "HOME", href: "/" },
   { label: "TRAILER", href: "/trailer" },
-  { label: "MOVIES", href: "/movies" },
+  { label: "FILM & ANIMATION", href: "/movies" },
   { label: "ILLUSTRATIONS", href: "/illustrations" },
   { label: "STORYTELLING", href: "/storytelling" },
   { label: "CV", href: "/cv" },

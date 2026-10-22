@@ -35,7 +35,7 @@ export default function MoviesPage() {
       reversed: false,
       description: (
         <>
-          Animator for the Documentary ONCE UPON A TIME THE LOUVRE
+          Animator for the documentary Once Upon a Time at the Louvre.
           <br /><br />
           By Frédéric Wilner
           <br /><br />
@@ -81,7 +81,7 @@ export default function MoviesPage() {
       reversed: false,
       description: (
         <>
-          Film Director & Animator for the short animated film BEAST.
+          Director & Animator of the animated short film BEAST.
           <br /><br />
           <span className="font-[family-name:var(--font-heading)] text-[20px] text-[#DDFF6E] tracking-[1.6px]">SELECTIONS & REWARDS</span>
           <br /><br />
@@ -110,7 +110,7 @@ export default function MoviesPage() {
       {/* Features Films */}
       <section className="px-3 md:px-[120px] pt-6 pb-6 md:py-16">
         <h2 className="text-[28px] tracking-[3.36px] md:text-[40px] md:tracking-[4.8px] font-[family-name:var(--font-heading)] mb-2">
-          FEATURES FILMS
+          FEATURE FILMS
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-6 md:mb-10" />
         <VideoCard videoId="BFLlIR9A8DY" title="SAINT EX" stickyPreview />
