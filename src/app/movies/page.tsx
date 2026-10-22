@@ -169,26 +169,25 @@ export default function MoviesPage() {
               </p>
             );
 
-            // With logos: media + text on a first row, then the italic text on the
-            // left and the logos on the right, vertically centred on each other.
+            // With logos (desktop): a two-column grid shared by both rows. The right
+            // column is as wide as the logos row, so the 16:9 image is exactly as wide
+            // as the italic text under it, and the text column lines up with the
+            // logos. Below that, the italic text and the logos are vertically centred
+            // on each other. On mobile everything simply stacks.
             if (doc.logos) {
               return (
-                <div key={doc.title} className="flex flex-col gap-3">
-                  <div
-                    className={`flex flex-col md:flex-row gap-[16px] md:gap-[24px] items-start ${
-                      doc.reversed ? "md:flex-row-reverse" : ""
-                    }`}
-                  >
-                    <div className="w-full md:w-[792px] flex-shrink-0">{media}</div>
-                    {textColumn}
-                  </div>
-                  <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8">
-                    <div className="md:flex-1">{belowText}</div>
-                    <div className="flex flex-wrap items-center gap-x-[14px] gap-y-3 md:flex-shrink-0 md:justify-end">
-                      {doc.logos.map((logo) => (
-                        <img key={logo.src} src={encodeURI(asset(logo.src))} alt={logo.alt} className="h-[44px] w-auto" />
-                      ))}
-                    </div>
+                <div
+                  key={doc.title}
+                  className="flex flex-col gap-[16px] md:grid md:grid-cols-[minmax(0,1fr)_max-content] md:gap-x-8 md:gap-y-3 md:items-start"
+                >
+                  <div>{media}</div>
+                  {/* w-0 + min-w-full: sized by the column (i.e. by the logos), never the other way round. */}
+                  <div className="md:w-0 md:min-w-full">{textColumn}</div>
+                  <div className="md:self-center">{belowText}</div>
+                  <div className="flex flex-wrap items-center gap-x-[14px] gap-y-3 md:flex-nowrap md:self-center md:justify-end">
+                    {doc.logos.map((logo) => (
+                      <img key={logo.src} src={encodeURI(asset(logo.src))} alt={logo.alt} className="h-[44px] w-auto" />
+                    ))}
                   </div>
                 </div>
               );
