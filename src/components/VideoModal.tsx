@@ -118,6 +118,8 @@ export default function VideoModal({
     startTimers.current = [0, 400, 1000, 2000, 3500].map((ms) =>
       window.setTimeout(() => {
         if (playingRef.current) return;
+        // The handshake sent on load is also dropped if the player wasn't ready.
+        listen(iframe);
         if (!withSound) sendCommand(iframe, "mute");
         sendCommand(iframe, "playVideo");
       }, ms)
