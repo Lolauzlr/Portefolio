@@ -311,7 +311,7 @@ export default function TrailerPage() {
         { src: "/images/hotel-renovator-2023/Hotel-Renovator-2023-001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Fully created in Unreal Engine 4" },
         { src: "/images/hotel-renovator-2023/Hotel-Renovator-2023-002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Fully created in Unreal Engine 4" },
       ] },
-    { videoId: "MTskFVe8P3Q", title: "A Plague Tale: Requiem • The Game Awards 2022 Spotlight", description: "2022 • In-game video capture • Video editing • Sound editing",
+    { videoId: "MTskFVe8P3Q", logo: "/images/logo-svg/The_Game_Awards_Logo_2023.svg", logoAlt: "The Game Awards", title: "A Plague Tale: Requiem • The Game Awards 2022 Spotlight", description: "2022 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "The Game Awards 2022 • Spotlight Trailer", screenshotTitle: "A PLAGUE TALE : REQUIEM",
       screenshotRole: "Cinematic artist in charge of The Game Awards 2022 Spotlight of A Plague Tale: Requiem",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
@@ -813,19 +813,31 @@ export default function TrailerPage() {
                         {card.description}
                       </p>
                     </div>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); openScreenshots(
-                        card.screenshotCategory,
-                        card.screenshotTitle,
-                        card.screenshots,
-                        card.screenshotRole
-                          ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits! }
-                          : undefined
-                      ); }}
-                      className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-end hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer"
-                    >
-                      VIEW SCREENSHOTS
-                    </button>
+                    {/* Bottom row: optional event logo on the left (auto spacing),
+                        "VIEW SCREENSHOTS" on the right, both aligned on the bottom. */}
+                    <div className="flex items-end justify-between gap-4">
+                      {card.logo && (
+                        // The SVG is black: turned white for the dark card.
+                        <img
+                          src={asset(card.logo)}
+                          alt={card.logoAlt ?? ""}
+                          className="h-[36px] w-auto brightness-0 invert"
+                        />
+                      )}
+                      <button
+                        onClick={(e) => { e.stopPropagation(); openScreenshots(
+                          card.screenshotCategory,
+                          card.screenshotTitle,
+                          card.screenshots,
+                          card.screenshotRole
+                            ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits! }
+                            : undefined
+                        ); }}
+                        className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase ml-auto hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer"
+                      >
+                        VIEW SCREENSHOTS
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
