@@ -115,6 +115,21 @@ export default function TrailerPage() {
   };
 
   const recentTrailers = [
+    { videoId: "eT8QvyGSyYU", title: "Insurgency Sandstorm : Operation Echoes Launch Trailer", description: "2026 • In-game video capture • Video editing • Sound editing",
+      screenshotCategory: "2026 · LAUNCH TRAILER", screenshotTitle: "Insurgency Sandstorm : Operation Echoes",
+      screenshotRole: "Cinematic artist in charge of the Launch Trailer of Insurgency Sandstorm : Operation Echoes",
+      screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
+      screenshotCredits: [
+        { label: "Developer", value: "New World Interactive, Saber Interactive" },
+        { label: "Publisher", value: "Focus Entertainment" },
+      ],
+      screenshots: [
+        { src: "/images/ISS/ISS_05.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/ISS/ISS_landscape_01.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/ISS/ISS_Newskin_04.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/ISS/ISS_Warzone_03.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/ISS/ISS_Weapon02.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Captured in game" },
+      ] },
     { videoId: "ZPQFsx9XXoM", title: "RESONANCE : A PLAGUE TALE LEGACY • GAMEPLAY", description: "2026 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "2026 • Long Gameplay Trailer", screenshotTitle: "RESONANCE : A PLAGUE TALE LEGACY",
       screenshotRole: "Cinematic artist in charge of The Long Gameplay Trailer of Resonance: A Plague Tale Legacy",
@@ -146,6 +161,9 @@ export default function TrailerPage() {
         { src: "/images/yerba-buena-gameplay-2026/J.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Captured in game" },
         { src: "/images/yerba-buena-gameplay-2026/K.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Fully created in Unity" },
       ] },
+  ];
+
+  const watchCards = [
     { videoId: "cZgim-KYkZQ", title: "YERBA BUENA • REVEAL TRAILER", description: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing",
       screenshotCategory: "2026 · REVEAL TRAILER", screenshotTitle: "YERBA BUENA",
       screenshotRole: "Cinematic artist in charge of The Reveal Trailer of Yerba Buena",
@@ -163,9 +181,6 @@ export default function TrailerPage() {
         { src: "/images/yerba-buena-reveal-2026/yerba-reveal-5.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Camera & Lighting Setup in Unity" },
         { src: "/images/yerba-buena-reveal-2026/yerba-reveal-6.webp", tag: "SCÈNE 06", description: "Screenshot from the trailer • Captured in game" },
       ] },
-  ];
-
-  const watchCards = [
     { videoId: "QwxFR1g7Uy4", title: "John Carpenter's Toxic Commando • Gameplay Overview Trailer", description: "2026 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "2026 · GAMEPLAY OVERVIEW", screenshotTitle: "JOHN CARPENTER'S TOXIC COMMANDO",
       screenshotRole: "Cinematic artist in charge of The Gameplay Overview Trailer of John Carpenter's Toxic Commando",
