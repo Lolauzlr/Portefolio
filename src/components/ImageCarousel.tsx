@@ -5,6 +5,8 @@ import { asset } from "@/lib/asset";
 import { CaretCircleLeftIcon, CaretCircleRightIcon, CornersOutIcon } from "@/components/CarouselIcons";
 import { useLightboxBehavior } from "@/components/ScreenshotGallery";
 import { buildSpreads } from "@/lib/reading";
+import ZoomControls from "@/components/ZoomControls";
+import { useZoomPan } from "@/hooks/useZoomPan";
 
 export type CarouselSlide = {
   src?: string;
@@ -45,7 +47,7 @@ function SlideContent({
 // short quick flick (12px+ in under 300ms) or a slower 30px+ drag counts, as
 // long as it is mostly horizontal. `swiped` lets click handlers ignore the
 // click some browsers fire right after a swipe.
-function useSwipe(onPrev: () => void, onNext: () => void, enabled: boolean) {
+function useSwipe(onPrev: () => void, onNext: () => void, enabled: boolean, isBlocked?: () => boolean) {
   const start = useRef<{ x: number; y: number; t: number } | null>(null);
   const swiped = useRef(false);
   return {
@@ -61,7 +63,8 @@ function useSwipe(onPrev: () => void, onNext: () => void, enabled: boolean) {
       onTouchEnd: (e: React.TouchEvent) => {
         const s = start.current;
         start.current = null;
-        if (!s || !enabled) return;
+        // A pinch / pan on a zoomed image is not a page swipe.
+        if (!s || !enabled || isBlocked?.()) return;
         const t = e.changedTouches[0];
         const dx = t.clientX - s.x;
         const ax = Math.abs(dx);
@@ -111,6 +114,8 @@ export default function ImageCarousel({
   const lbCount = spreadMode ? spreadList.length : slides.length;
   const lbIndex = spreadMode ? spreadIndex : index;
   const lbMultiple = lbCount > 1;
+  const [stage, setStage] = useState<HTMLElement | null>(null);
+  const zoom = useZoomPan(stage, lbIndex);
   const lbGo = (i: number) => (spreadMode ? setSpreadIndex(i) : setIndex(i));
   function lbPrev() {
     lbGo((lbIndex - 1 + lbCount) % lbCount);
@@ -126,13 +131,14 @@ export default function ImageCarousel({
   }
 
   const swipe = useSwipe(goPrev, goNext, hasMultiple);
-  const lbSwipe = useSwipe(lbPrev, lbNext, lbMultiple);
+  const lbSwipe = useSwipe(lbPrev, lbNext, lbMultiple, () => zoom.ignoreSwipe());
 
   useLightboxBehavior(
     lightboxOpen,
     () => setLightboxOpen(false),
     lbMultiple ? lbPrev : undefined,
-    lbMultiple ? lbNext : undefined
+    lbMultiple ? lbNext : undefined,
+    () => zoom.isZoomed()
   );
 
   if (slides.length === 0) return null;
@@ -218,7 +224,7 @@ export default function ImageCarousel({
             ✕
           </button>
 
-          <div className="relative flex-1 min-h-0 flex items-center justify-center p-4 md:p-12 touch-pan-y"
+          <div ref={setStage} className="relative flex-1 min-h-0 flex items-center justify-center p-4 md:p-12 touch-pan-y"
             {...lbSwipe.handlers}
           >
             {/* Clicking the left / right half of the screen goes to the
@@ -230,14 +236,14 @@ export default function ImageCarousel({
                   type="button"
                   tabIndex={-1}
                   aria-label="Previous"
-                  onClick={() => !lbSwipe.swiped.current && lbPrev()}
+                  onClick={(e) => zoom.guardTap(e, () => !lbSwipe.swiped.current && lbPrev())}
                   className="absolute inset-y-0 left-0 w-1/2 cursor-pointer"
                 />
                 <button
                   type="button"
                   tabIndex={-1}
                   aria-label="Next"
-                  onClick={() => !lbSwipe.swiped.current && lbNext()}
+                  onClick={(e) => zoom.guardTap(e, () => !lbSwipe.swiped.current && lbNext())}
                   className="absolute inset-y-0 right-0 w-1/2 cursor-pointer"
                 />
               </>
@@ -250,6 +256,7 @@ export default function ImageCarousel({
             {lbMultiple && (
               <button
                 type="button"
+                data-zoom-ignore
                 onClick={lbPrev}
                 className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
                 aria-label="Previous image"
@@ -261,7 +268,7 @@ export default function ImageCarousel({
             )}
 
             {spreadMode ? (
-              <div className="pointer-events-none flex h-full max-w-full items-center justify-center gap-1">
+              <div data-zoom-target className="pointer-events-none flex h-full max-w-full items-center justify-center gap-1">
                 {[spreadList[spreadIndex]?.left, spreadList[spreadIndex]?.right].map((src, i) =>
                   src ? (
                     <img key={src} src={asset(src)} alt={`${alt} ${spreadIndex * 2 + i + 1}`} className="min-w-0 max-h-full max-w-[50%] object-contain" />
@@ -269,7 +276,7 @@ export default function ImageCarousel({
                 )}
               </div>
             ) : current.src ? (
-              <img src={asset(current.src)} alt={alt} className="pointer-events-none max-w-full max-h-full object-contain" />
+              <img data-zoom-target src={asset(current.src)} alt={alt} className="pointer-events-none max-w-full max-h-full object-contain" />
             ) : (
               <div className="w-[90vw] max-w-[800px] aspect-video bg-[#d9d9d9] flex items-center justify-center">
                 <span className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-[#8F8F8F] uppercase">
@@ -281,6 +288,7 @@ export default function ImageCarousel({
             {lbMultiple && (
               <button
                 type="button"
+                data-zoom-ignore
                 onClick={lbNext}
                 className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
                 aria-label="Next image"
@@ -290,6 +298,8 @@ export default function ImageCarousel({
                 </svg>
               </button>
             )}
+
+            <ZoomControls scale={zoom.scale} onZoomIn={zoom.zoomIn} onZoomOut={zoom.zoomOut} onReset={zoom.reset} />
           </div>
 
           {lbMultiple && (

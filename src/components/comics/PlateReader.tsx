@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import type { Comic } from "@/lib/comics";
+import { useZoomPan } from "@/hooks/useZoomPan";
 
 /**
  * Lecture portrait : une planche à la fois, plein écran, comme le lightbox
@@ -21,12 +23,17 @@ export default function PlateReader({
   onPrev: () => void;
   onNext: () => void;
 }) {
+  // Pinch / double tap to zoom a plate (see useZoomPan); the half-screen tap
+  // zones below stand down while zoomed.
+  const [stage, setStage] = useState<HTMLElement | null>(null);
+  const zoom = useZoomPan(stage, plateIndex);
   const plate = comic.plates[plateIndex];
   if (!plate) return null;
 
   return (
-    <div className="fixed inset-0 z-[15] flex items-center justify-center bg-[#131313]">
+    <div ref={setStage} className="fixed inset-0 z-[15] flex items-center justify-center bg-[#131313] touch-none">
       <img
+        data-zoom-target
         key={plate}
         src={plate}
         alt={`${comic.title} - page ${plateIndex + 1}/${comic.plates.length}`}
@@ -38,13 +45,13 @@ export default function PlateReader({
           dans scene.ts) - plus de flèches visibles, seul le geste reste. */}
       <button
         type="button"
-        onClick={onPrev}
+        onClick={(e) => zoom.guardTap(e, onPrev)}
         aria-label="Page précédente"
         className="absolute inset-y-0 left-0 w-1/2 cursor-pointer"
       />
       <button
         type="button"
-        onClick={onNext}
+        onClick={(e) => zoom.guardTap(e, onNext)}
         aria-label="Page suivante"
         className="absolute inset-y-0 right-0 w-1/2 cursor-pointer"
       />

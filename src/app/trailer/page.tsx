@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { asset } from "@/lib/asset";
 import { useSwipeNav } from "@/hooks/useSwipeNav";
+import { useZoomPan } from "@/hooks/useZoomPan";
+import ZoomControls from "@/components/ZoomControls";
 import VideoModal from "@/components/VideoModal";
 import { useWheelNav } from "@/components/ScreenshotGallery";
 
@@ -16,11 +18,14 @@ export default function TrailerPage() {
     screenshots: { src: string; tag: string; description: string }[];
   } | null>(null);
   const [screenshotIndex, setScreenshotIndex] = useState(0);
+  const [shotStage, setShotStage] = useState<HTMLElement | null>(null);
+  const zoom = useZoomPan(shotStage, screenshotIndex);
   const shotCount = screenshotsData?.screenshots.length ?? 0;
   const swipeHandlers = useSwipeNav(
     () => setScreenshotIndex((i) => (i - 1 + shotCount) % shotCount),
     () => setScreenshotIndex((i) => (i + 1) % shotCount),
-    shotCount > 1
+    shotCount > 1,
+    () => zoom.ignoreSwipe()
   );
   const [videoModal, setVideoModal] = useState<{ videoId: string; title: string; fullWidth?: boolean } | null>(null);
   const [hoveredRecent, setHoveredRecent] = useState<string | null>(null);
@@ -86,7 +91,8 @@ export default function TrailerPage() {
   useWheelNav(
     shotCount > 1,
     () => setScreenshotIndex((i) => (i - 1 + shotCount) % shotCount),
-    () => setScreenshotIndex((i) => (i + 1) % shotCount)
+    () => setScreenshotIndex((i) => (i + 1) % shotCount),
+    () => zoom.isZoomed()
   );
 
   useEffect(() => {
@@ -830,6 +836,7 @@ export default function TrailerPage() {
                   desktop keeps its original flexible-height, letterboxed
                   layout. */}
               <div
+                ref={setShotStage}
                 {...swipeHandlers}
                 // Click/tap on the left or right half of the image to go to the
                 // previous / next screenshot (arrows stop propagation).
@@ -837,8 +844,11 @@ export default function TrailerPage() {
                   if (screenshotsData.screenshots.length < 2) return;
                   const rect = e.currentTarget.getBoundingClientRect();
                   const count = screenshotsData.screenshots.length;
-                  if (e.clientX < rect.left + rect.width / 2) setScreenshotIndex((i) => (i - 1 + count) % count);
-                  else setScreenshotIndex((i) => (i + 1) % count);
+                  const onLeftHalf = e.clientX < rect.left + rect.width / 2;
+                  zoom.guardTap(e, () => {
+                    if (onLeftHalf) setScreenshotIndex((i) => (i - 1 + count) % count);
+                    else setScreenshotIndex((i) => (i + 1) % count);
+                  });
                 }}
                 className="cursor-pointer touch-pan-y trailer-stage relative w-full h-[60vh] md:h-auto md:aspect-auto md:flex-1 flex items-center justify-center min-h-0">
                 {/* Counter */}
@@ -851,6 +861,7 @@ export default function TrailerPage() {
                   <button
                     onClick={(e) => { e.stopPropagation(); setScreenshotIndex((screenshotIndex - 1 + screenshotsData.screenshots.length) % screenshotsData.screenshots.length); }}
                     className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+                    data-zoom-ignore
                     aria-label="Précédent"
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -863,12 +874,14 @@ export default function TrailerPage() {
                     (object-cover, cropped); desktop: unchanged letterboxed
                     image + caption inside a padded box. */}
                 <img
+                  data-zoom-target
                   src={asset(screenshotsData.screenshots[screenshotIndex].src)}
                   alt={screenshotsData.screenshots[screenshotIndex].tag}
                   className="absolute inset-0 w-full h-full object-cover md:hidden"
                 />
                 <div className="hidden md:flex md:flex-col md:items-start md:h-full md:min-h-0 md:p-12">
                   <img
+                    data-zoom-target
                     src={asset(screenshotsData.screenshots[screenshotIndex].src)}
                     alt={screenshotsData.screenshots[screenshotIndex].tag}
                     className="md:flex-1 md:min-h-0 md:max-w-full object-contain"
@@ -888,6 +901,7 @@ export default function TrailerPage() {
                   <button
                     onClick={(e) => { e.stopPropagation(); setScreenshotIndex((screenshotIndex + 1) % screenshotsData.screenshots.length); }}
                     className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+                    data-zoom-ignore
                     aria-label="Suivant"
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -895,6 +909,8 @@ export default function TrailerPage() {
                     </svg>
                   </button>
                 )}
+
+                <ZoomControls scale={zoom.scale} onZoomIn={zoom.zoomIn} onZoomOut={zoom.zoomOut} onReset={zoom.reset} />
               </div>
 
               {/* Mobile portrait caption, below the filled image */}

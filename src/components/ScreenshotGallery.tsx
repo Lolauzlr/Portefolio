@@ -19,10 +19,10 @@ const WHEEL_IDLE_MS = 100;
 // swipe) or the vertical one, whichever dominates.
 // The listener is non-passive so the browser's own horizontal-swipe
 // back/forward navigation doesn't fire behind the overlay.
-export function useWheelNav(active: boolean, onPrev?: () => void, onNext?: () => void) {
-  const handlers = useRef({ onPrev, onNext });
+export function useWheelNav(active: boolean, onPrev?: () => void, onNext?: () => void, isBlocked?: () => boolean) {
+  const handlers = useRef({ onPrev, onNext, isBlocked });
   useEffect(() => {
-    handlers.current = { onPrev, onNext };
+    handlers.current = { onPrev, onNext, isBlocked };
   });
 
   useEffect(() => {
@@ -34,6 +34,9 @@ export function useWheelNav(active: boolean, onPrev?: () => void, onNext?: () =>
     });
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
+      // Pinch / ctrl+wheel zoom the image (see useZoomPan), and while zoomed the
+      // wheel pans it: neither turns the page.
+      if (e.ctrlKey || handlers.current.isBlocked?.()) return;
       gesture.handle(e);
     };
     window.addEventListener("wheel", onWheel, { passive: false });
@@ -44,8 +47,8 @@ export function useWheelNav(active: boolean, onPrev?: () => void, onNext?: () =>
   }, [active]);
 }
 
-export function useLightboxBehavior(active: boolean, onClose: () => void, onPrev?: () => void, onNext?: () => void) {
-  useWheelNav(active, onPrev, onNext);
+export function useLightboxBehavior(active: boolean, onClose: () => void, onPrev?: () => void, onNext?: () => void, isWheelBlocked?: () => boolean) {
+  useWheelNav(active, onPrev, onNext, isWheelBlocked);
 
   useEffect(() => {
     if (!active) return;

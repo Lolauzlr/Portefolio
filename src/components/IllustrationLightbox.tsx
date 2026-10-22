@@ -3,6 +3,8 @@
 import { createContext, useCallback, useContext, useRef, useState } from "react";
 import { asset } from "@/lib/asset";
 import { useLightboxBehavior } from "@/components/ScreenshotGallery";
+import ZoomControls from "@/components/ZoomControls";
+import { useZoomPan } from "@/hooks/useZoomPan";
 
 export type LightboxSlide = { src: string; alt: string; caption?: string };
 
@@ -16,6 +18,8 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
   const [index, setIndex] = useState<number | null>(null);
   const touchStart = useRef<{ x: number; y: number; t: number } | null>(null);
   const swiped = useRef(false);
+  const [stage, setStage] = useState<HTMLElement | null>(null);
+  const zoom = useZoomPan(stage, index);
   const isOpen = index !== null;
   const hasMultiple = slides.length > 1;
 
@@ -36,7 +40,7 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
     [slides.length]
   );
 
-  useLightboxBehavior(isOpen, close, hasMultiple ? goPrev : undefined, hasMultiple ? goNext : undefined);
+  useLightboxBehavior(isOpen, close, hasMultiple ? goPrev : undefined, hasMultiple ? goNext : undefined, () => zoom.isZoomed());
 
   const current = index !== null ? slides[index] : null;
 
@@ -63,6 +67,7 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
           </button>
 
           <div
+            ref={setStage}
             className="relative flex-1 min-h-0 flex items-center justify-center p-4 md:p-12 touch-pan-y"
             // Swipe left/right on touch screens to change image (mostly-horizontal
             // gestures only, so vertical scrolls/taps are left alone).
@@ -76,7 +81,7 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
             onTouchEnd={(e) => {
               const start = touchStart.current;
               touchStart.current = null;
-              if (!start || !hasMultiple) return;
+              if (!start || !hasMultiple || zoom.ignoreSwipe()) return;
               const t = e.changedTouches[0];
               const dx = t.clientX - start.x;
               const dy = t.clientY - start.y;
@@ -103,14 +108,14 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
                   type="button"
                   tabIndex={-1}
                   aria-label="Previous"
-                  onClick={() => !swiped.current && goPrev()}
+                  onClick={(e) => zoom.guardTap(e, () => !swiped.current && goPrev())}
                   className="absolute inset-y-0 left-0 w-1/2 cursor-pointer"
                 />
                 <button
                   type="button"
                   tabIndex={-1}
                   aria-label="Next"
-                  onClick={() => !swiped.current && goNext()}
+                  onClick={(e) => zoom.guardTap(e, () => !swiped.current && goNext())}
                   className="absolute inset-y-0 right-0 w-1/2 cursor-pointer"
                 />
               </>
@@ -123,6 +128,7 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
             {hasMultiple && (
               <button
                 type="button"
+                data-zoom-ignore
                 onClick={goPrev}
                 className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
                 aria-label="Previous image"
@@ -137,7 +143,7 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
                 as the trailer screenshots). The caption is dropped on a phone
                 held in landscape, where the image needs the whole height. */}
             <div className="pointer-events-none flex max-h-full max-w-full min-h-0 flex-col items-center gap-2 md:gap-3">
-              <img src={asset(current.src)} alt={current.alt} className="min-h-0 max-w-full w-auto h-auto object-contain" />
+              <img data-zoom-target src={asset(current.src)} alt={current.alt} className="min-h-0 max-w-full w-auto h-auto object-contain" />
               {current.caption && (
                 <p className="shrink-0 text-center font-[family-name:var(--font-body)] text-[12px] md:text-[16px] font-normal text-[#8F8F8F] [@media(orientation:landscape)_and_(max-height:500px)]:hidden">
                   {current.caption}
@@ -148,6 +154,7 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
             {hasMultiple && (
               <button
                 type="button"
+                data-zoom-ignore
                 onClick={goNext}
                 className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
                 aria-label="Next image"
@@ -157,6 +164,7 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
                 </svg>
               </button>
             )}
+            <ZoomControls scale={zoom.scale} onZoomIn={zoom.zoomIn} onZoomOut={zoom.zoomOut} onReset={zoom.reset} />
           </div>
 
           {/* Bande masquée sur téléphone en paysage (elle mangerait la hauteur de l'image). */}
