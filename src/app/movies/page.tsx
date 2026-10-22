@@ -109,12 +109,12 @@ export default function MoviesPage() {
     <div className="pt-[57px] md:pt-[95px] bg-[#15161b] text-white min-h-screen">
       {/* Features Films */}
       <section className="px-3 md:px-[120px] pt-6 pb-6 md:py-16">
-        <h2 className="text-[40px] font-[family-name:var(--font-heading)] tracking-[4.8px] mb-2">
+        <h2 className="text-[28px] tracking-[3.36px] md:text-[40px] md:tracking-[4.8px] font-[family-name:var(--font-heading)] mb-2">
           FEATURES FILMS
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-6 md:mb-10" />
         <VideoCard videoId="BFLlIR9A8DY" title="SAINT EX" />
-        <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px] mt-4 md:mt-6 mb-2">
+        <h3 className="text-[24px] tracking-[1.92px] md:text-[28px] md:tracking-[2.24px] font-[family-name:var(--font-heading)] mt-4 md:mt-6 mb-2">
           SAINT EX
         </h3>
         <div className="w-[80px] h-[4px] bg-white mb-3 md:mb-4" />
@@ -131,7 +131,7 @@ export default function MoviesPage() {
 
       {/* Documentary */}
       <section className="bg-[#131313] px-3 md:px-[120px] pt-6 pb-16 md:py-16">
-        <h2 className="text-[40px] font-[family-name:var(--font-heading)] tracking-[4.8px] mb-2">
+        <h2 className="text-[28px] tracking-[3.36px] md:text-[40px] md:tracking-[4.8px] font-[family-name:var(--font-heading)] mb-2">
           DOCUMENTARY
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-6 md:mb-10" />
@@ -156,7 +156,7 @@ export default function MoviesPage() {
                 )}
               </div>
               <div className="flex flex-col">
-                <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px] mb-2">
+                <h3 className="text-[24px] tracking-[1.92px] md:text-[28px] md:tracking-[2.24px] font-[family-name:var(--font-heading)] mb-2">
                   {doc.title}
                 </h3>
                 <div className="w-[80px] h-[4px] bg-white mb-3 md:mb-4" />
