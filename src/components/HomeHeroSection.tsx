@@ -15,10 +15,6 @@ const MOBILE_HERO_VIDEO_ID = "UMobicftZ1w";
 const DESKTOP_PLAYER = { w: 3840, h: 2160 };
 const TOUCH_PLAYER = { w: 1920, h: 1080 };
 const MOBILE_PLAYER = { w: 1080, h: 1920 };
-// The Short has a black credits strip burned into its bottom edge (~9 % of its
-// height). On mobile the video is zoomed from the top so that strip falls
-// outside the hero frame.
-const MOBILE_BOTTOM_CROP = 0.1;
 const TARGET_QUALITY = "hd2160";
 
 // Undocumented-but-working on many builds: lock the quality range to 4K, then
@@ -39,7 +35,6 @@ export default function HomeHeroSection() {
   const heroRef = useRef<HTMLElement>(null);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [playerScale, setPlayerScale] = useState(0.5);
-  const [playerShiftY, setPlayerShiftY] = useState(0);
   const hostRef = useRef<HTMLDivElement>(null);
   // null until mounted, so the right player is created straight away (no
   // desktop player briefly built then torn down on a phone).
@@ -62,15 +57,11 @@ export default function HomeHeroSection() {
     if (!hero) return;
     const ro = new ResizeObserver(([entry]) => {
       const { width, height } = entry.contentRect;
-      const cover = Math.max(width / player.w, height / player.h);
-      // Mobile: enlarge so the bottom strip overflows, anchored to the top edge.
-      const zoom = isMobile ? 1 / (1 - MOBILE_BOTTOM_CROP) : 1;
-      setPlayerScale(cover * zoom);
-      setPlayerShiftY(isMobile ? (height * (zoom - 1)) / 2 : 0);
+      setPlayerScale(Math.max(width / player.w, height / player.h));
     });
     ro.observe(hero);
     return () => ro.disconnect();
-  }, [player, isMobile]);
+  }, [player]);
 
   useEffect(() => {
     const hero = heroRef.current;
@@ -228,7 +219,7 @@ export default function HomeHeroSection() {
             style={{
               width: player.w,
               height: player.h,
-              transform: `translate(-50%, calc(-50% + ${playerShiftY}px)) scale(${playerScale})`,
+              transform: `translate(-50%, -50%) scale(${playerScale})`,
             }}
           >
             <div ref={hostRef} />
