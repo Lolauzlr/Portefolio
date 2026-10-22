@@ -8,6 +8,12 @@ import ZoomControls from "@/components/ZoomControls";
 import VideoModal from "@/components/VideoModal";
 import { useWheelNav } from "@/components/ScreenshotGallery";
 
+// Event logo shown at the bottom of a screenshots panel (and on the card).
+const logoOf = (card: object) => {
+  const { logo, logoAlt } = card as { logo?: string; logoAlt?: string };
+  return logo ? { src: logo, alt: logoAlt ?? "" } : undefined;
+};
+
 export default function TrailerPage() {
   const [screenshotsData, setScreenshotsData] = useState<{
     category: string;
@@ -15,6 +21,7 @@ export default function TrailerPage() {
     role?: string;
     responsibilities?: string;
     credits?: { label: string; value: string }[];
+    logo?: { src: string; alt: string };
     screenshots: { src: string; tag: string; description: string }[];
   } | null>(null);
   const [screenshotIndex, setScreenshotIndex] = useState(0);
@@ -123,7 +130,7 @@ export default function TrailerPage() {
     category: string,
     title: string,
     screenshots: { src: string; tag: string; description: string }[],
-    extra?: { role: string; responsibilities: string; credits: { label: string; value: string }[] }
+    extra?: { role: string; responsibilities: string; credits: { label: string; value: string }[]; logo?: { src: string; alt: string } }
   ) => {
     setScreenshotIndex(0);
     setScreenshotsData({ category, title, screenshots, ...extra });
@@ -357,6 +364,7 @@ export default function TrailerPage() {
     title: "Elta: Defy All Gods",
     role: "Cinematic artist in charge of The Reveal Trailer of Elta: Defy All Gods",
     responsibilities: "Camera animation, real-time combat VFX, cinematic lighting, animation polish",
+    logo: { src: "/images/logo-svg/gamescom-wordmark.be3b22f1.svg", alt: "gamescom" },
     credits: [
       { label: "Developer", value: "Afterburner Studios" },
       { label: "Publisher", value: "Focus Entertainment" },
@@ -620,7 +628,7 @@ export default function TrailerPage() {
               </p>
               {/* CTA - Voir les screenshots */}
               <button
-                onClick={(e) => { e.stopPropagation(); openScreenshots(heroScreenshots.category, heroScreenshots.title, heroScreenshots.screenshots, { role: heroScreenshots.role, responsibilities: heroScreenshots.responsibilities, credits: heroScreenshots.credits }); }}
+                onClick={(e) => { e.stopPropagation(); openScreenshots(heroScreenshots.category, heroScreenshots.title, heroScreenshots.screenshots, { role: heroScreenshots.role, responsibilities: heroScreenshots.responsibilities, credits: heroScreenshots.credits, logo: heroScreenshots.logo }); }}
                 className="font-[family-name:var(--font-heading)] text-[20px] md:text-[24px] tracking-[1.92px] text-[#0fd1ea] uppercase shrink-0 hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer whitespace-nowrap"
               >
                 VIEW SCREENSHOTS
@@ -662,7 +670,7 @@ export default function TrailerPage() {
                 card.screenshotTitle,
                 card.screenshots,
                 card.screenshotRole
-                  ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits! }
+                  ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits!, logo: logoOf(card) }
                   : undefined
               )}
             >
@@ -705,7 +713,7 @@ export default function TrailerPage() {
                     card.screenshotTitle,
                     card.screenshots,
                     card.screenshotRole
-                      ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits! }
+                      ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits!, logo: logoOf(card) }
                       : undefined
                   ); }}
                   className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-start hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer"
@@ -739,7 +747,7 @@ export default function TrailerPage() {
                   card.screenshotTitle,
                   card.screenshots,
                   card.screenshotRole
-                    ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits! }
+                    ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits!, logo: logoOf(card) }
                     : undefined
                 )}
               >
@@ -830,7 +838,7 @@ export default function TrailerPage() {
                           card.screenshotTitle,
                           card.screenshots,
                           card.screenshotRole
-                            ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits! }
+                            ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits!, logo: logoOf(card) }
                             : undefined
                         ); }}
                         className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase ml-auto hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer"
@@ -876,7 +884,7 @@ export default function TrailerPage() {
 
           <div className="w-full min-h-full md:h-full flex flex-col md:flex-row">
             {/* Left: Carousel */}
-            <div className="relative w-full flex flex-col md:flex-1 md:min-h-0">
+            <div className="relative w-full flex flex-col md:flex-1 md:min-h-0 md:min-w-0">
               {/* Main image area - mobile: capped to 60vh, fully filled
                   (object-cover, no letterboxing) instead of being squeezed
                   by the info panel below or taking over the whole screen;
@@ -990,7 +998,7 @@ export default function TrailerPage() {
             </div>
 
             {/* Right: Info panel */}
-            <div className="trailer-info w-full md:w-[400px] flex flex-col p-8 md:p-10 bg-[#15161b] overflow-y-auto">
+            <div className="trailer-info w-full md:w-[400px] md:shrink-0 flex flex-col p-8 md:p-10 bg-[#15161b] overflow-y-auto">
               {/* Close button - hidden on mobile in favor of the fixed one above */}
               <button
                 onClick={() => setScreenshotsData(null)}
@@ -1043,6 +1051,15 @@ export default function TrailerPage() {
                   </p>
                 )}
               </div>
+              {/* Event logo, bottom right: same right edge as the close cross,
+                  same distance from the bottom as the cross is from the top. */}
+              {screenshotsData.logo && (
+                <img
+                  src={asset(screenshotsData.logo.src)}
+                  alt={screenshotsData.logo.alt}
+                  className="mt-auto shrink-0 self-end pt-8 box-content h-[36px] w-auto"
+                />
+              )}
             </div>
           </div>
         </div>

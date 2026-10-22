@@ -19,6 +19,12 @@ function CaretCircleRight() {
   );
 }
 
+// Event logo shown at the bottom of a screenshots panel (and on the card).
+const logoOf = (card: object) => {
+  const { logo, logoAlt } = card as { logo?: string; logoAlt?: string };
+  return logo ? { src: logo, alt: logoAlt ?? "" } : undefined;
+};
+
 const trailerCards = [
   { videoId: "eT8QvyGSyYU", title: "Insurgency Sandstorm : Operation Echoes Launch Trailer", description: "2026 • In-game video capture • Video editing • Sound editing",
     screenshotCategory: "2026 · LAUNCH TRAILER", screenshotTitle: "Insurgency Sandstorm : Operation Echoes",
@@ -35,7 +41,7 @@ const trailerCards = [
       { src: "/images/ISS/ISS_Warzone_03.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Captured in game" },
       { src: "/images/ISS/ISS_Weapon02.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Captured in game" },
     ] },
-  { videoId: "OLEZv_Qyb6Q", title: "Elta : Defy All Gods • Reveal Trailer", description: "Gamescom 2026 • Unreal • Camera animation • Real-time combat VFX • Cinematic lighting",
+  { videoId: "OLEZv_Qyb6Q", logo: "/images/logo-svg/gamescom-wordmark.be3b22f1.svg", logoAlt: "gamescom", title: "Elta : Defy All Gods • Reveal Trailer", description: "Gamescom 2026 • Unreal • Camera animation • Real-time combat VFX • Cinematic lighting",
     screenshotCategory: "GAMESCOM 2026 • REVEAL TRAILER", screenshotTitle: "Elta: Defy All Gods",
     screenshotRole: "Cinematic artist in charge of The Reveal Trailer of Elta: Defy All Gods",
     screenshotResponsibilities: "Camera animation, real-time combat VFX, cinematic lighting, animation polish",
@@ -152,6 +158,7 @@ export default function HomeTrailerSection() {
     role?: string;
     responsibilities?: string;
     credits?: { label: string; value: string }[];
+    logo?: { src: string; alt: string };
     screenshots: { src: string; tag: string; description: string }[];
   } | null>(null);
   const [screenshotIndex, setScreenshotIndex] = useState(0);
@@ -191,7 +198,7 @@ export default function HomeTrailerSection() {
     category: string,
     title: string,
     screenshots: { src: string; tag: string; description: string }[],
-    extra?: { role: string; responsibilities: string; credits: { label: string; value: string }[] }
+    extra?: { role: string; responsibilities: string; credits: { label: string; value: string }[]; logo?: { src: string; alt: string } }
   ) => {
     setScreenshotIndex(0);
     setScreenshotsData({ category, title, screenshots, ...extra });
@@ -216,7 +223,7 @@ export default function HomeTrailerSection() {
                 card.screenshotCategory,
                 card.screenshotTitle,
                 card.screenshots,
-                { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities, credits: card.screenshotCredits }
+                { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities, credits: card.screenshotCredits, logo: logoOf(card) }
               )}
             >
               <div
@@ -264,7 +271,7 @@ export default function HomeTrailerSection() {
                     card.screenshotCategory,
                     card.screenshotTitle,
                     card.screenshots,
-                    { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities, credits: card.screenshotCredits }
+                    { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities, credits: card.screenshotCredits, logo: logoOf(card) }
                   ); }}
                   className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-start hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer mt-auto"
                 >
@@ -318,7 +325,7 @@ export default function HomeTrailerSection() {
 
           <div className="w-full min-h-full md:h-full flex flex-col md:flex-row">
             {/* Left: Carousel */}
-            <div className="relative w-full flex flex-col md:flex-1 md:min-h-0">
+            <div className="relative w-full flex flex-col md:flex-1 md:min-h-0 md:min-w-0">
               {/* Main image area - mobile: capped to 60vh, fully filled
                   (object-cover, no letterboxing) instead of being squeezed
                   by the info panel below or taking over the whole screen;
@@ -432,7 +439,7 @@ export default function HomeTrailerSection() {
             </div>
 
             {/* Right: Info panel */}
-            <div className="trailer-info w-full md:w-[400px] flex flex-col p-8 md:p-10 bg-[#15161b] overflow-y-auto">
+            <div className="trailer-info w-full md:w-[400px] md:shrink-0 flex flex-col p-8 md:p-10 bg-[#15161b] overflow-y-auto">
               {/* Close button - hidden on mobile in favor of the fixed one above */}
               <button
                 onClick={() => setScreenshotsData(null)}
@@ -485,6 +492,15 @@ export default function HomeTrailerSection() {
                   </p>
                 )}
               </div>
+              {/* Event logo, bottom right: same right edge as the close cross,
+                  same distance from the bottom as the cross is from the top. */}
+              {screenshotsData.logo && (
+                <img
+                  src={asset(screenshotsData.logo.src)}
+                  alt={screenshotsData.logo.alt}
+                  className="mt-auto shrink-0 self-end pt-8 box-content h-[36px] w-auto"
+                />
+              )}
             </div>
           </div>
         </div>
