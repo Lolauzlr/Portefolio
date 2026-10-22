@@ -498,7 +498,7 @@ export default function HomeTrailerSection() {
                 <img
                   src={asset(screenshotsData.logo.src)}
                   alt={screenshotsData.logo.alt}
-                  className="mt-auto shrink-0 self-end pt-8 box-content h-[36px] w-auto"
+                  className="mt-auto shrink-0 self-end pt-8 box-content h-[36px] w-auto brightness-0 invert"
                 />
               )}
             </div>
