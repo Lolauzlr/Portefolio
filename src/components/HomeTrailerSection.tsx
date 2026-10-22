@@ -266,17 +266,29 @@ export default function HomeTrailerSection() {
                 <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
                   {card.description}
                 </p>
-                <button
-                  onClick={(e) => { e.stopPropagation(); openScreenshots(
-                    card.screenshotCategory,
-                    card.screenshotTitle,
-                    card.screenshots,
-                    { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities, credits: card.screenshotCredits, logo: logoOf(card) }
-                  ); }}
-                  className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-start hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer mt-auto"
-                >
-                  VIEW SCREENSHOTS
-                </button>
+                {/* Bottom row: optional event logo on the left, vertically centred
+                    on the button; "VIEW SCREENSHOTS" always on the right. */}
+                <div className="mt-auto flex min-h-[36px] items-center justify-between gap-4">
+                  {card.logo && (
+                    // Logos may be black SVGs: forced to white for the dark page.
+                    <img
+                      src={asset(card.logo)}
+                      alt={card.logoAlt ?? ""}
+                      className="h-[36px] w-auto brightness-0 invert"
+                    />
+                  )}
+                  <button
+                    onClick={(e) => { e.stopPropagation(); openScreenshots(
+                      card.screenshotCategory,
+                      card.screenshotTitle,
+                      card.screenshots,
+                      { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities, credits: card.screenshotCredits, logo: logoOf(card) }
+                    ); }}
+                    className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase ml-auto hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer"
+                  >
+                    VIEW SCREENSHOTS
+                  </button>
+                </div>
               </div>
             </div>
           ))}
