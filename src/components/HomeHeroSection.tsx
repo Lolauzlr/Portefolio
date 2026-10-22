@@ -15,6 +15,10 @@ const MOBILE_HERO_VIDEO_ID = "UMobicftZ1w";
 const DESKTOP_PLAYER = { w: 3840, h: 2160 };
 const TOUCH_PLAYER = { w: 1920, h: 1080 };
 const MOBILE_PLAYER = { w: 1080, h: 1920 };
+// The Short has a black credits strip burned into its bottom edge (~9 % of its
+// height). On mobile the hero frame is therefore 10 % shorter than the 9:16
+// video and the video is anchored to the top (no zoom): the strip falls below
+// the frame and is clipped. 9 / (16 * 0.9) = 9 / 14.4.
 const TARGET_QUALITY = "hd2160";
 
 // Undocumented-but-working on many builds: lock the quality range to 4K, then
@@ -35,6 +39,7 @@ export default function HomeHeroSection() {
   const heroRef = useRef<HTMLElement>(null);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [playerScale, setPlayerScale] = useState(0.5);
+  const [playerShiftY, setPlayerShiftY] = useState(0);
   const hostRef = useRef<HTMLDivElement>(null);
   // null until mounted, so the right player is created straight away (no
   // desktop player briefly built then torn down on a phone).
@@ -57,11 +62,14 @@ export default function HomeHeroSection() {
     if (!hero) return;
     const ro = new ResizeObserver(([entry]) => {
       const { width, height } = entry.contentRect;
-      setPlayerScale(Math.max(width / player.w, height / player.h));
+      const cover = Math.max(width / player.w, height / player.h);
+      setPlayerScale(cover);
+      // Mobile: anchor the video to the top edge (the overflow is at the bottom).
+      setPlayerShiftY(isMobile ? Math.max(0, (player.h * cover - height) / 2) : 0);
     });
     ro.observe(hero);
     return () => ro.disconnect();
-  }, [player]);
+  }, [player, isMobile]);
 
   useEffect(() => {
     const hero = heroRef.current;
@@ -211,7 +219,7 @@ export default function HomeHeroSection() {
 
   return (
     <>
-      <section ref={heroRef} className="relative w-full aspect-[9/16] md:aspect-video bg-[#060000] overflow-hidden">
+      <section ref={heroRef} className="relative w-full aspect-[9/14.4] md:aspect-video bg-[#060000] overflow-hidden">
         {/* YouTube video background via API */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div
@@ -219,7 +227,7 @@ export default function HomeHeroSection() {
             style={{
               width: player.w,
               height: player.h,
-              transform: `translate(-50%, -50%) scale(${playerScale})`,
+              transform: `translate(-50%, calc(-50% + ${playerShiftY}px)) scale(${playerScale})`,
             }}
           >
             <div ref={hostRef} />
