@@ -8,10 +8,13 @@ const HERO_VIDEO_TITLE = "HERO VIDEO";
 // Mobile: the hero is a 9:16 frame (like the trailer page), so it plays this
 // vertical Short in the background; tapping it opens HERO_VIDEO_ID full width.
 const MOBILE_HERO_VIDEO_ID = "UMobicftZ1w";
-// YouTube picks the stream resolution from the player's size, so the player
-// is rendered at 4K and scaled down with CSS to nudge it toward high quality.
+// YouTube picks the stream resolution from the player's size, so the player is
+// rendered large and scaled down with CSS to nudge it toward high quality.
+// Phones and tablets (touch devices) get a Full HD-sized player: a 4K iframe is
+// ~8M pixels and makes iOS kill the tab ("Impossible d'ouvrir cette page").
 const DESKTOP_PLAYER = { w: 3840, h: 2160 };
-const MOBILE_PLAYER = { w: 2160, h: 3840 };
+const TOUCH_PLAYER = { w: 1920, h: 1080 };
+const MOBILE_PLAYER = { w: 1080, h: 1920 };
 const TARGET_QUALITY = "hd2160";
 
 // Undocumented-but-working on many builds: lock the quality range to 4K, then
@@ -35,15 +38,17 @@ export default function HomeHeroSection() {
   const hostRef = useRef<HTMLDivElement>(null);
   // null until mounted, so the right player is created straight away (no
   // desktop player briefly built then torn down on a phone).
-  const [isMobile, setIsMobile] = useState<boolean | null>(null);
+  const [layout, setLayout] = useState<{ mobile: boolean; touch: boolean } | null>(null);
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
-    const update = () => setIsMobile(mq.matches);
+    const touchMq = window.matchMedia("(pointer: coarse)");
+    const update = () => setLayout({ mobile: mq.matches, touch: touchMq.matches });
     update();
     mq.addEventListener("change", update);
     return () => mq.removeEventListener("change", update);
   }, []);
-  const player = isMobile ? MOBILE_PLAYER : DESKTOP_PLAYER;
+  const isMobile = layout ? layout.mobile : null;
+  const player = isMobile ? MOBILE_PLAYER : layout?.touch ? TOUCH_PLAYER : DESKTOP_PLAYER;
   const videoId = isMobile ? MOBILE_HERO_VIDEO_ID : HERO_VIDEO_ID;
 
   // Scale the 4K player so it covers the hero frame (same crop as object-cover).
