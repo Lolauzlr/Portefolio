@@ -4,7 +4,7 @@ import { createContext, useCallback, useContext, useRef, useState } from "react"
 import { asset } from "@/lib/asset";
 import { useLightboxBehavior } from "@/components/ScreenshotGallery";
 
-export type LightboxSlide = { src: string; alt: string };
+export type LightboxSlide = { src: string; alt: string; caption?: string };
 
 const LightboxContext = createContext<{ open: (src: string) => void } | null>(null);
 
@@ -133,7 +133,17 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
               </button>
             )}
 
-            <img src={asset(current.src)} alt={current.alt} className="pointer-events-none max-w-full max-h-full w-auto h-auto object-contain" />
+            {/* Image + its one-line description underneath (same small grey line
+                as the trailer screenshots). The caption is dropped on a phone
+                held in landscape, where the image needs the whole height. */}
+            <div className="pointer-events-none flex max-h-full max-w-full min-h-0 flex-col items-center gap-2 md:gap-3">
+              <img src={asset(current.src)} alt={current.alt} className="min-h-0 max-w-full w-auto h-auto object-contain" />
+              {current.caption && (
+                <p className="shrink-0 text-center font-[family-name:var(--font-body)] text-[12px] md:text-[16px] font-normal text-[#8F8F8F] [@media(orientation:landscape)_and_(max-height:500px)]:hidden">
+                  {current.caption}
+                </p>
+              )}
+            </div>
 
             {hasMultiple && (
               <button

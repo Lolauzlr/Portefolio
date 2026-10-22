@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { asset } from "@/lib/asset";
+import { illustrationCaption } from "@/data/illustrations";
 import { LightboxImg, LightboxProvider, type LightboxSlide } from "@/components/IllustrationLightbox";
 import HomeHeroSection from "@/components/HomeHeroSection";
 import HomeMoviesSection from "@/components/HomeMoviesSection";
@@ -16,7 +17,7 @@ const loremIpsum =
 const illustrationSlides: LightboxSlide[] = [
   { src: "/images/illustrations/illus-35.webp", alt: "Illustration" },
   { src: "/images/illustrations/illus-1.webp", alt: "Illustration" },
-];
+].map((slide) => ({ ...slide, caption: illustrationCaption(slide.src) }));
 
 const storytellingCards = [
   { title: "OLD KNIGHT", label: "Manga", slides: oldKnightSlides, widthClassName: "md:w-[372px]", aspectClassName: "aspect-[372/525]", spreadSkip: 1 },
