@@ -1,4 +1,6 @@
 import { illustrationCaption } from "@/data/illustrations";
+import JsonLd from "@/components/JsonLd";
+import { absolute, personRef } from "@/lib/schema";
 import { LightboxImg, LightboxProvider, type LightboxSlide } from "@/components/IllustrationLightbox";
 
 const i = (n: number) => `/images/illustrations/illus-${n}.webp`;
@@ -66,6 +68,27 @@ const lightboxSlideList: { src: string; alt: string }[] = [
 
 const lightboxSlides: LightboxSlide[] = lightboxSlideList.map((slide) => ({ ...slide, caption: illustrationCaption(slide.src) }));
 
+const illustrationsSchema = {
+  "@context": "https://schema.org",
+  "@type": "ImageGallery",
+  name: "Illustration & Concept Art",
+  url: absolute("/illustrations"),
+  creator: personRef,
+  image: lightboxSlides.map((slide, n) => {
+    const path = slide.src.startsWith("/") ? slide.src : `/${slide.src}`;
+    const caption = illustrationCaption(slide.src);
+    return {
+      "@type": "ImageObject",
+      name: slide.alt || `Illustration ${n + 1}`,
+      ...(caption && { description: caption }),
+      contentUrl: absolute(path),
+      creator: personRef,
+      creditText: "Marie Chalandre",
+      copyrightNotice: "© Marie Chalandre",
+    };
+  }),
+};
+
 const longestSlide = heroSlides[heroSlides.length - 1];
 
 function CaptionText({ slide }: { slide: (typeof heroSlides)[number] }) {
@@ -102,6 +125,7 @@ function TitleBlock({ title, text }: { title: string; text: string }) {
 export default function IllustrationsPage() {
   return (
     <LightboxProvider slides={lightboxSlides}>
+    <JsonLd data={illustrationsSchema} />
     <div className="pt-[48px] md:pt-[95px] bg-[#15161b] text-white min-h-screen">
 
       {/* ── Hero (latest work) ── */}

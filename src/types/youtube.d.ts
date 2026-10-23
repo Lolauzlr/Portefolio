@@ -21,6 +21,7 @@ declare namespace YT {
       elementId: string | HTMLElement,
       config: {
         videoId: string;
+        host?: string;
         width?: number | string;
         height?: number | string;
         playerVars?: Record<string, number | string>;

@@ -57,7 +57,7 @@ export default function VideoCard({
           // Preview ignores pointer events so the click reaches the card.
           <iframe
             className="absolute inset-0 w-full h-full pointer-events-none"
-            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
+            src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
             title={title}
             allow="autoplay; encrypted-media"
             style={{ border: 0 }}
@@ -76,7 +76,7 @@ export default function VideoCard({
 
       {modalOpen && (
         <VideoModal
-          src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`}
+          src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0`}
           title={title}
           fullWidth
           onClose={() => setModalOpen(false)}

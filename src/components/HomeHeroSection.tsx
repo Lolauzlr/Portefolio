@@ -146,6 +146,7 @@ export default function HomeHeroSection() {
     const createPlayer = () => {
       if (playerRef.current) return;
       playerRef.current = new YT.Player(host, {
+        host: "https://www.youtube-nocookie.com",
         videoId,
         width: player.w,
         height: iframeHeight,
@@ -300,7 +301,7 @@ export default function HomeHeroSection() {
 
       {videoModal && (
         <VideoModal
-          src={`https://www.youtube.com/embed/${videoModal.videoId}?autoplay=1&rel=0`}
+          src={`https://www.youtube-nocookie.com/embed/${videoModal.videoId}?autoplay=1&rel=0`}
           title={videoModal.title}
           fullWidth={videoModal.fullWidth}
           onClose={() => setVideoModal(null)}

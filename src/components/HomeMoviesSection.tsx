@@ -54,7 +54,7 @@ function VideoCard({
         // the /trailer page).
         <iframe
           className="w-full h-full pointer-events-none"
-          src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
+          src={`https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
           title={title}
           allow="autoplay; encrypted-media"
           style={{ border: 0 }}
@@ -170,7 +170,7 @@ export default function HomeMoviesSection() {
               youtubeId="BFLlIR9A8DY"
               title="SAINT EX"
               className="w-full"
-              onPlay={() => setVideoModal({ url: "https://www.youtube.com/embed/BFLlIR9A8DY?autoplay=1&rel=0", title: "SAINT EX" })}
+              onPlay={() => setVideoModal({ url: "https://www.youtube-nocookie.com/embed/BFLlIR9A8DY?autoplay=1&rel=0", title: "SAINT EX" })}
             />
             <div>
               <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] md:text-[28px] md:tracking-[2.24px]">SAINT EX</h3>
