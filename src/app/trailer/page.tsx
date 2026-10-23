@@ -18,10 +18,24 @@ const logoOf = (card: object) => {
   return logo ? { src: logo, alt: logoAlt ?? "" } : undefined;
 };
 
-// Exact upload dates when known; otherwise uploadDate falls back to January 1st
-// of the year shown in the card description.
+// Upload dates of the YouTube videos, used for the VideoObject structured data.
 const uploadDates: Record<string, string> = {
+  OLEZv_Qyb6Q: "2026-08-25",
+  eT8QvyGSyYU: "2026-10-14",
   ZPQFsx9XXoM: "2026-06-11",
+  ewZufHtEl68: "2026-04-16",
+  "cZgim-KYkZQ": "2026-03-12",
+  QwxFR1g7Uy4: "2026-02-04",
+  CxtlJ06u_lc: "2025-08-28",
+  ETCpWo0A0i0: "2025-06-04",
+  tSN6KhscgiE: "2023-08-21",
+  LpxuWSy8b9U: "2023-06-15",
+  _nFYp6BFviM: "2023-06-07",
+  a1JhKnaLxN0: "2023-05-09",
+  EdGCL3cVGPo: "2023-01-28",
+  MTskFVe8P3Q: "2022-12-09",
+  "3pEJJdJStiQ": "2022-12-05",
+  U4XA_dhCx_M: "2022-12-13",
 };
 
 export default function TrailerPage() {
@@ -567,13 +581,22 @@ export default function TrailerPage() {
     setIsMuted(!isMuted);
   };
 
-  const videoSchema = [...recentTrailers, ...watchCards].map((card) => ({
+  const videoSchema = [
+    {
+      videoId: "OLEZv_Qyb6Q",
+      title: "ELTA: DEFY ALL GODS • REVEAL TRAILER",
+      screenshotRole: heroScreenshots.role,
+      screenshotResponsibilities: heroScreenshots.responsibilities,
+    },
+    ...recentTrailers,
+    ...watchCards,
+  ].map((card) => ({
     "@context": "https://schema.org",
     "@type": "VideoObject",
     name: card.title,
     description: `${card.screenshotRole}. ${card.screenshotResponsibilities}.`,
     thumbnailUrl: `https://i.ytimg.com/vi/${card.videoId}/hqdefault.jpg`,
-    uploadDate: uploadDates[card.videoId] ?? `${card.description.slice(0, 4)}-01-01`,
+    uploadDate: uploadDates[card.videoId],
     embedUrl: `https://www.youtube.com/embed/${card.videoId}`,
     creator: personRef,
   }));
