@@ -227,7 +227,7 @@ export default function HomeHeroSection() {
 
   return (
     <>
-      <section ref={heroRef} className="relative w-full aspect-[9/14.4] md:aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:aspect-video bg-[#060000] overflow-hidden">
+      <section ref={heroRef} className="relative w-full mx-auto max-w-[calc(100dvh*9/14.4)] aspect-[9/14.4] md:max-w-[calc(100dvh*16/9)] md:aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:!max-w-[calc(100dvh*16/9)] bg-[#060000] overflow-hidden">
         {/* YouTube video background via API */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div

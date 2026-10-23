@@ -566,7 +566,7 @@ export default function TrailerPage() {
           9:16 regardless of device height) so the video reads as a portrait
           trailer frame and the caption card at the bottom only covers a
           small fraction of it. */}
-      <section ref={heroRef} className="relative w-full aspect-[9/16] md:aspect-auto md:h-[810px] [@media(orientation:landscape)_and_(max-height:500px)]:!aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:!h-auto overflow-hidden">
+      <section ref={heroRef} className="relative w-full mx-auto max-w-[calc(100dvh*9/16)] aspect-[9/16] md:max-w-none md:aspect-auto md:h-[min(810px,100dvh)] [@media(orientation:landscape)_and_(max-height:500px)]:!aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:!h-auto [@media(orientation:landscape)_and_(max-height:500px)]:!max-w-[calc(100dvh*16/9)] overflow-hidden">
         {/* YouTube video background via API */}
         <div
           ref={containerRef}
