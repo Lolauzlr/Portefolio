@@ -51,7 +51,8 @@ export default function HomeHeroSection() {
   // desktop player briefly built then torn down on a phone).
   const [layout, setLayout] = useState<{ mobile: boolean; touch: boolean } | null>(null);
   useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
+    // Portrait phones only: held in landscape, the horizontal video is shown instead.
+    const mq = window.matchMedia("(max-width: 767px) and (orientation: portrait)");
     const touchMq = window.matchMedia("(pointer: coarse)");
     const update = () => setLayout({ mobile: mq.matches, touch: touchMq.matches });
     update();
@@ -226,7 +227,7 @@ export default function HomeHeroSection() {
 
   return (
     <>
-      <section ref={heroRef} className="relative w-full aspect-[9/14.4] md:aspect-video bg-[#060000] overflow-hidden">
+      <section ref={heroRef} className="relative w-full aspect-[9/14.4] md:aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:aspect-video bg-[#060000] overflow-hidden">
         {/* YouTube video background via API */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div

@@ -44,15 +44,21 @@ export default function TrailerPage() {
   const [showPause, setShowPause] = useState(false);
   const [cadreSize, setCadreSize] = useState({ w: 792, h: 201 });
   const [watchSizes, setWatchSizes] = useState<Record<string, { w: number; h: number }>>({});
-  // Phones play a short self-hosted muted loop of the reveal trailer in the hero
-  // instead of the YouTube background player (which mobile browsers refuse to
-  // autoplay); tapping the hero still opens the YouTube video in the modal.
+  // Phones held in portrait play a short self-hosted muted loop of the reveal
+  // trailer in the hero instead of the YouTube background player (which mobile
+  // browsers refuse to autoplay); tapping the hero still opens the YouTube video in
+  // the modal. Held in landscape, the hero is the horizontal YouTube video itself.
   const isMobile = useSyncExternalStore(
-    () => () => {},
-    () => window.matchMedia("(max-width: 767px)").matches,
+    (onChange) => {
+      const mq = window.matchMedia("(max-width: 767px) and (orientation: portrait)");
+      mq.addEventListener("change", onChange);
+      return () => mq.removeEventListener("change", onChange);
+    },
+    () => window.matchMedia("(max-width: 767px) and (orientation: portrait)").matches,
     () => false
   );
   const mobileVideoRef = useRef<HTMLVideoElement>(null);
+  const ytHostRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
   const userPausedRef = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -448,11 +454,20 @@ export default function TrailerPage() {
   }, []);
 
   useEffect(() => {
-    if (window.matchMedia("(max-width: 767px)").matches) return;
+    // Portrait phones show the self-hosted loop instead (see isMobile): the YouTube
+    // player is only built elsewhere, and rebuilt when the phone is turned.
+    const wrapper = ytHostRef.current;
+    if (isMobile || !wrapper) return;
+    // The player replaces the element it is given, so it gets a throwaway child
+    // that React doesn't own (clean to recreate after a rotation).
+    const host = document.createElement("div");
+    wrapper.appendChild(host);
     const createPlayer = () => {
-      if (playerRef.current) return;
-      playerRef.current = new YT.Player("yt-bg-player", {
+      if (playerRef.current || !host.isConnected) return;
+      playerRef.current = new YT.Player(host, {
         videoId: "OLEZv_Qyb6Q",
+        width: "100%",
+        height: "100%",
         playerVars: {
           autoplay: 1,
           mute: 1,
@@ -490,8 +505,9 @@ export default function TrailerPage() {
     return () => {
       playerRef.current?.destroy();
       playerRef.current = null;
+      wrapper.replaceChildren();
     };
-  }, [onPlayerReady, onPlayerStateChange]);
+  }, [isMobile, onPlayerReady, onPlayerStateChange]);
 
   // Fallback when the browser blocks autoplay (e.g. iOS low-power mode):
   // start the muted video on the first touch anywhere on the page.
@@ -547,7 +563,7 @@ export default function TrailerPage() {
           9:16 regardless of device height) so the video reads as a portrait
           trailer frame and the caption card at the bottom only covers a
           small fraction of it. */}
-      <section ref={heroRef} className="relative w-full aspect-[9/16] md:aspect-auto md:h-[810px] overflow-hidden">
+      <section ref={heroRef} className="relative w-full aspect-[9/16] md:aspect-auto md:h-[810px] [@media(orientation:landscape)_and_(max-height:500px)]:!aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:!h-auto overflow-hidden">
         {/* YouTube video background via API */}
         <div
           ref={containerRef}
@@ -567,8 +583,8 @@ export default function TrailerPage() {
             />
           )}
           <div
-            id="yt-bg-player"
-            className="absolute top-1/2 left-1/2 w-[316.05vw] h-[177.78vw] -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full md:w-[177.78vh] md:h-[100vh] md:min-w-full md:min-h-full"
+            ref={ytHostRef}
+            className="absolute top-1/2 left-1/2 w-[316.05vw] h-[177.78vw] -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full md:w-[177.78vh] md:h-[100vh] md:min-w-full md:min-h-full [@media(orientation:landscape)_and_(max-height:500px)]:!w-full [@media(orientation:landscape)_and_(max-height:500px)]:!h-full"
           />
         </div>
 
