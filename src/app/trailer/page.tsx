@@ -1069,6 +1069,15 @@ export default function TrailerPage() {
                     <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
                       Responsibilities : <span className="font-semibold">{screenshotsData.responsibilities}</span>
                     </p>
+                    {/* Event logo right under the responsibilities, with the same gap
+                        above and below it as around the divider. */}
+                    {screenshotsData.logo && (
+                      <img
+                        src={asset(screenshotsData.logo.src)}
+                        alt={screenshotsData.logo.alt}
+                        className="mt-4 md:mt-6 self-start shrink-0 h-[32px] w-auto brightness-0 invert"
+                      />
+                    )}
                     <div className="w-full h-px bg-white/20 mt-4 md:mt-6" />
                     <div className="flex flex-col gap-3 mt-4 md:mt-6">
                       {screenshotsData.credits.map((c) => (
@@ -1084,15 +1093,6 @@ export default function TrailerPage() {
                   </p>
                 )}
               </div>
-              {/* Event logo under the details, same gap as between the other blocks. */}
-              {screenshotsData.logo && (
-                <img
-                  src={asset(screenshotsData.logo.src)}
-                  alt={screenshotsData.logo.alt}
-                  className="mt-6 md:mt-10 self-start shrink-0 h-[36px] w-auto brightness-0 invert"
-                />
-              )}
-
               {/* Jump to the previous / next trailer's screenshots. */}
               {trailerNav && (
                 <TrailerScreenshotNav
