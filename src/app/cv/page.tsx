@@ -194,7 +194,7 @@ export default function CVPage() {
   }, []);
 
   return (
-    <div className="bg-[#15161b] text-white flex flex-col gap-[24px] md:gap-[60px] pt-[81px] md:pt-[175px] pb-[24px] md:pb-[80px] px-3 md:px-[120px]">
+    <div className="bg-[#15161b] text-white flex flex-col gap-[24px] md:gap-[60px] pt-[81px] md:pt-[175px] pb-[24px] md:pb-[80px] px-3 md:px-8 min-[85rem]:px-[120px]">
       {/* Hero — desktop keeps the photo beside the whole content column;
           mobile pairs the photo with the title only and moves Download
           beside the social icons instead (Figma node 426-750). */}
@@ -232,7 +232,7 @@ export default function CVPage() {
             <SocialIcons />
           </div>
         </div>
-        <div className="shrink-0 w-[282px] h-[282px] overflow-hidden rounded-full">
+        <div className="shrink-0 w-[282px] h-[282px] md:w-[26vw] md:h-[26vw] min-[85rem]:w-[282px] min-[85rem]:h-[282px] overflow-hidden rounded-full">
           <img
             src={asset("/images/CV/photo-profil.webp")}
             alt="Marie Chalandre"

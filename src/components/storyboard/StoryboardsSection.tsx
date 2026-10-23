@@ -156,7 +156,7 @@ function StoryProject({
 
 export default function StoryboardsSection() {
   return (
-    <section className="bg-[#131313] flex flex-col gap-[24px] md:gap-[60px] items-start py-6 md:py-[60px] px-3 md:px-[120px] w-full">
+    <section className="bg-[#131313] flex flex-col gap-[24px] md:gap-[60px] items-start py-6 md:py-[60px] px-3 md:px-8 min-[85rem]:px-[120px] w-full">
       <div className="flex flex-col gap-[4px] items-start w-full">
         <h2 className="font-[family-name:var(--font-heading)] text-[28px] md:text-[40px] tracking-[3.2px] text-white uppercase">
           Storyboards
@@ -226,13 +226,13 @@ export default function StoryboardsSection() {
                 the label's. Left-aligning both keeps their edges flush. */}
             <div className="flex flex-col gap-4 items-start w-full md:w-auto">
               <SubLabel>Commercial storyboard n°1</SubLabel>
-              <div className="w-full md:w-auto md:h-[660px] aspect-[469/663]">
+              <div className="w-full md:w-auto md:h-[45vw] min-[85rem]:h-[660px] aspect-[469/663]">
                 <ImageCarousel slides={commercialStoryboard1Slides} alt="Commercial storyboard n°1" aspectClassName="h-full" />
               </div>
             </div>
             <div className="flex flex-col gap-4 items-start w-full md:w-auto">
               <SubLabel>Commercial storyboard n°2</SubLabel>
-              <div className="w-full md:w-auto md:h-[660px] aspect-[469/663]">
+              <div className="w-full md:w-auto md:h-[45vw] min-[85rem]:h-[660px] aspect-[469/663]">
                 <ImageCarousel slides={commercialStoryboard2Slides} alt="Commercial storyboard n°2" aspectClassName="h-full" />
               </div>
             </div>

@@ -649,7 +649,7 @@ export default function TrailerPage() {
         {/* Pentagon cadre - small chamfer top-right corner */}
         <div
           ref={cadreRef}
-          className="absolute left-4 md:left-[24px] bottom-8 md:bottom-[24px] w-[calc(100%-2rem)] md:w-[792px] z-20 pointer-events-auto"
+          className="absolute left-4 md:left-[24px] bottom-8 md:bottom-[24px] w-[calc(100%-2rem)] md:w-[calc(100%-3rem)] min-[85rem]:w-[792px] z-20 pointer-events-auto"
         >
           {/* Background with blur + pentagon clip */}
           <div
@@ -716,7 +716,7 @@ export default function TrailerPage() {
       </section>
 
       {/* Les Plus Récents */}
-      <section className="px-3 md:px-[120px] py-[60px]">
+      <section className="px-3 md:px-8 min-[85rem]:px-[120px] py-[60px]">
         <div className="mb-6 md:mb-10">
           <h2 className="text-[28px] md:text-[40px] font-[family-name:var(--font-heading)] tracking-[3.2px] mb-1">
             LATEST TRAILERS
@@ -790,7 +790,7 @@ export default function TrailerPage() {
       </section>
 
       {/* Featured Trailers */}
-      <section className="bg-[#131313] px-3 md:px-[120px] py-[60px]">
+      <section className="bg-[#131313] px-3 md:px-8 min-[85rem]:px-[120px] py-[60px]">
         <div className="mb-6 md:mb-10">
           <h2 className="text-[28px] md:text-[40px] font-[family-name:var(--font-heading)] tracking-[3.2px] mb-1">
             FEATURED TRAILERS
@@ -845,7 +845,7 @@ export default function TrailerPage() {
                 </svg>
                 <div className="relative z-20 flex flex-col md:flex-row p-5">
                   <div
-                    className="relative w-full md:w-[792px] flex-shrink-0 cursor-pointer overflow-hidden bg-black"
+                    className="relative w-full md:w-[62%] md:min-w-0 min-[85rem]:w-[792px] flex-shrink-0 cursor-pointer overflow-hidden bg-black"
                     style={{ aspectRatio: "16 / 9" }}
                     onMouseEnter={() => setHoveredWatch(card.videoId)}
                     onMouseLeave={() => setHoveredWatch(null)}

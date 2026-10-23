@@ -41,7 +41,7 @@ export default function Footer() {
   }
 
   return (
-    <footer className="backdrop-blur-[3.15px] bg-black/40 py-[24px] md:py-[40px] px-3 md:px-[120px]">
+    <footer className="backdrop-blur-[3.15px] bg-black/40 py-[24px] md:py-[40px] px-3 md:px-8 min-[85rem]:px-[120px]">
       <div className="flex flex-col md:flex-row md:items-center gap-6 md:gap-[40px]">
         {/* Left: Logo */}
         <div className="flex flex-row md:self-stretch shrink-0">

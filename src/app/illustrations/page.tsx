@@ -140,7 +140,7 @@ export default function IllustrationsPage() {
         </div>
 
         {/* Desktop: side-by-side layout, title/text alongside image */}
-        <div className="hidden md:flex gap-[24px] overflow-x-auto pb-4 items-start scrollbar-hide mx-auto w-fit px-[120px]">
+        <div className="hidden md:flex gap-[24px] overflow-x-auto pb-4 items-start scrollbar-hide mx-auto w-fit max-w-full px-8 min-[85rem]:px-[120px]">
           {/* ROSE — title on top, image below */}
           <div className="flex-shrink-0 flex flex-col gap-[16px] w-[303px]">
             <div className="flex flex-col gap-[12px]">
@@ -177,7 +177,7 @@ export default function IllustrationsPage() {
       </section>
 
       {/* ── ILLUSTRATION & VISUAL EXPLORATION ── */}
-      <section className="bg-[#131313] pt-[24px] pb-[24px] md:py-[60px] px-3 md:px-[120px]">
+      <section className="bg-[#131313] pt-[24px] pb-[24px] md:py-[60px] px-3 md:px-8 min-[85rem]:px-[120px]">
         <div className="mb-[24px] md:mb-[60px]">
           <h2 className="font-[family-name:var(--font-heading)] text-[28px] tracking-[2.24px] md:text-[40px] md:tracking-[4.8px] uppercase text-white">
             Illustration & visual exploration

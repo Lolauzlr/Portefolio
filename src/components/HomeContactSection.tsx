@@ -176,7 +176,7 @@ export default function HomeContactSection() {
   return (
     <section
       id="contact"
-      className="scroll-mt-[120px] bg-[#0D0D10] backdrop-blur-[3.15px] pt-6 md:pt-[40px] pb-[24px] md:pb-[80px] px-3 md:px-[120px]"
+      className="scroll-mt-[120px] bg-[#0D0D10] backdrop-blur-[3.15px] pt-6 md:pt-[40px] pb-[24px] md:pb-[80px] px-3 md:px-8 min-[85rem]:px-[120px]"
     >
       <div className="flex flex-col gap-6 md:gap-[24px]">
         <h2 className="font-[family-name:var(--font-heading)] text-[40px] md:text-[52px] tracking-[3.2px] md:tracking-[6.4px] leading-none text-white uppercase">
@@ -188,7 +188,7 @@ export default function HomeContactSection() {
               paragraph and contact block join the row's own flex context
               (see order-* below) so the contact block can be reordered
               after the form; md: restores it as a normal flex column. */}
-          <div className="contents md:flex md:flex-col md:gap-[40px] md:w-[470px] md:shrink-0">
+          <div className="contents md:flex md:flex-col md:gap-[40px] md:w-[38%] min-[85rem]:w-[470px] md:min-w-0 md:shrink-0">
             <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
               Interested in my work? Please feel free to get in touch or follow me on social media.
             </p>
@@ -237,7 +237,7 @@ export default function HomeContactSection() {
           {/* Right: form */}
           <form
             onSubmit={handleContactSubmit}
-            className="order-2 md:order-none flex flex-col gap-[40px] w-full md:w-[690px] md:shrink-0"
+            className="order-2 md:order-none flex flex-col gap-[40px] w-full md:w-[58%] min-[85rem]:w-[690px] md:min-w-0 md:shrink-0"
           >
             <div className="flex flex-col gap-6 md:gap-[24px]">
               <FormField label="Name" name="name" value={name} onChange={setName} onClear={() => setName("")} />

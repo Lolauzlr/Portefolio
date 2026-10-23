@@ -36,7 +36,7 @@ export default function ReaderSpread({
   const next = index < spreads.length - 1 ? index + 1 : null;
 
   return (
-    <article className="mx-auto max-w-[1440px] px-4 pt-[152px] pb-24 md:px-[120px]">
+    <article className="mx-auto max-w-[1440px] px-4 pt-[152px] pb-24 md:px-8 min-[85rem]:px-[120px]">
       <Link
         href="/storytelling"
         className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-[#0fd1ea] hover:opacity-80"
