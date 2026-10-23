@@ -566,7 +566,7 @@ export default function TrailerPage() {
           9:16 regardless of device height) so the video reads as a portrait
           trailer frame and the caption card at the bottom only covers a
           small fraction of it. */}
-      <section ref={heroRef} className="relative w-full aspect-[9/16] md:aspect-auto md:h-[810px] [@media(orientation:landscape)_and_(max-height:500px)]:!aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:!h-auto overflow-hidden">
+      <section ref={heroRef} className="relative w-full mx-auto aspect-[9/16] max-w-[calc(100dvh*9/16)] md:aspect-video md:max-w-[calc(100dvh*16/9)] [@media(orientation:landscape)_and_(max-height:500px)]:!aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:!max-w-[calc(100dvh*16/9)] bg-black overflow-hidden">
         {/* YouTube video background via API */}
         <div
           ref={containerRef}
@@ -587,7 +587,7 @@ export default function TrailerPage() {
           )}
           <div
             ref={ytHostRef}
-            className="absolute top-1/2 left-1/2 w-[316.05vw] h-[177.78vw] -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full md:w-[177.78vh] md:h-[100vh] md:min-w-full md:min-h-full [@media(orientation:landscape)_and_(max-height:500px)]:!w-full [@media(orientation:landscape)_and_(max-height:500px)]:!h-full"
+            className="absolute top-1/2 left-1/2 w-[316.05vw] h-[177.78vw] -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full md:w-[111%] md:h-[111%] [@media(orientation:landscape)_and_(max-height:500px)]:!w-full [@media(orientation:landscape)_and_(max-height:500px)]:!h-full"
           />
         </div>
 
