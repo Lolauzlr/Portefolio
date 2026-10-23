@@ -5,6 +5,7 @@ import { asset } from "@/lib/asset";
 import { useSwipeNav } from "@/hooks/useSwipeNav";
 import { useZoomPan } from "@/hooks/useZoomPan";
 import ZoomControls from "@/components/ZoomControls";
+import TrailerScreenshotNav from "@/components/TrailerScreenshotNav";
 import VideoModal from "@/components/VideoModal";
 import { useWheelNav } from "@/components/ScreenshotGallery";
 
@@ -126,6 +127,10 @@ export default function TrailerPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [videoModal, screenshotsData]);
 
+  // The first (most recent) trailer has no "Back" button, unless we got there by
+  // going through the last one ("Next" wraps around): then going back is logical.
+  const [wrappedAround, setWrappedAround] = useState(false);
+
   const openScreenshots = (
     category: string,
     title: string,
@@ -133,6 +138,7 @@ export default function TrailerPage() {
     extra?: { role: string; responsibilities: string; credits: { label: string; value: string }[]; logo?: { src: string; alt: string } }
   ) => {
     setScreenshotIndex(0);
+    setWrappedAround(false);
     setScreenshotsData({ category, title, screenshots, ...extra });
   };
 
@@ -383,6 +389,38 @@ export default function TrailerPage() {
       { src: "/images/Elta/Elta-2026-010.webp", tag: "SCÈNE 10", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
     ],
   };
+
+  const screenshotTrailers = [
+    {
+      label: "Elta : Defy All Gods • Reveal Trailer",
+      screenshots: heroScreenshots.screenshots,
+      open: () =>
+        openScreenshots(heroScreenshots.category, heroScreenshots.title, heroScreenshots.screenshots, {
+          role: heroScreenshots.role,
+          responsibilities: heroScreenshots.responsibilities,
+          credits: heroScreenshots.credits,
+          logo: heroScreenshots.logo,
+        }),
+    },
+    ...[...recentTrailers, ...watchCards].map((card) => ({
+      label: card.title,
+      screenshots: card.screenshots,
+      open: () =>
+        openScreenshots(card.screenshotCategory, card.screenshotTitle, card.screenshots, {
+          role: card.screenshotRole,
+          responsibilities: card.screenshotResponsibilities,
+          credits: card.screenshotCredits,
+          logo: logoOf(card),
+        }),
+    })),
+  ];
+
+  // Every trailer that has screenshots, in page order, for the Back / Next buttons.
+  const trailerNav = (() => {
+    const i = screenshotsData ? screenshotTrailers.findIndex((t) => t.screenshots[0]?.src === screenshotsData.screenshots[0]?.src) : -1;
+    const n = screenshotTrailers.length;
+    return i < 0 || n < 2 ? null : { prev: screenshotTrailers[(i - 1 + n) % n], next: screenshotTrailers[(i + 1) % n], isFirst: i === 0, isLast: i === n - 1 };
+  })();
 
   const onPlayerReady = useCallback((event: YT.PlayerEvent) => {
     event.target.mute();
@@ -1036,6 +1074,15 @@ export default function TrailerPage() {
                     <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
                       Responsibilities : <span className="font-semibold">{screenshotsData.responsibilities}</span>
                     </p>
+                    {/* Event logo right under the responsibilities, with the same gap
+                        above and below it as around the divider. */}
+                    {screenshotsData.logo && (
+                      <img
+                        src={asset(screenshotsData.logo.src)}
+                        alt={screenshotsData.logo.alt}
+                        className="mt-4 md:mt-6 self-start shrink-0 h-[32px] w-auto brightness-0 invert"
+                      />
+                    )}
                     <div className="w-full h-px bg-white/20 mt-4 md:mt-6" />
                     <div className="flex flex-col gap-3 mt-4 md:mt-6">
                       {screenshotsData.credits.map((c) => (
@@ -1051,13 +1098,22 @@ export default function TrailerPage() {
                   </p>
                 )}
               </div>
-              {/* Event logo, bottom right: same right edge as the close cross,
-                  same distance from the bottom as the cross is from the top. */}
-              {screenshotsData.logo && (
-                <img
-                  src={asset(screenshotsData.logo.src)}
-                  alt={screenshotsData.logo.alt}
-                  className="mt-auto shrink-0 self-end pt-8 box-content h-[36px] w-auto brightness-0 invert"
+              {/* Jump to the previous / next trailer's screenshots. */}
+              {trailerNav && (
+                <TrailerScreenshotNav
+                  prev={
+                    trailerNav.isFirst && !wrappedAround
+                      ? null
+                      : { label: trailerNav.prev.label, onSelect: trailerNav.prev.open }
+                  }
+                  next={{
+                    label: trailerNav.next.label,
+                    onSelect: () => {
+                      trailerNav.next.open();
+                      // Wrapping from the last trailer to the first one.
+                      if (trailerNav.isLast) setWrappedAround(true);
+                    },
+                  }}
                 />
               )}
             </div>
