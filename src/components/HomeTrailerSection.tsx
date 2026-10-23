@@ -6,6 +6,7 @@ import { asset } from "@/lib/asset";
 import { useSwipeNav } from "@/hooks/useSwipeNav";
 import { useZoomPan } from "@/hooks/useZoomPan";
 import ZoomControls from "@/components/ZoomControls";
+import TrailerScreenshotNav from "@/components/TrailerScreenshotNav";
 import { useSupportsHover } from "@/hooks/useSupportsHover";
 import VideoModal from "@/components/VideoModal";
 import { useWheelNav } from "@/components/ScreenshotGallery";
@@ -203,6 +204,25 @@ export default function HomeTrailerSection() {
     setScreenshotIndex(0);
     setScreenshotsData({ category, title, screenshots, ...extra });
   };
+
+  const screenshotTrailers = trailerCards.map((card) => ({
+    label: card.title,
+    screenshots: card.screenshots,
+    open: () =>
+      openScreenshots(card.screenshotCategory, card.screenshotTitle, card.screenshots, {
+        role: card.screenshotRole,
+        responsibilities: card.screenshotResponsibilities,
+        credits: card.screenshotCredits,
+        logo: logoOf(card),
+      }),
+  }));
+
+  // Every trailer that has screenshots, in page order, for the Back / Next buttons.
+  const trailerNav = (() => {
+    const i = screenshotsData ? screenshotTrailers.findIndex((t) => t.screenshots[0]?.src === screenshotsData.screenshots[0]?.src) : -1;
+    const n = screenshotTrailers.length;
+    return i < 0 || n < 2 ? null : { prev: screenshotTrailers[(i - 1 + n) % n], next: screenshotTrailers[(i + 1) % n] };
+  })();
 
   return (
     <section className="pl-3 md:pl-[120px]">
@@ -504,13 +524,20 @@ export default function HomeTrailerSection() {
                   </p>
                 )}
               </div>
-              {/* Event logo, bottom right: same right edge as the close cross,
-                  same distance from the bottom as the cross is from the top. */}
+              {/* Event logo under the details, same gap as between the other blocks. */}
               {screenshotsData.logo && (
                 <img
                   src={asset(screenshotsData.logo.src)}
                   alt={screenshotsData.logo.alt}
-                  className="mt-auto shrink-0 self-end pt-8 box-content h-[36px] w-auto brightness-0 invert"
+                  className="mt-6 md:mt-10 self-start shrink-0 h-[36px] w-auto brightness-0 invert"
+                />
+              )}
+
+              {/* Jump to the previous / next trailer's screenshots. */}
+              {trailerNav && (
+                <TrailerScreenshotNav
+                  prev={{ label: trailerNav.prev.label, onSelect: trailerNav.prev.open }}
+                  next={{ label: trailerNav.next.label, onSelect: trailerNav.next.open }}
                 />
               )}
             </div>
