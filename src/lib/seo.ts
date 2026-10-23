@@ -4,7 +4,7 @@ import { SITE_URL } from "@/lib/schema";
 // openGraph/twitter are replaced (not merged) per route, so each page must
 // carry its own copy or it would inherit the root layout's home title.
 // og:image must be an absolute URL, so local files go through SITE_URL.
-function pageMetadata(title: string, description: string, path: string, image: string): Metadata {
+export function pageMetadata(title: string, description: string, path: string, image: string): Metadata {
   const url = `${SITE_URL}${path}`;
   const img = image.startsWith("http") ? image : `${SITE_URL}${image}`;
   return {

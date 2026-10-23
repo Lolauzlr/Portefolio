@@ -130,6 +130,12 @@ export default function Footer() {
         </div>
       </div>
 
+      <div className="mt-6 md:mt-8 flex flex-wrap items-center gap-x-[16px] gap-y-[8px] font-[family-name:var(--font-body)] text-[14px] tracking-[1.12px] text-[#dadada]">
+        <span>© {new Date().getFullYear()} Marie Chalandre</span>
+        <Link href="/legal-notice" className="hover:text-[#7FECFB] transition-colors">Legal notice</Link>
+        <Link href="/privacy-policy" className="hover:text-[#7FECFB] transition-colors">Privacy policy</Link>
+      </div>
+
       {snackbarNode}
     </footer>
   );
