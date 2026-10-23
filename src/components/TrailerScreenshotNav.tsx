@@ -28,7 +28,7 @@ function CaretCircle({ direction }: { direction: "left" | "right" }) {
 
 function Label({ caption, title }: { caption: string; title: string }) {
   return (
-    <span className="flex min-w-0 flex-1 flex-col leading-[normal]">
+    <span className="flex min-w-0 flex-1 flex-col gap-[4px] leading-[normal]">
       <span className="font-[family-name:var(--font-body)] text-[12px] text-[#8F8F8F]">{caption}</span>
       <span className="block w-full overflow-hidden text-ellipsis whitespace-nowrap font-[family-name:var(--font-heading)] text-[20px] text-white">
         {title}
@@ -40,11 +40,11 @@ function Label({ caption, title }: { caption: string; title: string }) {
 export default function TrailerScreenshotNav({ prev, next }: { prev: TrailerNavTarget; next: TrailerNavTarget }) {
   return (
     <div className="mt-auto flex w-full gap-[12px] pt-8">
-      <button type="button" onClick={prev.onSelect} aria-label={`Back: ${prev.label}`} className={`${BUTTON} pl-[4px] pr-[12px]`}>
+      <button type="button" onClick={prev.onSelect} aria-label={`Back: ${prev.label}`} className={`${BUTTON} pl-[8px] pr-[12px]`}>
         <CaretCircle direction="left" />
         <Label caption="Back" title={prev.label} />
       </button>
-      <button type="button" onClick={next.onSelect} aria-label={`Next: ${next.label}`} className={`${BUTTON} pl-[12px] pr-[4px]`}>
+      <button type="button" onClick={next.onSelect} aria-label={`Next: ${next.label}`} className={`${BUTTON} pl-[12px] pr-[8px]`}>
         <Label caption="Next" title={next.label} />
         <CaretCircle direction="right" />
       </button>
