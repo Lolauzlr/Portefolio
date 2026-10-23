@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import { asset } from "@/lib/asset";
 import { CaretCircleLeftIcon, CaretCircleRightIcon, CornersOutIcon } from "@/components/CarouselIcons";
 import { useLightboxBehavior } from "@/components/ScreenshotGallery";
@@ -79,6 +79,14 @@ function useSwipe(onPrev: () => void, onNext: () => void, enabled: boolean, isBl
   };
 }
 
+const PHONE_QUERY = "(max-width: 767px)";
+function subscribePhone(cb: () => void) {
+  const mq = window.matchMedia(PHONE_QUERY);
+  mq.addEventListener("change", cb);
+  return () => mq.removeEventListener("change", cb);
+}
+const isPhone = () => window.matchMedia(PHONE_QUERY).matches;
+
 export default function ImageCarousel({
   slides,
   alt,
@@ -106,7 +114,9 @@ export default function ImageCarousel({
     setIndex((i) => (i + 1) % slides.length);
   }
 
-  const spreadMode = spreadSkip !== undefined;
+  // Phones read page by page (like the storytelling books), not two at a time.
+  const phone = useSyncExternalStore(subscribePhone, isPhone, () => false);
+  const spreadMode = spreadSkip !== undefined && !phone;
   const spreadList = spreadMode
     ? buildSpreads(slides.slice(spreadSkip).flatMap((sl) => (sl.src ? [sl.src] : [])))
     : [];
