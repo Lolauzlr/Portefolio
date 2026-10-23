@@ -16,7 +16,10 @@ export async function generateMetadata({ params }: PageProps<"/storytelling/[slu
   const comic = comicBySlug(slug);
   if (!comic) return {};
   const total = buildSpreads(comic.plates, comic.overlappingPlates).length;
-  return { title: `${comic.title} — page 1 of ${total} • Marie Chalandre` };
+  return {
+    title: `${comic.title} — page 1 of ${total} • Marie Chalandre`,
+    alternates: { canonical: `/storytelling/${slug}/lire` },
+  };
 }
 
 export default async function ReaderFirstPage({ params }: PageProps<"/storytelling/[slug]/lire">) {

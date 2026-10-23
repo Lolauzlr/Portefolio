@@ -10,6 +10,7 @@ function pageMetadata(title: string, description: string, path: string, image: s
   return {
     title,
     description,
+    alternates: { canonical: url },
     openGraph: { title, description, url, type: "website", images: [{ url: img }] },
     twitter: { card: "summary_large_image", title, description, images: [img] },
   };
