@@ -27,6 +27,10 @@ export default function LegalNoticePage() {
         The website is hosted by GitHub, Inc. (GitHub Pages), 88 Colin P. Kelly Jr. Street,
         San Francisco, CA 94107, United States.
       </p>
+      <p>
+        The domain name mariechalandre.com is registered with OVH SAS, 2 rue Kellermann, 59100
+        Roubaix, France.
+      </p>
 
       <h2>Intellectual property</h2>
       <p>
