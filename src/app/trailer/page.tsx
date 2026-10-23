@@ -8,7 +8,7 @@ import ZoomControls from "@/components/ZoomControls";
 import TrailerScreenshotNav from "@/components/TrailerScreenshotNav";
 import LandscapeImageViewer, { isPortraitPhone } from "@/components/LandscapeImageViewer";
 import VideoModal from "@/components/VideoModal";
-import { useWheelNav } from "@/components/ScreenshotGallery";
+import { useBodyScrollLock, useWheelNav } from "@/components/ScreenshotGallery";
 
 // Event logo shown at the bottom of a screenshots panel (and on the card).
 const logoOf = (card: object) => {
@@ -111,6 +111,9 @@ export default function TrailerPage() {
       if (idleTimerRef.current) clearTimeout(idleTimerRef.current);
     };
   }, []);
+
+  // The page behind the screenshots overlay must not scroll along with it.
+  useBodyScrollLock(screenshotsData !== null);
 
   useWheelNav(
     shotCount > 1,
@@ -927,7 +930,7 @@ export default function TrailerPage() {
       {/* Screenshots Carousel Overlay */}
       {screenshotsData && (
         <div
-          className="trailer-overlay fixed inset-0 z-[100] bg-black/95 flex items-start md:items-center justify-center overflow-y-auto md:overflow-hidden"
+          className="trailer-overlay overscroll-contain fixed inset-0 z-[100] bg-black/95 flex items-start md:items-center justify-center overflow-y-auto md:overflow-hidden"
           onClick={(e) => {
             if (e.target === e.currentTarget) setScreenshotsData(null);
           }}

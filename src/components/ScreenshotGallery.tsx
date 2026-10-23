@@ -47,26 +47,12 @@ export function useWheelNav(active: boolean, onPrev?: () => void, onNext?: () =>
   }, [active]);
 }
 
-export function useLightboxBehavior(active: boolean, onClose: () => void, onPrev?: () => void, onNext?: () => void, isWheelBlocked?: () => boolean) {
-  useWheelNav(active, onPrev, onNext, isWheelBlocked);
-
-  useEffect(() => {
-    if (!active) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-      else if (e.key === "ArrowLeft") onPrev?.();
-      else if (e.key === "ArrowRight") onNext?.();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [active, onClose, onPrev, onNext]);
-
-  // Freeze the page behind this overlay. `overflow: hidden` alone doesn't
-  // stop iOS Safari's rubber-band scroll chaining from reaching the body
-  // through a fixed-position overlay, so the body is also pinned in place
-  // (offset by its current scroll position) and restored to that exact
-  // spot on close — the gallery itself is then the only thing that can
-  // move, on both desktop and mobile.
+// Freeze the page behind a full-screen overlay. `overflow: hidden` alone doesn't
+// stop iOS Safari's rubber-band scroll chaining from reaching the body through a
+// fixed-position overlay, so the body is also pinned in place (offset by its
+// current scroll position) and restored to that exact spot on close - the overlay
+// itself is then the only thing that can move, on both desktop and mobile.
+export function useBodyScrollLock(active: boolean) {
   useEffect(() => {
     if (!active) return;
     const { body } = document;
@@ -86,6 +72,23 @@ export function useLightboxBehavior(active: boolean, onClose: () => void, onPrev
       window.scrollTo(0, scrollY);
     };
   }, [active]);
+}
+
+export function useLightboxBehavior(active: boolean, onClose: () => void, onPrev?: () => void, onNext?: () => void, isWheelBlocked?: () => boolean) {
+  useWheelNav(active, onPrev, onNext, isWheelBlocked);
+
+  useEffect(() => {
+    if (!active) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      else if (e.key === "ArrowLeft") onPrev?.();
+      else if (e.key === "ArrowRight") onNext?.();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [active, onClose, onPrev, onNext]);
+
+  useBodyScrollLock(active);
 }
 
 // Images-only variant of the /trailer page's screenshot overlay: same dark
