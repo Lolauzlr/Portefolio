@@ -490,6 +490,7 @@ export default function TrailerPage() {
     const createPlayer = () => {
       if (playerRef.current || !host.isConnected) return;
       playerRef.current = new YT.Player(host, {
+        host: "https://www.youtube-nocookie.com",
         videoId: "OLEZv_Qyb6Q",
         width: "100%",
         height: "100%",
@@ -792,7 +793,7 @@ export default function TrailerPage() {
                   // button, so no separate expand affordance is needed here.
                   <iframe
                     className="absolute inset-0 w-full h-full pointer-events-none"
-                    src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
+                    src={`https://www.youtube-nocookie.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
                     title={card.title}
                     allow="autoplay; encrypted-media"
                     style={{ border: 0 }}
@@ -901,7 +902,7 @@ export default function TrailerPage() {
                       // affordance is needed here.
                       <iframe
                         className="absolute inset-0 w-full h-full pointer-events-none"
-                        src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
+                        src={`https://www.youtube-nocookie.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
                         title={card.title}
                         allow="autoplay; encrypted-media"
                         style={{ border: 0 }}
@@ -963,7 +964,7 @@ export default function TrailerPage() {
       {/* Video Modal */}
       {videoModal && (
         <VideoModal
-          src={`https://www.youtube.com/embed/${videoModal.videoId}?autoplay=1&rel=0`}
+          src={`https://www.youtube-nocookie.com/embed/${videoModal.videoId}?autoplay=1&rel=0`}
           title={videoModal.title}
           fullWidth={videoModal.fullWidth}
           onClose={() => setVideoModal(null)}

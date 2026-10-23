@@ -279,7 +279,7 @@ export default function HomeTrailerSection() {
                   // modal (same as the /trailer page).
                   <iframe
                     className="absolute inset-0 w-full h-full pointer-events-none"
-                    src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
+                    src={`https://www.youtube-nocookie.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
                     title={card.title}
                     allow="autoplay; encrypted-media"
                     style={{ border: 0 }}
@@ -344,7 +344,7 @@ export default function HomeTrailerSection() {
       {/* Video Modal */}
       {videoModal && (
         <VideoModal
-          src={`https://www.youtube.com/embed/${videoModal.videoId}?autoplay=1&rel=0`}
+          src={`https://www.youtube-nocookie.com/embed/${videoModal.videoId}?autoplay=1&rel=0`}
           title={videoModal.title}
           fullWidth={videoModal.fullWidth}
           onClose={() => setVideoModal(null)}

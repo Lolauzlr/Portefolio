@@ -53,7 +53,7 @@ export default function RootLayout({
             with header support (Vercel/Netlify) is required for those. */}
         <meta
           httpEquiv="Content-Security-Policy"
-          content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://img.youtube.com https://i.ytimg.com; frame-src https://www.youtube.com; connect-src 'self' https://api.web3forms.com; object-src 'none'; base-uri 'self'"
+          content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://img.youtube.com https://i.ytimg.com; frame-src https://www.youtube-nocookie.com https://www.youtube.com; connect-src 'self' https://api.web3forms.com; object-src 'none'; base-uri 'self'"
         />
         <meta name="referrer" content="strict-origin-when-cross-origin" />
       </head>
