@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import JsonLd from "@/components/JsonLd";
 import { homeMetadata } from "@/lib/seo";
-import { personSchema, websiteSchema } from "@/lib/schema";
+import { SITE_URL, personSchema, websiteSchema } from "@/lib/schema";
 
 const bebasNeue = Bebas_Neue({
   weight: "400",
@@ -20,6 +20,7 @@ const roboto = Roboto({
 
 export const metadata: Metadata = {
   ...homeMetadata,
+  metadataBase: new URL(SITE_URL),
   keywords: [
     "Marie Chalandre",
     "cinematic artist",
