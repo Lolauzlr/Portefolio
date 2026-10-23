@@ -3,6 +3,7 @@ import { Bebas_Neue, Roboto } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { homeMetadata } from "@/lib/seo";
 
 const bebasNeue = Bebas_Neue({
   weight: "400",
@@ -16,24 +17,15 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "Marie Chalandre | Portfolio",
-  description:
-    "Portfolio de Marie Chalandre — Cinematic Artist, Concept Artist & Storyboarder. Découvrez mes travaux en trailer, films, illustrations et storyboard.",
+  ...homeMetadata,
   keywords: [
     "Marie Chalandre",
-    "portfolio",
     "cinematic artist",
-    "concept artist",
-    "storyboarder",
-    "trailer",
+    "filmmaker",
+    "storyboard",
+    "video game cinematics",
     "illustration",
   ],
-  openGraph: {
-    title: "Marie Chalandre | Portfolio",
-    description:
-      "Cinematic Artist, Concept Artist & Storyboarder",
-    type: "website",
-  },
 };
 
 // viewport-fit: cover is required for env(safe-area-inset-*) to resolve to

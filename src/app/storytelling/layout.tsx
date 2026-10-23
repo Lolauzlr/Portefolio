@@ -1,12 +1,8 @@
-import type { Metadata } from "next";
 import ShelfShell from "@/components/comics/ShelfShell";
+import { storytellingMetadata } from "@/lib/seo";
 import StoryboardsSection from "@/components/storyboard/StoryboardsSection";
 
-export const metadata: Metadata = {
-  title: "Storytelling | Marie Chalandre",
-  description:
-    "Les bandes dessinées de Marie Chalandre — Old Knight, No Finder — et ses storyboards : Nabil Harlow, The source, The Twins, Rose, The Untamed.",
-};
+export const metadata = storytellingMetadata;
 
 const pickAStoryHeader = (
   <div className="flex flex-col gap-[4px] items-start w-full px-3 pt-6 md:px-8 min-[85rem]:px-[120px] md:pt-[60px]">
