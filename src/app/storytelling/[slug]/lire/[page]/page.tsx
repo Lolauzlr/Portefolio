@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: PageProps<"/storytelling/[slu
   const comic = comicBySlug(slug);
   if (!comic) return {};
   const total = buildSpreads(comic.plates, comic.overlappingPlates).length;
-  return { title: `${comic.title} — page ${Number(page) + 1} sur ${total} | Marie Chalandre` };
+  return { title: `${comic.title} — page ${Number(page) + 1} of ${total} • Marie Chalandre` };
 }
 
 export default async function ReaderPage({ params }: PageProps<"/storytelling/[slug]/lire/[page]">) {

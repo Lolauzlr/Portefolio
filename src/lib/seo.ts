@@ -37,6 +37,6 @@ export const storytellingMetadata = pageMetadata(
 );
 
 export const cvMetadata = pageMetadata(
-  "Marie Chalandre • CV | Cinematic Artist",
+  "Cinematic Artist CV • Marie Chalandre",
   "View Marie Chalandre's full CV, experience, skills and professional background in cinematic art, filmmaking, storyboarding and illustration.",
 );

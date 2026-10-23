@@ -41,7 +41,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className={`${bebasNeue.variable} ${roboto.variable}`}>
+    <html lang="en" className={`${bebasNeue.variable} ${roboto.variable}`}>
       <head>
         {/* GitHub Pages serves static files with no custom HTTP headers, so
             X-Frame-Options, X-Content-Type-Options and Permissions-Policy
