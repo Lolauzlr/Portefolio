@@ -3,7 +3,9 @@ import { Bebas_Neue, Roboto } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import JsonLd from "@/components/JsonLd";
 import { homeMetadata } from "@/lib/seo";
+import { personSchema, websiteSchema } from "@/lib/schema";
 
 const bebasNeue = Bebas_Neue({
   weight: "400",
@@ -55,6 +57,8 @@ export default function RootLayout({
         <meta name="referrer" content="strict-origin-when-cross-origin" />
       </head>
       <body className="min-h-screen antialiased">
+        <JsonLd data={personSchema} />
+        <JsonLd data={websiteSchema} />
         <Navbar />
         <main>{children}</main>
         <Footer />

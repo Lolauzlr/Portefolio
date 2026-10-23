@@ -7,6 +7,8 @@ import { useZoomPan } from "@/hooks/useZoomPan";
 import ZoomControls from "@/components/ZoomControls";
 import TrailerScreenshotNav from "@/components/TrailerScreenshotNav";
 import LandscapeImageViewer, { isPortraitPhone } from "@/components/LandscapeImageViewer";
+import JsonLd from "@/components/JsonLd";
+import { personRef } from "@/lib/schema";
 import VideoModal from "@/components/VideoModal";
 import { useBodyScrollLock, useWheelNav } from "@/components/ScreenshotGallery";
 
@@ -14,6 +16,12 @@ import { useBodyScrollLock, useWheelNav } from "@/components/ScreenshotGallery";
 const logoOf = (card: object) => {
   const { logo, logoAlt } = card as { logo?: string; logoAlt?: string };
   return logo ? { src: logo, alt: logoAlt ?? "" } : undefined;
+};
+
+// Exact upload dates when known; otherwise uploadDate falls back to January 1st
+// of the year shown in the card description.
+const uploadDates: Record<string, string> = {
+  ZPQFsx9XXoM: "2026-06-11",
 };
 
 export default function TrailerPage() {
@@ -559,8 +567,20 @@ export default function TrailerPage() {
     setIsMuted(!isMuted);
   };
 
+  const videoSchema = [...recentTrailers, ...watchCards].map((card) => ({
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    name: card.title,
+    description: `${card.screenshotRole}. ${card.screenshotResponsibilities}.`,
+    thumbnailUrl: `https://i.ytimg.com/vi/${card.videoId}/hqdefault.jpg`,
+    uploadDate: uploadDates[card.videoId] ?? `${card.description.slice(0, 4)}-01-01`,
+    embedUrl: `https://www.youtube.com/embed/${card.videoId}`,
+    creator: personRef,
+  }));
+
   return (
     <div className="bg-[#15161b] text-white min-h-screen">
+      <JsonLd data={videoSchema} />
       {/* Hero Section - no top padding, video bleeds under navbar */}
       {/* Mobile: section is a true 9:16 frame (width-driven, so it stays
           9:16 regardless of device height) so the video reads as a portrait
