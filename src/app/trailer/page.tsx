@@ -6,8 +6,9 @@ import { useSwipeNav } from "@/hooks/useSwipeNav";
 import { useZoomPan } from "@/hooks/useZoomPan";
 import ZoomControls from "@/components/ZoomControls";
 import TrailerScreenshotNav from "@/components/TrailerScreenshotNav";
+import LandscapeImageViewer, { isPortraitPhone } from "@/components/LandscapeImageViewer";
 import VideoModal from "@/components/VideoModal";
-import { useWheelNav } from "@/components/ScreenshotGallery";
+import { useBodyScrollLock, useWheelNav } from "@/components/ScreenshotGallery";
 
 // Event logo shown at the bottom of a screenshots panel (and on the card).
 const logoOf = (card: object) => {
@@ -43,15 +44,21 @@ export default function TrailerPage() {
   const [showPause, setShowPause] = useState(false);
   const [cadreSize, setCadreSize] = useState({ w: 792, h: 201 });
   const [watchSizes, setWatchSizes] = useState<Record<string, { w: number; h: number }>>({});
-  // Phones play a short self-hosted muted loop of the reveal trailer in the hero
-  // instead of the YouTube background player (which mobile browsers refuse to
-  // autoplay); tapping the hero still opens the YouTube video in the modal.
+  // Phones held in portrait play a short self-hosted muted loop of the reveal
+  // trailer in the hero instead of the YouTube background player (which mobile
+  // browsers refuse to autoplay); tapping the hero still opens the YouTube video in
+  // the modal. Held in landscape, the hero is the horizontal YouTube video itself.
   const isMobile = useSyncExternalStore(
-    () => () => {},
-    () => window.matchMedia("(max-width: 767px)").matches,
+    (onChange) => {
+      const mq = window.matchMedia("(max-width: 767px) and (orientation: portrait)");
+      mq.addEventListener("change", onChange);
+      return () => mq.removeEventListener("change", onChange);
+    },
+    () => window.matchMedia("(max-width: 767px) and (orientation: portrait)").matches,
     () => false
   );
   const mobileVideoRef = useRef<HTMLVideoElement>(null);
+  const ytHostRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
   const userPausedRef = useRef(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -105,6 +112,9 @@ export default function TrailerPage() {
     };
   }, []);
 
+  // The page behind the screenshots overlay must not scroll along with it.
+  useBodyScrollLock(screenshotsData !== null);
+
   useWheelNav(
     shotCount > 1,
     () => setScreenshotIndex((i) => (i - 1 + shotCount) % shotCount),
@@ -112,8 +122,12 @@ export default function TrailerPage() {
     () => zoom.isZoomed()
   );
 
+  // Full-screen landscape view of one screenshot (phones held in portrait).
+  const [viewerOpen, setViewerOpen] = useState(false);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (viewerOpen) return; // the viewer handles its own Escape / arrows
       if (e.key === "Escape") {
         if (videoModal) setVideoModal(null);
         if (screenshotsData) setScreenshotsData(null);
@@ -125,7 +139,7 @@ export default function TrailerPage() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [videoModal, screenshotsData]);
+  }, [videoModal, screenshotsData, viewerOpen]);
 
   // The first (most recent) trailer has no "Back" button, unless we got there by
   // going through the last one ("Next" wraps around): then going back is logical.
@@ -139,6 +153,7 @@ export default function TrailerPage() {
   ) => {
     setScreenshotIndex(0);
     setWrappedAround(false);
+    setViewerOpen(false);
     setScreenshotsData({ category, title, screenshots, ...extra });
   };
 
@@ -442,11 +457,20 @@ export default function TrailerPage() {
   }, []);
 
   useEffect(() => {
-    if (window.matchMedia("(max-width: 767px)").matches) return;
+    // Portrait phones show the self-hosted loop instead (see isMobile): the YouTube
+    // player is only built elsewhere, and rebuilt when the phone is turned.
+    const wrapper = ytHostRef.current;
+    if (isMobile || !wrapper) return;
+    // The player replaces the element it is given, so it gets a throwaway child
+    // that React doesn't own (clean to recreate after a rotation).
+    const host = document.createElement("div");
+    wrapper.appendChild(host);
     const createPlayer = () => {
-      if (playerRef.current) return;
-      playerRef.current = new YT.Player("yt-bg-player", {
+      if (playerRef.current || !host.isConnected) return;
+      playerRef.current = new YT.Player(host, {
         videoId: "OLEZv_Qyb6Q",
+        width: "100%",
+        height: "100%",
         playerVars: {
           autoplay: 1,
           mute: 1,
@@ -484,8 +508,9 @@ export default function TrailerPage() {
     return () => {
       playerRef.current?.destroy();
       playerRef.current = null;
+      wrapper.replaceChildren();
     };
-  }, [onPlayerReady, onPlayerStateChange]);
+  }, [isMobile, onPlayerReady, onPlayerStateChange]);
 
   // Fallback when the browser blocks autoplay (e.g. iOS low-power mode):
   // start the muted video on the first touch anywhere on the page.
@@ -541,7 +566,7 @@ export default function TrailerPage() {
           9:16 regardless of device height) so the video reads as a portrait
           trailer frame and the caption card at the bottom only covers a
           small fraction of it. */}
-      <section ref={heroRef} className="relative w-full aspect-[9/16] md:aspect-auto md:h-[810px] overflow-hidden">
+      <section ref={heroRef} className="relative w-full mx-auto max-w-[calc(100dvh*9/16)] aspect-[9/16] md:max-w-none md:aspect-auto md:h-[min(810px,100dvh)] [@media(orientation:landscape)_and_(max-height:500px)]:!aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:!h-auto [@media(orientation:landscape)_and_(max-height:500px)]:!max-w-[calc(100dvh*16/9)] overflow-hidden">
         {/* YouTube video background via API */}
         <div
           ref={containerRef}
@@ -561,8 +586,8 @@ export default function TrailerPage() {
             />
           )}
           <div
-            id="yt-bg-player"
-            className="absolute top-1/2 left-1/2 w-[316.05vw] h-[177.78vw] -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full md:w-[177.78vh] md:h-[100vh] md:min-w-full md:min-h-full"
+            ref={ytHostRef}
+            className="absolute top-1/2 left-1/2 w-[316.05vw] h-[177.78vw] -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full md:w-[177.78vh] md:h-[100vh] md:min-w-full md:min-h-full [@media(orientation:landscape)_and_(max-height:500px)]:!w-full [@media(orientation:landscape)_and_(max-height:500px)]:!h-full"
           />
         </div>
 
@@ -624,7 +649,7 @@ export default function TrailerPage() {
         {/* Pentagon cadre - small chamfer top-right corner */}
         <div
           ref={cadreRef}
-          className="absolute left-4 md:left-[24px] bottom-8 md:bottom-[24px] w-[calc(100%-2rem)] md:w-[792px] z-20 pointer-events-auto"
+          className="absolute left-4 md:left-[24px] bottom-8 md:bottom-[24px] w-[calc(100%-2rem)] md:w-[calc(100%-3rem)] min-[85rem]:w-[792px] z-20 pointer-events-auto"
         >
           {/* Background with blur + pentagon clip */}
           <div
@@ -691,7 +716,7 @@ export default function TrailerPage() {
       </section>
 
       {/* Les Plus Récents */}
-      <section className="px-3 md:px-[120px] py-[60px]">
+      <section className="px-3 md:px-8 min-[85rem]:px-[120px] py-[60px]">
         <div className="mb-6 md:mb-10">
           <h2 className="text-[28px] md:text-[40px] font-[family-name:var(--font-heading)] tracking-[3.2px] mb-1">
             LATEST TRAILERS
@@ -765,7 +790,7 @@ export default function TrailerPage() {
       </section>
 
       {/* Featured Trailers */}
-      <section className="bg-[#131313] px-3 md:px-[120px] py-[60px]">
+      <section className="bg-[#131313] px-3 md:px-8 min-[85rem]:px-[120px] py-[60px]">
         <div className="mb-6 md:mb-10">
           <h2 className="text-[28px] md:text-[40px] font-[family-name:var(--font-heading)] tracking-[3.2px] mb-1">
             FEATURED TRAILERS
@@ -820,7 +845,7 @@ export default function TrailerPage() {
                 </svg>
                 <div className="relative z-20 flex flex-col md:flex-row p-5">
                   <div
-                    className="relative w-full md:w-[792px] flex-shrink-0 cursor-pointer overflow-hidden bg-black"
+                    className="relative w-full md:w-[62%] md:min-w-0 min-[85rem]:w-[792px] flex-shrink-0 cursor-pointer overflow-hidden bg-black"
                     style={{ aspectRatio: "16 / 9" }}
                     onMouseEnter={() => setHoveredWatch(card.videoId)}
                     onMouseLeave={() => setHoveredWatch(null)}
@@ -905,7 +930,7 @@ export default function TrailerPage() {
       {/* Screenshots Carousel Overlay */}
       {screenshotsData && (
         <div
-          className="fixed inset-0 z-[100] bg-black/95 flex items-start md:items-center justify-center overflow-y-auto md:overflow-hidden"
+          className="trailer-overlay overscroll-contain fixed inset-0 z-[100] bg-black/95 flex items-start md:items-center justify-center overflow-y-auto md:overflow-hidden"
           onClick={(e) => {
             if (e.target === e.currentTarget) setScreenshotsData(null);
           }}
@@ -914,13 +939,13 @@ export default function TrailerPage() {
               past the image/thumbnails/info panel below. */}
           <button
             onClick={() => setScreenshotsData(null)}
-            className="md:hidden fixed top-4 right-4 z-20 text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
+            className="trailer-close-mobile md:hidden fixed top-4 right-4 z-20 text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
             aria-label="Fermer"
           >
             ✕
           </button>
 
-          <div className="w-full min-h-full md:h-full flex flex-col md:flex-row">
+          <div className="trailer-layout w-full min-h-full md:h-full flex flex-col md:flex-row">
             {/* Left: Carousel */}
             <div className="relative w-full flex flex-col md:flex-1 md:min-h-0 md:min-w-0">
               {/* Main image area - mobile: capped to 60vh, fully filled
@@ -931,9 +956,14 @@ export default function TrailerPage() {
               <div
                 ref={setShotStage}
                 {...swipeHandlers}
-                // Click/tap on the left or right half of the image to go to the
-                // previous / next screenshot (arrows stop propagation).
+                // Phone held in portrait: a tap opens the image full screen, in
+                // landscape. Elsewhere: click/tap on the left or right half of the
+                // image to go to the previous / next screenshot (arrows stop propagation).
                 onClick={(e) => {
+                  if (isPortraitPhone()) {
+                    zoom.guardTap(e, () => setViewerOpen(true));
+                    return;
+                  }
                   if (screenshotsData.screenshots.length < 2) return;
                   const rect = e.currentTarget.getBoundingClientRect();
                   const count = screenshotsData.screenshots.length;
@@ -1119,6 +1149,16 @@ export default function TrailerPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Full-screen landscape view of the current screenshot. */}
+      {screenshotsData && viewerOpen && (
+        <LandscapeImageViewer
+          images={screenshotsData.screenshots.map((shot) => ({ src: asset(shot.src), alt: shot.tag }))}
+          index={screenshotIndex}
+          onIndexChange={setScreenshotIndex}
+          onClose={() => setViewerOpen(false)}
+        />
       )}
     </div>
   );

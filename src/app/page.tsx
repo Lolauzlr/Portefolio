@@ -69,12 +69,12 @@ export default function Home() {
 
       {/* Illustrations */}
       <LightboxProvider slides={illustrationSlides}>
-      <section className="py-6 md:py-[60px] bg-[#131313] px-3 md:px-[120px]">
+      <section className="py-6 md:py-[60px] bg-[#131313] px-3 md:px-8 min-[85rem]:px-[120px]">
         <SectionTitle>ILLUSTRATIONS</SectionTitle>
         <div className="flex flex-col gap-[24px] md:gap-[40px]">
           {/* Featured illustration */}
           <div className="flex flex-col md:flex-row gap-6 md:gap-10">
-            <div className="relative md:w-[587px] h-[500px] md:h-[662px] shrink-0">
+            <div className="relative md:w-[48%] min-[85rem]:w-[587px] h-[500px] md:h-[56vw] min-[85rem]:h-[662px] shrink-0">
               <LightboxImg src="/images/illustrations/illus-35.webp" alt="Illustration" className="absolute inset-0 w-full h-full object-cover" />
             </div>
             <div className="flex flex-col justify-between flex-1">
@@ -102,12 +102,12 @@ export default function Home() {
       <HomeMoviesSection />
 
       {/* Storytelling */}
-      <section className="py-6 md:py-[60px] bg-[#131313] px-3 md:px-[120px]">
+      <section className="py-6 md:py-[60px] bg-[#131313] px-3 md:px-8 min-[85rem]:px-[120px]">
         <SectionTitle>STORYTELLING</SectionTitle>
         <div className="flex flex-col md:flex-row gap-6 md:gap-[40px]">
           {storytellingCards.map((c) => (
-            <div key={c.title} className={`flex flex-col gap-4 w-full ${c.widthClassName} shrink-0`}>
-              <div className={`w-full md:h-[525px] ${c.aspectClassName}`}>
+            <div key={c.title} className={`flex flex-col gap-4 w-full md:min-w-0 ${c.widthClassName} shrink-0`}>
+              <div className={`w-full md:h-auto min-[85rem]:h-[525px] ${c.aspectClassName}`}>
                 <ImageCarousel slides={c.slides} alt={c.title} aspectClassName="h-full" spreadSkip={c.spreadSkip} />
               </div>
               <div className="flex flex-col gap-[24px]">
@@ -133,7 +133,7 @@ export default function Home() {
       </section>
 
       {/* About Me */}
-      <section className="px-3 md:px-[120px] pt-[24px] md:pt-0 pb-6 md:pb-0">
+      <section className="px-3 md:px-8 min-[85rem]:px-[120px] pt-[24px] md:pt-0 pb-6 md:pb-0">
         <div className="flex flex-col md:flex-row gap-[24px] md:gap-10 items-center">
           <div className="flex-1 flex flex-col justify-between">
             <div className="flex flex-col gap-6 md:gap-10">
@@ -166,7 +166,7 @@ export default function Home() {
             <img
               src={asset("/images/home-page/profil2.webp")}
               alt="Marie Chalandre"
-              className="w-[350px] md:w-[599px] h-auto object-cover"
+              className="w-[350px] md:w-[45vw] min-[85rem]:w-[599px] h-auto object-cover"
             />
           </div>
         </div>

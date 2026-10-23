@@ -37,25 +37,52 @@ body[data-reading="true"] {
   overflow: hidden;
 }
 
-/* Trailer screenshot overlay on phones: in landscape the thumbnails strip is
-   hidden and the caption sits over the image; in portrait the caption stays
-   below the image. Neither applies at md and up (desktop layout). */
+/* Trailer screenshot overlay on phones: in portrait the image caption stays below
+   the image; held in landscape the image fills the screen (thumbnails strip hidden,
+   caption over the image) and scrolling down reveals the description panel (title,
+   credits, logo, previous / next trailer) under it. The caption rules don't apply at
+   md and up (desktop layout) - but a phone in landscape can be wider than md, hence
+   the !important overrides of the md: utilities below. */
 .trailer-caption-overlay {
   display: none;
 }
 @media (orientation: landscape) and (max-height: 500px) {
   .trailer-thumbs,
-  .trailer-info,
   .trailer-caption-below {
     display: none;
   }
   .trailer-caption-overlay {
     display: block;
   }
-  /* Image fills the whole viewport instead of the 60vh portrait frame. */
+  /* Image fills the whole viewport instead of the 60vh portrait frame... */
   .trailer-stage {
     height: 100vh;
     height: 100dvh;
+    flex: none !important;
+  }
+  /* ...and the page scrolls to the description underneath. */
+  .trailer-overlay {
+    overflow-y: auto !important;
+    align-items: flex-start !important;
+  }
+  .trailer-layout {
+    flex-direction: column !important;
+    height: auto !important;
+    min-height: 100%;
+  }
+  .trailer-layout > div:first-child {
+    flex: none !important;
+  }
+  .trailer-info {
+    width: 100% !important;
+    flex-shrink: 0 !important;
+  }
+  /* The panel's own cross is replaced by the fixed one, always on screen. */
+  .trailer-info > button {
+    display: none !important;
+  }
+  .trailer-close-mobile {
+    display: block !important;
   }
 }
 @media (min-width: 768px) {

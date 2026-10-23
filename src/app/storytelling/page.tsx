@@ -8,7 +8,7 @@ import ShelfFallback from "@/components/comics/ShelfFallback";
  */
 export default function StoryboardPage() {
   return (
-    <div className="px-3 pb-12 md:px-[120px]">
+    <div className="px-3 pb-12 md:px-8 min-[85rem]:px-[120px]">
       <ShelfFallback />
     </div>
   );
