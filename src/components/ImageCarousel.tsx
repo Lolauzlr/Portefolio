@@ -4,6 +4,9 @@ import { useRef, useState } from "react";
 import { asset } from "@/lib/asset";
 import { CaretCircleLeftIcon, CaretCircleRightIcon, CornersOutIcon } from "@/components/CarouselIcons";
 import { useLightboxBehavior } from "@/components/ScreenshotGallery";
+import { buildSpreads } from "@/lib/reading";
+import ZoomControls from "@/components/ZoomControls";
+import { useZoomPan } from "@/hooks/useZoomPan";
 
 export type CarouselSlide = {
   src?: string;
@@ -44,7 +47,7 @@ function SlideContent({
 // short quick flick (12px+ in under 300ms) or a slower 30px+ drag counts, as
 // long as it is mostly horizontal. `swiped` lets click handlers ignore the
 // click some browsers fire right after a swipe.
-function useSwipe(onPrev: () => void, onNext: () => void, enabled: boolean) {
+function useSwipe(onPrev: () => void, onNext: () => void, enabled: boolean, isBlocked?: () => boolean) {
   const start = useRef<{ x: number; y: number; t: number } | null>(null);
   const swiped = useRef(false);
   return {
@@ -60,7 +63,8 @@ function useSwipe(onPrev: () => void, onNext: () => void, enabled: boolean) {
       onTouchEnd: (e: React.TouchEvent) => {
         const s = start.current;
         start.current = null;
-        if (!s || !enabled) return;
+        // A pinch / pan on a zoomed image is not a page swipe.
+        if (!s || !enabled || isBlocked?.()) return;
         const t = e.changedTouches[0];
         const dx = t.clientX - s.x;
         const ax = Math.abs(dx);
@@ -80,11 +84,16 @@ export default function ImageCarousel({
   alt,
   aspectClassName = "aspect-[1199/799]",
   caption,
+  spreadSkip,
 }: {
   slides: CarouselSlide[];
   alt: string;
   aspectClassName?: string;
   caption?: string;
+  // When set, the expanded view reads two pages at a time (like the
+  // storytelling reader, without the book animation). The value is how many
+  // leading slides (e.g. the cover) stay out of the spreads.
+  spreadSkip?: number;
 }) {
   const [index, setIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -97,13 +106,39 @@ export default function ImageCarousel({
     setIndex((i) => (i + 1) % slides.length);
   }
 
+  const spreadMode = spreadSkip !== undefined;
+  const spreadList = spreadMode
+    ? buildSpreads(slides.slice(spreadSkip).flatMap((sl) => (sl.src ? [sl.src] : [])))
+    : [];
+  const [spreadIndex, setSpreadIndex] = useState(0);
+  const lbCount = spreadMode ? spreadList.length : slides.length;
+  const lbIndex = spreadMode ? spreadIndex : index;
+  const lbMultiple = lbCount > 1;
+  const [stage, setStage] = useState<HTMLElement | null>(null);
+  const zoom = useZoomPan(stage, lbIndex);
+  const lbGo = (i: number) => (spreadMode ? setSpreadIndex(i) : setIndex(i));
+  function lbPrev() {
+    lbGo((lbIndex - 1 + lbCount) % lbCount);
+  }
+  function lbNext() {
+    lbGo((lbIndex + 1) % lbCount);
+  }
+  function openLightbox() {
+    if (spreadMode) {
+      setSpreadIndex(Math.min(Math.max(Math.floor((index - spreadSkip) / 2), 0), Math.max(spreadList.length - 1, 0)));
+    }
+    setLightboxOpen(true);
+  }
+
   const swipe = useSwipe(goPrev, goNext, hasMultiple);
+  const lbSwipe = useSwipe(lbPrev, lbNext, lbMultiple, () => zoom.ignoreSwipe());
 
   useLightboxBehavior(
     lightboxOpen,
     () => setLightboxOpen(false),
-    hasMultiple ? goPrev : undefined,
-    hasMultiple ? goNext : undefined
+    lbMultiple ? lbPrev : undefined,
+    lbMultiple ? lbNext : undefined,
+    () => zoom.isZoomed()
   );
 
   if (slides.length === 0) return null;
@@ -127,7 +162,7 @@ export default function ImageCarousel({
       // from inside the already-open lightbox (its own close/prev/next/
       // thumbnail buttons) never re-trigger this. The prev/next arrows
       // below stop propagation so they advance the slide instead.
-      onClick={() => !lightboxOpen && !swipe.swiped.current && setLightboxOpen(true)}
+      onClick={() => !lightboxOpen && !swipe.swiped.current && openLightbox()}
       {...(lightboxOpen ? {} : swipe.handlers)}
     >
       <SlideContent slide={current} alt={alt} />
@@ -156,7 +191,7 @@ export default function ImageCarousel({
       <div className="absolute bottom-0 right-0 p-3">
         <button
           type="button"
-          onClick={(e) => { e.stopPropagation(); setLightboxOpen(true); }}
+          onClick={(e) => { e.stopPropagation(); openLightbox(); }}
           aria-label="Expand image"
           className={ARROW_BUTTON_CLASSES}
         >
@@ -189,17 +224,40 @@ export default function ImageCarousel({
             ✕
           </button>
 
-          <div className="relative flex-1 min-h-0 flex items-center justify-center p-4 md:p-12 touch-pan-y"
-            {...swipe.handlers}
+          <div ref={setStage} className="relative flex-1 min-h-0 flex items-center justify-center p-4 md:p-12 touch-pan-y"
+            {...lbSwipe.handlers}
           >
+            {/* Clicking the left / right half of the screen goes to the
+                previous / next image (like the storytelling reader). The
+                image lets clicks through; arrows, counter and close sit above. */}
+            {lbMultiple && (
+              <>
+                <button
+                  type="button"
+                  tabIndex={-1}
+                  aria-label="Previous"
+                  onClick={(e) => zoom.guardTap(e, () => !lbSwipe.swiped.current && lbPrev())}
+                  className="absolute inset-y-0 left-0 w-1/2 cursor-pointer"
+                />
+                <button
+                  type="button"
+                  tabIndex={-1}
+                  aria-label="Next"
+                  onClick={(e) => zoom.guardTap(e, () => !lbSwipe.swiped.current && lbNext())}
+                  className="absolute inset-y-0 right-0 w-1/2 cursor-pointer"
+                />
+              </>
+            )}
+
             <span className="absolute top-4 left-4 md:top-6 md:left-6 font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white z-10">
-              {index + 1}/{slides.length}
+              {lbIndex + 1}/{lbCount}
             </span>
 
-            {hasMultiple && (
+            {lbMultiple && (
               <button
                 type="button"
-                onClick={goPrev}
+                data-zoom-ignore
+                onClick={lbPrev}
                 className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
                 aria-label="Previous image"
               >
@@ -209,8 +267,16 @@ export default function ImageCarousel({
               </button>
             )}
 
-            {current.src ? (
-              <img src={asset(current.src)} alt={alt} className="max-w-full max-h-full object-contain" />
+            {spreadMode ? (
+              <div data-zoom-target className="pointer-events-none flex h-full max-w-full items-center justify-center gap-1">
+                {[spreadList[spreadIndex]?.left, spreadList[spreadIndex]?.right].map((src, i) =>
+                  src ? (
+                    <img key={src} src={asset(src)} alt={`${alt} ${spreadIndex * 2 + i + 1}`} className="min-w-0 max-h-full max-w-[50%] object-contain" />
+                  ) : null
+                )}
+              </div>
+            ) : current.src ? (
+              <img data-zoom-target src={asset(current.src)} alt={alt} className="pointer-events-none max-w-full max-h-full object-contain" />
             ) : (
               <div className="w-[90vw] max-w-[800px] aspect-video bg-[#d9d9d9] flex items-center justify-center">
                 <span className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-[#8F8F8F] uppercase">
@@ -219,10 +285,11 @@ export default function ImageCarousel({
               </div>
             )}
 
-            {hasMultiple && (
+            {lbMultiple && (
               <button
                 type="button"
-                onClick={goNext}
+                data-zoom-ignore
+                onClick={lbNext}
                 className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
                 aria-label="Next image"
               >
@@ -231,26 +298,44 @@ export default function ImageCarousel({
                 </svg>
               </button>
             )}
+
+            <ZoomControls scale={zoom.scale} onZoomIn={zoom.zoomIn} onZoomOut={zoom.zoomOut} onReset={zoom.reset} />
           </div>
 
-          {hasMultiple && (
+          {lbMultiple && (
             // Hidden on a phone held in landscape (short viewport) so the
             // image gets the full height.
             <div className="bg-[#0d0d0d] px-3 md:px-4 py-3 overflow-x-auto [@media(orientation:landscape)_and_(max-height:500px)]:hidden">
               <div className="flex gap-2 justify-center min-w-min mx-auto">
-                {slides.map((slide, i) => (
-                  <button
-                    key={slide.src ?? i}
-                    type="button"
-                    onClick={() => setIndex(i)}
-                    aria-label={`Image ${i + 1}`}
-                    className={`relative flex-shrink-0 w-[120px] h-[68px] overflow-hidden cursor-pointer transition-all ${
-                      i === index ? "ring-2 ring-[#ddff6e]" : "opacity-50 hover:opacity-80"
-                    }`}
-                  >
-                    <SlideContent slide={slide} alt={`${alt} thumbnail ${i + 1}`} thumbnail />
-                  </button>
-                ))}
+                {spreadMode
+                  ? spreadList.map((sp, i) => (
+                      <button
+                        key={sp.index}
+                        type="button"
+                        onClick={() => setSpreadIndex(i)}
+                        aria-label={`Double page ${i + 1}`}
+                        className={`relative flex flex-shrink-0 h-[68px] overflow-hidden cursor-pointer transition-all ${
+                          i === spreadIndex ? "ring-2 ring-[#ddff6e]" : "opacity-50 hover:opacity-80"
+                        }`}
+                      >
+                        {[sp.left, sp.right].map((src) =>
+                          src ? <img key={src} src={asset(src)} alt="" className="h-full w-auto max-w-none block" /> : null
+                        )}
+                      </button>
+                    ))
+                  : slides.map((slide, i) => (
+                      <button
+                        key={slide.src ?? i}
+                        type="button"
+                        onClick={() => setIndex(i)}
+                        aria-label={`Image ${i + 1}`}
+                        className={`relative flex-shrink-0 w-[120px] h-[68px] overflow-hidden cursor-pointer transition-all ${
+                          i === index ? "ring-2 ring-[#ddff6e]" : "opacity-50 hover:opacity-80"
+                        }`}
+                      >
+                        <SlideContent slide={slide} alt={`${alt} thumbnail ${i + 1}`} thumbnail />
+                      </button>
+                    ))}
               </div>
             </div>
           )}

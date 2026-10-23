@@ -1,3 +1,4 @@
+import { illustrationCaption } from "@/data/illustrations";
 import { LightboxImg, LightboxProvider, type LightboxSlide } from "@/components/IllustrationLightbox";
 
 const i = (n: number) => `/images/illustrations/illus-${n}.webp`;
@@ -23,7 +24,7 @@ const heroSlides: { src: string; alt: string; title: string; description: React.
   },
 ];
 
-const lightboxSlides: LightboxSlide[] = [
+const lightboxSlideList: { src: string; alt: string }[] = [
   { src: i(25), alt: "Rose" },
   { src: i(34), alt: "Drunked Monster" },
   { src: i(32), alt: "Mazou BD" },
@@ -62,6 +63,8 @@ const lightboxSlides: LightboxSlide[] = [
   { src: purpleSmile, alt: "" },
   { src: i(11), alt: "" },
 ];
+
+const lightboxSlides: LightboxSlide[] = lightboxSlideList.map((slide) => ({ ...slide, caption: illustrationCaption(slide.src) }));
 
 const longestSlide = heroSlides[heroSlides.length - 1];
 

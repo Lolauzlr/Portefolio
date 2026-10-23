@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { createWheelGesture } from "@/lib/wheel-gesture";
 
 // Shared by every full-screen image overlay on the site (this gallery and
 // ImageCarousel's own lightbox) so Escape-to-close, arrow-key navigation
@@ -9,7 +10,46 @@ import { useEffect } from "react";
 // a gallery that only mounts while open (this component) can just pass
 // `true`. onPrev/onNext are optional since a single-image lightbox has
 // nothing to navigate to.
-export function useLightboxBehavior(active: boolean, onClose: () => void, onPrev?: () => void, onNext?: () => void) {
+const WHEEL_STEP_PX = 12;
+const WHEEL_IDLE_MS = 100;
+
+// Mouse wheel / trackpad scroll changes image: one step per gesture, and a new
+// swipe is recognised right away even while the previous one's inertia is still
+// running (see lib/wheel-gesture). Works on the horizontal axis (two-finger
+// swipe) or the vertical one, whichever dominates.
+// The listener is non-passive so the browser's own horizontal-swipe
+// back/forward navigation doesn't fire behind the overlay.
+export function useWheelNav(active: boolean, onPrev?: () => void, onNext?: () => void, isBlocked?: () => boolean) {
+  const handlers = useRef({ onPrev, onNext, isBlocked });
+  useEffect(() => {
+    handlers.current = { onPrev, onNext, isBlocked };
+  });
+
+  useEffect(() => {
+    if (!active) return;
+    const gesture = createWheelGesture({
+      stepPx: WHEEL_STEP_PX,
+      idleMs: WHEEL_IDLE_MS,
+      onStep: (direction) => (direction > 0 ? handlers.current.onNext?.() : handlers.current.onPrev?.()),
+    });
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      // Pinch / ctrl+wheel zoom the image (see useZoomPan), and while zoomed the
+      // wheel pans it: neither turns the page.
+      if (e.ctrlKey || handlers.current.isBlocked?.()) return;
+      gesture.handle(e);
+    };
+    window.addEventListener("wheel", onWheel, { passive: false });
+    return () => {
+      window.removeEventListener("wheel", onWheel);
+      gesture.dispose();
+    };
+  }, [active]);
+}
+
+export function useLightboxBehavior(active: boolean, onClose: () => void, onPrev?: () => void, onNext?: () => void, isWheelBlocked?: () => boolean) {
+  useWheelNav(active, onPrev, onNext, isWheelBlocked);
+
   useEffect(() => {
     if (!active) return;
     const handleKeyDown = (e: KeyboardEvent) => {

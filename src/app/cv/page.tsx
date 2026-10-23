@@ -222,7 +222,7 @@ export default function CVPage() {
             cinematic artist • concept artist • storyboarder
           </p>
           <p className="font-[family-name:var(--font-body)] text-[20px] text-white tracking-[1.6px] w-full leading-relaxed">
-            A cinematic artist specialising in the production of 3D shots for video games and film. From storyboarding to final compositing, including lighting, camera animation and motion design.
+            A cinematic artist specialising in 3D cinematics for video games and film. From storyboarding to final compositing, including lighting, camera animation and motion design.
           </p>
           <div className="flex flex-wrap items-center justify-between gap-4 w-full">
             <div className="flex flex-wrap gap-[12px] items-center">
@@ -265,7 +265,7 @@ export default function CVPage() {
             cinematic artist • concept artist • storyboarder
           </p>
           <p className="font-[family-name:var(--font-body)] text-[16px] text-white tracking-[1.28px] w-full leading-relaxed">
-            A cinematic artist specialising in the production of 3D shots for video games and film. From storyboarding to final compositing, including lighting, camera animation and motion design.
+            A cinematic artist specialising in 3D cinematics for video games and film. From storyboarding to final compositing, including lighting, camera animation and motion design.
           </p>
           <div className="flex flex-wrap items-center justify-between gap-y-[12px] w-full">
             <div className="flex flex-wrap gap-[8px] items-center">

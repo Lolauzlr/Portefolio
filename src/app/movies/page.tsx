@@ -28,6 +28,7 @@ export default function MoviesPage() {
     reversed: boolean;
     description: React.ReactNode;
     belowImageText?: string;
+    logos?: { src: string; alt: string }[];
   }[] = [
     {
       youtubeId: "M7PfKwiQL_w",
@@ -35,7 +36,7 @@ export default function MoviesPage() {
       reversed: false,
       description: (
         <>
-          Animator for the Documentary ONCE UPON A TIME THE LOUVRE
+          Animator for the documentary Once Upon a Time at the Louvre.
           <br /><br />
           By Frédéric Wilner
           <br /><br />
@@ -81,7 +82,7 @@ export default function MoviesPage() {
       reversed: false,
       description: (
         <>
-          Film Director & Animator for the short animated film BEAST.
+          Director & Animator of the animated short film BEAST.
           <br /><br />
           <span className="font-[family-name:var(--font-heading)] text-[20px] text-[#DDFF6E] tracking-[1.6px]">SELECTIONS & REWARDS</span>
           <br /><br />
@@ -100,6 +101,15 @@ export default function MoviesPage() {
           • <span className="font-semibold">Kinolikbez</span>, animation vidéo art competition, 2021 (Russia)
         </>
       ),
+      // Festival laurels shown at the bottom right, vertically centred on the text.
+      logos: [
+        { src: "/images/logo-svg/bronx-world-film.svg", alt: "Bronx World Film" },
+        { src: "/images/logo-svg/kinolikbez-official.svg", alt: "Kinolikbez" },
+        { src: "/images/logo-svg/Tonneins_Rework 1.svg", alt: "Tonneins International Film Festival" },
+        { src: "/images/logo-svg/logo-bogo-shorts-17.svg", alt: "BOGOSHORTS 17" },
+        { src: "/images/logo-svg/tiff-competition.svg", alt: "TIFF Competition 2019" },
+        { src: "/images/logo-svg/insomnia.svg", alt: "Insomnia International Open-air Animation Film Festival" },
+      ],
       belowImageText:
         "A lonely fisherman's wait. Over the horizon against the expanse of the sea, time passes. Something gradually overwhelms the waiting man. We then discover that he's unstable, fragile and sadly violent. As he suffocates from within, colors appear on his skin. And then everything comes to a halt : a woman arrives like an apparition in the water.",
     },
@@ -109,12 +119,12 @@ export default function MoviesPage() {
     <div className="pt-[57px] md:pt-[95px] bg-[#15161b] text-white min-h-screen">
       {/* Features Films */}
       <section className="px-3 md:px-[120px] pt-6 pb-6 md:py-16">
-        <h2 className="text-[40px] font-[family-name:var(--font-heading)] tracking-[4.8px] mb-2">
-          FEATURES FILMS
+        <h2 className="text-[28px] tracking-[3.36px] md:text-[40px] md:tracking-[4.8px] font-[family-name:var(--font-heading)] mb-2">
+          FEATURE FILMS
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-6 md:mb-10" />
-        <VideoCard videoId="BFLlIR9A8DY" title="SAINT EX" />
-        <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px] mt-4 md:mt-6 mb-2">
+        <VideoCard videoId="BFLlIR9A8DY" title="SAINT EX" stickyPreview />
+        <h3 className="text-[24px] tracking-[1.92px] md:text-[28px] md:tracking-[2.24px] font-[family-name:var(--font-heading)] mt-4 md:mt-6 mb-2">
           SAINT EX
         </h3>
         <div className="w-[80px] h-[4px] bg-white mb-3 md:mb-4" />
@@ -131,32 +141,20 @@ export default function MoviesPage() {
 
       {/* Documentary */}
       <section className="bg-[#131313] px-3 md:px-[120px] pt-6 pb-16 md:py-16">
-        <h2 className="text-[40px] font-[family-name:var(--font-heading)] tracking-[4.8px] mb-2">
+        <h2 className="text-[28px] tracking-[3.36px] md:text-[40px] md:tracking-[4.8px] font-[family-name:var(--font-heading)] mb-2">
           DOCUMENTARY
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-6 md:mb-10" />
         <div className="flex flex-col gap-[16px] md:gap-[24px]">
-          {documentaries.map((doc) => (
-            <div
-              key={doc.title}
-              className={`flex flex-col md:flex-row gap-[16px] md:gap-[24px] items-start ${
-                doc.reversed ? "md:flex-row-reverse" : ""
-              }`}
-            >
-              <div className="flex flex-col gap-3 w-full md:w-[792px] flex-shrink-0">
-                {doc.youtubeId ? (
-                  <VideoCard videoId={doc.youtubeId} title={doc.title} />
-                ) : (
-                  <ExternalCard thumbnail={doc.thumbnail} title={doc.title} externalUrl={doc.externalUrl} />
-                )}
-                {doc.belowImageText && (
-                  <p className="text-[#DADADA] text-base font-[family-name:var(--font-body)] tracking-[1.28px] italic">
-                    {doc.belowImageText}
-                  </p>
-                )}
-              </div>
+          {documentaries.map((doc) => {
+            const media = doc.youtubeId ? (
+              <VideoCard videoId={doc.youtubeId} title={doc.title} />
+            ) : (
+              <ExternalCard thumbnail={doc.thumbnail} title={doc.title} externalUrl={doc.externalUrl} />
+            );
+            const textColumn = (
               <div className="flex flex-col">
-                <h3 className="text-[28px] font-[family-name:var(--font-heading)] tracking-[2.24px] mb-2">
+                <h3 className="text-[24px] tracking-[1.92px] md:text-[28px] md:tracking-[2.24px] font-[family-name:var(--font-heading)] mb-2">
                   {doc.title}
                 </h3>
                 <div className="w-[80px] h-[4px] bg-white mb-3 md:mb-4" />
@@ -164,8 +162,52 @@ export default function MoviesPage() {
                   {doc.description}
                 </p>
               </div>
-            </div>
-          ))}
+            );
+            const belowText = doc.belowImageText && (
+              <p className="text-[#DADADA] text-base font-[family-name:var(--font-body)] tracking-[1.28px] italic">
+                {doc.belowImageText}
+              </p>
+            );
+
+            // With logos (desktop): a two-column grid shared by both rows. The right
+            // column is as wide as the logos row, so the 16:9 image is exactly as wide
+            // as the italic text under it, and the text column lines up with the
+            // logos. Below that, the italic text and the logos are vertically centred
+            // on each other. On mobile everything simply stacks.
+            if (doc.logos) {
+              return (
+                <div
+                  key={doc.title}
+                  className="flex flex-col gap-[16px] md:grid md:grid-cols-[minmax(0,1fr)_max-content] md:gap-x-8 md:gap-y-3 md:items-start"
+                >
+                  <div>{media}</div>
+                  {/* w-0 + min-w-full: sized by the column (i.e. by the logos), never the other way round. */}
+                  <div className="md:w-0 md:min-w-full">{textColumn}</div>
+                  <div className="md:self-center">{belowText}</div>
+                  <div className="flex flex-wrap items-center gap-x-[14px] gap-y-3 md:flex-nowrap md:self-center md:justify-end">
+                    {doc.logos.map((logo) => (
+                      <img key={logo.src} src={encodeURI(asset(logo.src))} alt={logo.alt} className="h-[44px] w-auto" />
+                    ))}
+                  </div>
+                </div>
+              );
+            }
+
+            return (
+              <div
+                key={doc.title}
+                className={`flex flex-col md:flex-row gap-[16px] md:gap-[24px] items-start ${
+                  doc.reversed ? "md:flex-row-reverse" : ""
+                }`}
+              >
+                <div className="flex flex-col gap-3 w-full md:w-[792px] flex-shrink-0">
+                  {media}
+                  {belowText}
+                </div>
+                {textColumn}
+              </div>
+            );
+          })}
         </div>
       </section>
     </div>

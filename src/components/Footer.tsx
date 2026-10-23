@@ -20,7 +20,7 @@ function CopySimpleIcon({ className }: { className?: string }) {
 const exploreLinks = [
   { label: "Home", href: "/" },
   { label: "Trailer", href: "/trailer" },
-  { label: "Movies", href: "/movies" },
+  { label: "Film & Animation", href: "/movies" },
   { label: "Illustrations", href: "/illustrations" },
   { label: "Storytelling", href: "/storytelling" },
   { label: "Curriculum vitae", href: "/cv" },

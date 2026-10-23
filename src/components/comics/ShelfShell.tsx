@@ -12,6 +12,7 @@ import {
 } from "@/components/comics/machine";
 import BookSlider from "@/components/comics/BookSlider";
 import PlateReader from "@/components/comics/PlateReader";
+import { createWheelGesture } from "@/lib/wheel-gesture";
 import type { SceneHandle } from "@/components/comics/scene";
 import ShelfInfoPanel from "@/components/comics/ShelfInfoPanel";
 import { COMICS } from "@/lib/comics";
@@ -31,15 +32,13 @@ const OVERLAY_MS = 320;
  * un pavé tactile, qui émet des dizaines d'événements de faible amplitude par geste,
  * la franchit en quelques-uns.
  */
-const WHEEL_STEP = 50;
+const WHEEL_STEP = 15;
 /**
  * Silence exigé avant d'accepter un nouveau geste : l'inertie d'un pavé tactile
  * continue d'émettre bien après que le doigt a quitté la surface, et chacun de ces
  * événements enchaînerait une double page.
  */
-const WHEEL_IDLE_MS = 180;
-/** `deltaMode` 1 compte en lignes : hauteur de ligne usuelle des navigateurs. */
-const WHEEL_LINE_PX = 16;
+const WHEEL_IDLE_MS = 100;
 /**
  * Écart voulu entre le livre le plus à droite et la card d'info, en desktop.
  * Le canevas occupe toute la largeur de la page (voir le rendu plus bas) : un
@@ -940,50 +939,29 @@ export default function ShelfShell({
 
   // --- molette --------------------------------------------------------------
   useEffect(() => {
-    let acc = 0;
-    let locked = false;
-    let idle = 0;
-
-    const closeGesture = () => {
-      window.clearTimeout(idle);
-      idle = window.setTimeout(function settle() {
-        // Relâcher pendant la tourne laisserait la fin du même geste en enchaîner
-        // une seconde : on attend qu'elle soit finie, puis un nouveau silence.
-        if (stateRef.current === "TURNING") {
-          idle = window.setTimeout(settle, WHEEL_IDLE_MS);
-          return;
-        }
-        locked = false;
-        acc = 0;
-      }, WHEEL_IDLE_MS);
-    };
+    // Un geste = une page ; un nouveau balayage (sens inverse ou accélération)
+    // est reconnu même pendant l'inertie du précédent, voir lib/wheel-gesture.
+    // Le verrou tient tant que la double page 3D est en train de tourner.
+    const gesture = createWheelGesture({
+      stepPx: WHEEL_STEP,
+      idleMs: WHEEL_IDLE_MS,
+      isBusy: () => stateRef.current === "TURNING",
+      // Vers le bas / la droite on avance dans le récit : `turn` raisonne en
+      // numéro de double page, et c'est la scène qui applique le sens de
+      // lecture inversé.
+      onStep: (direction) => void turn(direction),
+    });
 
     const onWheel = (event: WheelEvent) => {
       if (!canTurn(stateRef.current) && stateRef.current !== "TURNING") return;
       event.preventDefault();
-      closeGesture();
-      if (locked) return;
-
-      const unit =
-        event.deltaMode === 1
-          ? WHEEL_LINE_PX
-          : event.deltaMode === 2
-            ? window.innerHeight
-            : 1;
-      acc += event.deltaY * unit;
-      if (Math.abs(acc) < WHEEL_STEP) return;
-
-      locked = true;
-      // Vers le bas on avance dans le récit : `turn` raisonne en numéro de double
-      // page, et c'est la scène qui applique le sens de lecture inversé.
-      void turn(acc > 0 ? 1 : -1);
-      acc = 0;
+      gesture.handle(event);
     };
 
     window.addEventListener("wheel", onWheel, { passive: false });
     return () => {
       window.removeEventListener("wheel", onWheel);
-      window.clearTimeout(idle);
+      gesture.dispose();
     };
   }, [turn]);
 
@@ -1161,6 +1139,35 @@ export default function ShelfShell({
             <line x1="18" y1="6" x2="6" y2="18" />
           </svg>
         </button>
+      )}
+
+      {/* Flèches précédent / suivant, comme celles des carrousels du site : mêmes
+          actions que les flèches du clavier (voir l'effet clavier plus haut), en
+          paysage comme en portrait. Reculer depuis la première double page
+          referme le livre, comme au clavier. */}
+      {ready && (state === "READING" || state === "TURNING") && (
+        <>
+          <button
+            type="button"
+            onClick={() => void turn(-1)}
+            aria-label="Page précédente"
+            className="fixed left-4 top-1/2 z-20 flex h-[48px] w-[48px] -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/50 backdrop-blur-sm transition-colors hover:bg-black/70"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <polyline points="15,18 9,12 15,6" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            onClick={() => void turn(1)}
+            aria-label="Page suivante"
+            className="fixed right-4 top-1/2 z-20 flex h-[48px] w-[48px] -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/50 backdrop-blur-sm transition-colors hover:bg-black/70"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <polyline points="9,6 15,12 9,18" />
+            </svg>
+          </button>
+        </>
       )}
 
       <div

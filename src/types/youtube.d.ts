@@ -18,9 +18,11 @@ declare namespace YT {
 
   class Player {
     constructor(
-      elementId: string,
+      elementId: string | HTMLElement,
       config: {
         videoId: string;
+        width?: number | string;
+        height?: number | string;
         playerVars?: Record<string, number | string>;
         events?: {
           onReady?: (event: PlayerEvent) => void;
@@ -33,6 +35,8 @@ declare namespace YT {
     mute(): void;
     unMute(): void;
     getPlayerState(): number;
+    setPlaybackQuality(suggestedQuality: string): void;
+    setPlaybackQualityRange?(min: string, max: string): void;
     destroy(): void;
   }
 }

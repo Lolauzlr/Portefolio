@@ -2,6 +2,9 @@
 
 import Link from "next/link";
 import { asset } from "@/lib/asset";
+import { illustrationCaption } from "@/data/illustrations";
+import { LightboxImg, LightboxProvider, type LightboxSlide } from "@/components/IllustrationLightbox";
+import HomeHeroSection from "@/components/HomeHeroSection";
 import HomeMoviesSection from "@/components/HomeMoviesSection";
 import HomeTrailerSection from "@/components/HomeTrailerSection";
 import HomeContactSection from "@/components/HomeContactSection";
@@ -11,8 +14,13 @@ import { oldKnightSlides, nabilHarrowSlides } from "@/data/storytelling";
 const loremIpsum =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula.";
 
+const illustrationSlides: LightboxSlide[] = [
+  { src: "/images/illustrations/illus-35.webp", alt: "Illustration" },
+  { src: "/images/illustrations/illus-1.webp", alt: "Illustration" },
+].map((slide) => ({ ...slide, caption: illustrationCaption(slide.src) }));
+
 const storytellingCards = [
-  { title: "OLD KNIGHT", label: "Manga", slides: oldKnightSlides, widthClassName: "md:w-[372px]", aspectClassName: "aspect-[372/525]" },
+  { title: "OLD KNIGHT", label: "Manga", slides: oldKnightSlides, widthClassName: "md:w-[372px]", aspectClassName: "aspect-[372/525]", spreadSkip: 1 },
   { title: "Nabil Harlow", label: "Video clip", slides: nabilHarrowSlides, widthClassName: "md:flex-1", aspectClassName: "aspect-[788/525]" },
 ];
 
@@ -54,30 +62,20 @@ export default function Home() {
   return (
     <div className="flex flex-col gap-6 md:gap-[60px] bg-[#15161b] text-white">
       {/* Hero */}
-      <section className="relative h-[500px] md:h-[810px] bg-[#060000] overflow-hidden">
-        <img
-          src={asset("/images/imgImage31.png")}
-          alt="A Plague Tale: Requiem"
-          className="absolute right-0 top-[174px] w-[1131px] h-[636px] object-cover hidden md:block"
-        />
-        <img
-          src={asset("/images/imgImage31.png")}
-          alt="A Plague Tale: Requiem"
-          className="absolute inset-0 w-full h-full object-cover md:hidden"
-        />
-      </section>
+      <HomeHeroSection />
 
       {/* Trailer */}
       <HomeTrailerSection />
 
       {/* Illustrations */}
+      <LightboxProvider slides={illustrationSlides}>
       <section className="py-6 md:py-[60px] bg-[#131313] px-3 md:px-[120px]">
         <SectionTitle>ILLUSTRATIONS</SectionTitle>
         <div className="flex flex-col gap-[24px] md:gap-[40px]">
           {/* Featured illustration */}
           <div className="flex flex-col md:flex-row gap-6 md:gap-10">
             <div className="relative md:w-[587px] h-[500px] md:h-[662px] shrink-0">
-              <img src={asset("/images/illustrations/illus-35.webp")} alt="Illustration" className="absolute inset-0 w-full h-full object-cover" />
+              <LightboxImg src="/images/illustrations/illus-35.webp" alt="Illustration" className="absolute inset-0 w-full h-full object-cover" />
             </div>
             <div className="flex flex-col justify-between flex-1">
               <div className="flex flex-col gap-4 md:gap-6">
@@ -91,13 +89,14 @@ export default function Home() {
                   I don&apos;t have one fixed way of working. I choose the medium depending on what I want to express, whether it&apos;s a particular mood, texture, character or atmosphere. I enjoy moving from one technique to another, experimenting and sometimes combining them. I believe the visual style should grow naturally from the story.
                 </p>
               </div>
-              <img src={asset("/images/illustrations/illus-1.webp")} alt="" className="w-full h-[322px] object-cover mt-4 md:mt-6" />
+              <LightboxImg src="/images/illustrations/illus-1.webp" alt="" className="w-full h-[322px] object-cover mt-4 md:mt-6" />
             </div>
           </div>
 
           <ToutVoirLink href="/illustrations" />
         </div>
       </section>
+      </LightboxProvider>
 
       {/* Movies */}
       <HomeMoviesSection />
@@ -109,7 +108,7 @@ export default function Home() {
           {storytellingCards.map((c) => (
             <div key={c.title} className={`flex flex-col gap-4 w-full ${c.widthClassName} shrink-0`}>
               <div className={`w-full md:h-[525px] ${c.aspectClassName}`}>
-                <ImageCarousel slides={c.slides} alt={c.title} aspectClassName="h-full" />
+                <ImageCarousel slides={c.slides} alt={c.title} aspectClassName="h-full" spreadSkip={c.spreadSkip} />
               </div>
               <div className="flex flex-col gap-[24px]">
                 <div>
@@ -151,7 +150,7 @@ export default function Home() {
                 </p>
               </div>
               <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white leading-relaxed">
-                I&apos;m a Cinematic Artist with a background in animation and a strong interest in filmmaking and visual direction. Outside of work, I&apos;m drawn to experiences that keep me moving and curious. I&apos;ve travelled extensively, practiced martial arts for many years, and music has always been part of my life.
+                I&apos;m a Cinematic Artist with a background in animation, filmmaking and visual direction. I work across video games and film, with a focus on cinematics, camera work, storytelling and visual composition. Outside of work, I&apos;m drawn to experiences that keep me moving and curious. I&apos;ve travelled extensively, practiced martial arts for many years, and music has always been part of my life.
                 <br /><br />
                 All of this feeds into the way I approach visual work. I&apos;m interested in movement, rhythm, composition and the way a scene can communicate.
                 <br /><br />

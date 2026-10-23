@@ -4,8 +4,11 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { asset } from "@/lib/asset";
 import { useSwipeNav } from "@/hooks/useSwipeNav";
+import { useZoomPan } from "@/hooks/useZoomPan";
+import ZoomControls from "@/components/ZoomControls";
 import { useSupportsHover } from "@/hooks/useSupportsHover";
 import VideoModal from "@/components/VideoModal";
+import { useWheelNav } from "@/components/ScreenshotGallery";
 
 function CaretCircleRight() {
   return (
@@ -16,8 +19,29 @@ function CaretCircleRight() {
   );
 }
 
+// Event logo shown at the bottom of a screenshots panel (and on the card).
+const logoOf = (card: object) => {
+  const { logo, logoAlt } = card as { logo?: string; logoAlt?: string };
+  return logo ? { src: logo, alt: logoAlt ?? "" } : undefined;
+};
+
 const trailerCards = [
-  { videoId: "OLEZv_Qyb6Q", title: "Elta : Defy All Gods • Reveal Trailer", description: "Gamescom 2026 • Unreal • Camera animation • Real-time combat VFX • Cinematic lighting",
+  { videoId: "eT8QvyGSyYU", title: "Insurgency Sandstorm : Operation Echoes Launch Trailer", description: "2026 • In-game video capture • Video editing • Sound editing",
+    screenshotCategory: "2026 · LAUNCH TRAILER", screenshotTitle: "Insurgency Sandstorm : Operation Echoes",
+    screenshotRole: "Cinematic artist in charge of the Launch Trailer of Insurgency Sandstorm : Operation Echoes",
+    screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
+    screenshotCredits: [
+      { label: "Developer", value: "New World Interactive, Saber Interactive" },
+      { label: "Publisher", value: "Focus Entertainment" },
+    ],
+    screenshots: [
+      { src: "/images/ISS/ISS_05.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Captured in game" },
+      { src: "/images/ISS/ISS_landscape_01.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Captured in game" },
+      { src: "/images/ISS/ISS_Newskin_04.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
+      { src: "/images/ISS/ISS_Warzone_03.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Captured in game" },
+      { src: "/images/ISS/ISS_Weapon02.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Captured in game" },
+    ] },
+  { videoId: "OLEZv_Qyb6Q", logo: "/images/logo-svg/gamescom-wordmark.be3b22f1.svg", logoAlt: "gamescom", title: "Elta : Defy All Gods • Reveal Trailer", description: "Gamescom 2026 • Unreal • Camera animation • Real-time combat VFX • Cinematic lighting",
     screenshotCategory: "GAMESCOM 2026 • REVEAL TRAILER", screenshotTitle: "Elta: Defy All Gods",
     screenshotRole: "Cinematic artist in charge of The Reveal Trailer of Elta: Defy All Gods",
     screenshotResponsibilities: "Camera animation, real-time combat VFX, cinematic lighting, animation polish",
@@ -134,14 +158,25 @@ export default function HomeTrailerSection() {
     role?: string;
     responsibilities?: string;
     credits?: { label: string; value: string }[];
+    logo?: { src: string; alt: string };
     screenshots: { src: string; tag: string; description: string }[];
   } | null>(null);
   const [screenshotIndex, setScreenshotIndex] = useState(0);
+  const [shotStage, setShotStage] = useState<HTMLElement | null>(null);
+  const zoom = useZoomPan(shotStage, screenshotIndex);
   const shotCount = screenshotsData?.screenshots.length ?? 0;
   const swipeHandlers = useSwipeNav(
     () => setScreenshotIndex((i) => (i - 1 + shotCount) % shotCount),
     () => setScreenshotIndex((i) => (i + 1) % shotCount),
-    shotCount > 1
+    shotCount > 1,
+    () => zoom.ignoreSwipe()
+  );
+
+  useWheelNav(
+    shotCount > 1,
+    () => setScreenshotIndex((i) => (i - 1 + shotCount) % shotCount),
+    () => setScreenshotIndex((i) => (i + 1) % shotCount),
+    () => zoom.isZoomed()
   );
 
   useEffect(() => {
@@ -163,7 +198,7 @@ export default function HomeTrailerSection() {
     category: string,
     title: string,
     screenshots: { src: string; tag: string; description: string }[],
-    extra?: { role: string; responsibilities: string; credits: { label: string; value: string }[] }
+    extra?: { role: string; responsibilities: string; credits: { label: string; value: string }[]; logo?: { src: string; alt: string } }
   ) => {
     setScreenshotIndex(0);
     setScreenshotsData({ category, title, screenshots, ...extra });
@@ -181,7 +216,16 @@ export default function HomeTrailerSection() {
       <div className="relative">
         <div className="flex gap-4 md:gap-6 overflow-x-auto pb-3 md:pb-4 pr-3 md:pr-[120px] scrollbar-hide">
           {trailerCards.map((card) => (
-            <div key={card.title} className="flex-shrink-0 w-[300px] md:w-[474px] flex flex-col gap-3 md:gap-4">
+            <div
+              key={card.title}
+              className="flex-shrink-0 w-[300px] md:w-[474px] flex flex-col gap-3 md:gap-4 cursor-pointer"
+              onClick={() => openScreenshots(
+                card.screenshotCategory,
+                card.screenshotTitle,
+                card.screenshots,
+                { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities, credits: card.screenshotCredits, logo: logoOf(card) }
+              )}
+            >
               <div
                 className="relative w-full aspect-video cursor-pointer overflow-hidden bg-black"
                 // Skipping these two handlers entirely on touch-only devices
@@ -193,7 +237,7 @@ export default function HomeTrailerSection() {
                 {...(supportsHover
                   ? { onMouseEnter: () => setHoveredCard(card.videoId), onMouseLeave: () => setHoveredCard(null) }
                   : {})}
-                onClick={() => setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true })}
+                onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
               >
                 {hoveredCard === card.videoId ? (
                   // Preview only: no native controls and no pointer capture,
@@ -222,17 +266,29 @@ export default function HomeTrailerSection() {
                 <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
                   {card.description}
                 </p>
-                <button
-                  onClick={() => openScreenshots(
-                    card.screenshotCategory,
-                    card.screenshotTitle,
-                    card.screenshots,
-                    { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities, credits: card.screenshotCredits }
+                {/* Bottom row: optional event logo on the left, vertically centred
+                    on the button; "VIEW SCREENSHOTS" always on the right. */}
+                <div className="mt-auto flex min-h-[36px] items-center justify-between gap-4">
+                  {card.logo && (
+                    // Logos may be black SVGs: forced to white for the dark page.
+                    <img
+                      src={asset(card.logo)}
+                      alt={card.logoAlt ?? ""}
+                      className="h-[36px] w-auto brightness-0 invert"
+                    />
                   )}
-                  className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-start hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer mt-auto"
-                >
-                  VIEW SCREENSHOTS
-                </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); openScreenshots(
+                      card.screenshotCategory,
+                      card.screenshotTitle,
+                      card.screenshots,
+                      { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities, credits: card.screenshotCredits, logo: logoOf(card) }
+                    ); }}
+                    className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase ml-auto hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer"
+                  >
+                    VIEW SCREENSHOTS
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -281,13 +337,28 @@ export default function HomeTrailerSection() {
 
           <div className="w-full min-h-full md:h-full flex flex-col md:flex-row">
             {/* Left: Carousel */}
-            <div className="relative w-full flex flex-col md:flex-1 md:min-h-0">
+            <div className="relative w-full flex flex-col md:flex-1 md:min-h-0 md:min-w-0">
               {/* Main image area - mobile: capped to 60vh, fully filled
                   (object-cover, no letterboxing) instead of being squeezed
                   by the info panel below or taking over the whole screen;
                   desktop keeps its original flexible-height, letterboxed
                   layout. */}
-              <div {...swipeHandlers} className="touch-pan-y trailer-stage relative w-full h-[60vh] md:h-auto md:aspect-auto md:flex-1 flex items-center justify-center min-h-0">
+              <div
+                ref={setShotStage}
+                {...swipeHandlers}
+                // Click/tap on the left or right half of the image to go to the
+                // previous / next screenshot (arrows stop propagation).
+                onClick={(e) => {
+                  if (screenshotsData.screenshots.length < 2) return;
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const count = screenshotsData.screenshots.length;
+                  const onLeftHalf = e.clientX < rect.left + rect.width / 2;
+                  zoom.guardTap(e, () => {
+                    if (onLeftHalf) setScreenshotIndex((i) => (i - 1 + count) % count);
+                    else setScreenshotIndex((i) => (i + 1) % count);
+                  });
+                }}
+                className="cursor-pointer touch-pan-y trailer-stage relative w-full h-[60vh] md:h-auto md:aspect-auto md:flex-1 flex items-center justify-center min-h-0">
                 {/* Counter */}
                 <span className="absolute top-4 left-4 md:top-6 md:left-6 font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white z-10">
                   {screenshotIndex + 1}/{screenshotsData.screenshots.length}
@@ -296,8 +367,9 @@ export default function HomeTrailerSection() {
                 {/* Previous */}
                 {screenshotsData.screenshots.length > 1 && (
                   <button
-                    onClick={() => setScreenshotIndex((screenshotIndex - 1 + screenshotsData.screenshots.length) % screenshotsData.screenshots.length)}
+                    onClick={(e) => { e.stopPropagation(); setScreenshotIndex((screenshotIndex - 1 + screenshotsData.screenshots.length) % screenshotsData.screenshots.length); }}
                     className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+                    data-zoom-ignore
                     aria-label="Précédent"
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -310,12 +382,14 @@ export default function HomeTrailerSection() {
                     (object-cover, cropped); desktop: unchanged letterboxed
                     image + caption inside a padded box. */}
                 <img
+                  data-zoom-target
                   src={asset(screenshotsData.screenshots[screenshotIndex].src)}
                   alt={screenshotsData.screenshots[screenshotIndex].tag}
                   className="absolute inset-0 w-full h-full object-cover md:hidden"
                 />
                 <div className="hidden md:flex md:flex-col md:items-start md:h-full md:min-h-0 md:p-12">
                   <img
+                    data-zoom-target
                     src={asset(screenshotsData.screenshots[screenshotIndex].src)}
                     alt={screenshotsData.screenshots[screenshotIndex].tag}
                     className="md:flex-1 md:min-h-0 md:max-w-full object-contain"
@@ -333,8 +407,9 @@ export default function HomeTrailerSection() {
                 {/* Next */}
                 {screenshotsData.screenshots.length > 1 && (
                   <button
-                    onClick={() => setScreenshotIndex((screenshotIndex + 1) % screenshotsData.screenshots.length)}
+                    onClick={(e) => { e.stopPropagation(); setScreenshotIndex((screenshotIndex + 1) % screenshotsData.screenshots.length); }}
                     className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+                    data-zoom-ignore
                     aria-label="Suivant"
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -342,6 +417,8 @@ export default function HomeTrailerSection() {
                     </svg>
                   </button>
                 )}
+
+                <ZoomControls scale={zoom.scale} onZoomIn={zoom.zoomIn} onZoomOut={zoom.zoomOut} onReset={zoom.reset} />
               </div>
 
               {/* Mobile portrait caption, below the filled image */}
@@ -374,7 +451,7 @@ export default function HomeTrailerSection() {
             </div>
 
             {/* Right: Info panel */}
-            <div className="trailer-info w-full md:w-[400px] flex flex-col p-8 md:p-10 bg-[#15161b] overflow-y-auto">
+            <div className="trailer-info w-full md:w-[400px] md:shrink-0 flex flex-col p-8 md:p-10 bg-[#15161b] overflow-y-auto">
               {/* Close button - hidden on mobile in favor of the fixed one above */}
               <button
                 onClick={() => setScreenshotsData(null)}
@@ -427,6 +504,15 @@ export default function HomeTrailerSection() {
                   </p>
                 )}
               </div>
+              {/* Event logo, bottom right: same right edge as the close cross,
+                  same distance from the bottom as the cross is from the top. */}
+              {screenshotsData.logo && (
+                <img
+                  src={asset(screenshotsData.logo.src)}
+                  alt={screenshotsData.logo.alt}
+                  className="mt-auto shrink-0 self-end pt-8 box-content h-[36px] w-auto brightness-0 invert"
+                />
+              )}
             </div>
           </div>
         </div>

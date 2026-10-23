@@ -3,7 +3,16 @@
 import { useState, useRef, useEffect, useCallback, useSyncExternalStore } from "react";
 import { asset } from "@/lib/asset";
 import { useSwipeNav } from "@/hooks/useSwipeNav";
+import { useZoomPan } from "@/hooks/useZoomPan";
+import ZoomControls from "@/components/ZoomControls";
 import VideoModal from "@/components/VideoModal";
+import { useWheelNav } from "@/components/ScreenshotGallery";
+
+// Event logo shown at the bottom of a screenshots panel (and on the card).
+const logoOf = (card: object) => {
+  const { logo, logoAlt } = card as { logo?: string; logoAlt?: string };
+  return logo ? { src: logo, alt: logoAlt ?? "" } : undefined;
+};
 
 export default function TrailerPage() {
   const [screenshotsData, setScreenshotsData] = useState<{
@@ -12,14 +21,18 @@ export default function TrailerPage() {
     role?: string;
     responsibilities?: string;
     credits?: { label: string; value: string }[];
+    logo?: { src: string; alt: string };
     screenshots: { src: string; tag: string; description: string }[];
   } | null>(null);
   const [screenshotIndex, setScreenshotIndex] = useState(0);
+  const [shotStage, setShotStage] = useState<HTMLElement | null>(null);
+  const zoom = useZoomPan(shotStage, screenshotIndex);
   const shotCount = screenshotsData?.screenshots.length ?? 0;
   const swipeHandlers = useSwipeNav(
     () => setScreenshotIndex((i) => (i - 1 + shotCount) % shotCount),
     () => setScreenshotIndex((i) => (i + 1) % shotCount),
-    shotCount > 1
+    shotCount > 1,
+    () => zoom.ignoreSwipe()
   );
   const [videoModal, setVideoModal] = useState<{ videoId: string; title: string; fullWidth?: boolean } | null>(null);
   const [hoveredRecent, setHoveredRecent] = useState<string | null>(null);
@@ -91,6 +104,13 @@ export default function TrailerPage() {
     };
   }, []);
 
+  useWheelNav(
+    shotCount > 1,
+    () => setScreenshotIndex((i) => (i - 1 + shotCount) % shotCount),
+    () => setScreenshotIndex((i) => (i + 1) % shotCount),
+    () => zoom.isZoomed()
+  );
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -110,13 +130,28 @@ export default function TrailerPage() {
     category: string,
     title: string,
     screenshots: { src: string; tag: string; description: string }[],
-    extra?: { role: string; responsibilities: string; credits: { label: string; value: string }[] }
+    extra?: { role: string; responsibilities: string; credits: { label: string; value: string }[]; logo?: { src: string; alt: string } }
   ) => {
     setScreenshotIndex(0);
     setScreenshotsData({ category, title, screenshots, ...extra });
   };
 
   const recentTrailers = [
+    { videoId: "eT8QvyGSyYU", title: "Insurgency Sandstorm : Operation Echoes Launch Trailer", description: "2026 • In-game video capture • Video editing • Sound editing",
+      screenshotCategory: "2026 · LAUNCH TRAILER", screenshotTitle: "Insurgency Sandstorm : Operation Echoes",
+      screenshotRole: "Cinematic artist in charge of the Launch Trailer of Insurgency Sandstorm : Operation Echoes",
+      screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
+      screenshotCredits: [
+        { label: "Developer", value: "New World Interactive, Saber Interactive" },
+        { label: "Publisher", value: "Focus Entertainment" },
+      ],
+      screenshots: [
+        { src: "/images/ISS/ISS_05.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/ISS/ISS_landscape_01.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/ISS/ISS_Newskin_04.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/ISS/ISS_Warzone_03.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/ISS/ISS_Weapon02.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Captured in game" },
+      ] },
     { videoId: "ZPQFsx9XXoM", title: "RESONANCE : A PLAGUE TALE LEGACY • GAMEPLAY", description: "2026 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "2026 • Long Gameplay Trailer", screenshotTitle: "RESONANCE : A PLAGUE TALE LEGACY",
       screenshotRole: "Cinematic artist in charge of The Long Gameplay Trailer of Resonance: A Plague Tale Legacy",
@@ -148,6 +183,9 @@ export default function TrailerPage() {
         { src: "/images/yerba-buena-gameplay-2026/J.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Captured in game" },
         { src: "/images/yerba-buena-gameplay-2026/K.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Fully created in Unity" },
       ] },
+  ];
+
+  const watchCards = [
     { videoId: "cZgim-KYkZQ", title: "YERBA BUENA • REVEAL TRAILER", description: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing",
       screenshotCategory: "2026 · REVEAL TRAILER", screenshotTitle: "YERBA BUENA",
       screenshotRole: "Cinematic artist in charge of The Reveal Trailer of Yerba Buena",
@@ -165,9 +203,6 @@ export default function TrailerPage() {
         { src: "/images/yerba-buena-reveal-2026/yerba-reveal-5.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Camera & Lighting Setup in Unity" },
         { src: "/images/yerba-buena-reveal-2026/yerba-reveal-6.webp", tag: "SCÈNE 06", description: "Screenshot from the trailer • Captured in game" },
       ] },
-  ];
-
-  const watchCards = [
     { videoId: "QwxFR1g7Uy4", title: "John Carpenter's Toxic Commando • Gameplay Overview Trailer", description: "2026 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "2026 · GAMEPLAY OVERVIEW", screenshotTitle: "JOHN CARPENTER'S TOXIC COMMANDO",
       screenshotRole: "Cinematic artist in charge of The Gameplay Overview Trailer of John Carpenter's Toxic Commando",
@@ -283,7 +318,7 @@ export default function TrailerPage() {
         { src: "/images/hotel-renovator-2023/Hotel-Renovator-2023-001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Fully created in Unreal Engine 4" },
         { src: "/images/hotel-renovator-2023/Hotel-Renovator-2023-002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Fully created in Unreal Engine 4" },
       ] },
-    { videoId: "MTskFVe8P3Q", title: "A Plague Tale: Requiem • The Game Awards 2022 Spotlight", description: "2022 • In-game video capture • Video editing • Sound editing",
+    { videoId: "MTskFVe8P3Q", logo: "/images/logo-svg/The_Game_Awards_Logo_2023.svg", logoAlt: "The Game Awards", title: "A Plague Tale: Requiem • The Game Awards 2022 Spotlight", description: "2022 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "The Game Awards 2022 • Spotlight Trailer", screenshotTitle: "A PLAGUE TALE : REQUIEM",
       screenshotRole: "Cinematic artist in charge of The Game Awards 2022 Spotlight of A Plague Tale: Requiem",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
@@ -329,6 +364,7 @@ export default function TrailerPage() {
     title: "Elta: Defy All Gods",
     role: "Cinematic artist in charge of The Reveal Trailer of Elta: Defy All Gods",
     responsibilities: "Camera animation, real-time combat VFX, cinematic lighting, animation polish",
+    logo: { src: "/images/logo-svg/gamescom-wordmark.be3b22f1.svg", alt: "gamescom" },
     credits: [
       { label: "Developer", value: "Afterburner Studios" },
       { label: "Publisher", value: "Focus Entertainment" },
@@ -592,7 +628,7 @@ export default function TrailerPage() {
               </p>
               {/* CTA - Voir les screenshots */}
               <button
-                onClick={(e) => { e.stopPropagation(); openScreenshots(heroScreenshots.category, heroScreenshots.title, heroScreenshots.screenshots, { role: heroScreenshots.role, responsibilities: heroScreenshots.responsibilities, credits: heroScreenshots.credits }); }}
+                onClick={(e) => { e.stopPropagation(); openScreenshots(heroScreenshots.category, heroScreenshots.title, heroScreenshots.screenshots, { role: heroScreenshots.role, responsibilities: heroScreenshots.responsibilities, credits: heroScreenshots.credits, logo: heroScreenshots.logo }); }}
                 className="font-[family-name:var(--font-heading)] text-[20px] md:text-[24px] tracking-[1.92px] text-[#0fd1ea] uppercase shrink-0 hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer whitespace-nowrap"
               >
                 VIEW SCREENSHOTS
@@ -626,12 +662,23 @@ export default function TrailerPage() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           {recentTrailers.map((card) => (
-            <div key={card.title} className="flex flex-col gap-3 md:gap-4">
+            <div
+              key={card.title}
+              className="flex flex-col gap-3 md:gap-4 cursor-pointer"
+              onClick={() => openScreenshots(
+                card.screenshotCategory,
+                card.screenshotTitle,
+                card.screenshots,
+                card.screenshotRole
+                  ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits!, logo: logoOf(card) }
+                  : undefined
+              )}
+            >
               <div
                 className="relative w-full aspect-video cursor-pointer overflow-hidden bg-black"
                 onMouseEnter={() => setHoveredRecent(card.videoId)}
                 onMouseLeave={() => setHoveredRecent(null)}
-                onClick={() => setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true })}
+                onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
               >
                 {hoveredRecent === card.videoId ? (
                   // Native YouTube controls enabled (scrub bar + seeking).
@@ -661,14 +708,14 @@ export default function TrailerPage() {
                   {card.description}
                 </p>
                 <button
-                  onClick={() => openScreenshots(
+                  onClick={(e) => { e.stopPropagation(); openScreenshots(
                     card.screenshotCategory,
                     card.screenshotTitle,
                     card.screenshots,
                     card.screenshotRole
-                      ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits! }
+                      ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits!, logo: logoOf(card) }
                       : undefined
-                  )}
+                  ); }}
                   className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-start hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer"
                 >
                   VIEW SCREENSHOTS
@@ -694,7 +741,15 @@ export default function TrailerPage() {
               <div
                 key={card.videoId}
                 ref={watchCardRef(card.videoId)}
-                className="relative"
+                className="relative cursor-pointer"
+                onClick={() => openScreenshots(
+                  card.screenshotCategory,
+                  card.screenshotTitle,
+                  card.screenshots,
+                  card.screenshotRole
+                    ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits!, logo: logoOf(card) }
+                    : undefined
+                )}
               >
                 <div
                   className="absolute inset-0"
@@ -731,7 +786,7 @@ export default function TrailerPage() {
                     style={{ aspectRatio: "16 / 9" }}
                     onMouseEnter={() => setHoveredWatch(card.videoId)}
                     onMouseLeave={() => setHoveredWatch(null)}
-                    onClick={() => setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true })}
+                    onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
                   >
                     {hoveredWatch === card.videoId ? (
                       // Native YouTube controls enabled (scrub bar +
@@ -766,19 +821,31 @@ export default function TrailerPage() {
                         {card.description}
                       </p>
                     </div>
-                    <button
-                      onClick={() => openScreenshots(
-                        card.screenshotCategory,
-                        card.screenshotTitle,
-                        card.screenshots,
-                        card.screenshotRole
-                          ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits! }
-                          : undefined
+                    {/* Bottom row: optional event logo on the left (auto spacing),
+                        "VIEW SCREENSHOTS" on the right, both aligned on the bottom. */}
+                    <div className="flex items-end justify-between gap-4">
+                      {card.logo && (
+                        // The SVG is black: turned white for the dark card.
+                        <img
+                          src={asset(card.logo)}
+                          alt={card.logoAlt ?? ""}
+                          className="h-[36px] w-auto brightness-0 invert"
+                        />
                       )}
-                      className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-end hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer"
-                    >
-                      VIEW SCREENSHOTS
-                    </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); openScreenshots(
+                          card.screenshotCategory,
+                          card.screenshotTitle,
+                          card.screenshots,
+                          card.screenshotRole
+                            ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits!, logo: logoOf(card) }
+                            : undefined
+                        ); }}
+                        className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase ml-auto hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer"
+                      >
+                        VIEW SCREENSHOTS
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -817,13 +884,28 @@ export default function TrailerPage() {
 
           <div className="w-full min-h-full md:h-full flex flex-col md:flex-row">
             {/* Left: Carousel */}
-            <div className="relative w-full flex flex-col md:flex-1 md:min-h-0">
+            <div className="relative w-full flex flex-col md:flex-1 md:min-h-0 md:min-w-0">
               {/* Main image area - mobile: capped to 60vh, fully filled
                   (object-cover, no letterboxing) instead of being squeezed
                   by the info panel below or taking over the whole screen;
                   desktop keeps its original flexible-height, letterboxed
                   layout. */}
-              <div {...swipeHandlers} className="touch-pan-y trailer-stage relative w-full h-[60vh] md:h-auto md:aspect-auto md:flex-1 flex items-center justify-center min-h-0">
+              <div
+                ref={setShotStage}
+                {...swipeHandlers}
+                // Click/tap on the left or right half of the image to go to the
+                // previous / next screenshot (arrows stop propagation).
+                onClick={(e) => {
+                  if (screenshotsData.screenshots.length < 2) return;
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const count = screenshotsData.screenshots.length;
+                  const onLeftHalf = e.clientX < rect.left + rect.width / 2;
+                  zoom.guardTap(e, () => {
+                    if (onLeftHalf) setScreenshotIndex((i) => (i - 1 + count) % count);
+                    else setScreenshotIndex((i) => (i + 1) % count);
+                  });
+                }}
+                className="cursor-pointer touch-pan-y trailer-stage relative w-full h-[60vh] md:h-auto md:aspect-auto md:flex-1 flex items-center justify-center min-h-0">
                 {/* Counter */}
                 <span className="absolute top-4 left-4 md:top-6 md:left-6 font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white z-10">
                   {screenshotIndex + 1}/{screenshotsData.screenshots.length}
@@ -832,8 +914,9 @@ export default function TrailerPage() {
                 {/* Previous */}
                 {screenshotsData.screenshots.length > 1 && (
                   <button
-                    onClick={() => setScreenshotIndex((screenshotIndex - 1 + screenshotsData.screenshots.length) % screenshotsData.screenshots.length)}
+                    onClick={(e) => { e.stopPropagation(); setScreenshotIndex((screenshotIndex - 1 + screenshotsData.screenshots.length) % screenshotsData.screenshots.length); }}
                     className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+                    data-zoom-ignore
                     aria-label="Précédent"
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -846,12 +929,14 @@ export default function TrailerPage() {
                     (object-cover, cropped); desktop: unchanged letterboxed
                     image + caption inside a padded box. */}
                 <img
+                  data-zoom-target
                   src={asset(screenshotsData.screenshots[screenshotIndex].src)}
                   alt={screenshotsData.screenshots[screenshotIndex].tag}
                   className="absolute inset-0 w-full h-full object-cover md:hidden"
                 />
                 <div className="hidden md:flex md:flex-col md:items-start md:h-full md:min-h-0 md:p-12">
                   <img
+                    data-zoom-target
                     src={asset(screenshotsData.screenshots[screenshotIndex].src)}
                     alt={screenshotsData.screenshots[screenshotIndex].tag}
                     className="md:flex-1 md:min-h-0 md:max-w-full object-contain"
@@ -869,8 +954,9 @@ export default function TrailerPage() {
                 {/* Next */}
                 {screenshotsData.screenshots.length > 1 && (
                   <button
-                    onClick={() => setScreenshotIndex((screenshotIndex + 1) % screenshotsData.screenshots.length)}
+                    onClick={(e) => { e.stopPropagation(); setScreenshotIndex((screenshotIndex + 1) % screenshotsData.screenshots.length); }}
                     className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+                    data-zoom-ignore
                     aria-label="Suivant"
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -878,6 +964,8 @@ export default function TrailerPage() {
                     </svg>
                   </button>
                 )}
+
+                <ZoomControls scale={zoom.scale} onZoomIn={zoom.zoomIn} onZoomOut={zoom.zoomOut} onReset={zoom.reset} />
               </div>
 
               {/* Mobile portrait caption, below the filled image */}
@@ -910,7 +998,7 @@ export default function TrailerPage() {
             </div>
 
             {/* Right: Info panel */}
-            <div className="trailer-info w-full md:w-[400px] flex flex-col p-8 md:p-10 bg-[#15161b] overflow-y-auto">
+            <div className="trailer-info w-full md:w-[400px] md:shrink-0 flex flex-col p-8 md:p-10 bg-[#15161b] overflow-y-auto">
               {/* Close button - hidden on mobile in favor of the fixed one above */}
               <button
                 onClick={() => setScreenshotsData(null)}
@@ -963,6 +1051,15 @@ export default function TrailerPage() {
                   </p>
                 )}
               </div>
+              {/* Event logo, bottom right: same right edge as the close cross,
+                  same distance from the bottom as the cross is from the top. */}
+              {screenshotsData.logo && (
+                <img
+                  src={asset(screenshotsData.logo.src)}
+                  alt={screenshotsData.logo.alt}
+                  className="mt-auto shrink-0 self-end pt-8 box-content h-[36px] w-auto brightness-0 invert"
+                />
+              )}
             </div>
           </div>
         </div>

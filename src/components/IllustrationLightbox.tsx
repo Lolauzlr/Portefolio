@@ -1,12 +1,22 @@
 "use client";
 
-import { createContext, useCallback, useContext, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { asset } from "@/lib/asset";
 import { useLightboxBehavior } from "@/components/ScreenshotGallery";
+import ZoomControls from "@/components/ZoomControls";
+import { useZoomPan } from "@/hooks/useZoomPan";
 
-export type LightboxSlide = { src: string; alt: string };
+export type LightboxSlide = { src: string; alt: string; caption?: string };
 
-const LightboxContext = createContext<{ open: (src: string) => void } | null>(null);
+const LightboxContext = createContext<{
+  open: (src: string) => void;
+  // Lets each <LightboxImg> declare its element so closing the carousel can
+  // scroll back to the image it was on. Returns the unregister function.
+  register: (src: string, el: HTMLElement) => () => void;
+} | null>(null);
+
+// Visible (laid out) elements only: the page keeps hidden copies per breakpoint.
+const isRendered = (el: HTMLElement) => el.getClientRects().length > 0;
 
 // One shared carousel for the whole page: clicking any <LightboxImg> opens it
 // on that image, and prev/next/thumbnails move through every image in
@@ -15,8 +25,26 @@ const LightboxContext = createContext<{ open: (src: string) => void } | null>(nu
 export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]; children: React.ReactNode }) {
   const [index, setIndex] = useState<number | null>(null);
   const touchStart = useRef<{ x: number; y: number; t: number } | null>(null);
+  const swiped = useRef(false);
+  const [stage, setStage] = useState<HTMLElement | null>(null);
+  const zoom = useZoomPan(stage, index);
   const isOpen = index !== null;
   const hasMultiple = slides.length > 1;
+  const indexRef = useRef<number | null>(null);
+  useEffect(() => {
+    indexRef.current = index;
+  });
+  const elements = useRef(new Map<string, Set<HTMLElement>>());
+  const scrollBackTo = useRef<string | null>(null);
+
+  const register = useCallback((src: string, el: HTMLElement) => {
+    const set = elements.current.get(src) ?? new Set<HTMLElement>();
+    set.add(el);
+    elements.current.set(src, set);
+    return () => {
+      set.delete(el);
+    };
+  }, []);
 
   const open = useCallback(
     (src: string) => {
@@ -25,7 +53,13 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
     },
     [slides]
   );
-  const close = useCallback(() => setIndex(null), []);
+  const close = useCallback(() => {
+    // After browsing with the carousel, closing it brings the page back to the
+    // illustration that was on screen (see the effect below).
+    const i = indexRef.current;
+    if (i !== null) scrollBackTo.current = slides[i].src;
+    setIndex(null);
+  }, [slides]);
   const goPrev = useCallback(
     () => setIndex((i) => (i === null ? i : (i - 1 + slides.length) % slides.length)),
     [slides.length]
@@ -35,12 +69,31 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
     [slides.length]
   );
 
-  useLightboxBehavior(isOpen, close, hasMultiple ? goPrev : undefined, hasMultiple ? goNext : undefined);
+  useLightboxBehavior(isOpen, close, hasMultiple ? goPrev : undefined, hasMultiple ? goNext : undefined, () => zoom.isZoomed());
 
   const current = index !== null ? slides[index] : null;
 
+  // Once closed (and the page unpinned by useLightboxBehavior), scroll to the
+  // illustration we were on, unless it is already mostly in view.
+  useEffect(() => {
+    if (isOpen || !scrollBackTo.current) return;
+    const src = scrollBackTo.current;
+    scrollBackTo.current = null;
+    const frame = requestAnimationFrame(() => {
+      const el = [...(elements.current.get(src) ?? [])].find(isRendered);
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const visible = Math.min(r.bottom, window.innerHeight) - Math.max(r.top, 0);
+      if (visible >= Math.min(r.height, window.innerHeight) * 0.5) return;
+      el.scrollIntoView({ block: "center", inline: "nearest" });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [isOpen]);
+
+  const ctxValue = useMemo(() => ({ open, register }), [open, register]);
+
   return (
-    <LightboxContext.Provider value={{ open }}>
+    <LightboxContext.Provider value={ctxValue}>
       {children}
       {current && index !== null && (
         <div
@@ -62,6 +115,7 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
           </button>
 
           <div
+            ref={setStage}
             className="relative flex-1 min-h-0 flex items-center justify-center p-4 md:p-12 touch-pan-y"
             // Swipe left/right on touch screens to change image (mostly-horizontal
             // gestures only, so vertical scrolls/taps are left alone).
@@ -75,7 +129,7 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
             onTouchEnd={(e) => {
               const start = touchStart.current;
               touchStart.current = null;
-              if (!start || !hasMultiple) return;
+              if (!start || !hasMultiple || zoom.ignoreSwipe()) return;
               const t = e.changedTouches[0];
               const dx = t.clientX - start.x;
               const dy = t.clientY - start.y;
@@ -84,6 +138,9 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
               // drag of 30px+ both count, as long as it is mostly horizontal.
               const quick = Date.now() - start.t < 300;
               if (ax < (quick ? 12 : 30) || ax < Math.abs(dy)) return;
+              // Some browsers fire a click right after a swipe: ignore it.
+              swiped.current = true;
+              setTimeout(() => { swiped.current = false; }, 400);
               if (dx < 0) goNext();
               else goPrev();
             }}
@@ -91,6 +148,27 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
               if (e.target === e.currentTarget) close();
             }}
           >
+            {/* Left / right half of the screen = previous / next image. The
+                image lets clicks through; arrows, counter and close sit above. */}
+            {hasMultiple && (
+              <>
+                <button
+                  type="button"
+                  tabIndex={-1}
+                  aria-label="Previous"
+                  onClick={(e) => zoom.guardTap(e, () => !swiped.current && goPrev())}
+                  className="absolute inset-y-0 left-0 w-1/2 cursor-pointer"
+                />
+                <button
+                  type="button"
+                  tabIndex={-1}
+                  aria-label="Next"
+                  onClick={(e) => zoom.guardTap(e, () => !swiped.current && goNext())}
+                  className="absolute inset-y-0 right-0 w-1/2 cursor-pointer"
+                />
+              </>
+            )}
+
             <span className="absolute top-4 left-4 md:top-6 md:left-6 font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-white z-10">
               {index + 1}/{slides.length}
             </span>
@@ -98,6 +176,7 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
             {hasMultiple && (
               <button
                 type="button"
+                data-zoom-ignore
                 onClick={goPrev}
                 className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
                 aria-label="Previous image"
@@ -108,11 +187,22 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
               </button>
             )}
 
-            <img src={asset(current.src)} alt={current.alt} className="max-w-full max-h-full w-auto h-auto object-contain" />
+            {/* Image + its one-line description underneath (same small grey line
+                as the trailer screenshots). The caption is dropped on a phone
+                held in landscape, where the image needs the whole height. */}
+            <div className="pointer-events-none flex max-h-full max-w-full min-h-0 flex-col items-center gap-2 md:gap-3">
+              <img data-zoom-target src={asset(current.src)} alt={current.alt} className="min-h-0 max-w-full w-auto h-auto object-contain" />
+              {current.caption && (
+                <p className="shrink-0 text-center font-[family-name:var(--font-body)] text-[12px] md:text-[16px] font-normal text-[#8F8F8F] [@media(orientation:landscape)_and_(max-height:500px)]:hidden">
+                  {current.caption}
+                </p>
+              )}
+            </div>
 
             {hasMultiple && (
               <button
                 type="button"
+                data-zoom-ignore
                 onClick={goNext}
                 className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
                 aria-label="Next image"
@@ -122,6 +212,7 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
                 </svg>
               </button>
             )}
+            <ZoomControls scale={zoom.scale} onZoomIn={zoom.zoomIn} onZoomOut={zoom.zoomOut} onReset={zoom.reset} />
           </div>
 
           {/* Bande masquée sur téléphone en paysage (elle mangerait la hauteur de l'image). */}
@@ -154,8 +245,15 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
 // `src` is the un-prefixed path, the same one listed in the provider's slides.
 export function LightboxImg({ src, alt = "", className }: { src: string; alt?: string; className?: string }) {
   const ctx = useContext(LightboxContext);
+  const ref = useRef<HTMLImageElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !ctx) return;
+    return ctx.register(src, el);
+  }, [ctx, src]);
   return (
     <img
+      ref={ref}
       src={asset(src)}
       alt={alt}
       className={`cursor-pointer ${className ?? ""}`}
