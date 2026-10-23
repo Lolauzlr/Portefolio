@@ -8,7 +8,7 @@ export type TrailerNavTarget = { label: string; onSelect: () => void };
 // on the outer side, a small "Back" / "Next" caption over the trailer's name
 // (truncated if it doesn't fit). The pair shares the panel's inner width, 12px apart.
 const BUTTON =
-  "flex h-[53px] min-w-0 flex-1 cursor-pointer items-center gap-[8px] rounded-[4px] bg-[rgba(73,73,73,0.3)] py-[12px] text-left transition-colors hover:bg-[rgba(73,73,73,0.5)] focus-visible:bg-[rgba(73,73,73,0.5)] focus-visible:outline-none";
+  "flex h-[53px] min-w-0 flex-1 cursor-pointer items-center gap-[8px] rounded-[4px] bg-[rgba(73,73,73,0.3)] text-left transition-colors hover:bg-[rgba(73,73,73,0.5)] focus-visible:bg-[rgba(73,73,73,0.5)] focus-visible:outline-none";
 
 // Phosphor "CaretCircle" (regular), drawn in the site's cyan.
 function CaretCircle({ direction }: { direction: "left" | "right" }) {
@@ -30,7 +30,7 @@ function Label({ caption, title }: { caption: string; title: string }) {
   return (
     <span className="flex min-w-0 flex-1 flex-col leading-[normal]">
       <span className="font-[family-name:var(--font-body)] text-[12px] text-[#8F8F8F]">{caption}</span>
-      <span className="block w-full overflow-hidden text-ellipsis whitespace-nowrap font-[family-name:var(--font-heading)] text-[16px] text-white">
+      <span className="block w-full overflow-hidden text-ellipsis whitespace-nowrap font-[family-name:var(--font-heading)] text-[20px] text-white">
         {title}
       </span>
     </span>
