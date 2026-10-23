@@ -15,6 +15,12 @@ const MOBILE_HERO_VIDEO_ID = "UMobicftZ1w";
 const DESKTOP_PLAYER = { w: 3840, h: 2160 };
 const TOUCH_PLAYER = { w: 1920, h: 1080 };
 const MOBILE_PLAYER = { w: 1080, h: 1920 };
+// YouTube draws its title / channel banner over the top edge of the embed (it
+// can't be turned off any more). The iframe is made taller than the video by this
+// share of the video's height on each side: the video stays letterboxed in the
+// middle (same size, no zoom) and the banner lands in the black bar above it,
+// which the hero frame clips together with the bar below.
+const BANNER_PAD = 0.08;
 // The Short has a black credits strip burned into its bottom edge (~9 % of its
 // height). On mobile the hero frame is therefore 10 % shorter than the 9:16
 // video and the video is anchored to the top (no zoom): the strip falls below
@@ -55,6 +61,7 @@ export default function HomeHeroSection() {
   const isMobile = layout ? layout.mobile : null;
   const player = isMobile ? MOBILE_PLAYER : layout?.touch ? TOUCH_PLAYER : DESKTOP_PLAYER;
   const videoId = isMobile ? MOBILE_HERO_VIDEO_ID : HERO_VIDEO_ID;
+  const iframeHeight = player.h + 2 * Math.round(player.h * BANNER_PAD);
 
   // Scale the 4K player so it covers the hero frame (same crop as object-cover).
   useEffect(() => {
@@ -140,7 +147,7 @@ export default function HomeHeroSection() {
       playerRef.current = new YT.Player(host, {
         videoId,
         width: player.w,
-        height: player.h,
+        height: iframeHeight,
         playerVars: {
           autoplay: 1,
           mute: 1,
@@ -180,7 +187,7 @@ export default function HomeHeroSection() {
       playerRef.current = null;
       wrapper.replaceChildren();
     };
-  }, [isMobile, videoId, player, onPlayerReady, onPlayerStateChange]);
+  }, [isMobile, videoId, player, iframeHeight, onPlayerReady, onPlayerStateChange]);
 
   // Fallback when the browser blocks autoplay (e.g. iOS low-power mode):
   // start the muted video on the first touch anywhere on the page.
@@ -226,7 +233,7 @@ export default function HomeHeroSection() {
             className="absolute top-1/2 left-1/2"
             style={{
               width: player.w,
-              height: player.h,
+              height: iframeHeight,
               transform: `translate(-50%, calc(-50% + ${playerShiftY}px)) scale(${playerScale})`,
             }}
           >
