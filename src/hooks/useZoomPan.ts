@@ -36,11 +36,18 @@ type Pt = { x: number; y: number };
 const clamp = (v: number, lo: number, hi: number) => Math.min(Math.max(v, lo), hi);
 const dist = (a: Pt, b: Pt) => Math.hypot(a.x - b.x, a.y - b.y);
 
-export function useZoomPan(stage: HTMLElement | null, resetKey: unknown) {
+export function useZoomPan(stage: HTMLElement | null, resetKey: unknown, rotated = false) {
   const stageRef = useRef<HTMLElement | null>(null);
+  // `rotated`: the stage sits inside a container turned 90deg clockwise (the
+  // fullscreen "landscape" viewer on a portrait phone). Everything here is computed
+  // in screen space (touch / pointer coordinates, bounding boxes), so only two
+  // things change: the element's own size is swapped, and the translation is
+  // applied in the rotated frame.
+  const rotatedRef = useRef(rotated);
   useEffect(() => {
     stageRef.current = stage;
-  }, [stage]);
+    rotatedRef.current = rotated;
+  }, [stage, rotated]);
   const [scaleView, setScaleView] = useState(1);
   const st = useRef({ scale: 1, x: 0, y: 0 });
   const g = useRef({
@@ -67,10 +74,11 @@ export function useZoomPan(stage: HTMLElement | null, resetKey: unknown) {
     const el = targets().find((t) => t.offsetWidth > 0 && t.offsetHeight > 0);
     if (!stageEl || !el) return null;
     const r = el.getBoundingClientRect();
+    const turned = rotatedRef.current;
     return {
       C0: { x: r.left + r.width / 2 - st.current.x, y: r.top + r.height / 2 - st.current.y },
-      bw: el.offsetWidth,
-      bh: el.offsetHeight,
+      bw: turned ? el.offsetHeight : el.offsetWidth,
+      bh: turned ? el.offsetWidth : el.offsetHeight,
       sr: stageEl.getBoundingClientRect(),
     };
   }, [targets]);
@@ -88,7 +96,9 @@ export function useZoomPan(stage: HTMLElement | null, resetKey: unknown) {
         el.style.transition = animate ? "transform 200ms ease-out" : "none";
         el.style.transformOrigin = "center";
         el.style.willChange = "transform";
-        el.style.transform = scale === 1 ? "" : `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
+        // Screen displacement (x, y) = (-y', x') in a frame turned 90deg clockwise.
+        const [tx, ty] = rotatedRef.current ? [y, -x] : [x, y];
+        el.style.transform = scale === 1 ? "" : `translate3d(${tx}px, ${ty}px, 0) scale(${scale})`;
       }
     },
     [targets],

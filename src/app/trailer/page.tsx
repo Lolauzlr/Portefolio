@@ -6,6 +6,7 @@ import { useSwipeNav } from "@/hooks/useSwipeNav";
 import { useZoomPan } from "@/hooks/useZoomPan";
 import ZoomControls from "@/components/ZoomControls";
 import TrailerScreenshotNav from "@/components/TrailerScreenshotNav";
+import LandscapeImageViewer, { isPortraitPhone } from "@/components/LandscapeImageViewer";
 import VideoModal from "@/components/VideoModal";
 import { useWheelNav } from "@/components/ScreenshotGallery";
 
@@ -112,8 +113,12 @@ export default function TrailerPage() {
     () => zoom.isZoomed()
   );
 
+  // Full-screen landscape view of one screenshot (phones held in portrait).
+  const [viewerOpen, setViewerOpen] = useState(false);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (viewerOpen) return; // the viewer handles its own Escape / arrows
       if (e.key === "Escape") {
         if (videoModal) setVideoModal(null);
         if (screenshotsData) setScreenshotsData(null);
@@ -125,7 +130,7 @@ export default function TrailerPage() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [videoModal, screenshotsData]);
+  }, [videoModal, screenshotsData, viewerOpen]);
 
   // The first (most recent) trailer has no "Back" button, unless we got there by
   // going through the last one ("Next" wraps around): then going back is logical.
@@ -139,6 +144,7 @@ export default function TrailerPage() {
   ) => {
     setScreenshotIndex(0);
     setWrappedAround(false);
+    setViewerOpen(false);
     setScreenshotsData({ category, title, screenshots, ...extra });
   };
 
@@ -905,7 +911,7 @@ export default function TrailerPage() {
       {/* Screenshots Carousel Overlay */}
       {screenshotsData && (
         <div
-          className="fixed inset-0 z-[100] bg-black/95 flex items-start md:items-center justify-center overflow-y-auto md:overflow-hidden"
+          className="trailer-overlay fixed inset-0 z-[100] bg-black/95 flex items-start md:items-center justify-center overflow-y-auto md:overflow-hidden"
           onClick={(e) => {
             if (e.target === e.currentTarget) setScreenshotsData(null);
           }}
@@ -914,13 +920,13 @@ export default function TrailerPage() {
               past the image/thumbnails/info panel below. */}
           <button
             onClick={() => setScreenshotsData(null)}
-            className="md:hidden fixed top-4 right-4 z-20 text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
+            className="trailer-close-mobile md:hidden fixed top-4 right-4 z-20 text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
             aria-label="Fermer"
           >
             ✕
           </button>
 
-          <div className="w-full min-h-full md:h-full flex flex-col md:flex-row">
+          <div className="trailer-layout w-full min-h-full md:h-full flex flex-col md:flex-row">
             {/* Left: Carousel */}
             <div className="relative w-full flex flex-col md:flex-1 md:min-h-0 md:min-w-0">
               {/* Main image area - mobile: capped to 60vh, fully filled
@@ -931,9 +937,14 @@ export default function TrailerPage() {
               <div
                 ref={setShotStage}
                 {...swipeHandlers}
-                // Click/tap on the left or right half of the image to go to the
-                // previous / next screenshot (arrows stop propagation).
+                // Phone held in portrait: a tap opens the image full screen, in
+                // landscape. Elsewhere: click/tap on the left or right half of the
+                // image to go to the previous / next screenshot (arrows stop propagation).
                 onClick={(e) => {
+                  if (isPortraitPhone()) {
+                    zoom.guardTap(e, () => setViewerOpen(true));
+                    return;
+                  }
                   if (screenshotsData.screenshots.length < 2) return;
                   const rect = e.currentTarget.getBoundingClientRect();
                   const count = screenshotsData.screenshots.length;
@@ -1119,6 +1130,16 @@ export default function TrailerPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Full-screen landscape view of the current screenshot. */}
+      {screenshotsData && viewerOpen && (
+        <LandscapeImageViewer
+          images={screenshotsData.screenshots.map((shot) => ({ src: asset(shot.src), alt: shot.tag }))}
+          index={screenshotIndex}
+          onIndexChange={setScreenshotIndex}
+          onClose={() => setViewerOpen(false)}
+        />
       )}
     </div>
   );
