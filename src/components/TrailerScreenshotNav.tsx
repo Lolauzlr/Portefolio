@@ -6,7 +6,8 @@ export type TrailerNavTarget = { label: string; onSelect: () => void };
 // the screenshots of the previous / next trailer. Design from the Figma file
 // (Portefolio-Marie, node 620:256): a translucent grey pill with a cyan caret icon
 // on the outer side, a small "Back" / "Next" caption over the trailer's name
-// (truncated if it doesn't fit). The pair shares the panel's inner width, 12px apart.
+// (truncated if it doesn't fit). The pair shares the panel's inner width, 12px apart;
+// `prev` is null on the first trailer, leaving "Next" alone on the right.
 const BUTTON =
   "flex h-[53px] min-w-0 flex-1 cursor-pointer items-center gap-[8px] rounded-[4px] bg-[rgba(73,73,73,0.3)] text-left transition-colors hover:bg-[rgba(73,73,73,0.5)] focus-visible:bg-[rgba(73,73,73,0.5)] focus-visible:outline-none";
 
@@ -37,13 +38,18 @@ function Label({ caption, title }: { caption: string; title: string }) {
   );
 }
 
-export default function TrailerScreenshotNav({ prev, next }: { prev: TrailerNavTarget; next: TrailerNavTarget }) {
+export default function TrailerScreenshotNav({ prev, next }: { prev: TrailerNavTarget | null; next: TrailerNavTarget }) {
   return (
-    <div className="mt-auto flex w-full gap-[12px] pt-8">
-      <button type="button" onClick={prev.onSelect} aria-label={`Back: ${prev.label}`} className={`${BUTTON} pl-[8px] pr-[12px]`}>
-        <CaretCircle direction="left" />
-        <Label caption="Back" title={prev.label} />
-      </button>
+    <div className="mt-auto grid w-full grid-cols-2 gap-[12px] pt-8">
+      {prev ? (
+        <button type="button" onClick={prev.onSelect} aria-label={`Back: ${prev.label}`} className={`${BUTTON} pl-[8px] pr-[12px]`}>
+          <CaretCircle direction="left" />
+          <Label caption="Back" title={prev.label} />
+        </button>
+      ) : (
+        // No "Back" (first trailer): keep its slot so "Next" stays on the right.
+        <div aria-hidden />
+      )}
       <button type="button" onClick={next.onSelect} aria-label={`Next: ${next.label}`} className={`${BUTTON} pl-[12px] pr-[8px]`}>
         <Label caption="Next" title={next.label} />
         <CaretCircle direction="right" />

@@ -127,6 +127,10 @@ export default function TrailerPage() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [videoModal, screenshotsData]);
 
+  // The first (most recent) trailer has no "Back" button, unless we got there by
+  // going through the last one ("Next" wraps around): then going back is logical.
+  const [wrappedAround, setWrappedAround] = useState(false);
+
   const openScreenshots = (
     category: string,
     title: string,
@@ -134,6 +138,7 @@ export default function TrailerPage() {
     extra?: { role: string; responsibilities: string; credits: { label: string; value: string }[]; logo?: { src: string; alt: string } }
   ) => {
     setScreenshotIndex(0);
+    setWrappedAround(false);
     setScreenshotsData({ category, title, screenshots, ...extra });
   };
 
@@ -414,7 +419,7 @@ export default function TrailerPage() {
   const trailerNav = (() => {
     const i = screenshotsData ? screenshotTrailers.findIndex((t) => t.screenshots[0]?.src === screenshotsData.screenshots[0]?.src) : -1;
     const n = screenshotTrailers.length;
-    return i < 0 || n < 2 ? null : { prev: screenshotTrailers[(i - 1 + n) % n], next: screenshotTrailers[(i + 1) % n] };
+    return i < 0 || n < 2 ? null : { prev: screenshotTrailers[(i - 1 + n) % n], next: screenshotTrailers[(i + 1) % n], isFirst: i === 0, isLast: i === n - 1 };
   })();
 
   const onPlayerReady = useCallback((event: YT.PlayerEvent) => {
@@ -1096,8 +1101,19 @@ export default function TrailerPage() {
               {/* Jump to the previous / next trailer's screenshots. */}
               {trailerNav && (
                 <TrailerScreenshotNav
-                  prev={{ label: trailerNav.prev.label, onSelect: trailerNav.prev.open }}
-                  next={{ label: trailerNav.next.label, onSelect: trailerNav.next.open }}
+                  prev={
+                    trailerNav.isFirst && !wrappedAround
+                      ? null
+                      : { label: trailerNav.prev.label, onSelect: trailerNav.prev.open }
+                  }
+                  next={{
+                    label: trailerNav.next.label,
+                    onSelect: () => {
+                      trailerNav.next.open();
+                      // Wrapping from the last trailer to the first one.
+                      if (trailerNav.isLast) setWrappedAround(true);
+                    },
+                  }}
                 />
               )}
             </div>
