@@ -8,6 +8,7 @@ import ZoomControls from "@/components/ZoomControls";
 import TrailerScreenshotNav from "@/components/TrailerScreenshotNav";
 import LandscapeImageViewer, { isPortraitPhone } from "@/components/LandscapeImageViewer";
 import VideoModal from "@/components/VideoModal";
+import { useSupportsHover } from "@/hooks/useSupportsHover";
 import { useBodyScrollLock, useWheelNav } from "@/components/ScreenshotGallery";
 
 // Event logo shown at the bottom of a screenshots panel (and on the card).
@@ -37,6 +38,7 @@ export default function TrailerPage() {
     () => zoom.ignoreSwipe()
   );
   const [videoModal, setVideoModal] = useState<{ videoId: string; title: string; fullWidth?: boolean } | null>(null);
+  const supportsHover = useSupportsHover();
   const [hoveredRecent, setHoveredRecent] = useState<string | null>(null);
   const [hoveredWatch, setHoveredWatch] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -739,8 +741,9 @@ export default function TrailerPage() {
             >
               <div
                 className="relative w-full aspect-video cursor-pointer overflow-hidden bg-black"
-                onMouseEnter={() => setHoveredRecent(card.videoId)}
-                onMouseLeave={() => setHoveredRecent(null)}
+                // Touch-only devices get no hover listeners: WebKit would eat
+                // the first tap to simulate the hover (see useSupportsHover).
+                {...(supportsHover ? { onMouseEnter: () => setHoveredRecent(card.videoId), onMouseLeave: () => setHoveredRecent(null) } : {})}
                 onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
               >
                 {hoveredRecent === card.videoId ? (
@@ -847,8 +850,7 @@ export default function TrailerPage() {
                   <div
                     className="relative w-full md:w-[62%] md:min-w-0 min-[85rem]:w-[792px] flex-shrink-0 cursor-pointer overflow-hidden bg-black"
                     style={{ aspectRatio: "16 / 9" }}
-                    onMouseEnter={() => setHoveredWatch(card.videoId)}
-                    onMouseLeave={() => setHoveredWatch(null)}
+                    {...(supportsHover ? { onMouseEnter: () => setHoveredWatch(card.videoId), onMouseLeave: () => setHoveredWatch(null) } : {})}
                     onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
                   >
                     {hoveredWatch === card.videoId ? (

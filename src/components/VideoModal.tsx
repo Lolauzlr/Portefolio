@@ -55,6 +55,10 @@ export default function VideoModal({
   const [withSound] = useState(canAutoplayWithSound);
   // The "Activer le son" button shows only while the video is muted.
   const [muted, setMuted] = useState(!withSound);
+  // On touch devices a tap on the player's own YouTube logo makes the embed
+  // open a blank tab (about:blank) before redirecting. A real link laid over the
+  // logo goes straight to YouTube instead (desktop keeps the native behaviour).
+  const videoId = src.match(/\/embed\/([\w-]+)/)?.[1];
   const ageRestricted = AGE_RESTRICTED_VIDEO_IDS.some((id) => src.includes(id));
   // ...and leaves together with YouTube's own controls, which fade shortly after
   // playback starts. The player doesn't report control visibility, so the
@@ -164,6 +168,15 @@ export default function VideoModal({
           allowFullScreen
           style={{ border: 0 }}
         />
+        {!withSound && videoId && (
+          <a
+            href={`https://www.youtube.com/watch?v=${videoId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Regarder sur YouTube"
+            className="absolute bottom-[4%] left-[64%] z-10 h-[12%] w-[27%]"
+          />
+        )}
         {muted && !ageRestricted && !hintExpired && (
           <button
             onClick={enableSound}
