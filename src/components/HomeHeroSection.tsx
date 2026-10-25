@@ -183,7 +183,24 @@ export default function HomeHeroSection() {
       }
     }
 
+    // Mobile browsers often drop the first playVideo() (sent before the player
+    // is really ready) and then leave the video parked until a tap or scroll.
+    // Keep asking for muted playback until it actually runs.
+    const retry = window.setInterval(() => {
+      const p = playerRef.current;
+      if (!p || typeof p.getPlayerState !== "function" || userPausedRef.current) return;
+      if (p.getPlayerState?.() === YT.PlayerState.PLAYING) {
+        window.clearInterval(retry);
+        return;
+      }
+      p.mute();
+      p.playVideo();
+    }, 500);
+    const stopRetry = window.setTimeout(() => window.clearInterval(retry), 20000);
+
     return () => {
+      window.clearInterval(retry);
+      window.clearTimeout(stopRetry);
       playerRef.current?.destroy();
       playerRef.current = null;
       wrapper.replaceChildren();
@@ -200,8 +217,9 @@ export default function HomeHeroSection() {
         player.playVideo();
       }
     };
-    window.addEventListener("touchstart", kick, { once: true, passive: true });
-    return () => window.removeEventListener("touchstart", kick);
+    const events = ["touchstart", "touchmove", "scroll"] as const;
+    events.forEach((e) => window.addEventListener(e, kick, { once: true, passive: true }));
+    return () => events.forEach((e) => window.removeEventListener(e, kick));
   }, []);
 
   const togglePlay = () => {
