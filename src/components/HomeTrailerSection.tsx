@@ -11,6 +11,7 @@ import LandscapeImageViewer, { isPortraitPhone } from "@/components/LandscapeIma
 import { useSupportsHover } from "@/hooks/useSupportsHover";
 import VideoModal from "@/components/VideoModal";
 import { useBodyScrollLock, useWheelNav } from "@/components/ScreenshotGallery";
+import { useYoutubeConsent } from "@/lib/youtube-consent";
 
 function CaretCircleRight() {
   return (
@@ -153,6 +154,7 @@ const trailerCards = [
 export default function HomeTrailerSection() {
   const supportsHover = useSupportsHover();
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const consent = useYoutubeConsent();
   const [videoModal, setVideoModal] = useState<{ videoId: string; title: string; fullWidth?: boolean } | null>(null);
   const [screenshotsData, setScreenshotsData] = useState<{
     category: string;
@@ -273,7 +275,7 @@ export default function HomeTrailerSection() {
                   : {})}
                 onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
               >
-                {hoveredCard === card.videoId ? (
+                {hoveredCard === card.videoId && consent === "granted" ? (
                   // Preview only: no native controls and no pointer capture,
                   // so a click anywhere on the video opens the full-width
                   // modal (same as the /trailer page).

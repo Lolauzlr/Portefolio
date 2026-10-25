@@ -25,21 +25,27 @@ export default function PrivacyPolicyPage() {
         <li>Purpose: to answer you and to keep a professional contact, for example for job or project opportunities.</li>
         <li>Legal basis: your request to be contacted (steps prior to a contract) and the legitimate interest of replying to messages sent to her.</li>
         <li>
-          Recipients: Marie Chalandre only. The message is forwarded to her mailbox through a
-          third-party form service (Web3Forms), which may process data outside the European Union.
+          Recipients: Marie Chalandre. Messages go through a third-party form service (Web3Forms,{" "}
+          <a href="https://web3forms.com/privacy" target="_blank" rel="noopener noreferrer">
+            web3forms.com/privacy
+          </a>
+          ) that forwards them to her mailbox and may process data outside the European Union.
         </li>
         <li>
-          Retention: messages are kept in her mailbox for as long as needed to handle the exchange
-          and maintain the professional contact, and are deleted on request.
+          Retention: Web3Forms automatically deletes stored submissions after 3 months. The copy
+          received in her mailbox is kept for as long as needed to handle the exchange and maintain
+          the professional contact, and is deleted on request.
         </li>
       </ul>
 
       <h2>Embedded videos</h2>
       <p>
-        Videos are embedded from YouTube (Google) using the privacy-enhanced domain
-        youtube-nocookie.com. Some videos start playing automatically (muted). When a video loads or
-        plays, Google may collect technical data such as your IP address, under its own privacy
-        policy:{" "}
+        Videos are hosted by YouTube (Google). Nothing is loaded from YouTube until you accept it:
+        the first time you open a video, you are asked to accept or refuse, and you can also watch
+        the video directly on YouTube. Your choice is stored in your browser for 6 months and can be
+        changed at any time with the &quot;Video settings&quot; link in the footer. If you accept,
+        videos load from the privacy-enhanced domain youtube-nocookie.com and Google may collect
+        technical data such as your IP address, under its own privacy policy:{" "}
         <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">
           policies.google.com/privacy
         </a>

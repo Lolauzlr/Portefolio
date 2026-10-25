@@ -5,6 +5,7 @@ import Link from "next/link";
 import { asset } from "@/lib/asset";
 import { useSupportsHover } from "@/hooks/useSupportsHover";
 import VideoModal from "@/components/VideoModal";
+import { useYoutubeConsent } from "@/lib/youtube-consent";
 
 function CaretCircleRight() {
   return (
@@ -31,6 +32,7 @@ function VideoCard({
   className?: string;
 }) {
   const supportsHover = useSupportsHover();
+  const consent = useYoutubeConsent();
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -48,7 +50,7 @@ function VideoCard({
         else if (externalUrl) window.open(externalUrl, "_blank", "noopener,noreferrer");
       }}
     >
-      {youtubeId && hovered ? (
+      {youtubeId && hovered && consent === "granted" ? (
         // Preview only: no native controls and no pointer capture, so a
         // click anywhere on the video opens the full-width modal (same as
         // the /trailer page).

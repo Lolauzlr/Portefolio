@@ -11,6 +11,7 @@ import JsonLd from "@/components/JsonLd";
 import { personRef } from "@/lib/schema";
 import VideoModal from "@/components/VideoModal";
 import { useBodyScrollLock, useWheelNav } from "@/components/ScreenshotGallery";
+import { useYoutubeConsent } from "@/lib/youtube-consent";
 
 // Event logo shown at the bottom of a screenshots panel (and on the card).
 const logoOf = (card: object) => {
@@ -61,6 +62,7 @@ export default function TrailerPage() {
   const [videoModal, setVideoModal] = useState<{ videoId: string; title: string; fullWidth?: boolean } | null>(null);
   const [hoveredRecent, setHoveredRecent] = useState<string | null>(null);
   const [hoveredWatch, setHoveredWatch] = useState<string | null>(null);
+  const consent = useYoutubeConsent();
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [showPause, setShowPause] = useState(false);
@@ -787,7 +789,7 @@ export default function TrailerPage() {
                 onMouseLeave={() => setHoveredRecent(null)}
                 onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
               >
-                {hoveredRecent === card.videoId ? (
+                {hoveredRecent === card.videoId && consent === "granted" ? (
                   // Native YouTube controls enabled (scrub bar + seeking).
                   // YouTube's own control bar already includes a fullscreen
                   // button, so no separate expand affordance is needed here.
@@ -895,7 +897,7 @@ export default function TrailerPage() {
                     onMouseLeave={() => setHoveredWatch(null)}
                     onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
                   >
-                    {hoveredWatch === card.videoId ? (
+                    {hoveredWatch === card.videoId && consent === "granted" ? (
                       // Native YouTube controls enabled (scrub bar +
                       // seeking). YouTube's own control bar already
                       // includes a fullscreen button, so no separate expand
