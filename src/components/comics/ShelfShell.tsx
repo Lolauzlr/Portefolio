@@ -906,6 +906,11 @@ export default function ShelfShell({
       const scene = sceneRef.current;
       if (!scene) return;
 
+      // Enter on a focused link / button (READ, the book dots, close...) keeps
+      // its own action instead of being hijacked to open the selected book.
+      const onControl =
+        event.target instanceof Element && event.target.closest("a, button, input, textarea, select") !== null;
+
       if (event.key === "Escape" && (stateRef.current === "INSIDE" || canTurn(stateRef.current))) {
         event.preventDefault();
         void exit({ navigate: true });
@@ -928,7 +933,7 @@ export default function ShelfShell({
         const step = event.key === "ArrowRight" ? 1 : -1;
         const at = selectedRef.current === null ? -1 : playable.indexOf(selectedRef.current);
         handlePick(playable[(at + step + playable.length) % playable.length]);
-      } else if (event.key === "Enter" && selectedRef.current !== null) {
+      } else if (event.key === "Enter" && !onControl && selectedRef.current !== null) {
         event.preventDefault();
         void enterReading(selectedRef.current);
       }

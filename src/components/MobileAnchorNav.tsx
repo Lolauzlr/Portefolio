@@ -192,6 +192,16 @@ export default function MobileAnchorNav({
           onPointerMove={handlePointerMove}
           onPointerUp={() => finish(true)}
           onPointerCancel={() => finish(false)}
+          // Keyboard (Enter / Space fire a click with detail 0): jump to the
+          // next section, wrapping to the first one after the last.
+          onClick={(e) => {
+            if (e.detail !== 0) return;
+            const next = anchors.findIndex((a) => {
+              const el = document.querySelector(a.href);
+              return el instanceof HTMLElement && el.getBoundingClientRect().top > headerOffset + 8;
+            });
+            scrollToIndex(next === -1 ? 0 : next, true);
+          }}
           style={{ touchAction: "none", WebkitTouchCallout: "none", WebkitUserSelect: "none" }}
           className={`select-none flex items-center justify-center w-[44px] h-[44px] transition-colors ${
             active ? "text-[#0FD1EA]" : "text-white"

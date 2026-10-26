@@ -56,7 +56,7 @@ export default function VideoCard({
           type="button"
           onClick={() => setModalOpen(true)}
           aria-label={`Lire la vidéo ${title}`}
-          className="absolute inset-0 z-10 w-full h-full cursor-pointer"
+          className="absolute inset-0 z-10 w-full h-full cursor-pointer focus-visible:outline-offset-[-4px]"
         />
         {hovered ? (
           // Preview ignores pointer events so the click reaches the card.

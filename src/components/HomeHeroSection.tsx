@@ -264,15 +264,15 @@ export default function HomeHeroSection() {
         </div>
 
         {/* Click zone - opens the full-width video overlay */}
-        <button
-          className="absolute inset-0 w-full h-full z-10 cursor-pointer group"
+        <button type="button"
+          className="absolute inset-0 w-full h-full z-10 cursor-pointer group focus-visible:outline-offset-[-4px]"
           onClick={() => setVideoModal({ videoId: HERO_VIDEO_ID, title: HERO_VIDEO_TITLE, fullWidth: true })}
           aria-label="Ouvrir la vidéo"
         />
 
         {/* Pause button - visible on mouse move, hides after 5s idle */}
         {isPlaying && showPause && (
-          <button
+          <button type="button"
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[80px] h-[80px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-opacity duration-300 cursor-pointer"
             onClick={(e) => { e.stopPropagation(); togglePlay(); }}
             aria-label="Pause"
@@ -286,7 +286,7 @@ export default function HomeHeroSection() {
 
         {/* Play button - visible when paused */}
         {!isPlaying && (
-          <button
+          <button type="button"
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[80px] h-[80px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
             onClick={(e) => { e.stopPropagation(); togglePlay(); }}
             aria-label="Play"
@@ -298,7 +298,7 @@ export default function HomeHeroSection() {
         )}
 
         {/* Sound toggle */}
-        <button
+        <button type="button"
           onClick={toggleMute}
           className="absolute right-4 md:right-[24px] bottom-8 md:bottom-[24px] z-20 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
           aria-label={isMuted ? "Activer le son" : "Couper le son"}

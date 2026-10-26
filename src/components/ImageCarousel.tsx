@@ -1,5 +1,6 @@
 "use client";
 
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 import { useRef, useState, useSyncExternalStore } from "react";
 import { asset } from "@/lib/asset";
 import { CaretCircleLeftIcon, CaretCircleRightIcon, CornersOutIcon } from "@/components/CarouselIcons";
@@ -151,6 +152,9 @@ export default function ImageCarousel({
     () => zoom.isZoomed()
   );
 
+  const lightboxRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(lightboxOpen, lightboxRef);
+
   if (slides.length === 0) return null;
 
   const current = slides[index];
@@ -220,6 +224,10 @@ export default function ImageCarousel({
           chrome, not a bare single image. */}
       {lightboxOpen && (
         <div
+          ref={lightboxRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label={alt}
           className="fixed inset-0 z-[100] bg-black/95 flex flex-col"
           onClick={(e) => {
             if (e.target === e.currentTarget) setLightboxOpen(false);

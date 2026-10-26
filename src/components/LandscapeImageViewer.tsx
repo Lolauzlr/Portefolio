@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 import ZoomControls from "@/components/ZoomControls";
 import { useZoomPan } from "@/hooks/useZoomPan";
 
@@ -52,10 +53,13 @@ export default function LandscapeImageViewer({
   }, [index, count, onClose, onIndexChange]);
 
   const current = images[index];
+  const rootRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(!!current, rootRef);
+
   if (!current) return null;
 
   return (
-    <div className="fixed inset-0 z-[110] bg-black" role="dialog" aria-modal="true" aria-label="Image en plein écran">
+    <div ref={rootRef} className="fixed inset-0 z-[110] bg-black" role="dialog" aria-modal="true" aria-label="Image en plein écran">
       {/* Always at the screen's top-right, whether or not the content is turned. */}
       <button
         type="button"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { asset } from "@/lib/asset";
 import { useSwipeNav } from "@/hooks/useSwipeNav";
@@ -11,6 +11,7 @@ import LandscapeImageViewer, { isPortraitPhone } from "@/components/LandscapeIma
 import { useSupportsHover } from "@/hooks/useSupportsHover";
 import VideoModal from "@/components/VideoModal";
 import { useBodyScrollLock, useWheelNav } from "@/components/ScreenshotGallery";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 
 function CaretCircleRight() {
   return (
@@ -238,6 +239,9 @@ export default function HomeTrailerSection() {
     return i < 0 || n < 2 ? null : { prev: screenshotTrailers[(i - 1 + n) % n], next: screenshotTrailers[(i + 1) % n], isFirst: i === 0, isLast: i === n - 1 };
   })();
 
+  const overlayRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(screenshotsData !== null, overlayRef);
+
   return (
     <section className="pl-3 md:pl-[120px]">
       <div className="mb-6 md:mb-10 pr-3 md:pr-[120px]">
@@ -277,7 +281,7 @@ export default function HomeTrailerSection() {
                     type="button"
                     onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
                     aria-label={`Lire la vidéo ${card.title}`}
-                    className="absolute inset-0 z-10 w-full h-full cursor-pointer"
+                    className="absolute inset-0 z-10 w-full h-full cursor-pointer focus-visible:outline-offset-[-4px]"
                   />
                 {hoveredCard === card.videoId ? (
                   // Preview only: no native controls and no pointer capture,
@@ -317,7 +321,7 @@ export default function HomeTrailerSection() {
                       className="h-[36px] w-auto brightness-0 invert"
                     />
                   )}
-                  <button
+                  <button type="button"
                     onClick={(e) => { e.stopPropagation(); openScreenshots(
                       card.screenshotCategory,
                       card.screenshotTitle,
@@ -360,6 +364,10 @@ export default function HomeTrailerSection() {
       {/* Screenshots Carousel Overlay */}
       {screenshotsData && (
         <div
+          ref={overlayRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label={screenshotsData.title}
           className="trailer-overlay overscroll-contain fixed inset-0 z-[100] bg-black/95 flex items-start md:items-center justify-center overflow-y-auto md:overflow-hidden"
           onClick={(e) => {
             if (e.target === e.currentTarget) setScreenshotsData(null);
@@ -367,7 +375,7 @@ export default function HomeTrailerSection() {
         >
           {/* Mobile-only close button, always reachable without scrolling
               past the image/thumbnails/info panel below. */}
-          <button
+          <button type="button"
             onClick={() => setScreenshotsData(null)}
             className="trailer-close-mobile md:hidden fixed top-4 right-4 z-20 text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
             aria-label="Fermer"
@@ -411,7 +419,7 @@ export default function HomeTrailerSection() {
 
                 {/* Previous */}
                 {screenshotsData.screenshots.length > 1 && (
-                  <button
+                  <button type="button"
                     onClick={(e) => { e.stopPropagation(); setScreenshotIndex((screenshotIndex - 1 + screenshotsData.screenshots.length) % screenshotsData.screenshots.length); }}
                     className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
                     data-zoom-ignore
@@ -451,7 +459,7 @@ export default function HomeTrailerSection() {
 
                 {/* Next */}
                 {screenshotsData.screenshots.length > 1 && (
-                  <button
+                  <button type="button"
                     onClick={(e) => { e.stopPropagation(); setScreenshotIndex((screenshotIndex + 1) % screenshotsData.screenshots.length); }}
                     className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
                     data-zoom-ignore
@@ -476,7 +484,7 @@ export default function HomeTrailerSection() {
                 <div className="trailer-thumbs bg-[#0d0d0d] px-3 md:px-4 py-3 overflow-x-auto">
                   <div className="flex gap-2">
                     {screenshotsData.screenshots.map((shot, i) => (
-                      <button
+                      <button type="button"
                         key={i}
                         onClick={() => setScreenshotIndex(i)}
                         className={`relative flex-shrink-0 w-[120px] h-[68px] overflow-hidden cursor-pointer transition-all ${
@@ -498,7 +506,7 @@ export default function HomeTrailerSection() {
             {/* Right: Info panel */}
             <div className="trailer-info w-full md:w-[400px] md:shrink-0 flex flex-col p-8 md:p-10 bg-[#15161b] overflow-y-auto">
               {/* Close button - hidden on mobile in favor of the fixed one above */}
-              <button
+              <button type="button"
                 onClick={() => setScreenshotsData(null)}
                 className="hidden md:block self-end text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
                 aria-label="Fermer"

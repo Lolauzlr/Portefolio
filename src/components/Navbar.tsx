@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { asset } from "@/lib/asset";
 
 const navLinks = [
@@ -17,6 +17,20 @@ const navLinks = [
 export default function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const burgerRef = useRef<HTMLButtonElement>(null);
+
+  // Escape closes the mobile menu and hands focus back to the burger button.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMenuOpen(false);
+        burgerRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
 
   return (
     <>
@@ -61,6 +75,7 @@ export default function Navbar() {
 
         {/* Hamburger */}
         <button
+          ref={burgerRef}
           className="min-[1560px]:hidden absolute right-6 flex flex-col gap-1.5 p-2"
           type="button"
           onClick={() => setMenuOpen(!menuOpen)}

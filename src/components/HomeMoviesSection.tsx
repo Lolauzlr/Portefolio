@@ -49,7 +49,7 @@ function VideoCard({
           type="button"
           onClick={onPlay}
           aria-label={`Lire la vidéo ${title}`}
-          className="absolute inset-0 z-10 w-full h-full cursor-pointer"
+          className="absolute inset-0 z-10 w-full h-full cursor-pointer focus-visible:outline-offset-[-4px]"
         />
       ) : externalUrl ? (
         <a
@@ -57,7 +57,7 @@ function VideoCard({
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`${title} (nouvel onglet)`}
-          className="absolute inset-0 z-10 cursor-pointer"
+          className="absolute inset-0 z-10 cursor-pointer focus-visible:outline-offset-[-4px]"
         />
       ) : null}
       {youtubeId && hovered ? (

@@ -9,6 +9,33 @@
   --font-body: "Roboto", sans-serif;
 }
 
+@layer base {
+  :focus-visible {
+    outline: 2px solid #0fd1ea;
+    outline-offset: 2px;
+  }
+}
+
+/* Skip link: only visible once focused with the keyboard. */
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 200;
+  padding: 10px 16px;
+  background: #15161b;
+  color: #0fd1ea;
+  border: 2px solid #0fd1ea;
+  border-radius: 40px;
+  font-family: var(--font-heading);
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  transform: translateY(-200%);
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+
 html {
   scroll-behavior: smooth;
 }

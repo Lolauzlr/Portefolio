@@ -28,7 +28,6 @@ function ClearFieldButton({ label, onClick }: { label: string; onClick: () => vo
       type="button"
       onClick={onClick}
       aria-label={label}
-      tabIndex={-1}
       className="absolute right-0 top-[18px] text-[#8F8F8F] hover:text-[#7FECFB] transition-colors"
     >
       <XCircleFillIcon className="w-5 h-5" />

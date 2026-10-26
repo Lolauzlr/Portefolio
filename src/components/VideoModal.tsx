@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 
 // Mobile browsers block unmuted autoplay for cross-origin iframes even when
 // the iframe is created from a click, so an autoplay=1 embed without mute=1
@@ -142,6 +143,9 @@ export default function VideoModal({
     );
   };
 
+  const rootRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(true, rootRef);
+
   const enableSound = () => {
     const iframe = iframeRef.current;
     if (!iframe) return;
@@ -152,10 +156,15 @@ export default function VideoModal({
 
   return (
     <div
+      ref={rootRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
       className="fixed top-0 left-0 w-full h-screen h-dvh z-[100] bg-black/95 flex items-center justify-center"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <button
+        type="button"
         onClick={onClose}
         className="absolute top-6 right-6 md:top-10 md:right-10 [@media(orientation:landscape)_and_(max-height:500px)]:top-3 [@media(orientation:landscape)_and_(max-height:500px)]:left-4 [@media(orientation:landscape)_and_(max-height:500px)]:right-auto text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer z-10"
         aria-label="Fermer"
@@ -191,6 +200,7 @@ export default function VideoModal({
         )}
         {muted && !ageRestricted && !hintExpired && (
           <button
+            type="button"
             onClick={enableSound}
             className="absolute bottom-[5.25rem] right-[4.25rem] z-10 flex w-max items-center gap-2 whitespace-nowrap rounded-full bg-black/60 px-4 py-2 text-sm text-white cursor-pointer"
           >
