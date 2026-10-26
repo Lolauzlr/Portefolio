@@ -67,12 +67,12 @@ export default function Footer() {
           {/* Explore */}
           <div className="order-2 md:order-none flex flex-col gap-[16px] md:gap-[24px] items-start">
             <div className="flex flex-col gap-[10px] items-start">
-              <h3 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
+              <h2 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
                 EXPLORE
-              </h3>
+              </h2>
               <div className="w-full h-[4px] bg-[#ddff6e]" />
             </div>
-            <div className="flex flex-wrap gap-[12px] md:gap-[16px]">
+            <nav aria-label="Pied de page" className="flex flex-wrap gap-[12px] md:gap-[16px]">
               {exploreLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -82,16 +82,16 @@ export default function Footer() {
                   {link.label}
                 </Link>
               ))}
-            </div>
+            </nav>
           </div>
 
           {/* Contact - always under the logo on mobile; on desktop, hidden
               on the home page (its own contact form covers this already). */}
           <div className={`order-1 md:order-none flex-col gap-[16px] md:gap-[24px] items-start ${isHome ? "flex md:hidden" : "flex"}`}>
             <div className="flex flex-col gap-[10px] items-start">
-              <h3 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
+              <h2 className="font-[family-name:var(--font-heading)] text-white text-[20px] tracking-[1.6px] uppercase">
                 CONTACT
-              </h3>
+              </h2>
               <div className="w-full h-[4px] bg-[#ddff6e]" />
             </div>
             <div className="flex flex-col gap-[12px] items-start">

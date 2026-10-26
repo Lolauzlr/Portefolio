@@ -62,6 +62,7 @@ export default function Home() {
   return (
     <div className="flex flex-col gap-6 md:gap-[60px] bg-[#15161b] text-white">
       {/* Hero */}
+      <h1 className="sr-only">Marie Chalandre — Cinematic Artist, Concept Artist &amp; Storyboarder</h1>
       <HomeHeroSection />
 
       {/* Trailer */}

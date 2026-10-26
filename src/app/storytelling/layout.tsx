@@ -10,9 +10,9 @@ export const metadata: Metadata = {
 
 const pickAStoryHeader = (
   <div className="flex flex-col gap-[4px] items-start w-full px-3 pt-6 md:px-8 min-[85rem]:px-[120px] md:pt-[60px]">
-    <h2 className="font-[family-name:var(--font-heading)] text-[28px] md:text-[40px] tracking-[3.2px] text-white uppercase">
+    <h1 className="font-[family-name:var(--font-heading)] text-[28px] md:text-[40px] tracking-[3.2px] text-white uppercase">
       Pick a story
-    </h2>
+    </h1>
     <div className="bg-[#ddff6e] h-[4px] w-[80px]" />
   </div>
 );

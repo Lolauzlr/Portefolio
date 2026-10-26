@@ -43,11 +43,23 @@ function VideoCard({
       // second tap. With no listener attached, the first tap fires click
       // immediately.
       {...(supportsHover ? { onMouseEnter: () => setHovered(true), onMouseLeave: () => setHovered(false) } : {})}
-      onClick={() => {
-        if (onPlay) onPlay();
-        else if (externalUrl) window.open(externalUrl, "_blank", "noopener,noreferrer");
-      }}
     >
+      {onPlay ? (
+        <button
+          type="button"
+          onClick={onPlay}
+          aria-label={`Lire la vidéo ${title}`}
+          className="absolute inset-0 z-10 w-full h-full cursor-pointer"
+        />
+      ) : externalUrl ? (
+        <a
+          href={externalUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`${title} (nouvel onglet)`}
+          className="absolute inset-0 z-10 cursor-pointer"
+        />
+      ) : null}
       {youtubeId && hovered ? (
         // Preview only: no native controls and no pointer capture, so a
         // click anywhere on the video opens the full-width modal (same as

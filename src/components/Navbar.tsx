@@ -32,18 +32,19 @@ export default function Navbar() {
         </Link>
 
         {/* Center nav pill */}
-        <nav className="hidden min-[1560px]:flex items-center gap-10 rounded-[40px] bg-black/40 backdrop-blur-[5px] px-[40px] py-[24px]">
+        <nav aria-label="Navigation principale" className="hidden min-[1560px]:flex items-center gap-10 rounded-[40px] bg-black/40 backdrop-blur-[5px] px-[40px] py-[24px]">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
               <Link
                 key={link.href}
                 href={link.href}
+                aria-current={isActive ? "page" : undefined}
                 className="relative font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase text-white hover:text-[#0fd1ea] transition-colors"
               >
                 {link.label}
                 {isActive && (
-                  <span className="absolute left-0 right-0 -bottom-1 h-[4px] bg-[#0fd1ea]" />
+                  <span aria-hidden="true" className="absolute left-0 right-0 -bottom-1 h-[4px] bg-[#0fd1ea]" />
                 )}
               </Link>
             );
@@ -61,8 +62,11 @@ export default function Navbar() {
         {/* Hamburger */}
         <button
           className="min-[1560px]:hidden absolute right-6 flex flex-col gap-1.5 p-2"
+          type="button"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
+          aria-expanded={menuOpen}
+          aria-controls="mobile-menu"
         >
           <span className={`block w-7 h-0.5 bg-white transition-transform ${menuOpen ? "rotate-45 translate-y-2" : ""}`} />
           <span className={`block w-7 h-0.5 bg-white transition-opacity ${menuOpen ? "opacity-0" : ""}`} />
@@ -72,7 +76,7 @@ export default function Navbar() {
 
       {/* Mobile overlay */}
       {menuOpen && (
-        <div className="fixed inset-0 z-[65] bg-[#15161b]/95 backdrop-blur-md flex flex-col items-center justify-center gap-8 min-[1560px]:hidden">
+        <nav id="mobile-menu" aria-label="Navigation principale" className="fixed inset-0 z-[65] bg-[#15161b]/95 backdrop-blur-md flex flex-col items-center justify-center gap-8 min-[1560px]:hidden">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
@@ -80,6 +84,7 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setMenuOpen(false)}
+                aria-current={isActive ? "page" : undefined}
                 className={`font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase transition-colors ${
                   isActive ? "text-[#0fd1ea]" : "text-white hover:text-[#0fd1ea]"
                 }`}
@@ -95,7 +100,7 @@ export default function Navbar() {
           >
             CONTACT ME
           </Link>
-        </div>
+        </nav>
       )}
     </>
   );

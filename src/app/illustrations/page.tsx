@@ -103,6 +103,7 @@ export default function IllustrationsPage() {
   return (
     <LightboxProvider slides={lightboxSlides}>
     <div className="pt-[48px] md:pt-[95px] bg-[#15161b] text-white min-h-screen">
+      <h1 className="sr-only">Illustrations — Marie Chalandre</h1>
 
       {/* ── Hero (latest work) ── */}
       <section className="pt-[24px] pb-[24px] md:pt-[60px] md:pb-[60px]">

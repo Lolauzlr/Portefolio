@@ -51,8 +51,13 @@ export default function VideoCard({
         // firing click on a second tap. With no listener attached, the
         // first tap fires click immediately.
         {...(supportsHover ? { onMouseEnter: () => setHovered(true), onMouseLeave: () => !stickyPreview && setHovered(false) } : {})}
-        onClick={() => setModalOpen(true)}
       >
+        <button
+          type="button"
+          onClick={() => setModalOpen(true)}
+          aria-label={`Lire la vidéo ${title}`}
+          className="absolute inset-0 z-10 w-full h-full cursor-pointer"
+        />
         {hovered ? (
           // Preview ignores pointer events so the click reaches the card.
           <iframe
