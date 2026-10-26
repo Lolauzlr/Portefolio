@@ -772,7 +772,7 @@ export default function TrailerPage() {
                   />
                 )}
               </div>
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-3 flex-1">
                 <p className="text-[24px] font-[family-name:var(--font-heading)] tracking-[1.92px]">
                   {card.title}
                 </p>
@@ -788,7 +788,7 @@ export default function TrailerPage() {
                       ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits!, logo: logoOf(card) }
                       : undefined
                   ); }}
-                  className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-start hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer"
+                  className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-end mt-auto hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer"
                 >
                   VIEW SCREENSHOTS
                 </button>
