@@ -4,12 +4,14 @@ import { useState, useRef, useEffect, useCallback, useSyncExternalStore } from "
 import { asset } from "@/lib/asset";
 import { useSwipeNav } from "@/hooks/useSwipeNav";
 import { useZoomPan } from "@/hooks/useZoomPan";
+import { prefersReducedMotion } from "@/hooks/useReducedMotion";
 import ZoomControls from "@/components/ZoomControls";
 import TrailerScreenshotNav from "@/components/TrailerScreenshotNav";
 import LandscapeImageViewer, { isPortraitPhone } from "@/components/LandscapeImageViewer";
 import VideoModal from "@/components/VideoModal";
 import { useSupportsHover } from "@/hooks/useSupportsHover";
 import { useBodyScrollLock, useWheelNav } from "@/components/ScreenshotGallery";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 
 // Event logo shown at the bottom of a screenshots panel (and on the card).
 const logoOf = (card: object) => {
@@ -62,7 +64,8 @@ export default function TrailerPage() {
   const mobileVideoRef = useRef<HTMLVideoElement>(null);
   const ytHostRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
-  const userPausedRef = useRef(false);
+  // With prefers-reduced-motion the hero video starts paused; the play button starts it.
+  const userPausedRef = useRef(prefersReducedMotion());
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const cadreRef = useRef<HTMLDivElement>(null);
@@ -442,6 +445,10 @@ export default function TrailerPage() {
   const onPlayerReady = useCallback((event: YT.PlayerEvent) => {
     event.target.mute();
     setIsMuted(true);
+    if (userPausedRef.current) {
+      setIsPlaying(false);
+      return;
+    }
     event.target.playVideo();
   }, []);
 
@@ -474,7 +481,7 @@ export default function TrailerPage() {
         width: "100%",
         height: "100%",
         playerVars: {
-          autoplay: 1,
+          autoplay: userPausedRef.current ? 0 : 1,
           mute: 1,
           loop: 1,
           playlist: "OLEZv_Qyb6Q",
@@ -534,6 +541,10 @@ export default function TrailerPage() {
     if (!isMobile) return;
     const video = mobileVideoRef.current;
     if (!video) return;
+    if (prefersReducedMotion()) {
+      video.pause();
+      return;
+    }
     video.play().catch(() => {});
     const kick = () => { if (video.paused) video.play().catch(() => {}); };
     window.addEventListener("touchstart", kick, { once: true, passive: true });
@@ -560,6 +571,9 @@ export default function TrailerPage() {
     }
     setIsMuted(!isMuted);
   };
+
+  const overlayRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(screenshotsData !== null, overlayRef);
 
   return (
     <div className="bg-[#15161b] text-white min-h-screen">
@@ -594,15 +608,15 @@ export default function TrailerPage() {
         </div>
 
         {/* Click zone - opens overlay, or pauses on hover-visible button */}
-        <button
-          className="absolute inset-0 w-full h-full z-10 cursor-pointer group"
+        <button type="button"
+          className="absolute inset-0 w-full h-full z-10 cursor-pointer group focus-visible:outline-offset-[-4px]"
           onClick={() => setVideoModal({ videoId: "OLEZv_Qyb6Q", title: "ELTA: DEFY ALL GODS • REVEAL TRAILER", fullWidth: true })}
           aria-label="Ouvrir la vidéo"
         />
 
         {/* Pause button - visible on mouse move, hides after 5s idle */}
         {isPlaying && showPause && (
-          <button
+          <button type="button"
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[80px] h-[80px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-opacity duration-300 cursor-pointer"
             onClick={(e) => { e.stopPropagation(); togglePlay(); }}
             aria-label="Pause"
@@ -616,7 +630,7 @@ export default function TrailerPage() {
 
         {/* Play button - visible when paused */}
         {!isPlaying && (
-          <button
+          <button type="button"
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[80px] h-[80px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
             onClick={(e) => { e.stopPropagation(); togglePlay(); }}
             aria-label="Play"
@@ -628,7 +642,7 @@ export default function TrailerPage() {
         )}
 
         {/* Sound toggle - always visible, aligned right with ME CONTACTER, bottom with pentagon */}
-        <button
+        <button type="button"
           onClick={toggleMute}
           className="absolute right-4 md:right-[24px] bottom-8 md:bottom-[24px] z-20 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm hidden md:flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
           aria-label={isMuted ? "Activer le son" : "Couper le son"}
@@ -692,7 +706,7 @@ export default function TrailerPage() {
                 Reveal Trailer
               </p>
               {/* CTA - Voir les screenshots */}
-              <button
+              <button type="button"
                 onClick={(e) => { e.stopPropagation(); openScreenshots(heroScreenshots.category, heroScreenshots.title, heroScreenshots.screenshots, { role: heroScreenshots.role, responsibilities: heroScreenshots.responsibilities, credits: heroScreenshots.credits, logo: heroScreenshots.logo }); }}
                 className="font-[family-name:var(--font-heading)] text-[20px] md:text-[24px] tracking-[1.92px] text-[#0fd1ea] uppercase shrink-0 hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer whitespace-nowrap"
               >
@@ -746,6 +760,12 @@ export default function TrailerPage() {
                 {...(supportsHover ? { onMouseEnter: () => setHoveredRecent(card.videoId), onMouseLeave: () => setHoveredRecent(null) } : {})}
                 onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
               >
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
+                    aria-label={`Lire la vidéo ${card.title}`}
+                    className="absolute inset-0 z-10 w-full h-full cursor-pointer focus-visible:outline-offset-[-4px]"
+                  />
                 {hoveredRecent === card.videoId ? (
                   // Native YouTube controls enabled (scrub bar + seeking).
                   // YouTube's own control bar already includes a fullscreen
@@ -766,14 +786,14 @@ export default function TrailerPage() {
                   />
                 )}
               </div>
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-3 flex-1">
                 <p className="text-[24px] font-[family-name:var(--font-heading)] tracking-[1.92px]">
                   {card.title}
                 </p>
                 <p className="text-[16px] font-[family-name:var(--font-body)] tracking-[1.28px] text-white">
                   {card.description}
                 </p>
-                <button
+                <button type="button"
                   onClick={(e) => { e.stopPropagation(); openScreenshots(
                     card.screenshotCategory,
                     card.screenshotTitle,
@@ -782,7 +802,7 @@ export default function TrailerPage() {
                       ? { role: card.screenshotRole, responsibilities: card.screenshotResponsibilities!, credits: card.screenshotCredits!, logo: logoOf(card) }
                       : undefined
                   ); }}
-                  className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-start hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer"
+                  className="font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] text-[#0fd1ea] uppercase self-end mt-auto hover:text-[#7FECFB] focus:text-[#7FECFB] active:text-[#0897A9] transition-colors cursor-pointer"
                 >
                   VIEW SCREENSHOTS
                 </button>
@@ -853,6 +873,12 @@ export default function TrailerPage() {
                     {...(supportsHover ? { onMouseEnter: () => setHoveredWatch(card.videoId), onMouseLeave: () => setHoveredWatch(null) } : {})}
                     onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
                   >
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
+                        aria-label={`Lire la vidéo ${card.title}`}
+                        className="absolute inset-0 z-10 w-full h-full cursor-pointer focus-visible:outline-offset-[-4px]"
+                      />
                     {hoveredWatch === card.videoId ? (
                       // Native YouTube controls enabled (scrub bar +
                       // seeking). YouTube's own control bar already
@@ -897,7 +923,7 @@ export default function TrailerPage() {
                           className="h-[36px] w-auto brightness-0 invert"
                         />
                       )}
-                      <button
+                      <button type="button"
                         onClick={(e) => { e.stopPropagation(); openScreenshots(
                           card.screenshotCategory,
                           card.screenshotTitle,
@@ -932,6 +958,10 @@ export default function TrailerPage() {
       {/* Screenshots Carousel Overlay */}
       {screenshotsData && (
         <div
+          ref={overlayRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label={screenshotsData.title}
           className="trailer-overlay overscroll-contain fixed inset-0 z-[100] bg-black/95 flex items-start md:items-center justify-center overflow-y-auto md:overflow-hidden"
           onClick={(e) => {
             if (e.target === e.currentTarget) setScreenshotsData(null);
@@ -939,7 +969,7 @@ export default function TrailerPage() {
         >
           {/* Mobile-only close button, always reachable without scrolling
               past the image/thumbnails/info panel below. */}
-          <button
+          <button type="button"
             onClick={() => setScreenshotsData(null)}
             className="trailer-close-mobile md:hidden fixed top-4 right-4 z-20 text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
             aria-label="Fermer"
@@ -983,7 +1013,7 @@ export default function TrailerPage() {
 
                 {/* Previous */}
                 {screenshotsData.screenshots.length > 1 && (
-                  <button
+                  <button type="button"
                     onClick={(e) => { e.stopPropagation(); setScreenshotIndex((screenshotIndex - 1 + screenshotsData.screenshots.length) % screenshotsData.screenshots.length); }}
                     className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
                     data-zoom-ignore
@@ -1023,7 +1053,7 @@ export default function TrailerPage() {
 
                 {/* Next */}
                 {screenshotsData.screenshots.length > 1 && (
-                  <button
+                  <button type="button"
                     onClick={(e) => { e.stopPropagation(); setScreenshotIndex((screenshotIndex + 1) % screenshotsData.screenshots.length); }}
                     className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
                     data-zoom-ignore
@@ -1048,7 +1078,7 @@ export default function TrailerPage() {
                 <div className="trailer-thumbs bg-[#0d0d0d] px-3 md:px-4 py-3 overflow-x-auto">
                   <div className="flex gap-2">
                     {screenshotsData.screenshots.map((shot, i) => (
-                      <button
+                      <button type="button"
                         key={i}
                         onClick={() => setScreenshotIndex(i)}
                         className={`relative flex-shrink-0 w-[120px] h-[68px] overflow-hidden cursor-pointer transition-all ${
@@ -1070,7 +1100,7 @@ export default function TrailerPage() {
             {/* Right: Info panel */}
             <div className="trailer-info w-full md:w-[400px] md:shrink-0 flex flex-col p-8 md:p-10 bg-[#15161b] overflow-y-auto">
               {/* Close button - hidden on mobile in favor of the fixed one above */}
-              <button
+              <button type="button"
                 onClick={() => setScreenshotsData(null)}
                 className="hidden md:block self-end text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
                 aria-label="Fermer"

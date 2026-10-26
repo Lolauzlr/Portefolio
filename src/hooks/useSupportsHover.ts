@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 const QUERY = "(hover: hover)";
 
@@ -29,6 +30,12 @@ function getServerSnapshot() {
 // and attaching the listener anyway breaks the expected single-tap-to-
 // fullscreen behavior. Callers should skip mouseenter/mouseleave entirely
 // when this is false, rather than attaching them unconditionally.
+//
+// Under prefers-reduced-motion this also returns false: the hover preview is a
+// muted autoplaying video, so those users keep the still thumbnail and click
+// to open the video (the click still works, it never depended on the preview).
 export function useSupportsHover(): boolean {
-  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const hover = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const reducedMotion = useReducedMotion();
+  return hover && !reducedMotion;
 }

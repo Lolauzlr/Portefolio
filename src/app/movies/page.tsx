@@ -5,9 +5,12 @@ import VideoCard from "@/components/VideoCard";
 
 function ExternalCard({ thumbnail, title, externalUrl }: { thumbnail?: string; title: string; externalUrl?: string }) {
   return (
-    <div
-      className="relative aspect-video cursor-pointer group overflow-hidden w-full"
-      onClick={() => externalUrl && window.open(externalUrl, "_blank", "noopener,noreferrer")}
+    <a
+      href={externalUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`${title} (nouvel onglet)`}
+      className="relative block aspect-video cursor-pointer group overflow-hidden w-full"
     >
       {thumbnail && <img src={asset(thumbnail)} alt={title} className="w-full h-full object-cover" />}
       <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -15,7 +18,7 @@ function ExternalCard({ thumbnail, title, externalUrl }: { thumbnail?: string; t
           <path d="M8 5v14l11-7z" />
         </svg>
       </div>
-    </div>
+    </a>
   );
 }
 
@@ -117,6 +120,7 @@ export default function MoviesPage() {
 
   return (
     <div className="pt-[57px] md:pt-[95px] bg-[#15161b] text-white min-h-screen">
+      <h1 className="sr-only">Film &amp; Animation — Marie Chalandre</h1>
       {/* Features Films */}
       <section className="px-3 md:px-8 min-[85rem]:px-[120px] pt-6 pb-6 md:py-16">
         <h2 className="text-[28px] tracking-[3.36px] md:text-[40px] md:tracking-[4.8px] font-[family-name:var(--font-heading)] mb-2">

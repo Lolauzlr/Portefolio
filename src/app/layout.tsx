@@ -63,8 +63,13 @@ export default function RootLayout({
         <meta name="referrer" content="strict-origin-when-cross-origin" />
       </head>
       <body className="min-h-screen antialiased">
+        <a href="#contenu" className="skip-link">
+          Aller au contenu
+        </a>
         <Navbar />
-        <main>{children}</main>
+        <main id="contenu" tabIndex={-1} className="outline-none">
+          {children}
+        </main>
         <Footer />
       </body>
     </html>
