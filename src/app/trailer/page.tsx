@@ -7,13 +7,36 @@ import { useZoomPan } from "@/hooks/useZoomPan";
 import ZoomControls from "@/components/ZoomControls";
 import TrailerScreenshotNav from "@/components/TrailerScreenshotNav";
 import LandscapeImageViewer, { isPortraitPhone } from "@/components/LandscapeImageViewer";
+import JsonLd from "@/components/JsonLd";
+import { personRef } from "@/lib/schema";
 import VideoModal from "@/components/VideoModal";
 import { useBodyScrollLock, useWheelNav } from "@/components/ScreenshotGallery";
+import { useYoutubeConsent } from "@/lib/youtube-consent";
 
 // Event logo shown at the bottom of a screenshots panel (and on the card).
 const logoOf = (card: object) => {
   const { logo, logoAlt } = card as { logo?: string; logoAlt?: string };
   return logo ? { src: logo, alt: logoAlt ?? "" } : undefined;
+};
+
+// Upload dates of the YouTube videos, used for the VideoObject structured data.
+const uploadDates: Record<string, string> = {
+  OLEZv_Qyb6Q: "2026-08-25",
+  eT8QvyGSyYU: "2026-10-14",
+  ZPQFsx9XXoM: "2026-06-11",
+  ewZufHtEl68: "2026-04-16",
+  "cZgim-KYkZQ": "2026-03-12",
+  QwxFR1g7Uy4: "2026-02-04",
+  CxtlJ06u_lc: "2025-08-28",
+  ETCpWo0A0i0: "2025-06-04",
+  tSN6KhscgiE: "2023-08-21",
+  LpxuWSy8b9U: "2023-06-15",
+  _nFYp6BFviM: "2023-06-07",
+  a1JhKnaLxN0: "2023-05-09",
+  EdGCL3cVGPo: "2023-01-28",
+  MTskFVe8P3Q: "2022-12-09",
+  "3pEJJdJStiQ": "2022-12-05",
+  U4XA_dhCx_M: "2022-12-13",
 };
 
 export default function TrailerPage() {
@@ -39,6 +62,7 @@ export default function TrailerPage() {
   const [videoModal, setVideoModal] = useState<{ videoId: string; title: string; fullWidth?: boolean } | null>(null);
   const [hoveredRecent, setHoveredRecent] = useState<string | null>(null);
   const [hoveredWatch, setHoveredWatch] = useState<string | null>(null);
+  const consent = useYoutubeConsent();
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [showPause, setShowPause] = useState(false);
@@ -468,6 +492,7 @@ export default function TrailerPage() {
     const createPlayer = () => {
       if (playerRef.current || !host.isConnected) return;
       playerRef.current = new YT.Player(host, {
+        host: "https://www.youtube-nocookie.com",
         videoId: "OLEZv_Qyb6Q",
         width: "100%",
         height: "100%",
@@ -559,8 +584,29 @@ export default function TrailerPage() {
     setIsMuted(!isMuted);
   };
 
+  const videoSchema = [
+    {
+      videoId: "OLEZv_Qyb6Q",
+      title: "ELTA: DEFY ALL GODS • REVEAL TRAILER",
+      screenshotRole: heroScreenshots.role,
+      screenshotResponsibilities: heroScreenshots.responsibilities,
+    },
+    ...recentTrailers,
+    ...watchCards,
+  ].map((card) => ({
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    name: card.title,
+    description: `${card.screenshotRole}. ${card.screenshotResponsibilities}.`,
+    thumbnailUrl: `https://i.ytimg.com/vi/${card.videoId}/hqdefault.jpg`,
+    uploadDate: uploadDates[card.videoId],
+    embedUrl: `https://www.youtube.com/embed/${card.videoId}`,
+    creator: personRef,
+  }));
+
   return (
     <div className="bg-[#15161b] text-white min-h-screen">
+      <JsonLd data={videoSchema} />
       {/* Hero Section - no top padding, video bleeds under navbar */}
       {/* Mobile: section is a true 9:16 frame (width-driven, so it stays
           9:16 regardless of device height) so the video reads as a portrait
@@ -743,13 +789,13 @@ export default function TrailerPage() {
                 onMouseLeave={() => setHoveredRecent(null)}
                 onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
               >
-                {hoveredRecent === card.videoId ? (
+                {hoveredRecent === card.videoId && consent === "granted" ? (
                   // Native YouTube controls enabled (scrub bar + seeking).
                   // YouTube's own control bar already includes a fullscreen
                   // button, so no separate expand affordance is needed here.
                   <iframe
                     className="absolute inset-0 w-full h-full pointer-events-none"
-                    src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
+                    src={`https://www.youtube-nocookie.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
                     title={card.title}
                     allow="autoplay; encrypted-media"
                     style={{ border: 0 }}
@@ -851,14 +897,14 @@ export default function TrailerPage() {
                     onMouseLeave={() => setHoveredWatch(null)}
                     onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
                   >
-                    {hoveredWatch === card.videoId ? (
+                    {hoveredWatch === card.videoId && consent === "granted" ? (
                       // Native YouTube controls enabled (scrub bar +
                       // seeking). YouTube's own control bar already
                       // includes a fullscreen button, so no separate expand
                       // affordance is needed here.
                       <iframe
                         className="absolute inset-0 w-full h-full pointer-events-none"
-                        src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
+                        src={`https://www.youtube-nocookie.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
                         title={card.title}
                         allow="autoplay; encrypted-media"
                         style={{ border: 0 }}
@@ -920,7 +966,7 @@ export default function TrailerPage() {
       {/* Video Modal */}
       {videoModal && (
         <VideoModal
-          src={`https://www.youtube.com/embed/${videoModal.videoId}?autoplay=1&rel=0`}
+          src={`https://www.youtube-nocookie.com/embed/${videoModal.videoId}?autoplay=1&rel=0`}
           title={videoModal.title}
           fullWidth={videoModal.fullWidth}
           onClose={() => setVideoModal(null)}

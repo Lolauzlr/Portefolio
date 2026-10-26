@@ -11,6 +11,7 @@ import LandscapeImageViewer, { isPortraitPhone } from "@/components/LandscapeIma
 import { useSupportsHover } from "@/hooks/useSupportsHover";
 import VideoModal from "@/components/VideoModal";
 import { useBodyScrollLock, useWheelNav } from "@/components/ScreenshotGallery";
+import { useYoutubeConsent } from "@/lib/youtube-consent";
 
 function CaretCircleRight() {
   return (
@@ -153,6 +154,7 @@ const trailerCards = [
 export default function HomeTrailerSection() {
   const supportsHover = useSupportsHover();
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const consent = useYoutubeConsent();
   const [videoModal, setVideoModal] = useState<{ videoId: string; title: string; fullWidth?: boolean } | null>(null);
   const [screenshotsData, setScreenshotsData] = useState<{
     category: string;
@@ -273,13 +275,13 @@ export default function HomeTrailerSection() {
                   : {})}
                 onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
               >
-                {hoveredCard === card.videoId ? (
+                {hoveredCard === card.videoId && consent === "granted" ? (
                   // Preview only: no native controls and no pointer capture,
                   // so a click anywhere on the video opens the full-width
                   // modal (same as the /trailer page).
                   <iframe
                     className="absolute inset-0 w-full h-full pointer-events-none"
-                    src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
+                    src={`https://www.youtube-nocookie.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
                     title={card.title}
                     allow="autoplay; encrypted-media"
                     style={{ border: 0 }}
@@ -344,7 +346,7 @@ export default function HomeTrailerSection() {
       {/* Video Modal */}
       {videoModal && (
         <VideoModal
-          src={`https://www.youtube.com/embed/${videoModal.videoId}?autoplay=1&rel=0`}
+          src={`https://www.youtube-nocookie.com/embed/${videoModal.videoId}?autoplay=1&rel=0`}
           title={videoModal.title}
           fullWidth={videoModal.fullWidth}
           onClose={() => setVideoModal(null)}

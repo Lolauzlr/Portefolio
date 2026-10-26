@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { denyYoutube, grantYoutube, useYoutubeConsent } from "@/lib/youtube-consent";
 
 // Mobile browsers block unmuted autoplay for cross-origin iframes even when
 // the iframe is created from a click, so an autoplay=1 embed without mute=1
@@ -52,6 +53,8 @@ export default function VideoModal({
   fullWidth?: boolean;
 }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const consent = useYoutubeConsent();
+  const youtubeId = src.match(/\/embed\/([^?&/]+)/)?.[1];
   const [withSound] = useState(canAutoplayWithSound);
   // The "Activer le son" button shows only while the video is muted.
   const [muted, setMuted] = useState(!withSound);
@@ -154,17 +157,53 @@ export default function VideoModal({
           instead of staying small until the user physically rotates their
           phone. Desktop and mobile landscape keep the normal centered box. */}
       <div className={`${fullWidth ? "w-[min(100vw,177.78dvh)] h-auto" : "w-full h-full max-w-[90vw] max-h-[90vh] md:max-w-[85vw] md:max-h-[85vh]"} relative aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:w-[min(100vw,177.78dvh)] [@media(orientation:landscape)_and_(max-height:500px)]:h-auto [@media(orientation:landscape)_and_(max-height:500px)]:max-w-none [@media(orientation:landscape)_and_(max-height:500px)]:max-h-none max-md:portrait:fixed max-md:portrait:top-1/2 max-md:portrait:left-1/2 max-md:portrait:w-[min(100dvh,177.78dvw)] max-md:portrait:h-[min(56.25dvh,100dvw)] max-md:portrait:max-w-none max-md:portrait:max-h-none max-md:portrait:-translate-x-1/2 max-md:portrait:-translate-y-1/2 max-md:portrait:rotate-90`}>
-        <iframe
-          ref={iframeRef}
-          className="w-full h-full"
-          src={buildSrc(src, withSound)}
-          onLoad={(e) => startPlayback(e.currentTarget)}
-          title={title}
-          allow="autoplay; encrypted-media; fullscreen"
-          allowFullScreen
-          style={{ border: 0 }}
-        />
-        {muted && !ageRestricted && !hintExpired && (
+        {consent === "granted" ? (
+          <iframe
+            ref={iframeRef}
+            className="w-full h-full"
+            src={buildSrc(src, withSound)}
+            onLoad={(e) => startPlayback(e.currentTarget)}
+            title={title}
+            allow="autoplay; encrypted-media; fullscreen"
+            allowFullScreen
+            style={{ border: 0 }}
+          />
+        ) : (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[#15161b] px-6 text-center text-white">
+            <p className="font-[family-name:var(--font-heading)] text-[24px] md:text-[32px] tracking-[1.92px] uppercase">
+              Load YouTube videos?
+            </p>
+            <p className="max-w-md text-sm md:text-base text-[#dadada]">
+              This video is hosted by YouTube (Google). Loading it shares your IP address with Google.
+              Your choice is saved for 6 months and can be changed any time from the footer.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <button
+                onClick={grantYoutube}
+                className="rounded-full border-2 border-[#0fd1ea] px-6 py-2 text-[#0fd1ea] hover:bg-[rgba(15,209,234,0.1)] transition-colors cursor-pointer"
+              >
+                Accept
+              </button>
+              <button
+                onClick={() => { denyYoutube(); onClose(); }}
+                className="rounded-full border-2 border-[#0fd1ea] px-6 py-2 text-[#0fd1ea] hover:bg-[rgba(15,209,234,0.1)] transition-colors cursor-pointer"
+              >
+                Refuse
+              </button>
+            </div>
+            {youtubeId && (
+              <a
+                href={`https://www.youtube.com/watch?v=${youtubeId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm text-[#dadada] underline hover:text-[#7FECFB]"
+              >
+                Watch on YouTube instead
+              </a>
+            )}
+          </div>
+        )}
+        {consent === "granted" && muted && !ageRestricted && !hintExpired && (
           <button
             onClick={enableSound}
             className="absolute bottom-[5.25rem] right-[4.25rem] z-10 flex w-max items-center gap-2 whitespace-nowrap rounded-full bg-black/60 px-4 py-2 text-sm text-white cursor-pointer"
