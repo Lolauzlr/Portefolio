@@ -43,7 +43,6 @@ export default function VideoModal({
   title,
   onClose,
   fullWidth = false,
-  hideTitleBanner = false,
 }: {
   src: string;
   title: string;
@@ -52,11 +51,6 @@ export default function VideoModal({
   // its 16:9 height would overflow the visible height) instead of the padded
   // 90vw/85vw box.
   fullWidth?: boolean;
-  // YouTube draws its title banner over the top edge of the player and it
-  // can't be turned off: the iframe is made 20% taller (video letterboxed in
-  // the middle, same size) and the box clips the top bar, banner included.
-  // The clip stays open at the bottom so the player controls remain usable.
-  hideTitleBanner?: boolean;
 }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [withSound] = useState(canAutoplayWithSound);
@@ -184,18 +178,16 @@ export default function VideoModal({
           in landscape immediately on open, like YouTube's mobile player,
           instead of staying small until the user physically rotates their
           phone. Desktop and mobile landscape keep the normal centered box. */}
-      <div className={`${fullWidth ? "w-[min(100vw,177.78dvh)] h-auto" : "w-full h-full max-w-[90vw] max-h-[90vh] md:max-w-[85vw] md:max-h-[85vh]"} relative aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:w-[min(100vw,177.78dvh)] [@media(orientation:landscape)_and_(max-height:500px)]:h-auto [@media(orientation:landscape)_and_(max-height:500px)]:max-w-none [@media(orientation:landscape)_and_(max-height:500px)]:max-h-none max-md:portrait:fixed max-md:portrait:top-1/2 max-md:portrait:left-1/2 max-md:portrait:w-[min(100dvh,177.78dvw)] max-md:portrait:h-[min(56.25dvh,100dvw)] max-md:portrait:max-w-none max-md:portrait:max-h-none max-md:portrait:-translate-x-1/2 max-md:portrait:-translate-y-1/2 max-md:portrait:rotate-90`}
-        style={hideTitleBanner ? { clipPath: "inset(0 0 -12% 0)" } : undefined}
-      >
+      <div className={`${fullWidth ? "w-[min(100vw,177.78dvh)] h-auto" : "w-full h-full max-w-[90vw] max-h-[90vh] md:max-w-[85vw] md:max-h-[85vh]"} relative aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:w-[min(100vw,177.78dvh)] [@media(orientation:landscape)_and_(max-height:500px)]:h-auto [@media(orientation:landscape)_and_(max-height:500px)]:max-w-none [@media(orientation:landscape)_and_(max-height:500px)]:max-h-none max-md:portrait:fixed max-md:portrait:top-1/2 max-md:portrait:left-1/2 max-md:portrait:w-[min(100dvh,177.78dvw)] max-md:portrait:h-[min(56.25dvh,100dvw)] max-md:portrait:max-w-none max-md:portrait:max-h-none max-md:portrait:-translate-x-1/2 max-md:portrait:-translate-y-1/2 max-md:portrait:rotate-90`}>
         <iframe
           ref={iframeRef}
-          className={hideTitleBanner ? "absolute left-0 w-full" : "w-full h-full"}
-          style={hideTitleBanner ? { border: 0, top: "-10%", height: "120%" } : { border: 0 }}
+          className="w-full h-full"
           src={buildSrc(src, withSound)}
           onLoad={(e) => startPlayback(e.currentTarget)}
           title={title}
           allow="autoplay; encrypted-media; fullscreen"
           allowFullScreen
+          style={{ border: 0 }}
         />
         {!withSound && videoId && (
           <a
