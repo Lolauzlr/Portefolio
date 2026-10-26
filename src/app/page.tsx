@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { asset } from "@/lib/asset";
-import { illustrationCaption } from "@/data/illustrations";
+import { illustrationAlt, illustrationCaption } from "@/data/illustrations";
 import { LightboxImg, LightboxProvider, type LightboxSlide } from "@/components/IllustrationLightbox";
 import HomeHeroSection from "@/components/HomeHeroSection";
 import HomeMoviesSection from "@/components/HomeMoviesSection";
@@ -90,7 +90,7 @@ export default function Home() {
                   I don&apos;t have one fixed way of working. I choose the medium depending on what I want to express, whether it&apos;s a particular mood, texture, character or atmosphere. I enjoy moving from one technique to another, experimenting and sometimes combining them. I believe the visual style should grow naturally from the story.
                 </p>
               </div>
-              <LightboxImg src="/images/illustrations/illus-1.webp" alt="" className="w-full h-[322px] object-cover mt-4 md:mt-6" />
+              <LightboxImg src="/images/illustrations/illus-1.webp" alt={illustrationAlt("/images/illustrations/illus-1.webp")} className="w-full h-[322px] object-cover mt-4 md:mt-6" />
             </div>
           </div>
 
