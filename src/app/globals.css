@@ -118,3 +118,35 @@ body[data-reading="true"] {
     display: none !important;
   }
 }
+
+/* prefers-reduced-motion: only applies to users who asked their system for
+   fewer animations - everyone else keeps the full experience unchanged.
+   - smooth scrolling and decorative CSS transitions / animations (hover fades,
+     burger icon, thumbnail highlights, floating form labels...) become instant;
+   - the veil that covers the shelf <-> reader switch stays as a very short fade,
+     so the change of view is still understandable;
+   - the 3D shelf has its own reduced-motion mode (see scene.ts / ShelfShell). */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
+
+  [data-reduced-motion-fade] {
+    transition-duration: 120ms !important;
+  }
+
+  body[data-reading="true"] header,
+  body[data-reading="true"] footer {
+    transition-duration: 120ms !important;
+  }
+}

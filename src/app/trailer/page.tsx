@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback, useSyncExternalStore } from "
 import { asset } from "@/lib/asset";
 import { useSwipeNav } from "@/hooks/useSwipeNav";
 import { useZoomPan } from "@/hooks/useZoomPan";
+import { prefersReducedMotion } from "@/hooks/useReducedMotion";
 import ZoomControls from "@/components/ZoomControls";
 import TrailerScreenshotNav from "@/components/TrailerScreenshotNav";
 import LandscapeImageViewer, { isPortraitPhone } from "@/components/LandscapeImageViewer";
@@ -63,7 +64,8 @@ export default function TrailerPage() {
   const mobileVideoRef = useRef<HTMLVideoElement>(null);
   const ytHostRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YT.Player | null>(null);
-  const userPausedRef = useRef(false);
+  // With prefers-reduced-motion the hero video starts paused; the play button starts it.
+  const userPausedRef = useRef(prefersReducedMotion());
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const cadreRef = useRef<HTMLDivElement>(null);
@@ -443,6 +445,10 @@ export default function TrailerPage() {
   const onPlayerReady = useCallback((event: YT.PlayerEvent) => {
     event.target.mute();
     setIsMuted(true);
+    if (userPausedRef.current) {
+      setIsPlaying(false);
+      return;
+    }
     event.target.playVideo();
   }, []);
 
@@ -475,7 +481,7 @@ export default function TrailerPage() {
         width: "100%",
         height: "100%",
         playerVars: {
-          autoplay: 1,
+          autoplay: userPausedRef.current ? 0 : 1,
           mute: 1,
           loop: 1,
           playlist: "OLEZv_Qyb6Q",
@@ -535,6 +541,10 @@ export default function TrailerPage() {
     if (!isMobile) return;
     const video = mobileVideoRef.current;
     if (!video) return;
+    if (prefersReducedMotion()) {
+      video.pause();
+      return;
+    }
     video.play().catch(() => {});
     const kick = () => { if (video.paused) video.play().catch(() => {}); };
     window.addEventListener("touchstart", kick, { once: true, passive: true });

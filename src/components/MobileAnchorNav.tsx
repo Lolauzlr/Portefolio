@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { prefersReducedMotion } from "@/hooks/useReducedMotion";
 
 type Anchor = { href: string; label: string };
 
@@ -66,7 +67,7 @@ export default function MobileAnchorNav({
     const el = document.querySelector(anchors[idx].href);
     if (el instanceof HTMLElement) {
       const top = el.getBoundingClientRect().top + window.scrollY - headerOffset;
-      window.scrollTo({ top, behavior: smooth ? "smooth" : "instant" });
+      window.scrollTo({ top, behavior: smooth && !prefersReducedMotion() ? "smooth" : "instant" });
     }
   };
 

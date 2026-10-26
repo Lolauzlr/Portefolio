@@ -1177,6 +1177,7 @@ export default function ShelfShell({
 
       <div
         aria-hidden
+        data-reduced-motion-fade
         className="pointer-events-none fixed inset-0 z-30 bg-[#131313] transition-opacity duration-300"
         style={{ opacity: overlay }}
       />

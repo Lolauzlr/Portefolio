@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import VideoModal from "@/components/VideoModal";
+import { prefersReducedMotion } from "@/hooks/useReducedMotion";
 
 const HERO_VIDEO_ID = "yfCtiQ93gis";
 const HERO_VIDEO_TITLE = "HERO VIDEO";
@@ -41,7 +42,9 @@ export default function HomeHeroSection() {
   const [isMuted, setIsMuted] = useState(true);
   const [showPause, setShowPause] = useState(false);
   const playerRef = useRef<YT.Player | null>(null);
-  const userPausedRef = useRef(false);
+  // With prefers-reduced-motion the background video starts paused (poster
+  // frame + play button); the user can still start it with the play button.
+  const userPausedRef = useRef(prefersReducedMotion());
   const heroRef = useRef<HTMLElement>(null);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [playerScale, setPlayerScale] = useState(0.5);
@@ -116,6 +119,10 @@ export default function HomeHeroSection() {
     event.target.mute();
     setIsMuted(true);
     requestMaxQuality(event.target);
+    if (userPausedRef.current) {
+      setIsPlaying(false);
+      return;
+    }
     event.target.playVideo();
   }, []);
 
@@ -150,7 +157,7 @@ export default function HomeHeroSection() {
         width: player.w,
         height: iframeHeight,
         playerVars: {
-          autoplay: 1,
+          autoplay: userPausedRef.current ? 0 : 1,
           mute: 1,
           loop: 1,
           playlist: videoId,
