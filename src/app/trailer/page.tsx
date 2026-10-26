@@ -746,6 +746,12 @@ export default function TrailerPage() {
                 {...(supportsHover ? { onMouseEnter: () => setHoveredRecent(card.videoId), onMouseLeave: () => setHoveredRecent(null) } : {})}
                 onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
               >
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
+                    aria-label={`Lire la vidéo ${card.title}`}
+                    className="absolute inset-0 z-10 w-full h-full cursor-pointer"
+                  />
                 {hoveredRecent === card.videoId ? (
                   // Native YouTube controls enabled (scrub bar + seeking).
                   // YouTube's own control bar already includes a fullscreen
@@ -853,6 +859,12 @@ export default function TrailerPage() {
                     {...(supportsHover ? { onMouseEnter: () => setHoveredWatch(card.videoId), onMouseLeave: () => setHoveredWatch(null) } : {})}
                     onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
                   >
+                      <button
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
+                        aria-label={`Lire la vidéo ${card.title}`}
+                        className="absolute inset-0 z-10 w-full h-full cursor-pointer"
+                      />
                     {hoveredWatch === card.videoId ? (
                       // Native YouTube controls enabled (scrub bar +
                       // seeking). YouTube's own control bar already

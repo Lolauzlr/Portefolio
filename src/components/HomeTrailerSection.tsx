@@ -273,6 +273,12 @@ export default function HomeTrailerSection() {
                   : {})}
                 onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
               >
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
+                    aria-label={`Lire la vidéo ${card.title}`}
+                    className="absolute inset-0 z-10 w-full h-full cursor-pointer"
+                  />
                 {hoveredCard === card.videoId ? (
                   // Preview only: no native controls and no pointer capture,
                   // so a click anywhere on the video opens the full-width
