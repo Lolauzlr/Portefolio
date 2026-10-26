@@ -28,6 +28,10 @@ export default function LegalNoticePage() {
         San Francisco, CA 94107, United States.
       </p>
       <p>
+        Traffic to the website goes through Cloudflare, Inc. (CDN and security services), 101
+        Townsend Street, San Francisco, CA 94107, United States.
+      </p>
+      <p>
         The domain name mariechalandre.com is registered with OVH SAS, 2 rue Kellermann, 59100
         Roubaix, France.
       </p>

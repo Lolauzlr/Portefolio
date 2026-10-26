@@ -54,8 +54,9 @@ export default function PrivacyPolicyPage() {
 
       <h2>Hosting and logs</h2>
       <p>
-        The website is hosted on GitHub Pages (GitHub, Inc., United States), which may keep
-        technical logs such as IP addresses. This website does not use analytics or advertising
+        The website is hosted on GitHub Pages (GitHub, Inc., United States) and its traffic goes
+        through Cloudflare, Inc. (United States), which provides caching and security services.
+        Both may keep technical logs such as IP addresses. This website does not use analytics or advertising
         trackers.
       </p>
 
