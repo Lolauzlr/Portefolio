@@ -55,6 +55,10 @@ export default function VideoModal({
   const [withSound] = useState(canAutoplayWithSound);
   // The "Activer le son" button shows only while the video is muted.
   const [muted, setMuted] = useState(!withSound);
+  // On touch devices a tap on the player's own YouTube logo makes the embed
+  // open a blank tab (about:blank) before redirecting. A real link laid over the
+  // logo goes straight to YouTube instead (desktop keeps the native behaviour).
+  const videoId = src.match(/\/embed\/([\w-]+)/)?.[1];
   const ageRestricted = AGE_RESTRICTED_VIDEO_IDS.some((id) => src.includes(id));
   // ...and leaves together with YouTube's own controls, which fade shortly after
   // playback starts. The player doesn't report control visibility, so the
@@ -65,6 +69,7 @@ export default function VideoModal({
   // Set once the player reports it is playing; stops the start retries below.
   const playingRef = useRef(false);
   const startTimers = useRef<number[]>([]);
+  const lastKick = useRef(0);
   const armHide = (ms: number) => {
     if (hideTimer.current) return;
     hideTimer.current = window.setTimeout(() => setHintExpired(true), ms);
@@ -95,6 +100,17 @@ export default function VideoModal({
         const data = JSON.parse(e.data);
         const m = data?.info?.muted;
         if (typeof m === "boolean") setMuted(m);
+        // The player talks as soon as it is ready: that is the moment a
+        // start command is sure to be heard (a slow phone can be ready well
+        // after the timed retries below), so ask for playback then too.
+        if (!playingRef.current && iframeRef.current && (data?.event === "onReady" || data?.event === "initialDelivery" || data?.event === "infoDelivery")) {
+          const now = Date.now();
+          if (now - lastKick.current > 250) {
+            lastKick.current = now;
+            if (!withSound) sendCommand(iframeRef.current, "mute");
+            sendCommand(iframeRef.current, "playVideo");
+          }
+        }
         if (data?.info?.playerState === 1) {
           playingRef.current = true;
           armHide(4000);
@@ -105,7 +121,7 @@ export default function VideoModal({
     };
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, []);
+  }, [withSound]);
 
   // The autoplay URL parameter alone is often ignored by mobile browsers, which
   // leaves YouTube's play button waiting for a second tap. Like the trailer
@@ -115,7 +131,7 @@ export default function VideoModal({
   const startPlayback = (iframe: HTMLIFrameElement) => {
     listen(iframe);
     startTimers.current.forEach(window.clearTimeout);
-    startTimers.current = [0, 400, 1000, 2000, 3500].map((ms) =>
+    startTimers.current = [0, 400, 1000, 2000, 3500, 5500, 8000].map((ms) =>
       window.setTimeout(() => {
         if (playingRef.current) return;
         // The handshake sent on load is also dropped if the player wasn't ready.
@@ -164,6 +180,15 @@ export default function VideoModal({
           allowFullScreen
           style={{ border: 0 }}
         />
+        {!withSound && videoId && (
+          <a
+            href={`https://www.youtube.com/watch?v=${videoId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Regarder sur YouTube"
+            className="absolute bottom-[4%] left-[64%] z-10 h-[12%] w-[27%]"
+          />
+        )}
         {muted && !ageRestricted && !hintExpired && (
           <button
             onClick={enableSound}
