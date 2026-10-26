@@ -28,6 +28,12 @@ const BANNER_PAD = 0;
 // height). On mobile the hero frame is therefore 10 % shorter than the 9:16
 // video and the video is anchored to the top (no zoom): the strip falls below
 // the frame and is clipped. 9 / (16 * 0.9) = 9 / 14.4.
+// The showreel has black bars burned into its picture (about 12 % of the frame
+// at the top and at the bottom: YouTube's title banner, the credits line and the
+// YouTube logo all land in them). Zooming the horizontal video by this factor
+// pushes the bars out of the hero frame so the picture fills the screen. The
+// iframe size (hence the 4K stream) is unchanged: only the CSS scale grows.
+const VIDEO_ZOOM = 1.32;
 const TARGET_QUALITY = "hd2160";
 
 // Undocumented-but-working on many builds: lock the quality range to 4K, then
@@ -74,7 +80,7 @@ export default function HomeHeroSection() {
     const ro = new ResizeObserver(([entry]) => {
       const { width, height } = entry.contentRect;
       const cover = Math.max(width / player.w, height / player.h);
-      setPlayerScale(cover);
+      setPlayerScale(isMobile ? cover : cover * VIDEO_ZOOM);
       // Mobile: anchor the video to the top edge (the overflow is at the bottom).
       setPlayerShiftY(isMobile ? Math.max(0, (player.h * cover - height) / 2) : 0);
     });
