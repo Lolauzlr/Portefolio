@@ -324,6 +324,7 @@ export default function HomeHeroSection() {
           src={`https://www.youtube.com/embed/${videoModal.videoId}?autoplay=1&rel=0`}
           title={videoModal.title}
           fullWidth={videoModal.fullWidth}
+          hideTitleBanner
           onClose={() => setVideoModal(null)}
         />
       )}
