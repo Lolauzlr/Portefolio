@@ -20,7 +20,10 @@ const MOBILE_PLAYER = { w: 1080, h: 1920 };
 // share of the video's height on each side: the video stays letterboxed in the
 // middle (same size, no zoom) and the banner lands in the black bar above it,
 // which the hero frame clips together with the bar below.
-const BANNER_PAD = 0.08;
+// Currently 0: a non-16:9 iframe (0.08 => 3840x2506) made YouTube pick a lower
+// resolution than 4K on desktop. Keep it 0 unless the banner trick is re-done
+// without changing the player's aspect ratio.
+const BANNER_PAD = 0;
 // The Short has a black credits strip burned into its bottom edge (~9 % of its
 // height). On mobile the hero frame is therefore 10 % shorter than the 9:16
 // video and the video is anchored to the top (no zoom): the strip falls below
