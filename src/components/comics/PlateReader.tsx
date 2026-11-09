@@ -47,14 +47,14 @@ export default function PlateReader({
         type="button"
         tabIndex={-1}
         onClick={(e) => zoom.guardTap(e, onPrev)}
-        aria-label="Page précédente"
+        aria-label="Previous page"
         className="absolute inset-y-0 left-0 w-1/2 cursor-pointer"
       />
       <button
         type="button"
         tabIndex={-1}
         onClick={(e) => zoom.guardTap(e, onNext)}
-        aria-label="Page suivante"
+        aria-label="Next page"
         className="absolute inset-y-0 right-0 w-1/2 cursor-pointer"
       />
 

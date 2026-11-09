@@ -113,7 +113,7 @@ export default function HomeHeroSection() {
         <button type="button"
           className="absolute inset-0 w-full h-full z-10 cursor-pointer group focus-visible:outline-offset-[-4px]"
           onClick={() => setVideoModal({ videoId: HERO_VIDEO_ID, title: HERO_VIDEO_TITLE, fullWidth: true })}
-          aria-label="Ouvrir la vidéo"
+          aria-label="Open the video"
         />
 
         {/* Pause button - visible on mouse move, hides after 5s idle */}
@@ -169,7 +169,7 @@ export default function HomeHeroSection() {
         <button type="button"
           onClick={toggleMute}
           className="absolute right-[52px] md:right-[24px] bottom-[41px] md:bottom-[calc(11.8%+14px)] z-20 size-[27px] md:size-[30px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
-          aria-label={isMuted ? "Activer le son" : "Couper le son"}
+          aria-label={isMuted ? "Turn sound on" : "Turn sound off"}
         >
           {isMuted ? (
             <svg width="32" height="32" className="size-[17px] md:size-[18px]" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

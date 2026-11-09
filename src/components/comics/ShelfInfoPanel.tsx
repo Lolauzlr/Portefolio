@@ -9,7 +9,7 @@ import type { Comic } from "@/lib/comics";
 const CROSSFADE_MS = 220;
 
 /**
- * CTA READ (ou son repli "BIENTÔT" pour un album sans pages, voir plus bas) -
+ * CTA READ (ou son repli "COMING SOON" pour un album sans pages, voir plus bas) -
  * rendue deux fois par le panneau : à côté du titre sur mobile (`compact`,
  * taille reprise du même barème que les autres pilules du site, voir
  * Navbar.tsx/cv/page.tsx - `text-[20px]`/`px-[20px]`/`py-[10px]`), tout en
@@ -32,7 +32,7 @@ function ReadAction({
     return (
       <span className={`border-2 border-[#555] flex items-center shrink-0 rounded-[40px] ${padding}`}>
         <span className={`font-[family-name:var(--font-heading)] text-[#8b9099] whitespace-nowrap ${textSize}`}>
-          BIENTÔT
+          COMING SOON
         </span>
       </span>
     );

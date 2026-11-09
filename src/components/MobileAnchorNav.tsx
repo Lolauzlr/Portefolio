@@ -188,7 +188,7 @@ export default function MobileAnchorNav({
         <button
           ref={buttonRef}
           type="button"
-          aria-label="Navigation rapide entre les sections"
+          aria-label="Quick navigation between sections"
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={() => finish(true)}

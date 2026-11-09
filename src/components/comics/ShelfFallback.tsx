@@ -10,7 +10,7 @@ export default function ShelfFallback({ className = "" }: { className?: string }
             <Link href={`/storytelling/${comic.slug}/lire`} className="group block">
               <img
                 src={comic.cover ?? ""}
-                alt={`Couverture de ${comic.title}`}
+                alt={`Cover of ${comic.title}`}
                 className="aspect-[2/3] w-full object-cover transition-opacity group-hover:opacity-80"
               />
               <h2 className="mt-4 font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] uppercase">

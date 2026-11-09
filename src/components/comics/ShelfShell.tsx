@@ -1136,7 +1136,7 @@ export default function ShelfShell({
         <button
           type="button"
           onClick={() => void exit({ navigate: true })}
-          aria-label="Fermer la lecture"
+          aria-label="Close the reader"
           className="fixed top-4 right-4 z-20 flex h-[56px] w-[56px] items-center justify-center rounded-full border-2 border-[#0fd1ea] bg-black/40 text-[#0fd1ea] backdrop-blur-[5px] transition-colors hover:bg-[#0fd1ea]/10 md:top-6 md:right-6"
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
@@ -1155,7 +1155,7 @@ export default function ShelfShell({
           <button
             type="button"
             onClick={() => void turn(-1)}
-            aria-label="Page précédente"
+            aria-label="Previous page"
             className="fixed left-4 top-1/2 z-20 flex h-[48px] w-[48px] -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/50 backdrop-blur-sm transition-colors hover:bg-black/70"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
@@ -1165,7 +1165,7 @@ export default function ShelfShell({
           <button
             type="button"
             onClick={() => void turn(1)}
-            aria-label="Page suivante"
+            aria-label="Next page"
             className="fixed right-4 top-1/2 z-20 flex h-[48px] w-[48px] -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-black/50 backdrop-blur-sm transition-colors hover:bg-black/70"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>

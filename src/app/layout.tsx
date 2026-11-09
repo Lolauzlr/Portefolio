@@ -59,7 +59,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen antialiased">
         <a href="#contenu" className="skip-link">
-          Aller au contenu
+          Skip to content
         </a>
         <JsonLd data={personSchema} />
         <JsonLd data={websiteSchema} />

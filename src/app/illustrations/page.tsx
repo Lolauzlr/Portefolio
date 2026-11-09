@@ -15,14 +15,14 @@ const heroSlides: { src: string; alt: string; title: string; description: React.
     src: i(34),
     alt: "Drunked Monster",
     title: "DRUNKED MONSTER",
-    description: "Digital Painting : Marie Chalandre • Illustration : Cyril Mornet",
+    description: "Digital Painting: Marie Chalandre • Illustration: Cyril Mornet",
   },
   {
     src: i(32),
     alt: "Mazou BD",
     title: "MAZOU BD",
     description:
-      "Comic Book Project • A visual diary of a journey around the world • Pen drawing on paper, digitally colored in Adobe Photoshop",
+      "Comic Book Project • A visual diary of a journey around the world • Pen drawing on paper, digitally coloured in Adobe Photoshop",
   },
 ];
 
@@ -183,7 +183,7 @@ export default function IllustrationsPage() {
             <div className="flex flex-col gap-[12px]">
               <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">DRUNKED MONSTER</p>
               <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px]">
-                Digital Painting : Marie Chalandre • Illustration : Cyril Mornet
+                Digital Painting: Marie Chalandre • Illustration: Cyril Mornet
               </p>
             </div>
           </div>
@@ -193,7 +193,7 @@ export default function IllustrationsPage() {
             <div className="flex flex-col gap-[12px]">
               <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">MAZOU BD</p>
               <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px]">
-                Comic Book Project • A visual diary of a journey around the world • Pen drawing on paper, digitally colored in Adobe Photoshop
+                Comic Book Project • A visual diary of a journey around the world • Pen drawing on paper, digitally coloured in Adobe Photoshop
               </p>
             </div>
             <LightboxImg src={i(32)} alt="Mazou BD" className="w-full h-[539px] object-cover" />
@@ -220,7 +220,7 @@ export default function IllustrationsPage() {
             <div className="flex-1 flex flex-col gap-6 md:gap-0 md:justify-between md:self-stretch">
               <TitleBlock
                 title="Cinematic Approach to Illustration"
-                text="My background in cinematic art still comes through in the way I approach illustration. I pay a lot of attention to composition, color, light and rhythm, even in a single frame. For me, visual storytelling is about creating an image that can communicate something without saying a word."
+                text="My background in cinematic art still comes through in the way I approach illustration. I pay a lot of attention to composition, colour, light and rhythm, even in a single frame. For me, visual storytelling is about creating an image that can communicate something without saying a word."
               />
               <LightboxImg src={i(1)} alt={illustrationAlt(i(1))} className="w-full md:aspect-auto md:h-[322px] md:object-cover" />
             </div>
@@ -275,7 +275,7 @@ export default function IllustrationsPage() {
             <div className="flex-1 flex flex-col gap-6 md:gap-0 md:justify-between md:self-stretch">
               <TitleBlock
                 title="Traditional & Digital Techniques"
-                text="I switch between traditional and digital techniques depending on what I want to express. Sometimes it is watercolor and ink, sometimes pencil and pen, sometimes digital painting in Photoshop. I like not being locked into one way of working and letting the technique adapt to the idea."
+                text="I switch between traditional and digital techniques depending on what I want to express. Sometimes it is watercolour and ink, sometimes pencil and pen, sometimes digital painting in Photoshop. I like not being locked into one way of working and letting the technique adapt to the idea."
               />
               <LightboxImg src={i(14)} alt={illustrationAlt(i(14))} className="w-full md:aspect-[1548/1473] md:object-cover" />
             </div>
@@ -326,8 +326,8 @@ export default function IllustrationsPage() {
             </div>
             <div className="flex-1 flex flex-col gap-6 md:gap-0 md:justify-between md:self-stretch">
               <TitleBlock
-                title="Color, Light & Composition"
-                text="I pay a lot of attention to color and lighting when I work. A change in palette, contrast or light can completely change the mood of an image. I like using these elements as part of the visual language, not just to make an image look good, but to reinforce its meaning."
+                title="Colour, Light & Composition"
+                text="I pay a lot of attention to colour and lighting when I work. A change in palette, contrast or light can completely change the mood of an image. I like using these elements as part of the visual language, not just to make an image look good, but to reinforce its meaning."
               />
               <LightboxImg src={i(21)} alt={illustrationAlt(i(21))} className="w-full md:aspect-auto md:h-[500px] md:object-cover" />
             </div>

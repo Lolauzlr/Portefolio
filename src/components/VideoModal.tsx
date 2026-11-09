@@ -9,13 +9,13 @@ import { useFocusTrap } from "@/hooks/useFocusTrap";
 // the iframe is created from a click, so an autoplay=1 embed without mute=1
 // silently fails to start and shows YouTube's own play button (a second tap).
 // Muted autoplay is always allowed, so on touch devices the video starts muted
-// on the first click, and a tap on our "Activer le son" button (a real user
+// on the first click, and a tap on our "Turn sound on" button (a real user
 // gesture, the only thing that can unmute) turns the sound on. We never try to
 // unmute programmatically: without a gesture the browser answers by pausing the
 // video. Desktop (hover + fine pointer) can autoplay with sound, so it is left
 // unmuted and shows no button.
 // Age-restricted videos open on YouTube's own age-confirmation screen, where
-// an "Activer le son" button makes no sense, so they never get one.
+// an "Turn sound on" button makes no sense, so they never get one.
 const AGE_RESTRICTED_VIDEO_IDS = ["ZPQFsx9XXoM"]; // RESONANCE : A PLAGUE TALE LEGACY • GAMEPLAY
 
 function canAutoplayWithSound(): boolean {
@@ -63,7 +63,7 @@ export default function VideoModal({
     return () => { window.dispatchEvent(new Event(VIDEO_MODAL_CLOSE)); };
   }, []);
   const [withSound] = useState(canAutoplayWithSound);
-  // The "Activer le son" button shows only while the video is muted.
+  // The "Turn sound on" button shows only while the video is muted.
   const [muted, setMuted] = useState(!withSound);
   // On touch devices a tap on the player's own YouTube logo makes the embed
   // open a blank tab (about:blank) before redirecting. A real link laid over the
@@ -176,7 +176,7 @@ export default function VideoModal({
         type="button"
         onClick={onClose}
         className="absolute top-6 right-6 md:top-10 md:right-10 [@media(orientation:landscape)_and_(max-height:500px)]:top-3 [@media(orientation:landscape)_and_(max-height:500px)]:left-4 [@media(orientation:landscape)_and_(max-height:500px)]:right-auto text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer z-10"
-        aria-label="Fermer"
+        aria-label="Close"
       >
         ✕
       </button>
@@ -203,7 +203,7 @@ export default function VideoModal({
             href={`https://www.youtube.com/watch?v=${videoId}`}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Regarder sur YouTube"
+            aria-label="Watch on YouTube"
             className="absolute bottom-[4%] left-[64%] z-10 h-[12%] w-[27%]"
           />
         )}
@@ -217,7 +217,7 @@ export default function VideoModal({
               <path d="M11 5 6 9H2v6h4l5 4V5z" fill="currentColor" />
               <path d="m23 9-6 6M17 9l6 6" />
             </svg>
-            Activer le son
+            Turn sound on
           </button>
         )}
       </div>

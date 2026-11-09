@@ -16,17 +16,17 @@ type ExperienceItem = {
 
 const EXPERIENCE: ExperienceItem[] = [
   { dates: "Apr. 25 - Now", title: "Cinematic artist", org: "Focus Entertainment", meta: "CDI • Paris", desc: "Video & Sound Editing / Motion Design, 3D Cinematic / Animation & Camera Layout" },
-  { dates: "Dec. 24 - Mar. 25", title: "Video Editor & Illustrator Freelance", org: "Freelance", desc: "Illustration, Video Editing / Motion Design / Animation" },
+  { dates: "Dec. 24 - Mar. 25", title: "Freelance Video Editor & Illustrator", org: "Freelance", desc: "Illustration, Video Editing / Motion Design / Animation" },
   { dates: "Aug. 23 - Sep. 23", title: "Compositing artist", org: "SAINT EX feature film by Pablo Agüero", meta: "Paris", desc: "Compositing / Animation" },
   { dates: "Sep. 22 - Aug. 23", title: "Cinematic artist", org: "Focus Entertainment", meta: "CDI • Paris", desc: "Video & Sound Editing / Motion Design / Animation" },
   { dates: "Jun. 22", title: "Video Editor & Motion designer", org: "ARTE, « Gymnastique »", meta: "Paris", desc: "Video & Sound Editing / Motion Design, 3D Cinematic / Animation & Camera Layout" },
   { dates: "Nov. 19 - Jun. 22", title: "Scenarist & Concept artist", org: "MANUEL CAM", meta: "Asnières", desc: "Scenario Development / Storyboarding / Concept art" },
-  { dates: "Nov. 21 - Dec. 21", title: "Storyboarder", org: "Nabil Harlow", meta: "Clip video • Paris", desc: "Storyboarding" },
-  { dates: "Oct. 21 - Nov. 21", title: "Storyboarder", org: "TWINS Brothers, parternship with Henessy", meta: "Clip video • Paris", desc: "Storyboarding" },
+  { dates: "Nov. 21 - Dec. 21", title: "Storyboarder", org: "Nabil Harlow", meta: "Video clip • Paris", desc: "Storyboarding" },
+  { dates: "Oct. 21 - Nov. 21", title: "Storyboarder", org: "TWINS Brothers, partnership with Hennessy", meta: "Video clip • Paris", desc: "Storyboarding" },
   { dates: "Sep. 20 - Nov. 20", title: "Animator 2D", org: "MAC GUFF", meta: "Paris", desc: "2D Animation" },
-  { dates: "Jul. 20 - Aug. 20", title: "Animator 2D", org: "Documentary LAONGO Jerôme Legrand", meta: "Paris", desc: "2D Animation / Rotoscoping / Video Editing" },
-  { dates: "May 19 - Jun. 19", title: "Video Editor & Motion designer", org: "ZENDCO", orgSuffix: "Exhibition", meta: "Museum « des Confluences » • Lyon", desc: "2D Animation / Illustration / Video Editing" },
-  { dates: "Dec. 16 - Jan. 17", title: "Internship Illustrator & Graphist", org: "MUZIKA", meta: "Tokyo, Japan", desc: "Graphic Design / Editorial Design / Illustration" },
+  { dates: "Jul. 20 - Aug. 20", title: "Animator 2D", org: "Documentary LAONGO Jérôme Legrand", meta: "Paris", desc: "2D Animation / Rotoscoping / Video Editing" },
+  { dates: "May 19 - Jun. 19", title: "Video Editor & Motion designer", org: "ZENDCO", orgSuffix: "Exhibition", meta: "Musée des Confluences • Lyon", desc: "2D Animation / Illustration / Video Editing" },
+  { dates: "Dec. 16 - Jan. 17", title: "Internship Illustrator & Graphic Designer", org: "MUZIKA", meta: "Tokyo, Japan", desc: "Graphic Design / Editorial Design / Illustration" },
 ];
 
 const SOFTWARES = [
@@ -35,7 +35,7 @@ const SOFTWARES = [
     items: [
       { name: "TVPaint Animation", icon: "logo-tvpaint" },
       { name: "Blender", icon: "logo-blender" },
-      { name: "Zbrush", icon: "logo-zbrush" },
+      { name: "ZBrush", icon: "logo-zbrush" },
       { name: "Unreal Engine", icon: "logo-unreal" },
       { name: "Unity", icon: "logo-unity" },
     ],
@@ -54,7 +54,7 @@ const SOFTWARES = [
     items: [
       { name: "Photoshop", icon: "logo-photoshop" },
       { name: "Illustrator", icon: "logo-illustrator" },
-      { name: "Indesign", icon: "logo-indesign" },
+      { name: "InDesign", icon: "logo-indesign" },
       { name: "Clip Studio Paint", icon: "logo-clipstudio" },
       { name: "Storyboarder", icon: "logo-storyboader" },
     ],
@@ -70,21 +70,21 @@ const LANGS = [
 ] as const;
 
 const EDUCATION: ExperienceItem[] = [
-  { dates: "Sep. 13 - Jun. 18", title: "Master's Degree in Animation", org: "École Nationale Supérieure des Arts Décoratifs of Paris", meta: "Paris", desc: "Master dissertation awarded Jury's Congratulations / Graduation film awarded Honors" },
+  { dates: "Sep. 13 - Jun. 18", title: "Master's Degree in Animation", org: "École Nationale Supérieure des Arts Décoratifs of Paris", meta: "Paris", desc: "Master's dissertation awarded with the Jury's Congratulations / Graduation film awarded Honours" },
   { dates: "Sep. 16 - Feb. 17", title: "International Exchange Program (Japan)", org: "Asagaya College of Art & Design", meta: "Tokyo", desc: "" },
-  { dates: "Sep. 10 - Jul. 13", title: "Bachelor's Degree - STD2A (Applied Arts)", org: "Saint-Maur des Fossés", desc: "Graduated with Honors" },
+  { dates: "Sep. 10 - Jul. 13", title: "Bachelor's Degree - STD2A (Applied Arts)", org: "Saint-Maur-des-Fossés", desc: "Graduated with Honours" },
 ];
 
 const ADDITIONAL_TRAINING: ExperienceItem[] = [
-  { dates: "Mar. 22", title: "Z Brush Training", org: "Ziggourat Formation", desc: "" },
+  { dates: "Mar. 22", title: "ZBrush Training", org: "Ziggourat Formation", desc: "" },
   { dates: "Mar. 22", title: "Blender Training", org: "40e Rugissant", desc: "" },
 ];
 
 const HOBBIES = [
-  { icon: "boxing-glove", label: "Martial Arts & Sports", desc: "Shotokan Karate / Black Belt, 2nd Dan / Boxing / Hiking / Climbing / Running" },
+  { icon: "boxing-glove", label: "Martial Arts & Sports", desc: "Shotokan Karate, Black Belt 2nd Dan / Boxing / Hiking / Climbing / Running" },
   { icon: "palette", label: "Arts", desc: "Cinema / Animation / Photography / Literature / Philosophy / Comics / Manga / Video Games" },
   { icon: "headphones", label: "Music", desc: "Certificate of Musical Studies (DEM) • Piano & Music Theory / Fingerstyle Guitar" },
-  { icon: "airplane-tilt", label: "Travel", desc: "One-year backpacking world tour • Oct. 23 - Oct. 24 • East & Southeast Asia, Oceania, North & South America\nWoofing experience & and 7-month stay in Japan • Jul. 16 - Feb. 17" },
+  { icon: "airplane-tilt", label: "Travel", desc: "One-year backpacking world tour • Oct. 23 - Oct. 24 • East & Southeast Asia, Oceania, North & South America\nWWOOFing experience and 7-month stay in Japan • Jul. 16 - Feb. 17" },
 ] as const;
 
 const ANCHORS = [
@@ -395,7 +395,7 @@ export default function CVPage() {
             <SectionTitle>Reward</SectionTitle>
             <div className="flex flex-col gap-[4px] items-start w-full">
               <h3 className="font-[family-name:var(--font-heading)] text-[24px] md:text-[32px] text-white tracking-[2.56px] uppercase">
-                Graduation film « BEAST »
+                Graduation film “BEAST”
               </h3>
               <p className="font-[family-name:var(--font-body)] text-[16px] md:text-[20px] tracking-[1.6px]">
                 <span className="text-[#ddff6e] font-semibold">Kinolikbez Festival (2021)</span>

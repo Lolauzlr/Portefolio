@@ -197,30 +197,30 @@ export default function TrailerPage() {
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/ISS/ISS_05.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/ISS/ISS_landscape_01.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/ISS/ISS_Newskin_04.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/ISS/ISS_Warzone_03.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/ISS/ISS_Weapon02.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/ISS/ISS_05.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/ISS/ISS_landscape_01.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/ISS/ISS_Newskin_04.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/ISS/ISS_Warzone_03.webp", tag: "SCENE 04", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/ISS/ISS_Weapon02.webp", tag: "SCENE 05", description: "Screenshot from the trailer • Captured in game" },
       ] },
     { videoId: "ZPQFsx9XXoM", title: "RESONANCE : A PLAGUE TALE LEGACY • GAMEPLAY", description: "2026 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "2026 • Long Gameplay Trailer", screenshotTitle: "RESONANCE : A PLAGUE TALE LEGACY",
-      screenshotRole: "Cinematic artist in charge of The Long Gameplay Trailer of Resonance: A Plague Tale Legacy",
+      screenshotRole: "Cinematic artist in charge of the Long Gameplay Trailer of Resonance: A Plague Tale Legacy",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
         { label: "Developer", value: "Asobo" },
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Created in game with camera tools" },
-        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_003.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_004.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Created in game with camera tools" },
-        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_005.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Created in game with camera tools" },
+        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_001.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Created in game with camera tools" },
+        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_003.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_004.webp", tag: "SCENE 04", description: "Screenshot from the trailer • Created in game with camera tools" },
+        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_005.webp", tag: "SCENE 05", description: "Screenshot from the trailer • Created in game with camera tools" },
       ] },
     { videoId: "ewZufHtEl68", title: "YERBA BUENA • GAMEPLAY", description: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing",
       screenshotCategory: "2026 • Gameplay Overview Trailer", screenshotTitle: "YERBA BUENA",
-      screenshotRole: "Cinematic artist in charge of The Overview Trailer of Yerba Buena",
+      screenshotRole: "Cinematic artist in charge of the Overview Trailer of Yerba Buena",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
         { label: "Developer", value: "Mad about Pandas" },
@@ -228,18 +228,18 @@ export default function TrailerPage() {
       ],
       screenshots: [
         { src: "/images/yerba-buena-gameplay-2026/compo.webp", tag: "COMPOSITION", description: "Motion Graphics • Artistic Direction & Animation" },
-        { src: "/images/yerba-buena-gameplay-2026/F.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/yerba-buena-gameplay-2026/G.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Fully created in Unity" },
-        { src: "/images/yerba-buena-gameplay-2026/I.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Camera & Lighting Setup in Unity" },
-        { src: "/images/yerba-buena-gameplay-2026/J.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/yerba-buena-gameplay-2026/K.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Fully created in Unity" },
+        { src: "/images/yerba-buena-gameplay-2026/F.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/yerba-buena-gameplay-2026/G.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Fully created in Unity" },
+        { src: "/images/yerba-buena-gameplay-2026/I.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Camera & Lighting Setup in Unity" },
+        { src: "/images/yerba-buena-gameplay-2026/J.webp", tag: "SCENE 04", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/yerba-buena-gameplay-2026/K.webp", tag: "SCENE 05", description: "Screenshot from the trailer • Fully created in Unity" },
       ] },
   ];
 
   const watchCards = [
     { videoId: "cZgim-KYkZQ", title: "YERBA BUENA • REVEAL TRAILER", description: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing",
       screenshotCategory: "2026 · REVEAL TRAILER", screenshotTitle: "YERBA BUENA",
-      screenshotRole: "Cinematic artist in charge of The Reveal Trailer of Yerba Buena",
+      screenshotRole: "Cinematic artist in charge of the Reveal Trailer of Yerba Buena",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
         { label: "Developer", value: "Mad about Pandas" },
@@ -247,16 +247,16 @@ export default function TrailerPage() {
         { label: "Cinematic artists credits", value: "Michael Leroy" },
       ],
       screenshots: [
-        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-1.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Camera & Lighting Setup in Unity • Other cinematic artist credit : Michael Leroy" },
-        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-2.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Camera & Lighting Setup in Unity" },
-        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-3.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-4.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Fully created in Unity" },
-        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-5.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Camera & Lighting Setup in Unity" },
-        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-6.webp", tag: "SCÈNE 06", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-1.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Camera & Lighting Setup in Unity • Other cinematic artist credit: Michael Leroy" },
+        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-2.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Camera & Lighting Setup in Unity" },
+        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-3.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-4.webp", tag: "SCENE 04", description: "Screenshot from the trailer • Fully created in Unity" },
+        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-5.webp", tag: "SCENE 05", description: "Screenshot from the trailer • Camera & Lighting Setup in Unity" },
+        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-6.webp", tag: "SCENE 06", description: "Screenshot from the trailer • Captured in game" },
       ] },
     { videoId: "QwxFR1g7Uy4", title: "John Carpenter's Toxic Commando • Gameplay Overview Trailer", description: "2026 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "2026 · GAMEPLAY OVERVIEW", screenshotTitle: "JOHN CARPENTER'S TOXIC COMMANDO",
-      screenshotRole: "Cinematic artist in charge of The Gameplay Overview Trailer of John Carpenter's Toxic Commando",
+      screenshotRole: "Cinematic artist in charge of the Gameplay Overview Trailer of John Carpenter's Toxic Commando",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
         { label: "Developer", value: "Saber Interactive" },
@@ -265,57 +265,57 @@ export default function TrailerPage() {
         { label: "Additional Cinematic artist", value: "Perrine Soulas" },
       ],
       screenshots: [
-        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_001.webp", tag: "SCÈNE 01", description: "In game cinematic" },
-        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_003.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_004.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_005.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_006.webp", tag: "SCÈNE 06", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_007.webp", tag: "SCÈNE 07", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_008.webp", tag: "SCÈNE 08", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_001.webp", tag: "SCENE 01", description: "In game cinematic" },
+        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_003.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_004.webp", tag: "SCENE 04", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_005.webp", tag: "SCENE 05", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_006.webp", tag: "SCENE 06", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_007.webp", tag: "SCENE 07", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_008.webp", tag: "SCENE 08", description: "Screenshot from the trailer • Captured in game" },
       ] },
     { videoId: "CxtlJ06u_lc", title: "Space Marine 2 • Year 2 Trailer", description: "2025 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "2025 · YEAR 2 TRAILER", screenshotTitle: "SPACE MARINE 2",
-      screenshotRole: "Cinematic artist in charge of The Space Marine 2 Year 2 Trailer",
+      screenshotRole: "Cinematic artist in charge of the Space Marine 2 Year 2 Trailer",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
         { label: "Developer", value: "Saber Interactive" },
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_003.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_004.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_005.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_006.webp", tag: "SCÈNE 06", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_001.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_003.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_004.webp", tag: "SCENE 04", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_005.webp", tag: "SCENE 05", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_006.webp", tag: "SCENE 06", description: "Screenshot from the trailer • Captured in game" },
       ] },
     { videoId: "ETCpWo0A0i0", title: "MIO: Memories In Orbit • Gameplay Trailer", description: "2025 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "2025 · GAMEPLAY TRAILER", screenshotTitle: "MIO: MEMORIES IN ORBIT",
-      screenshotRole: "Cinematic artist in charge of The MIO: Memories In Orbit - Gameplay Trailer",
+      screenshotRole: "Cinematic artist in charge of the MIO: Memories In Orbit - Gameplay Trailer",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
         { label: "Developer", value: "Douze Dixiemes" },
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_003.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_004.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_001.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_003.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_004.webp", tag: "SCENE 04", description: "Screenshot from the trailer • Captured in game" },
       ] },
     { videoId: "tSN6KhscgiE", title: "Chants of Sennaar • Gameplay Overview Trailer | Gamescom 2023", description: "2023 • In-game video capture • Camera Animation in Unity • Video editing • Sound editing",
       screenshotCategory: "Gamescom 2023 • Gameplay Overview Trailer", screenshotTitle: "CHANTS OF SENNAAR",
-      screenshotRole: "Cinematic artist in charge of the Gameplay Overview Trailer of Chants of Sennaar for the Gamescom 2023",
+      screenshotRole: "Cinematic artist in charge of the Gameplay Overview Trailer of Chants of Sennaar for Gamescom 2023",
       screenshotResponsibilities: "In-game Video Capture / Camera Animation in Unity / Video Editing / Sound Editing",
       screenshotCredits: [
         { label: "Developer", value: "Rundisc" },
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/chants-of-sennaar-2023/chants-1.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Created in Unity" },
-        { src: "/images/chants-of-sennaar-2023/chants-2.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/chants-of-sennaar-2023/chants-3.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/chants-of-sennaar-2023/chants-1.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Created in Unity" },
+        { src: "/images/chants-of-sennaar-2023/chants-2.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/chants-of-sennaar-2023/chants-3.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Captured in game" },
       ] },
     { videoId: "LpxuWSy8b9U", title: "Atlas Fallen • Gameplay Overview Trailer", description: "2023 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "2023 · GAMEPLAY OVERVIEW", screenshotTitle: "ATLAS FALLEN",
@@ -326,8 +326,8 @@ export default function TrailerPage() {
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/atlas-fallen-2023/Atlas-fallen-2023-001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/atlas-fallen-2023/Atlas-fallen-2023-002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/atlas-fallen-2023/Atlas-fallen-2023-001.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/atlas-fallen-2023/Atlas-fallen-2023-002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Captured in game" },
       ] },
     { videoId: "_nFYp6BFviM", title: "My Time at Sandrock • \"Shape your future\" Release Date Reveal Trailer", description: "2023 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "2023 · RELEASE DATE REVEAL", screenshotTitle: "MY TIME AT SANDROCK",
@@ -338,10 +338,10 @@ export default function TrailerPage() {
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/sandrock-2023/My-Time-at-Sandrock-2023-001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/sandrock-2023/My-Time-at-Sandrock-2023-002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/sandrock-2023/My-Time-at-Sandrock-2023-003.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/sandrock-2023/My-Time-at-Sandrock-2023-004.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/sandrock-2023/My-Time-at-Sandrock-2023-001.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/sandrock-2023/My-Time-at-Sandrock-2023-002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/sandrock-2023/My-Time-at-Sandrock-2023-003.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/sandrock-2023/My-Time-at-Sandrock-2023-004.webp", tag: "SCENE 04", description: "Screenshot from the trailer • Captured in game" },
       ] },
     { videoId: "a1JhKnaLxN0", title: "Dordogne • Release Date Reveal Trailer", description: "2023 • Scene Set-up and Animation in Unity • In-game Video Capture • Motion Graphics • Video Editing • Sound Editing",
       screenshotCategory: "2023 · RELEASE DATE REVEAL", screenshotTitle: "DORDOGNE",
@@ -352,9 +352,9 @@ export default function TrailerPage() {
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/dordogne-2023/Dordogne-2023-001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Fully created in Unity" },
-        { src: "/images/dordogne-2023/Dordogne-2023-002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/dordogne-2023/Dordogne-2023-003.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/dordogne-2023/Dordogne-2023-001.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Fully created in Unity" },
+        { src: "/images/dordogne-2023/Dordogne-2023-002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/dordogne-2023/Dordogne-2023-003.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Captured in game" },
       ] },
     { videoId: "EdGCL3cVGPo", title: "Hotel Renovator • Release Date Reveal Trailer", description: "2023 • Camera • Animation & Scene set up in Unreal Engine 4 • Video Editing • Sound Editing",
       screenshotCategory: "2023 · RELEASE DATE REVEAL", screenshotTitle: "HOTEL RENOVATOR",
@@ -366,22 +366,22 @@ export default function TrailerPage() {
         { label: "Cinematic artists credits", value: "Alexis Sabalza, Emmanuel Bahu-Leyser, Alexa Marie-Jeanne" },
       ],
       screenshots: [
-        { src: "/images/hotel-renovator-2023/Hotel-Renovator-2023-001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Fully created in Unreal Engine 4" },
-        { src: "/images/hotel-renovator-2023/Hotel-Renovator-2023-002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Fully created in Unreal Engine 4" },
+        { src: "/images/hotel-renovator-2023/Hotel-Renovator-2023-001.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Fully created in Unreal Engine 4" },
+        { src: "/images/hotel-renovator-2023/Hotel-Renovator-2023-002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Fully created in Unreal Engine 4" },
       ] },
     { videoId: "MTskFVe8P3Q", logo: "/images/logo-svg/The_Game_Awards_Logo_2023.svg", logoAlt: "The Game Awards", title: "A Plague Tale: Requiem • The Game Awards 2022 Spotlight", description: "2022 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "The Game Awards 2022 • Spotlight Trailer", screenshotTitle: "A PLAGUE TALE : REQUIEM",
-      screenshotRole: "Cinematic artist in charge of The Game Awards 2022 Spotlight of A Plague Tale: Requiem",
+      screenshotRole: "Cinematic artist in charge of the Game Awards 2022 Spotlight of A Plague Tale: Requiem",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
         { label: "Developer", value: "Asobo" },
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/plague-tale-requiem-2022/A-Plague-Tale-Requiem-2022-001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Cinematic" },
-        { src: "/images/plague-tale-requiem-2022/A-Plague-Tale-Requiem-2022-002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Cinematic" },
-        { src: "/images/plague-tale-requiem-2022/A-Plague-Tale-Requiem-2022-003.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/plague-tale-requiem-2022/A-Plague-Tale-Requiem-2022-004.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/plague-tale-requiem-2022/A-Plague-Tale-Requiem-2022-001.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Cinematic" },
+        { src: "/images/plague-tale-requiem-2022/A-Plague-Tale-Requiem-2022-002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Cinematic" },
+        { src: "/images/plague-tale-requiem-2022/A-Plague-Tale-Requiem-2022-003.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/plague-tale-requiem-2022/A-Plague-Tale-Requiem-2022-004.webp", tag: "SCENE 04", description: "Screenshot from the trailer • Captured in game" },
       ] },
     { videoId: "3pEJJdJStiQ", title: "BLACKTAIL • 'The Forest Awaits' Gameplay Trailer | THE PARASIGHT", description: "2022 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "2022 · GAMEPLAY TRAILER", screenshotTitle: "BLACKTAIL",
@@ -392,9 +392,9 @@ export default function TrailerPage() {
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/blacktail-2022/blacktail-001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/blacktail-2022/blacktail-002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/blacktail-2022/blacktail-003.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/blacktail-2022/blacktail-001.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/blacktail-2022/blacktail-002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/blacktail-2022/blacktail-003.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Captured in game" },
       ] },
     { videoId: "U4XA_dhCx_M", title: "Warstride Challenges • Multiplayer Update Trailer", description: "2022 • Camera & Character Animation in Unreal Engine 4 • In-game Video Capture • Video Editing • Sound Editing",
       screenshotCategory: "2022 · MULTIPLAYER UPDATE TRAILER", screenshotTitle: "WARSTRIDE CHALLENGES",
@@ -405,15 +405,15 @@ export default function TrailerPage() {
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/warstride-2022/Warstride-Challenges-2022-001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Created in Unreal Engine 4" },
-        { src: "/images/warstride-2022/Warstride-Challenges-2022-002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Created in Unreal Engine 4" },
+        { src: "/images/warstride-2022/Warstride-Challenges-2022-001.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Created in Unreal Engine 4" },
+        { src: "/images/warstride-2022/Warstride-Challenges-2022-002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Created in Unreal Engine 4" },
       ] },
   ];
 
   const heroScreenshots = {
     category: "GAMESCOM 2026 • REVEAL TRAILER",
     title: "Elta: Defy All Gods",
-    role: "Cinematic artist in charge of The Reveal Trailer of Elta: Defy All Gods",
+    role: "Cinematic artist in charge of the Reveal Trailer of Elta: Defy All Gods",
     responsibilities: "Camera animation, real-time combat VFX, cinematic lighting, animation polish",
     logo: { src: "/images/logo-svg/gamescom-wordmark.be3b22f1.svg", alt: "gamescom" },
     credits: [
@@ -422,16 +422,16 @@ export default function TrailerPage() {
       { label: "Cinematic artist team credits", value: "Gaël Verbitzky, Michael Leroy" },
     ],
     screenshots: [
-      { src: "/images/Elta/Elta-2026-001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
-      { src: "/images/Elta/Elta-2026-002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
-      { src: "/images/Elta/Elta-2026-003.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
-      { src: "/images/Elta/Elta-2026-004.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
-      { src: "/images/Elta/Elta-2026-005.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
-      { src: "/images/Elta/Elta-2026-006.webp", tag: "SCÈNE 06", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
-      { src: "/images/Elta/Elta-2026-007.webp", tag: "SCÈNE 07", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
-      { src: "/images/Elta/Elta-2026-008.webp", tag: "SCÈNE 08", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
-      { src: "/images/Elta/Elta-2026-009.webp", tag: "SCÈNE 09", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
-      { src: "/images/Elta/Elta-2026-010.webp", tag: "SCÈNE 10", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-001.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-003.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-004.webp", tag: "SCENE 04", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-005.webp", tag: "SCENE 05", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-006.webp", tag: "SCENE 06", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-007.webp", tag: "SCENE 07", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-008.webp", tag: "SCENE 08", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-009.webp", tag: "SCENE 09", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-010.webp", tag: "SCENE 10", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
     ],
   };
 
@@ -531,7 +531,7 @@ export default function TrailerPage() {
         <button type="button"
           className="absolute inset-0 w-full h-full z-10 cursor-pointer group focus-visible:outline-offset-[-4px]"
           onClick={() => setVideoModal({ videoId: "OLEZv_Qyb6Q", title: "ELTA: DEFY ALL GODS • REVEAL TRAILER", fullWidth: true })}
-          aria-label="Ouvrir la vidéo"
+          aria-label="Open the video"
         />
 
         {/* Pause button - visible on mouse move, hides after 5s idle */}
@@ -587,7 +587,7 @@ export default function TrailerPage() {
         <button type="button"
           onClick={toggleMute}
           className="absolute right-[52px] bottom-[3px] md:right-[24px] md:bottom-[24px] z-30 md:z-20 size-[27px] md:size-[30px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
-          aria-label={isMuted ? "Activer le son" : "Couper le son"}
+          aria-label={isMuted ? "Turn sound on" : "Turn sound off"}
         >
           {isMuted ? (
             <svg width="32" height="32" className="size-[17px] md:size-[18px]" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -705,7 +705,7 @@ export default function TrailerPage() {
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
-                    aria-label={`Lire la vidéo ${card.title}`}
+                    aria-label={`Play the video ${card.title}`}
                     className="absolute inset-0 z-10 w-full h-full cursor-pointer focus-visible:outline-offset-[-4px]"
                   />
                 {hoveredRecent === card.videoId && consent === "granted" ? (
@@ -816,7 +816,7 @@ export default function TrailerPage() {
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
-                        aria-label={`Lire la vidéo ${card.title}`}
+                        aria-label={`Play the video ${card.title}`}
                         className="absolute inset-0 z-10 w-full h-full cursor-pointer focus-visible:outline-offset-[-4px]"
                       />
                     {hoveredWatch === card.videoId && consent === "granted" ? (
@@ -910,7 +910,7 @@ export default function TrailerPage() {
           <button type="button"
             onClick={() => setScreenshotsData(null)}
             className="trailer-close-mobile md:hidden fixed top-4 right-4 z-20 text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
-            aria-label="Fermer"
+            aria-label="Close"
           >
             ✕
           </button>
@@ -955,7 +955,7 @@ export default function TrailerPage() {
                     onClick={(e) => { e.stopPropagation(); setScreenshotIndex((screenshotIndex - 1 + screenshotsData.screenshots.length) % screenshotsData.screenshots.length); }}
                     className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
                     data-zoom-ignore
-                    aria-label="Précédent"
+                    aria-label="Previous"
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="15,18 9,12 15,6" />
@@ -995,7 +995,7 @@ export default function TrailerPage() {
                     onClick={(e) => { e.stopPropagation(); setScreenshotIndex((screenshotIndex + 1) % screenshotsData.screenshots.length); }}
                     className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
                     data-zoom-ignore
-                    aria-label="Suivant"
+                    aria-label="Next"
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="9,6 15,12 9,18" />
@@ -1041,7 +1041,7 @@ export default function TrailerPage() {
               <button type="button"
                 onClick={() => setScreenshotsData(null)}
                 className="hidden md:block self-end text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
-                aria-label="Fermer"
+                aria-label="Close"
               >
                 ✕
               </button>

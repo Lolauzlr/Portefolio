@@ -11,17 +11,24 @@ import HomeContactSection from "@/components/HomeContactSection";
 import ImageCarousel from "@/components/ImageCarousel";
 import { oldKnightSlides, nabilHarrowSlides } from "@/data/storytelling";
 
-const loremIpsum =
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam quis mollis tortor. Sed id augue ligula.";
-
 const illustrationSlides: LightboxSlide[] = [
   { src: "/images/illustrations/illus-35.webp", alt: "Illustration" },
   { src: "/images/illustrations/illus-1.webp", alt: "Illustration" },
 ].map((slide) => ({ ...slide, caption: illustrationCaption(slide.src) }));
 
 const storytellingCards = [
-  { title: "OLD KNIGHT", label: "Manga", slides: oldKnightSlides, widthClassName: "md:w-[372px]", aspectClassName: "aspect-[372/525]", spreadSkip: 1 },
-  { title: "Nabil Harlow", label: "Video clip", slides: nabilHarrowSlides, widthClassName: "md:flex-1", aspectClassName: "aspect-[788/525]" },
+  {
+    title: "OLD KNIGHT",
+    label: "Manga",
+    text: "A silent love story told through acting, framing and pacing alone, created for the international Silent Manga Audition.",
+    slides: oldKnightSlides, widthClassName: "md:w-[372px]", aspectClassName: "aspect-[372/525]", spreadSkip: 1,
+  },
+  {
+    title: "Nabil Harlow",
+    label: "Video clip",
+    text: "Storyboard for Nabil Harlow's music video: camera framing and detailed line art, created with illustrator Cyril Mornet.",
+    slides: nabilHarrowSlides, widthClassName: "md:flex-1", aspectClassName: "aspect-[788/525]",
+  },
 ];
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -85,7 +92,7 @@ export default function Home() {
                   <div className="w-[80px] h-[4px] bg-white mt-1" />
                 </div>
                 <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
-                  I like to keep my approach to illustration open and varied. I work both traditionally and digitally, using Photoshop, digital painting, watercolor, ink, Chinese ink, pen, and whatever technique feels right for the project.
+                  I like to keep my approach to illustration open and varied. I work both traditionally and digitally, using Photoshop, digital painting, watercolour, ink, Chinese ink, pen, and whatever technique feels right for the project.
                   <br /><br />
                   I don&apos;t have one fixed way of working. I choose the medium depending on what I want to express, whether it&apos;s a particular mood, texture, character or atmosphere. I enjoy moving from one technique to another, experimenting and sometimes combining them. I believe the visual style should grow naturally from the story.
                 </p>
@@ -123,7 +130,7 @@ export default function Home() {
                     {c.label}
                   </p>
                   <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
-                    {loremIpsum}
+                    {c.text}
                   </p>
                 </div>
               </div>
@@ -151,7 +158,7 @@ export default function Home() {
                 </p>
               </div>
               <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white leading-relaxed">
-                I&apos;m a Cinematic Artist with a background in animation, filmmaking and visual direction. I work across video games and film, with a focus on cinematics, camera work, storytelling and visual composition. Outside of work, I&apos;m drawn to experiences that keep me moving and curious. I&apos;ve travelled extensively, practiced martial arts for many years, and music has always been part of my life.
+                I&apos;m a Cinematic Artist with a background in animation, filmmaking and visual direction. I work across video games and film, with a focus on cinematics, camera work, storytelling and visual composition. Outside of work, I&apos;m drawn to experiences that keep me moving and curious. I&apos;ve travelled extensively, practised martial arts for many years, and music has always been part of my life.
                 <br /><br />
                 All of this feeds into the way I approach visual work. I&apos;m interested in movement, rhythm, composition and the way a scene can communicate.
                 <br /><br />

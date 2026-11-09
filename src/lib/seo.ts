@@ -32,7 +32,7 @@ export const trailerMetadata = pageMetadata(
 
 export const moviesMetadata = pageMetadata(
   "Film & Animation • Marie Chalandre",
-  "Film and animation work by Marie Chalandre, including filmmaking, previsualization, storyboarding, compositing and visual development.",
+  "Film and animation work by Marie Chalandre, including filmmaking, previsualisation, storyboarding, compositing and visual development.",
   "/movies",
   "/images/thumbnails/BFLlIR9A8DY.webp",
 );

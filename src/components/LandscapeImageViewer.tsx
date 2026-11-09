@@ -59,12 +59,12 @@ export default function LandscapeImageViewer({
   if (!current) return null;
 
   return (
-    <div ref={rootRef} className="fixed inset-0 z-[110] bg-black" role="dialog" aria-modal="true" aria-label="Image en plein écran">
+    <div ref={rootRef} className="fixed inset-0 z-[110] bg-black" role="dialog" aria-modal="true" aria-label="Full-screen image">
       {/* Always at the screen's top-right, whether or not the content is turned. */}
       <button
         type="button"
         onClick={onClose}
-        aria-label="Fermer"
+        aria-label="Close"
         className={`${ROUND_BUTTON} !fixed right-4 top-4 text-[22px]`}
       >
         ✕
@@ -97,12 +97,12 @@ export default function LandscapeImageViewer({
 
         {count > 1 && (
           <>
-            <button type="button" data-zoom-ignore onClick={() => go(-1)} aria-label="Précédent" className={`${ROUND_BUTTON} left-4 top-1/2 -translate-y-1/2`}>
+            <button type="button" data-zoom-ignore onClick={() => go(-1)} aria-label="Previous" className={`${ROUND_BUTTON} left-4 top-1/2 -translate-y-1/2`}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                 <polyline points="15,18 9,12 15,6" />
               </svg>
             </button>
-            <button type="button" data-zoom-ignore onClick={() => go(1)} aria-label="Suivant" className={`${ROUND_BUTTON} right-4 top-1/2 -translate-y-1/2`}>
+            <button type="button" data-zoom-ignore onClick={() => go(1)} aria-label="Next" className={`${ROUND_BUTTON} right-4 top-1/2 -translate-y-1/2`}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
                 <polyline points="9,6 15,12 9,18" />
               </svg>

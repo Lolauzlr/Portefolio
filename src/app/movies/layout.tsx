@@ -10,7 +10,7 @@ const moviesSchema = [
     "@type": "Movie",
     name: "Saint-Ex",
     description:
-      "French-Belgian feature film about Antoine de Saint-Exupéry, released in 2024. Marie Chalandre worked on it as a VFX Previsualization Artist.",
+      "French-Belgian feature film about Antoine de Saint-Exupéry, released in 2024. Marie Chalandre worked on it as a VFX Previsualisation Artist.",
     datePublished: "2024",
     director: { "@type": "Person", name: "Pablo Agüero" },
     actor: [
@@ -20,7 +20,7 @@ const moviesSchema = [
     ],
     contributor: {
       "@type": "Role",
-      roleName: "VFX Previsualization Artist",
+      roleName: "VFX Previsualisation Artist",
       contributor: { "@id": PERSON_ID },
     },
     image: absolute("/images/thumbnails/BFLlIR9A8DY.webp"),

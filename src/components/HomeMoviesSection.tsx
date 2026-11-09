@@ -52,7 +52,7 @@ function VideoCard({
         <button
           type="button"
           onClick={onPlay}
-          aria-label={`Lire la vidéo ${title}`}
+          aria-label={`Play the video ${title}`}
           className="absolute inset-0 z-10 w-full h-full cursor-pointer focus-visible:outline-offset-[-4px]"
         />
       ) : externalUrl ? (
@@ -60,7 +60,7 @@ function VideoCard({
           href={externalUrl}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={`${title} (nouvel onglet)`}
+          aria-label={`${title} (opens in a new tab)`}
           className="absolute inset-0 z-10 cursor-pointer focus-visible:outline-offset-[-4px]"
         />
       ) : null}
@@ -210,7 +210,7 @@ export default function HomeMoviesSection() {
               <div className="w-[80px] h-[4px] bg-white mt-1" />
             </div>
             <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
-              Motion Designer &amp; Video editor for Gymnastique (ARTE).
+              Motion Designer &amp; Video Editor for Gymnastique (ARTE).
               <br />
               HOW TO MAP YOUR IMAGINATION, A documentary by David Caillon.
             </p>

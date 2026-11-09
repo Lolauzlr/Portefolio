@@ -59,7 +59,7 @@ export default function VideoCard({
         <button
           type="button"
           onClick={() => setModalOpen(true)}
-          aria-label={`Lire la vidéo ${title}`}
+          aria-label={`Play the video ${title}`}
           className="absolute inset-0 z-10 w-full h-full cursor-pointer focus-visible:outline-offset-[-4px]"
         />
         {hovered && consent === "granted" ? (
