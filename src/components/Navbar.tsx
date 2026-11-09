@@ -80,7 +80,8 @@ export default function Navbar() {
         {/* Hamburger */}
         <button
           ref={burgerRef}
-          className="min-[1560px]:hidden absolute right-6 flex flex-col gap-1.5 p-2"
+          // Mobile: centred on the logo; same soft halo as the logo so the bars stay readable over bright content.
+          className="min-[1560px]:hidden absolute right-6 flex flex-col gap-1.5 p-2 translate-y-[14px] md:translate-y-0 [filter:drop-shadow(0_0_5px_rgba(0,0,0,0.55))_drop-shadow(0_1px_2px_rgba(0,0,0,0.5))]"
           type="button"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
