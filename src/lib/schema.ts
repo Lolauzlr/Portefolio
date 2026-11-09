@@ -12,7 +12,7 @@ export const personSchema = {
   name: "Marie Chalandre",
   jobTitle: "Cinematic Artist",
   url: `${SITE_URL}/`,
-  sameAs: socialLinks.map((l) => l.href.split("?")[0]),
+  sameAs: [...socialLinks.map((l) => l.href.split("?")[0]), "https://www.imdb.com/name/nm11203292/"],
 };
 
 export const websiteSchema = {
