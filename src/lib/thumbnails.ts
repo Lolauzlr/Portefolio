@@ -6,7 +6,7 @@ const LOCAL = new Set([
   "OLEZv_Qyb6Q", "eT8QvyGSyYU", "ZPQFsx9XXoM", "ewZufHtEl68", "cZgim-KYkZQ", "QwxFR1g7Uy4",
   "CxtlJ06u_lc", "ETCpWo0A0i0", "tSN6KhscgiE", "LpxuWSy8b9U", "_nFYp6BFviM", "a1JhKnaLxN0",
   "EdGCL3cVGPo", "MTskFVe8P3Q", "3pEJJdJStiQ", "U4XA_dhCx_M",
-  "BFLlIR9A8DY", "M7PfKwiQL_w",
+  "BFLlIR9A8DY", "M7PfKwiQL_w", "3gWXENcQ_VU",
 ]);
 
 // A transparent pixel (the card's black background shows) for a video whose
