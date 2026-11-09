@@ -15,9 +15,10 @@ export default function LegalNoticePage() {
     <LegalPage title="Legal Notice" updated="October 2026">
       <h2>Publisher</h2>
       <p>
-        This website (mariechalandre.com) is a personal portfolio published by Marie Chalandre,
-        who is also the publication director. It is a non-commercial showcase of her work.
+        This website (mariechalandre.com) is a personal portfolio presenting the work of Marie
+        Chalandre, who is also the publication director.
       </p>
+      <p>SIRET: 842 918 492 00013</p>
       <p>
         Contact: <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
       </p>
