@@ -5,7 +5,7 @@ export const metadata = pageMetadata(
   "Privacy Policy • Marie Chalandre",
   "How personal data is processed on mariechalandre.com: contact form, hosting and embedded videos.",
   "/privacy-policy",
-  "/images/home-page/profil2.webp",
+  "/images/og/home.jpg",
 );
 
 const EMAIL = "mariechalandre.pro@gmail.com";

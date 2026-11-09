@@ -20,7 +20,7 @@ export const homeMetadata = pageMetadata(
   "Marie Chalandre • Cinematic Artist & Filmmaker",
   "Cinematic artist and filmmaker working across video games and film, with a focus on cinematics, storyboarding, visual storytelling and illustration.",
   "/",
-  "/images/home-page/profil2.webp",
+  "/images/og/home.jpg",
 );
 
 export const trailerMetadata = pageMetadata(
@@ -41,19 +41,19 @@ export const illustrationsMetadata = pageMetadata(
   "Illustration & Concept Art • Marie Chalandre",
   "A selection of illustration and concept art by Marie Chalandre, exploring different techniques, visual styles and approaches to image-making.",
   "/illustrations",
-  "/images/illustrations/illus-35.webp",
+  "/images/og/illustrations.jpg",
 );
 
 export const storytellingMetadata = pageMetadata(
   "Storytelling & Storyboards • Marie Chalandre",
   "Manga, storyboards and visual storytelling by Marie Chalandre, exploring narrative, composition, pacing and the relationship between text and image.",
   "/storytelling",
-  "/images/Storybook/Old-knight/OLD_KNIGHT-01.webp",
+  "/images/og/storytelling.jpg",
 );
 
 export const cvMetadata = pageMetadata(
   "Cinematic Artist CV • Marie Chalandre",
   "View Marie Chalandre's full CV, experience, skills and professional background in cinematic art, filmmaking, storyboarding and illustration.",
   "/cv",
-  "/images/CV/photo-profil.webp",
+  "/images/og/cv.jpg",
 );
