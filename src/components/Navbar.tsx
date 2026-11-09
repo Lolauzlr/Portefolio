@@ -42,11 +42,14 @@ export default function Navbar() {
             alt="Marie Chalandre"
             width={164}
             height={58}
+            // Soft dark halo so the white logo stays readable over bright or
+            // white content scrolling underneath.
+            className="[filter:drop-shadow(0_0_5px_rgba(0,0,0,0.55))_drop-shadow(0_1px_2px_rgba(0,0,0,0.5))]"
           />
         </Link>
 
         {/* Center nav pill */}
-        <nav aria-label="Navigation principale" className="hidden min-[1560px]:flex items-center gap-10 rounded-[40px] bg-black/40 backdrop-blur-[5px] px-[40px] py-[24px]">
+        <nav aria-label="Main navigation" className="hidden min-[1560px]:flex items-center gap-10 rounded-[40px] bg-black/40 backdrop-blur-[5px] px-[40px] py-[24px]">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
@@ -91,7 +94,7 @@ export default function Navbar() {
 
       {/* Mobile overlay */}
       {menuOpen && (
-        <nav id="mobile-menu" aria-label="Navigation principale" className="fixed inset-0 z-[65] bg-[#15161b]/95 backdrop-blur-md flex flex-col items-center justify-center gap-8 min-[1560px]:hidden">
+        <nav id="mobile-menu" aria-label="Main navigation" className="fixed inset-0 z-[65] bg-[#15161b]/95 backdrop-blur-md flex flex-col items-center justify-center gap-8 min-[1560px]:hidden">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
