@@ -21,6 +21,7 @@ const MOBILE_VIDEO = {
   av1: "/videos/hero-home-mobile-av1.mp4",
   h264: "/videos/hero-home-mobile.mp4",
   poster: "/videos/hero-home-mobile-poster.jpg",
+  fallback: "/videos/hero-home-mobile-loop.webp",
 };
 
 export default function HomeHeroSection() {
@@ -105,6 +106,7 @@ export default function HomeHeroSection() {
               poster={source.poster}
               fit={isMobile ? "cover-top" : "contain-bottom"}
               startPaused={startPaused}
+              fallback={isMobile ? MOBILE_VIDEO.fallback : undefined}
               onPlayingChange={setIsPlaying}
             />
           )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { asset } from "@/lib/asset";
 
 export type HeroVideoHandle = {
@@ -21,6 +21,10 @@ type Props = {
   fit?: "contain" | "contain-bottom" | "cover-top";
   // Wait for the visitor to press play (prefers-reduced-motion).
   startPaused?: boolean;
+  // Animated image shown while the browser refuses to autoplay the video (iOS
+  // Low Power Mode blocks every autoplay): it keeps the hero alive until the
+  // first tap starts the real video.
+  fallback?: string;
   onPlayingChange?: (playing: boolean) => void;
 };
 
@@ -44,7 +48,7 @@ function shouldSkipDownload(): boolean {
 }
 
 const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
-  { av1, h264, poster, fit = "contain", startPaused = false, onPlayingChange },
+  { av1, h264, poster, fit = "contain", startPaused = false, fallback, onPlayingChange },
   ref,
 ) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -52,6 +56,8 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
   const userPausedRef = useRef(startPaused);
   // True while a video is open full screen: the hero must stay paused.
   const modalOpenRef = useRef(false);
+  const [blocked, setBlocked] = useState(false);
+  const blockedRef = useRef(false);
 
   const load = useCallback(() => {
     const v = videoRef.current;
@@ -61,6 +67,14 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
     v.load();
   }, [av1, h264]);
 
+  // The animated image stands in for a video the browser refuses to autoplay: the
+  // hero still counts as playing until the first tap starts the real one.
+  const markBlocked = useCallback(() => {
+    blockedRef.current = true;
+    setBlocked(true);
+    onPlayingChange?.(true);
+  }, [onPlayingChange]);
+
   const play = useCallback(() => {
     const v = videoRef.current;
     if (!v) return;
@@ -68,8 +82,11 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
     userPausedRef.current = false;
     // A refused play() (iOS low-power mode...) shows the play button; the
     // retries and the first touch below keep trying.
-    v.play().catch(() => onPlayingChange?.(false));
-  }, [load, onPlayingChange]);
+    v.play().catch(() => {
+      if (fallback && !startPaused) markBlocked();
+      else onPlayingChange?.(false);
+    });
+  }, [load, onPlayingChange, fallback, startPaused, markBlocked]);
 
   useImperativeHandle(
     ref,
@@ -102,7 +119,9 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
         window.clearInterval(retry);
         return;
       }
-      v.play().catch(() => {});
+      v.play().catch(() => {
+        if (fallback) markBlocked();
+      });
     }, 700);
     const stopRetry = window.setTimeout(() => window.clearInterval(retry), 20000);
     return () => {
@@ -154,6 +173,7 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
   }, []);
 
   return (
+    <>
     <video
       ref={videoRef}
       className={`absolute inset-0 h-full w-full ${FIT_CLASS[fit]}`}
@@ -164,13 +184,27 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
       playsInline
       preload="none"
       aria-hidden
-      onPlay={() => onPlayingChange?.(true)}
+      onPlay={() => {
+        blockedRef.current = false;
+        setBlocked(false);
+        onPlayingChange?.(true);
+      }}
       onCanPlay={(e) => {
         const v = e.currentTarget;
         if (v.paused && !userPausedRef.current && !modalOpenRef.current) v.play().catch(() => {});
       }}
-      onPause={() => onPlayingChange?.(false)}
+      onPause={() => { if (!blockedRef.current) onPlayingChange?.(false); }}
     />
+    {blocked && fallback && (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={asset(fallback)}
+        alt=""
+        aria-hidden
+        className={`absolute inset-0 h-full w-full ${FIT_CLASS[fit]}`}
+      />
+    )}
+    </>
   );
 });
 

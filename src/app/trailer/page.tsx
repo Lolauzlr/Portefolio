@@ -524,6 +524,7 @@ export default function TrailerPage() {
             poster={isMobile ? "/videos/hero-trailer-mobile-poster.jpg" : "/videos/hero-trailer-desktop-poster.jpg"}
             fit={isMobile ? "cover-top" : "contain"}
             startPaused={startPaused}
+            fallback={isMobile ? "/videos/hero-trailer-mobile-loop.webp" : undefined}
             onPlayingChange={setIsPlaying}
           />
         </div>
