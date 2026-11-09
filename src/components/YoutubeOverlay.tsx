@@ -13,9 +13,9 @@ export function YoutubeLogoLink({ videoId, className = "" }: { videoId: string; 
       rel="noopener noreferrer"
       aria-label="Watch on YouTube (opens in a new tab)"
       onClick={(e) => e.stopPropagation()}
-      className={`absolute z-20 rounded-full bg-black/60 px-3 py-[7px] backdrop-blur-sm transition-colors hover:bg-black/80 shadow-[0_2px_10px_rgba(0,0,0,0.45),inset_0_0_9px_rgba(0,0,0,0.6)] ${className}`}
+      className={`absolute z-20 rounded-full bg-black/75 px-3 py-[7px] backdrop-blur-md transition-colors hover:bg-black/85 shadow-[0_0_0_1px_rgba(0,0,0,0.35),0_3px_14px_rgba(0,0,0,0.65),inset_0_0_12px_rgba(0,0,0,0.75)] ${className}`}
     >
-      <img src={asset("/images/logo-svg/youtube.svg")} alt="YouTube" className="block h-[13px] md:h-[16px] w-auto drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]" />
+      <img src={asset("/images/logo-svg/youtube.svg")} alt="YouTube" className="block h-[13px] md:h-[16px] w-auto drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]" />
     </a>
   );
 }
