@@ -5,7 +5,7 @@ export const metadata = pageMetadata(
   "Legal Notice • Marie Chalandre",
   "Legal notice of the mariechalandre.com portfolio: publisher, hosting and intellectual property.",
   "/legal-notice",
-  "/images/og/home-2.jpg",
+  "/images/og/home-square.jpg",
 );
 
 const EMAIL = "mariechalandre.pro@gmail.com";
