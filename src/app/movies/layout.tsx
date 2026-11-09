@@ -23,7 +23,7 @@ const moviesSchema = [
       roleName: "VFX Previsualization Artist",
       contributor: { "@id": PERSON_ID },
     },
-    image: "https://i.ytimg.com/vi/BFLlIR9A8DY/hqdefault.jpg",
+    image: absolute("/images/thumbnails/BFLlIR9A8DY.webp"),
     url: absolute("/movies"),
   },
   {

@@ -9,7 +9,7 @@ import ZoomControls from "@/components/ZoomControls";
 import TrailerScreenshotNav from "@/components/TrailerScreenshotNav";
 import LandscapeImageViewer, { isPortraitPhone } from "@/components/LandscapeImageViewer";
 import JsonLd from "@/components/JsonLd";
-import { personRef } from "@/lib/schema";
+import { absolute, personRef } from "@/lib/schema";
 import VideoModal from "@/components/VideoModal";
 import HeroVideo, { type HeroVideoHandle } from "@/components/HeroVideo";
 import { useSupportsHover } from "@/hooks/useSupportsHover";
@@ -491,7 +491,7 @@ export default function TrailerPage() {
     "@type": "VideoObject",
     name: card.title,
     description: `${card.screenshotRole}. ${card.screenshotResponsibilities}.`,
-    thumbnailUrl: `https://i.ytimg.com/vi/${card.videoId}/hqdefault.jpg`,
+    thumbnailUrl: absolute(`/images/thumbnails/${card.videoId}.webp`),
     uploadDate: uploadDates[card.videoId],
     embedUrl: `https://www.youtube.com/embed/${card.videoId}`,
     creator: personRef,
