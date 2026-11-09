@@ -36,17 +36,21 @@ export default function Navbar() {
     <>
       <header className="fixed top-0 left-0 right-0 z-[70] flex items-center justify-center px-4 md:px-8 min-[85rem]:px-[120px] pt-[28px] pb-[20px]">
         {/* Logo - absolutely positioned left */}
-        <Link href="/" className="absolute left-6 md:left-[120px] shrink-0">
+        {/* Mobile: nudged down so the top of the logo sits as far from the top edge as the burger icon */}
+        <Link href="/" className="absolute left-6 md:left-[120px] shrink-0 translate-y-[15px] md:translate-y-0">
           <img
             src={asset("/images/logo-svg/LogoMC.svg")}
             alt="Marie Chalandre"
             width={164}
             height={58}
+            // Soft dark halo so the white logo stays readable over bright or
+            // white content scrolling underneath.
+            className="[filter:drop-shadow(0_0_5px_rgba(0,0,0,0.55))_drop-shadow(0_1px_2px_rgba(0,0,0,0.5))]"
           />
         </Link>
 
         {/* Center nav pill */}
-        <nav aria-label="Navigation principale" className="hidden min-[1560px]:flex items-center gap-10 rounded-[40px] bg-black/40 backdrop-blur-[5px] px-[40px] py-[24px]">
+        <nav aria-label="Main navigation" className="hidden min-[1560px]:flex items-center gap-10 rounded-[40px] bg-black/40 backdrop-blur-[5px] px-[40px] py-[24px]">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
@@ -76,7 +80,8 @@ export default function Navbar() {
         {/* Hamburger */}
         <button
           ref={burgerRef}
-          className="min-[1560px]:hidden absolute right-6 flex flex-col gap-1.5 p-2"
+          // Mobile: centred on the logo; same soft halo as the logo so the bars stay readable over bright content.
+          className="min-[1560px]:hidden absolute right-6 flex flex-col gap-1.5 p-2 translate-y-[14px] md:translate-y-0 [filter:drop-shadow(0_0_5px_rgba(0,0,0,0.55))_drop-shadow(0_1px_2px_rgba(0,0,0,0.5))]"
           type="button"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
@@ -91,7 +96,7 @@ export default function Navbar() {
 
       {/* Mobile overlay */}
       {menuOpen && (
-        <nav id="mobile-menu" aria-label="Navigation principale" className="fixed inset-0 z-[65] bg-[#15161b]/95 backdrop-blur-md flex flex-col items-center justify-center gap-8 min-[1560px]:hidden">
+        <nav id="mobile-menu" aria-label="Main navigation" className="fixed inset-0 z-[65] bg-[#15161b]/95 backdrop-blur-md flex flex-col items-center justify-center gap-8 min-[1560px]:hidden">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (

@@ -1,86 +1,51 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
-import VideoModal from "@/components/VideoModal";
+import { useState, useRef, useEffect } from "react";
+import { flushSync } from "react-dom";
+import VideoModal, { type LocalVideo } from "@/components/VideoModal";
+import HeroVideo, { type HeroVideoHandle } from "@/components/HeroVideo";
 import { prefersReducedMotion } from "@/hooks/useReducedMotion";
+import { YoutubeLogoLink } from "@/components/YoutubeOverlay";
 
+// The full showreel opens on click (YouTube); the hero itself plays the
+// self-hosted copies below.
 const HERO_VIDEO_ID = "yfCtiQ93gis";
 const HERO_VIDEO_TITLE = "HERO VIDEO";
-// Mobile: the hero is a 9:16 frame (like the trailer page), so it plays this
-// vertical Short in the background; tapping it opens HERO_VIDEO_ID full width.
-const MOBILE_HERO_VIDEO_ID = "UMobicftZ1w";
-// YouTube picks the stream resolution from the player's size, so the player is
-// rendered large and scaled down with CSS to nudge it toward high quality.
-// Phones and tablets (touch devices) get a Full HD-sized player: a 4K iframe is
-// ~8M pixels and makes iOS kill the tab ("Impossible d'ouvrir cette page").
-const DESKTOP_PLAYER = { w: 3840, h: 2160 };
-const TOUCH_PLAYER = { w: 1920, h: 1080 };
-const MOBILE_PLAYER = { w: 1080, h: 1920 };
-// YouTube draws its title / channel banner over the top edge of the embed (it
-// can't be turned off any more). The iframe is made taller than the video by this
-// share of the video's height on each side: the video stays letterboxed in the
-// middle (same size, no zoom) and the banner lands in the black bar above it,
-// which the hero frame clips together with the bar below.
-const BANNER_PAD = 0.08;
-// The Short has a black credits strip burned into its bottom edge (~9 % of its
-// height). On mobile the hero frame is therefore 10 % shorter than the 9:16
-// video and the video is anchored to the top (no zoom): the strip falls below
-// the frame and is clipped. 9 / (16 * 0.9) = 9 / 14.4.
-const TARGET_QUALITY = "hd2160";
-
-// Undocumented-but-working on many builds: lock the quality range to 4K, then
-// also use the legacy setter. Both may be ignored by YouTube, so this is
-// retried a few times after playback starts (it often resets the quality).
-function requestMaxQuality(player: YT.Player) {
-  player.setPlaybackQualityRange?.(TARGET_QUALITY, TARGET_QUALITY);
-  player.setPlaybackQuality(TARGET_QUALITY);
-}
+const DESKTOP_VIDEO = {
+  av1: "/videos/hero-home-desktop-av1.mp4",
+  h264: "/videos/hero-home-desktop.mp4",
+  poster: "/videos/hero-home-desktop-poster.jpg",
+};
+// Mobile: the hero is a 9:16 frame, so it plays the vertical edit.
+const MOBILE_VIDEO = {
+  av1: "/videos/hero-home-mobile-av1.mp4",
+  h264: "/videos/hero-home-mobile.mp4",
+  poster: "/videos/hero-home-mobile-poster.jpg",
+  fallback: "/videos/hero-home-mobile-loop.webp",
+};
 
 export default function HomeHeroSection() {
-  const [videoModal, setVideoModal] = useState<{ videoId: string; title: string; fullWidth?: boolean } | null>(null);
+  const [videoModal, setVideoModal] = useState<{ videoId: string; title: string; fullWidth?: boolean; local?: LocalVideo } | null>(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [showPause, setShowPause] = useState(false);
-  const playerRef = useRef<YT.Player | null>(null);
-  // With prefers-reduced-motion the background video starts paused (poster
-  // frame + play button); the user can still start it with the play button.
-  const userPausedRef = useRef(prefersReducedMotion());
+  const videoRef = useRef<HeroVideoHandle>(null);
   const heroRef = useRef<HTMLElement>(null);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [playerScale, setPlayerScale] = useState(0.5);
-  const [playerShiftY, setPlayerShiftY] = useState(0);
-  const hostRef = useRef<HTMLDivElement>(null);
-  // null until mounted, so the right player is created straight away (no
-  // desktop player briefly built then torn down on a phone).
-  const [layout, setLayout] = useState<{ mobile: boolean; touch: boolean } | null>(null);
+  // With prefers-reduced-motion the background video starts paused (poster
+  // frame + play button); the user can still start it with the play button.
+  const [startPaused] = useState(() => prefersReducedMotion());
+  // null until mounted. Portrait phones only: held in landscape, the
+  // horizontal video is shown instead.
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
   useEffect(() => {
-    // Portrait phones only: held in landscape, the horizontal video is shown instead.
     const mq = window.matchMedia("(max-width: 767px) and (orientation: portrait)");
-    const touchMq = window.matchMedia("(pointer: coarse)");
-    const update = () => setLayout({ mobile: mq.matches, touch: touchMq.matches });
+    const update = () => setIsMobile(mq.matches);
     update();
     mq.addEventListener("change", update);
     return () => mq.removeEventListener("change", update);
   }, []);
-  const isMobile = layout ? layout.mobile : null;
-  const player = isMobile ? MOBILE_PLAYER : layout?.touch ? TOUCH_PLAYER : DESKTOP_PLAYER;
-  const videoId = isMobile ? MOBILE_HERO_VIDEO_ID : HERO_VIDEO_ID;
-  const iframeHeight = player.h + 2 * Math.round(player.h * BANNER_PAD);
-
-  // Scale the 4K player so it covers the hero frame (same crop as object-cover).
-  useEffect(() => {
-    const hero = heroRef.current;
-    if (!hero) return;
-    const ro = new ResizeObserver(([entry]) => {
-      const { width, height } = entry.contentRect;
-      const cover = Math.max(width / player.w, height / player.h);
-      setPlayerScale(cover);
-      // Mobile: anchor the video to the top edge (the overflow is at the bottom).
-      setPlayerShiftY(isMobile ? Math.max(0, (player.h * cover - height) / 2) : 0);
-    });
-    ro.observe(hero);
-    return () => ro.disconnect();
-  }, [player, isMobile]);
+  const source = isMobile ? MOBILE_VIDEO : DESKTOP_VIDEO;
 
   useEffect(() => {
     const hero = heroRef.current;
@@ -115,163 +80,44 @@ export default function HomeHeroSection() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [videoModal]);
 
-  const onPlayerReady = useCallback((event: YT.PlayerEvent) => {
-    event.target.mute();
-    setIsMuted(true);
-    requestMaxQuality(event.target);
-    if (userPausedRef.current) {
-      setIsPlaying(false);
-      return;
-    }
-    event.target.playVideo();
-  }, []);
-
-  // Keep the play/pause UI in sync with what the player is really doing:
-  // mobile browsers can refuse or interrupt autoplay, in which case the
-  // play button must show instead of a "pause" state that isn't true.
-  const onPlayerStateChange = useCallback((event: YT.OnStateChangeEvent) => {
-    if (event.data === YT.PlayerState.ENDED) {
-      event.target.playVideo();
-    } else if (event.data === YT.PlayerState.PLAYING) {
-      setIsPlaying(true);
-      const player = event.target;
-      requestMaxQuality(player);
-      [1000, 3000].forEach((delay) => setTimeout(() => playerRef.current && requestMaxQuality(player), delay));
-    } else if (event.data === YT.PlayerState.PAUSED) {
-      setIsPlaying(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    const wrapper = hostRef.current;
-    if (isMobile === null || !wrapper) return;
-    // The player replaces the element it is given, so it gets a throwaway child
-    // that React doesn't own (clean to recreate when the layout switches).
-    const host = document.createElement("div");
-    wrapper.appendChild(host);
-
-    const createPlayer = () => {
-      if (playerRef.current) return;
-      playerRef.current = new YT.Player(host, {
-        videoId,
-        width: player.w,
-        height: iframeHeight,
-        playerVars: {
-          autoplay: userPausedRef.current ? 0 : 1,
-          mute: 1,
-          loop: 1,
-          playlist: videoId,
-          controls: 0,
-          showinfo: 0,
-          rel: 0,
-          modestbranding: 1,
-          playsinline: 1,
-          iv_load_policy: 3,
-          disablekb: 1,
-        },
-        events: {
-          onReady: onPlayerReady,
-          onStateChange: onPlayerStateChange,
-        },
-      });
-    };
-
-    // The IFrame API script only runs its ready callback on first load, so
-    // when arriving here by client-side navigation (API already loaded) the
-    // player must be created directly or the hero video never starts.
-    if (typeof YT !== "undefined" && YT.Player) {
-      createPlayer();
-    } else {
-      (window as unknown as Record<string, unknown>).onYouTubeIframeAPIReady = createPlayer;
-      if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
-        const tag = document.createElement("script");
-        tag.src = "https://www.youtube.com/iframe_api";
-        document.head.appendChild(tag);
-      }
-    }
-
-    // Mobile browsers often drop the first playVideo() (sent before the player
-    // is really ready) and then leave the video parked until a tap or scroll.
-    // Keep asking for muted playback until it actually runs.
-    const retry = window.setInterval(() => {
-      const p = playerRef.current;
-      if (!p || typeof p.getPlayerState !== "function" || userPausedRef.current) return;
-      if (p.getPlayerState?.() === YT.PlayerState.PLAYING) {
-        window.clearInterval(retry);
-        return;
-      }
-      p.mute();
-      p.playVideo();
-    }, 500);
-    const stopRetry = window.setTimeout(() => window.clearInterval(retry), 20000);
-
-    return () => {
-      window.clearInterval(retry);
-      window.clearTimeout(stopRetry);
-      playerRef.current?.destroy();
-      playerRef.current = null;
-      wrapper.replaceChildren();
-    };
-  }, [isMobile, videoId, player, iframeHeight, onPlayerReady, onPlayerStateChange]);
-
-  // Fallback when the browser blocks autoplay (e.g. iOS low-power mode):
-  // start the muted video on the first touch anywhere on the page.
-  useEffect(() => {
-    const kick = () => {
-      const player = playerRef.current;
-      if (player && player.getPlayerState?.() !== YT.PlayerState.PLAYING && !userPausedRef.current) {
-        player.mute();
-        player.playVideo();
-      }
-    };
-    const events = ["touchstart", "touchmove", "scroll"] as const;
-    events.forEach((e) => window.addEventListener(e, kick, { once: true, passive: true }));
-    return () => events.forEach((e) => window.removeEventListener(e, kick));
-  }, []);
-
   const togglePlay = () => {
-    if (!playerRef.current) return;
-    if (isPlaying) {
-      userPausedRef.current = true;
-      playerRef.current.pauseVideo();
-    } else {
-      userPausedRef.current = false;
-      playerRef.current.playVideo();
-    }
+    if (isPlaying) videoRef.current?.pause();
+    else videoRef.current?.play();
   };
 
   const toggleMute = () => {
-    if (!playerRef.current) return;
-    if (isMuted) {
-      playerRef.current.unMute();
-    } else {
-      playerRef.current.mute();
-    }
+    videoRef.current?.setMuted(!isMuted);
     setIsMuted(!isMuted);
   };
 
   return (
     <>
-      <section ref={heroRef} className="relative w-full mx-auto max-w-[calc(100dvh*9/14.4)] aspect-[9/14.4] md:max-w-[calc(100dvh*16/9)] md:aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:!max-w-[calc(100dvh*16/9)] bg-[#060000] overflow-hidden">
-        {/* YouTube video background via API */}
+      <section ref={heroRef} className="relative w-full mx-auto max-w-[calc(100dvh*9/14.4)] aspect-[9/14.4] md:max-w-[calc(100dvh*1.89)] md:aspect-[1920/1016] [@media(orientation:landscape)_and_(max-height:500px)]:aspect-[1920/1016] [@media(orientation:landscape)_and_(max-height:500px)]:!max-w-[calc(100dvh*1.89)] bg-[#060000] overflow-hidden">
+        {/* Self-hosted background video (the poster shows until it starts) */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div
-            className="absolute top-1/2 left-1/2"
-            style={{
-              width: player.w,
-              height: iframeHeight,
-              transform: `translate(-50%, calc(-50% + ${playerShiftY}px)) scale(${playerScale})`,
-            }}
-          >
-            <div ref={hostRef} />
-          </div>
+          {isMobile !== null && (
+            <HeroVideo
+              // A new player per layout, so the right file is loaded when a
+              // phone is turned.
+              key={isMobile ? "mobile" : "desktop"}
+              ref={videoRef}
+              av1={source.av1}
+              h264={source.h264}
+              poster={source.poster}
+              fit={isMobile ? "cover-top" : "contain-bottom"}
+              startPaused={startPaused}
+              fallback={isMobile ? MOBILE_VIDEO.fallback : undefined}
+              onPlayingChange={setIsPlaying}
+            />
+          )}
         </div>
 
         {/* Click zone - opens the full-width video overlay */}
         <button type="button"
           className="absolute inset-0 w-full h-full z-10 cursor-pointer group focus-visible:outline-offset-[-4px]"
-          onClick={() => setVideoModal({ videoId: HERO_VIDEO_ID, title: HERO_VIDEO_TITLE, fullWidth: true })}
-          aria-label="Ouvrir la vidéo"
+          // flushSync: the modal (and its video) must start inside the tap, see VideoModal.
+          onClick={() => flushSync(() => setVideoModal({ videoId: HERO_VIDEO_ID, title: HERO_VIDEO_TITLE, fullWidth: true, local: DESKTOP_VIDEO }))}
+          aria-label="Open the video"
         />
 
         {/* Pause button - visible on mouse move, hides after 5s idle */}
@@ -301,20 +147,42 @@ export default function HomeHeroSection() {
           </button>
         )}
 
+        {/* YouTube logo: the full video opens from a click on the hero */}
+        <YoutubeLogoLink videoId={HERO_VIDEO_ID} className="right-[88px] md:right-[62px] bottom-[3px] md:bottom-[calc(11.8%+14px)]" />
+
+        {/* Mobile: small pause / play button next to the sound button (the hover-only
+            pause button doesn't exist on touch screens) */}
+        <button type="button"
+          onClick={togglePlay}
+          className="absolute right-4 bottom-[3px] z-30 md:hidden size-[27px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+          aria-label={isPlaying ? "Pause" : "Play"}
+        >
+          {isPlaying ? (
+            <svg width="15" height="15" viewBox="0 0 20 20" fill="white" aria-hidden="true">
+              <rect x="4" y="3" width="4" height="14" rx="1" />
+              <rect x="12" y="3" width="4" height="14" rx="1" />
+            </svg>
+          ) : (
+            <svg width="15" height="15" viewBox="0 0 20 20" fill="white" aria-hidden="true">
+              <polygon points="6,3 17,10 6,17" />
+            </svg>
+          )}
+        </button>
+
         {/* Sound toggle */}
         <button type="button"
           onClick={toggleMute}
-          className="absolute right-4 md:right-[24px] bottom-8 md:bottom-[24px] z-20 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
-          aria-label={isMuted ? "Activer le son" : "Couper le son"}
+          className="absolute right-[52px] md:right-[24px] bottom-[3px] md:bottom-[calc(11.8%+14px)] z-20 size-[27px] md:size-[30px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+          aria-label={isMuted ? "Turn sound on" : "Turn sound off"}
         >
           {isMuted ? (
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="32" height="32" className="size-[17px] md:size-[18px]" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
               <line x1="23" y1="9" x2="17" y2="15" />
               <line x1="17" y1="9" x2="23" y2="15" />
             </svg>
           ) : (
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="32" height="32" className="size-[17px] md:size-[18px]" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
               <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
               <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
@@ -325,9 +193,10 @@ export default function HomeHeroSection() {
 
       {videoModal && (
         <VideoModal
-          src={`https://www.youtube.com/embed/${videoModal.videoId}?autoplay=1&rel=0`}
+          src={`https://www.youtube-nocookie.com/embed/${videoModal.videoId}?autoplay=1&rel=0`}
           title={videoModal.title}
           fullWidth={videoModal.fullWidth}
+          local={videoModal.local}
           onClose={() => setVideoModal(null)}
         />
       )}

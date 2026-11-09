@@ -5,6 +5,9 @@ import Link from "next/link";
 import { asset } from "@/lib/asset";
 import { useSupportsHover } from "@/hooks/useSupportsHover";
 import VideoModal from "@/components/VideoModal";
+import { useYoutubeConsent } from "@/lib/youtube-consent";
+import YoutubeOverlay from "@/components/YoutubeOverlay";
+import { videoThumb } from "@/lib/thumbnails";
 
 function CaretCircleRight() {
   return (
@@ -31,6 +34,7 @@ function VideoCard({
   className?: string;
 }) {
   const supportsHover = useSupportsHover();
+  const consent = useYoutubeConsent();
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -48,7 +52,7 @@ function VideoCard({
         <button
           type="button"
           onClick={onPlay}
-          aria-label={`Lire la vidéo ${title}`}
+          aria-label={`Play the video ${title}`}
           className="absolute inset-0 z-10 w-full h-full cursor-pointer focus-visible:outline-offset-[-4px]"
         />
       ) : externalUrl ? (
@@ -56,17 +60,17 @@ function VideoCard({
           href={externalUrl}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={`${title} (nouvel onglet)`}
+          aria-label={`${title} (opens in a new tab)`}
           className="absolute inset-0 z-10 cursor-pointer focus-visible:outline-offset-[-4px]"
         />
       ) : null}
-      {youtubeId && hovered ? (
+      {youtubeId && hovered && consent === "granted" ? (
         // Preview only: no native controls and no pointer capture, so a
         // click anywhere on the video opens the full-width modal (same as
         // the /trailer page).
         <iframe
           className="w-full h-full pointer-events-none"
-          src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
+          src={`https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
           title={title}
           allow="autoplay; encrypted-media"
           style={{ border: 0 }}
@@ -74,12 +78,9 @@ function VideoCard({
       ) : (
         <>
           {youtubeId ? (
-            <img
-              src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`}
+            <img src={videoThumb(youtubeId)}
               alt={title}
-              className="w-full h-full object-cover"
-              onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`; }}
-            />
+              className="w-full h-full object-cover" loading="lazy" decoding="async" />
           ) : thumbnail ? (
             <img src={asset(thumbnail)} alt={title} className="w-full h-full object-cover" />
           ) : (
@@ -94,6 +95,7 @@ function VideoCard({
           </div>
         </>
       )}
+      {youtubeId && <YoutubeOverlay videoId={youtubeId} previewing={hovered && consent === "granted"} />}
     </div>
   );
 }
@@ -182,7 +184,7 @@ export default function HomeMoviesSection() {
               youtubeId="BFLlIR9A8DY"
               title="SAINT EX"
               className="w-full"
-              onPlay={() => setVideoModal({ url: "https://www.youtube.com/embed/BFLlIR9A8DY?autoplay=1&rel=0", title: "SAINT EX" })}
+              onPlay={() => setVideoModal({ url: "https://www.youtube-nocookie.com/embed/BFLlIR9A8DY?autoplay=1&rel=0", title: "SAINT EX" })}
             />
             <div>
               <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] md:text-[28px] md:tracking-[2.24px]">SAINT EX</h3>
@@ -208,7 +210,7 @@ export default function HomeMoviesSection() {
               <div className="w-[80px] h-[4px] bg-white mt-1" />
             </div>
             <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px] text-white">
-              Motion Designer &amp; Video editor for Gymnastique (ARTE).
+              Motion Designer &amp; Video Editor for Gymnastique (ARTE).
               <br />
               HOW TO MAP YOUR IMAGINATION, A documentary by David Caillon.
             </p>

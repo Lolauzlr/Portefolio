@@ -8,15 +8,42 @@ import { prefersReducedMotion } from "@/hooks/useReducedMotion";
 import ZoomControls from "@/components/ZoomControls";
 import TrailerScreenshotNav from "@/components/TrailerScreenshotNav";
 import LandscapeImageViewer, { isPortraitPhone } from "@/components/LandscapeImageViewer";
-import VideoModal from "@/components/VideoModal";
+import JsonLd from "@/components/JsonLd";
+import { absolute, personRef } from "@/lib/schema";
+import { flushSync } from "react-dom";
+import VideoModal, { type LocalVideo } from "@/components/VideoModal";
+import HeroVideo, { type HeroVideoHandle } from "@/components/HeroVideo";
 import { useSupportsHover } from "@/hooks/useSupportsHover";
 import { useBodyScrollLock, useWheelNav } from "@/components/ScreenshotGallery";
+import { useYoutubeConsent } from "@/lib/youtube-consent";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
+import YoutubeOverlay, { YoutubeLogoLink } from "@/components/YoutubeOverlay";
+import { videoThumb } from "@/lib/thumbnails";
 
 // Event logo shown at the bottom of a screenshots panel (and on the card).
 const logoOf = (card: object) => {
   const { logo, logoAlt } = card as { logo?: string; logoAlt?: string };
   return logo ? { src: logo, alt: logoAlt ?? "" } : undefined;
+};
+
+// Upload dates of the YouTube videos, used for the VideoObject structured data.
+const uploadDates: Record<string, string> = {
+  OLEZv_Qyb6Q: "2026-08-25",
+  eT8QvyGSyYU: "2026-10-14",
+  ZPQFsx9XXoM: "2026-06-11",
+  ewZufHtEl68: "2026-04-16",
+  "cZgim-KYkZQ": "2026-03-12",
+  QwxFR1g7Uy4: "2026-02-04",
+  CxtlJ06u_lc: "2025-08-28",
+  ETCpWo0A0i0: "2025-06-04",
+  tSN6KhscgiE: "2023-08-21",
+  LpxuWSy8b9U: "2023-06-15",
+  _nFYp6BFviM: "2023-06-07",
+  a1JhKnaLxN0: "2023-05-09",
+  EdGCL3cVGPo: "2023-01-28",
+  MTskFVe8P3Q: "2022-12-09",
+  "3pEJJdJStiQ": "2022-12-05",
+  U4XA_dhCx_M: "2022-12-13",
 };
 
 export default function TrailerPage() {
@@ -39,10 +66,11 @@ export default function TrailerPage() {
     shotCount > 1,
     () => zoom.ignoreSwipe()
   );
-  const [videoModal, setVideoModal] = useState<{ videoId: string; title: string; fullWidth?: boolean } | null>(null);
+  const [videoModal, setVideoModal] = useState<{ videoId: string; title: string; fullWidth?: boolean; local?: LocalVideo } | null>(null);
   const supportsHover = useSupportsHover();
   const [hoveredRecent, setHoveredRecent] = useState<string | null>(null);
   const [hoveredWatch, setHoveredWatch] = useState<string | null>(null);
+  const consent = useYoutubeConsent();
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [showPause, setShowPause] = useState(false);
@@ -61,11 +89,9 @@ export default function TrailerPage() {
     () => window.matchMedia("(max-width: 767px) and (orientation: portrait)").matches,
     () => false
   );
-  const mobileVideoRef = useRef<HTMLVideoElement>(null);
-  const ytHostRef = useRef<HTMLDivElement>(null);
-  const playerRef = useRef<YT.Player | null>(null);
+  const videoRef = useRef<HeroVideoHandle>(null);
   // With prefers-reduced-motion the hero video starts paused; the play button starts it.
-  const userPausedRef = useRef(prefersReducedMotion());
+  const [startPaused] = useState(() => prefersReducedMotion());
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const cadreRef = useRef<HTMLDivElement>(null);
@@ -172,30 +198,30 @@ export default function TrailerPage() {
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/ISS/ISS_05.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/ISS/ISS_landscape_01.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/ISS/ISS_Newskin_04.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/ISS/ISS_Warzone_03.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/ISS/ISS_Weapon02.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/ISS/ISS_05.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/ISS/ISS_landscape_01.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/ISS/ISS_Newskin_04.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/ISS/ISS_Warzone_03.webp", tag: "SCENE 04", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/ISS/ISS_Weapon02.webp", tag: "SCENE 05", description: "Screenshot from the trailer • Captured in game" },
       ] },
     { videoId: "ZPQFsx9XXoM", title: "RESONANCE : A PLAGUE TALE LEGACY • GAMEPLAY", description: "2026 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "2026 • Long Gameplay Trailer", screenshotTitle: "RESONANCE : A PLAGUE TALE LEGACY",
-      screenshotRole: "Cinematic artist in charge of The Long Gameplay Trailer of Resonance: A Plague Tale Legacy",
+      screenshotRole: "Cinematic artist in charge of the Long Gameplay Trailer of Resonance: A Plague Tale Legacy",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
         { label: "Developer", value: "Asobo" },
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Created in game with camera tools" },
-        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_003.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_004.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Created in game with camera tools" },
-        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_005.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Created in game with camera tools" },
+        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_001.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Created in game with camera tools" },
+        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_003.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_004.webp", tag: "SCENE 04", description: "Screenshot from the trailer • Created in game with camera tools" },
+        { src: "/images/plague-tale-gameplay-2026/RESONNANCE_GAMEPLAY_OVERVIEW_005.webp", tag: "SCENE 05", description: "Screenshot from the trailer • Created in game with camera tools" },
       ] },
     { videoId: "ewZufHtEl68", title: "YERBA BUENA • GAMEPLAY", description: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing",
       screenshotCategory: "2026 • Gameplay Overview Trailer", screenshotTitle: "YERBA BUENA",
-      screenshotRole: "Cinematic artist in charge of The Overview Trailer of Yerba Buena",
+      screenshotRole: "Cinematic artist in charge of the Overview Trailer of Yerba Buena",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
         { label: "Developer", value: "Mad about Pandas" },
@@ -203,18 +229,18 @@ export default function TrailerPage() {
       ],
       screenshots: [
         { src: "/images/yerba-buena-gameplay-2026/compo.webp", tag: "COMPOSITION", description: "Motion Graphics • Artistic Direction & Animation" },
-        { src: "/images/yerba-buena-gameplay-2026/F.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/yerba-buena-gameplay-2026/G.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Fully created in Unity" },
-        { src: "/images/yerba-buena-gameplay-2026/I.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Camera & Lighting Setup in Unity" },
-        { src: "/images/yerba-buena-gameplay-2026/J.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/yerba-buena-gameplay-2026/K.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Fully created in Unity" },
+        { src: "/images/yerba-buena-gameplay-2026/F.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/yerba-buena-gameplay-2026/G.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Fully created in Unity" },
+        { src: "/images/yerba-buena-gameplay-2026/I.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Camera & Lighting Setup in Unity" },
+        { src: "/images/yerba-buena-gameplay-2026/J.webp", tag: "SCENE 04", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/yerba-buena-gameplay-2026/K.webp", tag: "SCENE 05", description: "Screenshot from the trailer • Fully created in Unity" },
       ] },
   ];
 
   const watchCards = [
     { videoId: "cZgim-KYkZQ", title: "YERBA BUENA • REVEAL TRAILER", description: "2026 • In-game video capture • Unity set-up & camera animation • Video editing • Sound editing",
       screenshotCategory: "2026 · REVEAL TRAILER", screenshotTitle: "YERBA BUENA",
-      screenshotRole: "Cinematic artist in charge of The Reveal Trailer of Yerba Buena",
+      screenshotRole: "Cinematic artist in charge of the Reveal Trailer of Yerba Buena",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
         { label: "Developer", value: "Mad about Pandas" },
@@ -222,16 +248,16 @@ export default function TrailerPage() {
         { label: "Cinematic artists credits", value: "Michael Leroy" },
       ],
       screenshots: [
-        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-1.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Camera & Lighting Setup in Unity • Other cinematic artist credit : Michael Leroy" },
-        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-2.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Camera & Lighting Setup in Unity" },
-        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-3.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-4.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Fully created in Unity" },
-        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-5.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Camera & Lighting Setup in Unity" },
-        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-6.webp", tag: "SCÈNE 06", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-1.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Camera & Lighting Setup in Unity • Other cinematic artist credit: Michael Leroy" },
+        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-2.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Camera & Lighting Setup in Unity" },
+        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-3.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-4.webp", tag: "SCENE 04", description: "Screenshot from the trailer • Fully created in Unity" },
+        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-5.webp", tag: "SCENE 05", description: "Screenshot from the trailer • Camera & Lighting Setup in Unity" },
+        { src: "/images/yerba-buena-reveal-2026/yerba-reveal-6.webp", tag: "SCENE 06", description: "Screenshot from the trailer • Captured in game" },
       ] },
     { videoId: "QwxFR1g7Uy4", title: "John Carpenter's Toxic Commando • Gameplay Overview Trailer", description: "2026 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "2026 · GAMEPLAY OVERVIEW", screenshotTitle: "JOHN CARPENTER'S TOXIC COMMANDO",
-      screenshotRole: "Cinematic artist in charge of The Gameplay Overview Trailer of John Carpenter's Toxic Commando",
+      screenshotRole: "Cinematic artist in charge of the Gameplay Overview Trailer of John Carpenter's Toxic Commando",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
         { label: "Developer", value: "Saber Interactive" },
@@ -240,57 +266,57 @@ export default function TrailerPage() {
         { label: "Additional Cinematic artist", value: "Perrine Soulas" },
       ],
       screenshots: [
-        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_001.webp", tag: "SCÈNE 01", description: "In game cinematic" },
-        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_003.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_004.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_005.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_006.webp", tag: "SCÈNE 06", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_007.webp", tag: "SCÈNE 07", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_008.webp", tag: "SCÈNE 08", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_001.webp", tag: "SCENE 01", description: "In game cinematic" },
+        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_003.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_004.webp", tag: "SCENE 04", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_005.webp", tag: "SCENE 05", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_006.webp", tag: "SCENE 06", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_007.webp", tag: "SCENE 07", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/toxic-commando-gameplay-2026/TOXIC_COMMANDO_GAMEPLAY_OVERVIEW_008.webp", tag: "SCENE 08", description: "Screenshot from the trailer • Captured in game" },
       ] },
     { videoId: "CxtlJ06u_lc", title: "Space Marine 2 • Year 2 Trailer", description: "2025 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "2025 · YEAR 2 TRAILER", screenshotTitle: "SPACE MARINE 2",
-      screenshotRole: "Cinematic artist in charge of The Space Marine 2 Year 2 Trailer",
+      screenshotRole: "Cinematic artist in charge of the Space Marine 2 Year 2 Trailer",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
         { label: "Developer", value: "Saber Interactive" },
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_003.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_004.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_005.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_006.webp", tag: "SCÈNE 06", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_001.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_003.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_004.webp", tag: "SCENE 04", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_005.webp", tag: "SCENE 05", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/space-marine-year2-2025/SPACE_MARINE_YEAR2_006.webp", tag: "SCENE 06", description: "Screenshot from the trailer • Captured in game" },
       ] },
     { videoId: "ETCpWo0A0i0", title: "MIO: Memories In Orbit • Gameplay Trailer", description: "2025 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "2025 · GAMEPLAY TRAILER", screenshotTitle: "MIO: MEMORIES IN ORBIT",
-      screenshotRole: "Cinematic artist in charge of The MIO: Memories In Orbit - Gameplay Trailer",
+      screenshotRole: "Cinematic artist in charge of the MIO: Memories In Orbit - Gameplay Trailer",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
         { label: "Developer", value: "Douze Dixiemes" },
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_003.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_004.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_001.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_003.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/mio-gameplay-2025/MIO_GAMEPLAY_004.webp", tag: "SCENE 04", description: "Screenshot from the trailer • Captured in game" },
       ] },
     { videoId: "tSN6KhscgiE", title: "Chants of Sennaar • Gameplay Overview Trailer | Gamescom 2023", description: "2023 • In-game video capture • Camera Animation in Unity • Video editing • Sound editing",
       screenshotCategory: "Gamescom 2023 • Gameplay Overview Trailer", screenshotTitle: "CHANTS OF SENNAAR",
-      screenshotRole: "Cinematic artist in charge of the Gameplay Overview Trailer of Chants of Sennaar for the Gamescom 2023",
+      screenshotRole: "Cinematic artist in charge of the Gameplay Overview Trailer of Chants of Sennaar for Gamescom 2023",
       screenshotResponsibilities: "In-game Video Capture / Camera Animation in Unity / Video Editing / Sound Editing",
       screenshotCredits: [
         { label: "Developer", value: "Rundisc" },
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/chants-of-sennaar-2023/chants-1.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Created in Unity" },
-        { src: "/images/chants-of-sennaar-2023/chants-2.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/chants-of-sennaar-2023/chants-3.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/chants-of-sennaar-2023/chants-1.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Created in Unity" },
+        { src: "/images/chants-of-sennaar-2023/chants-2.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/chants-of-sennaar-2023/chants-3.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Captured in game" },
       ] },
     { videoId: "LpxuWSy8b9U", title: "Atlas Fallen • Gameplay Overview Trailer", description: "2023 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "2023 · GAMEPLAY OVERVIEW", screenshotTitle: "ATLAS FALLEN",
@@ -301,8 +327,8 @@ export default function TrailerPage() {
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/atlas-fallen-2023/Atlas-fallen-2023-001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/atlas-fallen-2023/Atlas-fallen-2023-002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/atlas-fallen-2023/Atlas-fallen-2023-001.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/atlas-fallen-2023/Atlas-fallen-2023-002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Captured in game" },
       ] },
     { videoId: "_nFYp6BFviM", title: "My Time at Sandrock • \"Shape your future\" Release Date Reveal Trailer", description: "2023 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "2023 · RELEASE DATE REVEAL", screenshotTitle: "MY TIME AT SANDROCK",
@@ -313,10 +339,10 @@ export default function TrailerPage() {
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/sandrock-2023/My-Time-at-Sandrock-2023-001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/sandrock-2023/My-Time-at-Sandrock-2023-002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/sandrock-2023/My-Time-at-Sandrock-2023-003.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/sandrock-2023/My-Time-at-Sandrock-2023-004.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/sandrock-2023/My-Time-at-Sandrock-2023-001.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/sandrock-2023/My-Time-at-Sandrock-2023-002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/sandrock-2023/My-Time-at-Sandrock-2023-003.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/sandrock-2023/My-Time-at-Sandrock-2023-004.webp", tag: "SCENE 04", description: "Screenshot from the trailer • Captured in game" },
       ] },
     { videoId: "a1JhKnaLxN0", title: "Dordogne • Release Date Reveal Trailer", description: "2023 • Scene Set-up and Animation in Unity • In-game Video Capture • Motion Graphics • Video Editing • Sound Editing",
       screenshotCategory: "2023 · RELEASE DATE REVEAL", screenshotTitle: "DORDOGNE",
@@ -327,9 +353,9 @@ export default function TrailerPage() {
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/dordogne-2023/Dordogne-2023-001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Fully created in Unity" },
-        { src: "/images/dordogne-2023/Dordogne-2023-002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/dordogne-2023/Dordogne-2023-003.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/dordogne-2023/Dordogne-2023-001.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Fully created in Unity" },
+        { src: "/images/dordogne-2023/Dordogne-2023-002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/dordogne-2023/Dordogne-2023-003.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Captured in game" },
       ] },
     { videoId: "EdGCL3cVGPo", title: "Hotel Renovator • Release Date Reveal Trailer", description: "2023 • Camera • Animation & Scene set up in Unreal Engine 4 • Video Editing • Sound Editing",
       screenshotCategory: "2023 · RELEASE DATE REVEAL", screenshotTitle: "HOTEL RENOVATOR",
@@ -341,22 +367,22 @@ export default function TrailerPage() {
         { label: "Cinematic artists credits", value: "Alexis Sabalza, Emmanuel Bahu-Leyser, Alexa Marie-Jeanne" },
       ],
       screenshots: [
-        { src: "/images/hotel-renovator-2023/Hotel-Renovator-2023-001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Fully created in Unreal Engine 4" },
-        { src: "/images/hotel-renovator-2023/Hotel-Renovator-2023-002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Fully created in Unreal Engine 4" },
+        { src: "/images/hotel-renovator-2023/Hotel-Renovator-2023-001.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Fully created in Unreal Engine 4" },
+        { src: "/images/hotel-renovator-2023/Hotel-Renovator-2023-002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Fully created in Unreal Engine 4" },
       ] },
     { videoId: "MTskFVe8P3Q", logo: "/images/logo-svg/The_Game_Awards_Logo_2023.svg", logoAlt: "The Game Awards", title: "A Plague Tale: Requiem • The Game Awards 2022 Spotlight", description: "2022 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "The Game Awards 2022 • Spotlight Trailer", screenshotTitle: "A PLAGUE TALE : REQUIEM",
-      screenshotRole: "Cinematic artist in charge of The Game Awards 2022 Spotlight of A Plague Tale: Requiem",
+      screenshotRole: "Cinematic artist in charge of the Game Awards 2022 Spotlight of A Plague Tale: Requiem",
       screenshotResponsibilities: "In-game Video Capture / Video Editing / Sound Editing",
       screenshotCredits: [
         { label: "Developer", value: "Asobo" },
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/plague-tale-requiem-2022/A-Plague-Tale-Requiem-2022-001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Cinematic" },
-        { src: "/images/plague-tale-requiem-2022/A-Plague-Tale-Requiem-2022-002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Cinematic" },
-        { src: "/images/plague-tale-requiem-2022/A-Plague-Tale-Requiem-2022-003.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/plague-tale-requiem-2022/A-Plague-Tale-Requiem-2022-004.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/plague-tale-requiem-2022/A-Plague-Tale-Requiem-2022-001.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Cinematic" },
+        { src: "/images/plague-tale-requiem-2022/A-Plague-Tale-Requiem-2022-002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Cinematic" },
+        { src: "/images/plague-tale-requiem-2022/A-Plague-Tale-Requiem-2022-003.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/plague-tale-requiem-2022/A-Plague-Tale-Requiem-2022-004.webp", tag: "SCENE 04", description: "Screenshot from the trailer • Captured in game" },
       ] },
     { videoId: "3pEJJdJStiQ", title: "BLACKTAIL • 'The Forest Awaits' Gameplay Trailer | THE PARASIGHT", description: "2022 • In-game video capture • Video editing • Sound editing",
       screenshotCategory: "2022 · GAMEPLAY TRAILER", screenshotTitle: "BLACKTAIL",
@@ -367,9 +393,9 @@ export default function TrailerPage() {
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/blacktail-2022/blacktail-001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/blacktail-2022/blacktail-002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Captured in game" },
-        { src: "/images/blacktail-2022/blacktail-003.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/blacktail-2022/blacktail-001.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/blacktail-2022/blacktail-002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Captured in game" },
+        { src: "/images/blacktail-2022/blacktail-003.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Captured in game" },
       ] },
     { videoId: "U4XA_dhCx_M", title: "Warstride Challenges • Multiplayer Update Trailer", description: "2022 • Camera & Character Animation in Unreal Engine 4 • In-game Video Capture • Video Editing • Sound Editing",
       screenshotCategory: "2022 · MULTIPLAYER UPDATE TRAILER", screenshotTitle: "WARSTRIDE CHALLENGES",
@@ -380,15 +406,15 @@ export default function TrailerPage() {
         { label: "Publisher", value: "Focus Entertainment" },
       ],
       screenshots: [
-        { src: "/images/warstride-2022/Warstride-Challenges-2022-001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Created in Unreal Engine 4" },
-        { src: "/images/warstride-2022/Warstride-Challenges-2022-002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Created in Unreal Engine 4" },
+        { src: "/images/warstride-2022/Warstride-Challenges-2022-001.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Created in Unreal Engine 4" },
+        { src: "/images/warstride-2022/Warstride-Challenges-2022-002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Created in Unreal Engine 4" },
       ] },
   ];
 
   const heroScreenshots = {
     category: "GAMESCOM 2026 • REVEAL TRAILER",
     title: "Elta: Defy All Gods",
-    role: "Cinematic artist in charge of The Reveal Trailer of Elta: Defy All Gods",
+    role: "Cinematic artist in charge of the Reveal Trailer of Elta: Defy All Gods",
     responsibilities: "Camera animation, real-time combat VFX, cinematic lighting, animation polish",
     logo: { src: "/images/logo-svg/gamescom-wordmark.be3b22f1.svg", alt: "gamescom" },
     credits: [
@@ -397,16 +423,16 @@ export default function TrailerPage() {
       { label: "Cinematic artist team credits", value: "Gaël Verbitzky, Michael Leroy" },
     ],
     screenshots: [
-      { src: "/images/Elta/Elta-2026-001.webp", tag: "SCÈNE 01", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
-      { src: "/images/Elta/Elta-2026-002.webp", tag: "SCÈNE 02", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
-      { src: "/images/Elta/Elta-2026-003.webp", tag: "SCÈNE 03", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
-      { src: "/images/Elta/Elta-2026-004.webp", tag: "SCÈNE 04", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
-      { src: "/images/Elta/Elta-2026-005.webp", tag: "SCÈNE 05", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
-      { src: "/images/Elta/Elta-2026-006.webp", tag: "SCÈNE 06", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
-      { src: "/images/Elta/Elta-2026-007.webp", tag: "SCÈNE 07", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
-      { src: "/images/Elta/Elta-2026-008.webp", tag: "SCÈNE 08", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
-      { src: "/images/Elta/Elta-2026-009.webp", tag: "SCÈNE 09", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
-      { src: "/images/Elta/Elta-2026-010.webp", tag: "SCÈNE 10", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-001.webp", tag: "SCENE 01", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-002.webp", tag: "SCENE 02", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-003.webp", tag: "SCENE 03", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-004.webp", tag: "SCENE 04", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-005.webp", tag: "SCENE 05", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-006.webp", tag: "SCENE 06", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-007.webp", tag: "SCENE 07", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-008.webp", tag: "SCENE 08", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-009.webp", tag: "SCENE 09", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
+      { src: "/images/Elta/Elta-2026-010.webp", tag: "SCENE 10", description: "Screenshot from the trailer • Fully created in Unreal Engine 5" },
     ],
   };
 
@@ -442,176 +468,73 @@ export default function TrailerPage() {
     return i < 0 || n < 2 ? null : { prev: screenshotTrailers[(i - 1 + n) % n], next: screenshotTrailers[(i + 1) % n], isFirst: i === 0, isLast: i === n - 1 };
   })();
 
-  const onPlayerReady = useCallback((event: YT.PlayerEvent) => {
-    event.target.mute();
-    setIsMuted(true);
-    if (userPausedRef.current) {
-      setIsPlaying(false);
-      return;
-    }
-    event.target.playVideo();
-  }, []);
-
-  // Keep the play/pause UI in sync with what the player is really doing:
-  // mobile browsers can refuse or interrupt autoplay, in which case the
-  // play button must show instead of a "pause" state that isn't true.
-  const onPlayerStateChange = useCallback((event: YT.OnStateChangeEvent) => {
-    if (event.data === YT.PlayerState.ENDED) {
-      event.target.playVideo();
-    } else if (event.data === YT.PlayerState.PLAYING) {
-      setIsPlaying(true);
-    } else if (event.data === YT.PlayerState.PAUSED) {
-      setIsPlaying(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    // Portrait phones show the self-hosted loop instead (see isMobile): the YouTube
-    // player is only built elsewhere, and rebuilt when the phone is turned.
-    const wrapper = ytHostRef.current;
-    if (isMobile || !wrapper) return;
-    // The player replaces the element it is given, so it gets a throwaway child
-    // that React doesn't own (clean to recreate after a rotation).
-    const host = document.createElement("div");
-    wrapper.appendChild(host);
-    const createPlayer = () => {
-      if (playerRef.current || !host.isConnected) return;
-      playerRef.current = new YT.Player(host, {
-        videoId: "OLEZv_Qyb6Q",
-        width: "100%",
-        height: "100%",
-        playerVars: {
-          autoplay: userPausedRef.current ? 0 : 1,
-          mute: 1,
-          loop: 1,
-          playlist: "OLEZv_Qyb6Q",
-          controls: 0,
-          showinfo: 0,
-          rel: 0,
-          modestbranding: 1,
-          playsinline: 1,
-          iv_load_policy: 3,
-          disablekb: 1,
-        },
-        events: {
-          onReady: onPlayerReady,
-          onStateChange: onPlayerStateChange,
-        },
-      });
-    };
-
-    // The IFrame API script only runs its ready callback on first load, so
-    // when arriving here by client-side navigation (API already loaded) the
-    // player must be created directly or the hero video never starts.
-    if (typeof YT !== "undefined" && YT.Player) {
-      createPlayer();
-    } else {
-      (window as unknown as Record<string, unknown>).onYouTubeIframeAPIReady = createPlayer;
-      if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
-        const tag = document.createElement("script");
-        tag.src = "https://www.youtube.com/iframe_api";
-        document.head.appendChild(tag);
-      }
-    }
-
-    return () => {
-      playerRef.current?.destroy();
-      playerRef.current = null;
-      wrapper.replaceChildren();
-    };
-  }, [isMobile, onPlayerReady, onPlayerStateChange]);
-
-  // Fallback when the browser blocks autoplay (e.g. iOS low-power mode):
-  // start the muted video on the first touch anywhere on the page.
-  useEffect(() => {
-    const kick = () => {
-      const player = playerRef.current;
-      if (player && player.getPlayerState?.() !== YT.PlayerState.PLAYING && !userPausedRef.current) {
-        player.mute();
-        player.playVideo();
-      }
-    };
-    window.addEventListener("touchstart", kick, { once: true, passive: true });
-    return () => window.removeEventListener("touchstart", kick);
-  }, []);
-
-  // Mobile hero video: muted playsInline autoplay is allowed on iOS/Android,
-  // but low-power mode can still block it, so retry on the first touch.
-  useEffect(() => {
-    if (!isMobile) return;
-    const video = mobileVideoRef.current;
-    if (!video) return;
-    if (prefersReducedMotion()) {
-      video.pause();
-      return;
-    }
-    video.play().catch(() => {});
-    const kick = () => { if (video.paused) video.play().catch(() => {}); };
-    window.addEventListener("touchstart", kick, { once: true, passive: true });
-    return () => window.removeEventListener("touchstart", kick);
-  }, [isMobile]);
-
   const togglePlay = () => {
-    if (!playerRef.current) return;
-    if (isPlaying) {
-      userPausedRef.current = true;
-      playerRef.current.pauseVideo();
-    } else {
-      userPausedRef.current = false;
-      playerRef.current.playVideo();
-    }
+    if (isPlaying) videoRef.current?.pause();
+    else videoRef.current?.play();
   };
 
   const toggleMute = () => {
-    if (!playerRef.current) return;
-    if (isMuted) {
-      playerRef.current.unMute();
-    } else {
-      playerRef.current.mute();
-    }
+    videoRef.current?.setMuted(!isMuted);
     setIsMuted(!isMuted);
   };
 
+  const videoSchema = [
+    {
+      videoId: "OLEZv_Qyb6Q",
+      title: "ELTA: DEFY ALL GODS • REVEAL TRAILER",
+      screenshotRole: heroScreenshots.role,
+      screenshotResponsibilities: heroScreenshots.responsibilities,
+    },
+    ...recentTrailers,
+    ...watchCards,
+  ].map((card) => ({
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    name: card.title,
+    description: `${card.screenshotRole}. ${card.screenshotResponsibilities}.`,
+    thumbnailUrl: absolute(`/images/thumbnails/${card.videoId}.webp`),
+    uploadDate: uploadDates[card.videoId],
+    embedUrl: `https://www.youtube.com/embed/${card.videoId}`,
+    creator: personRef,
+  }));
   const overlayRef = useRef<HTMLDivElement>(null);
   useFocusTrap(screenshotsData !== null, overlayRef);
 
   return (
     <div className="bg-[#15161b] text-white min-h-screen">
+      <JsonLd data={videoSchema} />
       {/* Hero Section - no top padding, video bleeds under navbar */}
       {/* Mobile: section is a true 9:16 frame (width-driven, so it stays
           9:16 regardless of device height) so the video reads as a portrait
           trailer frame and the caption card at the bottom only covers a
           small fraction of it. */}
       <section ref={heroRef} className="relative w-full mx-auto max-w-[calc(100dvh*9/16)] aspect-[9/16] md:max-w-none md:aspect-auto md:h-[min(810px,100dvh)] [@media(orientation:landscape)_and_(max-height:500px)]:!aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:!h-auto [@media(orientation:landscape)_and_(max-height:500px)]:!max-w-[calc(100dvh*16/9)] overflow-hidden">
-        {/* YouTube video background via API */}
+        {/* Self-hosted background video (the poster shows until it starts) */}
         <div
           ref={containerRef}
-          className="absolute inset-0 overflow-hidden pointer-events-none"
+          className="absolute inset-0 overflow-hidden bg-black pointer-events-none"
         >
-          {isMobile && (
-            <video
-              ref={mobileVideoRef}
-              className="absolute inset-0 w-full h-full object-cover"
-              src={asset("/videos/elta-reveal-mobile.mp4")}
-              poster={asset("/videos/elta-reveal-mobile-poster.jpg")}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-            />
-          )}
-          <div
-            ref={ytHostRef}
-            className="absolute top-1/2 left-1/2 w-[316.05vw] h-[177.78vw] -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full md:w-[177.78vh] md:h-[100vh] md:min-w-full md:min-h-full [@media(orientation:landscape)_and_(max-height:500px)]:!w-full [@media(orientation:landscape)_and_(max-height:500px)]:!h-full"
+          <HeroVideo
+            // A new player per layout, so the right file is loaded when a
+            // phone is turned.
+            key={isMobile ? "mobile" : "desktop"}
+            ref={videoRef}
+            av1={isMobile ? "/videos/hero-trailer-mobile-av1.mp4" : "/videos/hero-trailer-desktop-av1.mp4"}
+            h264={isMobile ? "/videos/hero-trailer-mobile.mp4" : "/videos/hero-trailer-desktop.mp4"}
+            poster={isMobile ? "/videos/hero-trailer-mobile-poster.jpg" : "/videos/hero-trailer-desktop-poster.jpg"}
+            fit={isMobile ? "cover-top" : "contain"}
+            startPaused={startPaused}
+            fallback={isMobile ? "/videos/hero-trailer-mobile-loop.webp" : undefined}
+            onPlayingChange={setIsPlaying}
           />
         </div>
 
         {/* Click zone - opens overlay, or pauses on hover-visible button */}
         <button type="button"
           className="absolute inset-0 w-full h-full z-10 cursor-pointer group focus-visible:outline-offset-[-4px]"
-          onClick={() => setVideoModal({ videoId: "OLEZv_Qyb6Q", title: "ELTA: DEFY ALL GODS • REVEAL TRAILER", fullWidth: true })}
-          aria-label="Ouvrir la vidéo"
+          // flushSync: the modal (and its video) must start inside the tap, see VideoModal.
+          onClick={() => flushSync(() => setVideoModal({ videoId: "OLEZv_Qyb6Q", title: "ELTA: DEFY ALL GODS • REVEAL TRAILER", fullWidth: true, local: { av1: "/videos/hero-trailer-desktop-av1.mp4", h264: "/videos/hero-trailer-desktop.mp4", poster: "/videos/hero-trailer-desktop-poster.jpg" } }))}
+          aria-label="Open the video"
         />
 
         {/* Pause button - visible on mouse move, hides after 5s idle */}
@@ -641,20 +564,42 @@ export default function TrailerPage() {
           </button>
         )}
 
+        {/* YouTube logo: the full video opens from a click on the hero */}
+        <YoutubeLogoLink videoId="OLEZv_Qyb6Q" className="z-30 right-[88px] bottom-[3px] md:right-[62px] md:bottom-[24px]" />
+
+        {/* Mobile: small pause / play button next to the sound button (the hover-only
+            pause button doesn't exist on touch screens) */}
+        <button type="button"
+          onClick={togglePlay}
+          className="absolute right-4 bottom-[3px] z-30 md:hidden size-[27px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+          aria-label={isPlaying ? "Pause" : "Play"}
+        >
+          {isPlaying ? (
+            <svg width="15" height="15" viewBox="0 0 20 20" fill="white" aria-hidden="true">
+              <rect x="4" y="3" width="4" height="14" rx="1" />
+              <rect x="12" y="3" width="4" height="14" rx="1" />
+            </svg>
+          ) : (
+            <svg width="15" height="15" viewBox="0 0 20 20" fill="white" aria-hidden="true">
+              <polygon points="6,3 17,10 6,17" />
+            </svg>
+          )}
+        </button>
+
         {/* Sound toggle - always visible, aligned right with ME CONTACTER, bottom with pentagon */}
         <button type="button"
           onClick={toggleMute}
-          className="absolute right-4 md:right-[24px] bottom-8 md:bottom-[24px] z-20 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm hidden md:flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
-          aria-label={isMuted ? "Activer le son" : "Couper le son"}
+          className="absolute right-[52px] bottom-[3px] md:right-[24px] md:bottom-[24px] z-30 md:z-20 size-[27px] md:size-[30px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+          aria-label={isMuted ? "Turn sound on" : "Turn sound off"}
         >
           {isMuted ? (
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="32" height="32" className="size-[17px] md:size-[18px]" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
               <line x1="23" y1="9" x2="17" y2="15" />
               <line x1="17" y1="9" x2="23" y2="15" />
             </svg>
           ) : (
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="32" height="32" className="size-[17px] md:size-[18px]" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
               <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
               <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
@@ -665,7 +610,7 @@ export default function TrailerPage() {
         {/* Pentagon cadre - small chamfer top-right corner */}
         <div
           ref={cadreRef}
-          className="absolute left-4 md:left-[24px] bottom-8 md:bottom-[24px] w-[calc(100%-2rem)] md:w-[calc(100%-3rem)] min-[85rem]:w-[792px] z-20 pointer-events-auto"
+          className="absolute left-4 md:left-[24px] bottom-[44px] md:bottom-[24px] w-[calc(100%-2rem)] md:w-[calc(100%-3rem)] min-[85rem]:w-[792px] z-20 pointer-events-auto"
         >
           {/* Background with blur + pentagon clip */}
           <div
@@ -763,28 +708,26 @@ export default function TrailerPage() {
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
-                    aria-label={`Lire la vidéo ${card.title}`}
+                    aria-label={`Play the video ${card.title}`}
                     className="absolute inset-0 z-10 w-full h-full cursor-pointer focus-visible:outline-offset-[-4px]"
                   />
-                {hoveredRecent === card.videoId ? (
+                {hoveredRecent === card.videoId && consent === "granted" ? (
                   // Native YouTube controls enabled (scrub bar + seeking).
                   // YouTube's own control bar already includes a fullscreen
                   // button, so no separate expand affordance is needed here.
                   <iframe
                     className="absolute inset-0 w-full h-full pointer-events-none"
-                    src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
+                    src={`https://www.youtube-nocookie.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
                     title={card.title}
                     allow="autoplay; encrypted-media"
                     style={{ border: 0 }}
                   />
                 ) : (
-                  <img
-                    src={`https://img.youtube.com/vi/${card.videoId}/maxresdefault.jpg`}
+                  <img src={videoThumb(card.videoId)}
                     alt={card.title}
-                    className="w-full h-full object-cover"
-                    onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${card.videoId}/hqdefault.jpg`; }}
-                  />
+                    className="w-full h-full object-cover" loading="lazy" decoding="async" />
                 )}
+<YoutubeOverlay videoId={card.videoId} previewing={hoveredRecent === card.videoId && consent === "granted"} />
               </div>
               <div className="flex flex-col gap-3 flex-1">
                 <p className="text-[24px] font-[family-name:var(--font-heading)] tracking-[1.92px]">
@@ -876,29 +819,27 @@ export default function TrailerPage() {
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
-                        aria-label={`Lire la vidéo ${card.title}`}
+                        aria-label={`Play the video ${card.title}`}
                         className="absolute inset-0 z-10 w-full h-full cursor-pointer focus-visible:outline-offset-[-4px]"
                       />
-                    {hoveredWatch === card.videoId ? (
+                    {hoveredWatch === card.videoId && consent === "granted" ? (
                       // Native YouTube controls enabled (scrub bar +
                       // seeking). YouTube's own control bar already
                       // includes a fullscreen button, so no separate expand
                       // affordance is needed here.
                       <iframe
                         className="absolute inset-0 w-full h-full pointer-events-none"
-                        src={`https://www.youtube.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
+                        src={`https://www.youtube-nocookie.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
                         title={card.title}
                         allow="autoplay; encrypted-media"
                         style={{ border: 0 }}
                       />
                     ) : (
-                      <img
-                        src={`https://img.youtube.com/vi/${card.videoId}/maxresdefault.jpg`}
+                      <img src={videoThumb(card.videoId)}
                         alt={card.title}
-                        className="w-full h-full object-cover"
-                        onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${card.videoId}/hqdefault.jpg`; }}
-                      />
+                        className="w-full h-full object-cover" loading="lazy" decoding="async" />
                     )}
+<YoutubeOverlay videoId={card.videoId} previewing={hoveredWatch === card.videoId && consent === "granted"} />
                   </div>
                   <div className="flex flex-col gap-4 md:gap-6 pt-4 md:pt-6 pl-4 md:pl-6 justify-between flex-1">
                     <div className="flex flex-col gap-4 md:gap-6">
@@ -948,9 +889,10 @@ export default function TrailerPage() {
       {/* Video Modal */}
       {videoModal && (
         <VideoModal
-          src={`https://www.youtube.com/embed/${videoModal.videoId}?autoplay=1&rel=0`}
+          src={`https://www.youtube-nocookie.com/embed/${videoModal.videoId}?autoplay=1&rel=0`}
           title={videoModal.title}
           fullWidth={videoModal.fullWidth}
+          local={videoModal.local}
           onClose={() => setVideoModal(null)}
         />
       )}
@@ -972,7 +914,7 @@ export default function TrailerPage() {
           <button type="button"
             onClick={() => setScreenshotsData(null)}
             className="trailer-close-mobile md:hidden fixed top-4 right-4 z-20 text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
-            aria-label="Fermer"
+            aria-label="Close"
           >
             ✕
           </button>
@@ -1017,7 +959,7 @@ export default function TrailerPage() {
                     onClick={(e) => { e.stopPropagation(); setScreenshotIndex((screenshotIndex - 1 + screenshotsData.screenshots.length) % screenshotsData.screenshots.length); }}
                     className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
                     data-zoom-ignore
-                    aria-label="Précédent"
+                    aria-label="Previous"
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="15,18 9,12 15,6" />
@@ -1057,7 +999,7 @@ export default function TrailerPage() {
                     onClick={(e) => { e.stopPropagation(); setScreenshotIndex((screenshotIndex + 1) % screenshotsData.screenshots.length); }}
                     className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
                     data-zoom-ignore
-                    aria-label="Suivant"
+                    aria-label="Next"
                   >
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <polyline points="9,6 15,12 9,18" />
@@ -1103,7 +1045,7 @@ export default function TrailerPage() {
               <button type="button"
                 onClick={() => setScreenshotsData(null)}
                 className="hidden md:block self-end text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
-                aria-label="Fermer"
+                aria-label="Close"
               >
                 ✕
               </button>

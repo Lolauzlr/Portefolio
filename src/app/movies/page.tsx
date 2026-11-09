@@ -9,7 +9,7 @@ function ExternalCard({ thumbnail, title, externalUrl }: { thumbnail?: string; t
       href={externalUrl}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={`${title} (nouvel onglet)`}
+      aria-label={`${title} (opens in a new tab)`}
       className="relative block aspect-video cursor-pointer group overflow-hidden w-full"
     >
       {thumbnail && <img src={asset(thumbnail)} alt={title} className="w-full h-full object-cover" />}
@@ -62,7 +62,7 @@ export default function MoviesPage() {
       reversed: true,
       description: (
         <>
-          Motion Designer & Video editor for Gymnastique (ARTE).
+          Motion Designer & Video Editor for Gymnastique (ARTE).
           <br />
           HOW TO MAP YOUR IMAGINATION, A documentary by David Caillon that sheds light on the subject of cards in the real and imaginary world by questioning the unique and stunning work of Jerry Gretzinger.
           <br /><br />
@@ -99,7 +99,7 @@ export default function MoviesPage() {
           <br />
           • <span className="font-semibold">Tonneins International Film Festival (IFFT)</span> 2019 (France)
           <br />
-          • <span className="font-semibold">Bronx Wolrd Film Inc</span>, Winter Cycle 2019 (USA)
+          • <span className="font-semibold">Bronx World Film Inc</span>, Winter Cycle 2019 (USA)
           <br />
           • <span className="font-semibold">Kinolikbez</span>, animation vidéo art competition, 2021 (Russia)
         </>
@@ -114,7 +114,7 @@ export default function MoviesPage() {
         { src: "/images/logo-svg/insomnia.svg", alt: "Insomnia International Open-air Animation Film Festival" },
       ],
       belowImageText:
-        "A lonely fisherman's wait. Over the horizon against the expanse of the sea, time passes. Something gradually overwhelms the waiting man. We then discover that he's unstable, fragile and sadly violent. As he suffocates from within, colors appear on his skin. And then everything comes to a halt : a woman arrives like an apparition in the water.",
+        "A lonely fisherman's wait. Over the horizon against the expanse of the sea, time passes. Something gradually overwhelms the waiting man. We then discover that he's unstable, fragile and sadly violent. As he suffocates from within, colours appear on his skin. And then everything comes to a halt : a woman arrives like an apparition in the water.",
     },
   ];
 
@@ -137,7 +137,7 @@ export default function MoviesPage() {
           <br /><br />
           The film follows Antoine de Saint-Exupéry during his time as a pilot for the Aéropostale in Argentina in 1930.
           <br /><br />
-          I had the opportunity to work on the film as a VFX Previsualization Artist, creating video mock-ups combining blue-screen footage with environments shot on location in Argentina. These previsualizations were used to establish and refine the shots before being handed over to the VFX teams for final production.
+          I had the opportunity to work on the film as a VFX Previsualisation Artist, creating video mock-ups combining blue-screen footage with environments shot on location in Argentina. These previsualisations were used to establish and refine the shots before being handed over to the VFX teams for final production.
           <br /><br />
           Cast: Vincent Cassel, Diane Kruger, Louis Garrel.
         </p>

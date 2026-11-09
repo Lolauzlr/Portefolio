@@ -19,27 +19,27 @@ describe("export statique de la section", () => {
   });
 
   it("produit la page d'étagère", () => {
-    expect(existsSync(`${OUT}/storyboard.html`)).toBe(true);
+    expect(existsSync(`${OUT}/storytelling.html`)).toBe(true);
   });
 
   it("produit une page de lecture par album publié", () => {
-    expect(existsSync(`${OUT}/storyboard/old-knight/lire.html`)).toBe(true);
-    expect(existsSync(`${OUT}/storyboard/no-finder/lire.html`)).toBe(true);
-    expect(existsSync(`${OUT}/storyboard/mazou/lire.html`)).toBe(true);
+    expect(existsSync(`${OUT}/storytelling/old-knight/lire.html`)).toBe(true);
+    expect(existsSync(`${OUT}/storytelling/no-finder/lire.html`)).toBe(true);
+    expect(existsSync(`${OUT}/storytelling/mazou/lire.html`)).toBe(true);
   });
 
   it("ne produit aucune page pour les albums à venir", () => {
-    expect(existsSync(`${OUT}/storyboard/en-ecriture/lire.html`)).toBe(false);
+    expect(existsSync(`${OUT}/storytelling/en-ecriture/lire.html`)).toBe(false);
   });
 
   it("place le titre de l'album dans le HTML pré-rendu", () => {
-    const html = readFileSync(`${OUT}/storyboard/old-knight/lire.html`, "utf8");
+    const html = readFileSync(`${OUT}/storytelling/old-knight/lire.html`, "utf8");
     expect(html).toContain("Old Knight");
   });
 
   it("place les liens vers les albums dans la page d'étagère", () => {
-    const html = readFileSync(`${OUT}/storyboard.html`, "utf8");
-    expect(html).toContain("/storyboard/old-knight/lire");
-    expect(html).toContain("/storyboard/no-finder/lire");
+    const html = readFileSync(`${OUT}/storytelling.html`, "utf8");
+    expect(html).toContain("/storytelling/old-knight/lire");
+    expect(html).toContain("/storytelling/no-finder/lire");
   });
 });

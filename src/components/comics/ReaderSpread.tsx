@@ -19,7 +19,7 @@ function Page({ src, alt }: { src: string | null; alt: string }) {
 function plateLabel(comic: PublishedComic, src: string | null): string {
   if (!src) return "";
   const n = comic.plates.indexOf(src) + 1;
-  return `${comic.title} — planche ${n}`;
+  return `${comic.title} — plate ${n}`;
 }
 
 export default function ReaderSpread({
@@ -55,26 +55,26 @@ export default function ReaderSpread({
 
       <nav className="mt-6 flex items-center justify-between font-[family-name:var(--font-heading)] text-[20px] tracking-[1.6px] uppercase">
         {previous === null ? (
-          <span className="text-[#8b9099]">Début</span>
+          <span className="text-[#8b9099]">Start</span>
         ) : (
           <Link
             href={`/storytelling/${comic.slug}/lire/${previous}`}
             className="text-[#0fd1ea] hover:opacity-80"
           >
-            ← Précédent
+            ← Previous
           </Link>
         )}
         <span className="text-[#c9ccd1]">
           {index + 1} / {spreads.length}
         </span>
         {next === null ? (
-          <span className="text-[#8b9099]">Fin</span>
+          <span className="text-[#8b9099]">End</span>
         ) : (
           <Link
             href={`/storytelling/${comic.slug}/lire/${next}`}
             className="text-[#0fd1ea] hover:opacity-80"
           >
-            Suivant →
+            Next →
           </Link>
         )}
       </nav>

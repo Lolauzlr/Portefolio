@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { asset } from "@/lib/asset";
 import { socialLinks } from "@/components/SocialIcons";
 import { useSnackbar } from "@/components/Snackbar";
+import { resetYoutube } from "@/lib/youtube-consent";
 
 const CONTACT_EMAIL = "mariechalandre.pro@gmail.com";
 
@@ -128,6 +129,22 @@ export default function Footer() {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="mt-6 md:mt-8 flex flex-wrap items-center gap-x-[16px] gap-y-[8px] font-[family-name:var(--font-body)] text-[14px] tracking-[1.12px] text-[#dadada]">
+        <span>© {new Date().getFullYear()} Marie Chalandre</span>
+        <Link href="/legal-notice" className="hover:text-[#7FECFB] transition-colors">Legal notice</Link>
+        <Link href="/privacy-policy" className="hover:text-[#7FECFB] transition-colors">Privacy policy</Link>
+        <button
+          type="button"
+          onClick={() => {
+            resetYoutube();
+            showSnackbar({ icon: "success", message: "Video choice reset. You will be asked again on the next video.", oneLine: true });
+          }}
+          className="hover:text-[#7FECFB] transition-colors cursor-pointer"
+        >
+          Video settings
+        </button>
       </div>
 
       {snackbarNode}

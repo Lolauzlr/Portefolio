@@ -137,7 +137,7 @@ export default function HomeContactSection() {
   async function handleContactSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    const subject = "Prise de contact - Portefolio";
+    const subject = "Message via mariechalandre.com";
     const body = `${message.trim()}\n\n${name.trim()}`;
 
     setSendStatus("sending");

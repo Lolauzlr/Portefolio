@@ -1,4 +1,6 @@
 import { illustrationAlt, illustrationCaption } from "@/data/illustrations";
+import JsonLd from "@/components/JsonLd";
+import { absolute, personRef } from "@/lib/schema";
 import { LightboxImg, LightboxProvider, type LightboxSlide } from "@/components/IllustrationLightbox";
 
 const i = (n: number) => `/images/illustrations/illus-${n}.webp`;
@@ -11,22 +13,22 @@ const heroSlides: { src: string; alt: string; title: string; description: React.
   { src: i(25), alt: "Rose", title: "ROSE", description: "Concept Art for a short film • Digital Painting in Adobe Photoshop" },
   {
     src: i(34),
-    alt: "Drunked Monster",
-    title: "DRUNKED MONSTER",
-    description: "Digital Painting : Marie Chalandre • Illustration : Cyril Mornet",
+    alt: "Drunken Monster",
+    title: "DRUNKEN MONSTER",
+    description: "Digital Painting: Marie Chalandre • Illustration: Cyril Mornet",
   },
   {
     src: i(32),
     alt: "Mazou BD",
     title: "MAZOU BD",
     description:
-      "Comic Book Project • A visual diary of a journey around the world • Pen drawing on paper, digitally colored in Adobe Photoshop",
+      "Comic Book Project • A visual diary of a journey around the world • Pen drawing on paper, digitally coloured in Adobe Photoshop",
   },
 ];
 
 const lightboxSlideList: { src: string; alt: string }[] = [
   { src: i(25), alt: "Rose" },
-  { src: i(34), alt: "Drunked Monster" },
+  { src: i(34), alt: "Drunken Monster" },
   { src: i(32), alt: "Mazou BD" },
   { src: i(35), alt: illustrationAlt(i(35)) },
   { src: i(1), alt: illustrationAlt(i(1)) },
@@ -66,6 +68,27 @@ const lightboxSlideList: { src: string; alt: string }[] = [
 
 const lightboxSlides: LightboxSlide[] = lightboxSlideList.map((slide) => ({ ...slide, caption: illustrationCaption(slide.src) }));
 
+const illustrationsSchema = {
+  "@context": "https://schema.org",
+  "@type": "ImageGallery",
+  name: "Illustration & Concept Art",
+  url: absolute("/illustrations"),
+  creator: personRef,
+  image: lightboxSlides.map((slide, n) => {
+    const path = slide.src.startsWith("/") ? slide.src : `/${slide.src}`;
+    const caption = illustrationCaption(slide.src);
+    return {
+      "@type": "ImageObject",
+      name: slide.alt || `Illustration ${n + 1}`,
+      ...(caption && { description: caption }),
+      contentUrl: absolute(path),
+      creator: personRef,
+      creditText: "Marie Chalandre",
+      copyrightNotice: "© Marie Chalandre",
+    };
+  }),
+};
+
 const longestSlide = heroSlides[heroSlides.length - 1];
 
 function CaptionText({ slide }: { slide: (typeof heroSlides)[number] }) {
@@ -102,6 +125,7 @@ function TitleBlock({ title, text }: { title: string; text: string }) {
 export default function IllustrationsPage() {
   return (
     <LightboxProvider slides={lightboxSlides}>
+    <JsonLd data={illustrationsSchema} />
     <div className="pt-[48px] md:pt-[95px] bg-[#15161b] text-white min-h-screen">
       <h1 className="sr-only">Illustrations — Marie Chalandre</h1>
 
@@ -155,11 +179,11 @@ export default function IllustrationsPage() {
 
           {/* MONSTER IN A BOTTLE — image on top, title below */}
           <div className="flex-shrink-0 flex flex-col gap-[16px] w-[382px]">
-            <LightboxImg src={i(34)} alt="Drunked Monster" className="w-full h-[679px] object-cover" />
+            <LightboxImg src={i(34)} alt="Drunken Monster" className="w-full h-[679px] object-cover" />
             <div className="flex flex-col gap-[12px]">
-              <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">DRUNKED MONSTER</p>
+              <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">DRUNKEN MONSTER</p>
               <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px]">
-                Digital Painting : Marie Chalandre • Illustration : Cyril Mornet
+                Digital Painting: Marie Chalandre • Illustration: Cyril Mornet
               </p>
             </div>
           </div>
@@ -169,7 +193,7 @@ export default function IllustrationsPage() {
             <div className="flex flex-col gap-[12px]">
               <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">MAZOU BD</p>
               <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px]">
-                Comic Book Project • A visual diary of a journey around the world • Pen drawing on paper, digitally colored in Adobe Photoshop
+                Comic Book Project • A visual diary of a journey around the world • Pen drawing on paper, digitally coloured in Adobe Photoshop
               </p>
             </div>
             <LightboxImg src={i(32)} alt="Mazou BD" className="w-full h-[539px] object-cover" />
@@ -196,7 +220,7 @@ export default function IllustrationsPage() {
             <div className="flex-1 flex flex-col gap-6 md:gap-0 md:justify-between md:self-stretch">
               <TitleBlock
                 title="Cinematic Approach to Illustration"
-                text="My background in cinematic art still comes through in the way I approach illustration. I pay a lot of attention to composition, color, light and rhythm, even in a single frame. For me, visual storytelling is about creating an image that can communicate something without saying a word."
+                text="My background in cinematic art still comes through in the way I approach illustration. I pay a lot of attention to composition, colour, light and rhythm, even in a single frame. For me, visual storytelling is about creating an image that can communicate something without saying a word."
               />
               <LightboxImg src={i(1)} alt={illustrationAlt(i(1))} className="w-full md:aspect-auto md:h-[322px] md:object-cover" />
             </div>
@@ -251,7 +275,7 @@ export default function IllustrationsPage() {
             <div className="flex-1 flex flex-col gap-6 md:gap-0 md:justify-between md:self-stretch">
               <TitleBlock
                 title="Traditional & Digital Techniques"
-                text="I switch between traditional and digital techniques depending on what I want to express. Sometimes it is watercolor and ink, sometimes pencil and pen, sometimes digital painting in Photoshop. I like not being locked into one way of working and letting the technique adapt to the idea."
+                text="I switch between traditional and digital techniques depending on what I want to express. Sometimes it is watercolour and ink, sometimes pencil and pen, sometimes digital painting in Photoshop. I like not being locked into one way of working and letting the technique adapt to the idea."
               />
               <LightboxImg src={i(14)} alt={illustrationAlt(i(14))} className="w-full md:aspect-[1548/1473] md:object-cover" />
             </div>
@@ -302,8 +326,8 @@ export default function IllustrationsPage() {
             </div>
             <div className="flex-1 flex flex-col gap-6 md:gap-0 md:justify-between md:self-stretch">
               <TitleBlock
-                title="Color, Light & Composition"
-                text="I pay a lot of attention to color and lighting when I work. A change in palette, contrast or light can completely change the mood of an image. I like using these elements as part of the visual language, not just to make an image look good, but to reinforce its meaning."
+                title="Colour, Light & Composition"
+                text="I pay a lot of attention to colour and lighting when I work. A change in palette, contrast or light can completely change the mood of an image. I like using these elements as part of the visual language, not just to make an image look good, but to reinforce its meaning."
               />
               <LightboxImg src={i(21)} alt={illustrationAlt(i(21))} className="w-full md:aspect-auto md:h-[500px] md:object-cover" />
             </div>

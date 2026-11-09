@@ -70,7 +70,9 @@ export function useBodyScrollLock(active: boolean) {
       body.style.left = prev.left;
       body.style.right = prev.right;
       body.style.overflow = prev.overflow;
-      window.scrollTo(0, scrollY);
+      // Instant: the global `scroll-behavior: smooth` would otherwise animate the
+      // page from the top down to where the visitor was.
+      window.scrollTo({ top: scrollY, left: 0, behavior: "instant" });
     };
   }, [active]);
 }
@@ -120,7 +122,7 @@ export default function ScreenshotGallery({
       ref={rootRef}
       role="dialog"
       aria-modal="true"
-      aria-label="Galerie d'images"
+      aria-label="Image gallery"
       className="fixed inset-0 z-[100] bg-black/95 flex flex-col"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -130,7 +132,7 @@ export default function ScreenshotGallery({
         type="button"
         onClick={onClose}
         className="fixed top-4 right-4 md:top-6 md:right-6 z-20 text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
-        aria-label="Fermer"
+        aria-label="Close"
       >
         ✕
       </button>
@@ -144,7 +146,7 @@ export default function ScreenshotGallery({
           <button type="button"
             onClick={() => go(-1)}
             className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
-            aria-label="Précédent"
+            aria-label="Previous"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="15,18 9,12 15,6" />
@@ -162,7 +164,7 @@ export default function ScreenshotGallery({
           <button type="button"
             onClick={() => go(1)}
             className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
-            aria-label="Suivant"
+            aria-label="Next"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="9,6 15,12 9,18" />
@@ -182,7 +184,7 @@ export default function ScreenshotGallery({
                   i === index ? "ring-2 ring-[#ddff6e]" : "opacity-50 hover:opacity-80"
                 }`}
               >
-                <img src={src} alt={`Miniature ${i + 1}`} className="w-full h-full object-cover" />
+                <img src={src} alt={`Thumbnail ${i + 1}`} className="w-full h-full object-cover" />
               </button>
             ))}
           </div>
