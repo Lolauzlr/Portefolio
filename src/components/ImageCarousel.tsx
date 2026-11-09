@@ -11,6 +11,8 @@ import { useZoomPan } from "@/hooks/useZoomPan";
 
 export type CarouselSlide = {
   src?: string;
+  // Description of this image (falls back to the carousel's alt text)
+  alt?: string;
   label?: string;
 };
 
@@ -29,7 +31,7 @@ function SlideContent({
   thumbnail?: boolean;
 }) {
   if (slide.src) {
-    return <img src={asset(slide.src)} alt={alt} className="absolute inset-0 w-full h-full object-cover" />;
+    return <img src={asset(slide.src)} alt={thumbnail ? alt : (slide.alt ?? alt)} className="absolute inset-0 w-full h-full object-cover" />;
   }
   return (
     <div className="absolute inset-0 flex items-center justify-center bg-[#d9d9d9] p-1">
@@ -294,7 +296,7 @@ export default function ImageCarousel({
                 )}
               </div>
             ) : current.src ? (
-              <img data-zoom-target src={asset(current.src)} alt={alt} className="pointer-events-none max-w-full max-h-full object-contain" />
+              <img data-zoom-target src={asset(current.src)} alt={current.alt ?? alt} className="pointer-events-none max-w-full max-h-full object-contain" />
             ) : (
               <div className="w-[90vw] max-w-[800px] aspect-video bg-[#d9d9d9] flex items-center justify-center">
                 <span className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px] text-[#8F8F8F] uppercase">
