@@ -5,15 +5,13 @@ import { grantYoutube } from "@/lib/youtube-consent";
 import { VIDEO_MODAL_CLOSE, VIDEO_MODAL_OPEN } from "@/components/HeroVideo";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
 
-// Mobile browsers block unmuted autoplay for cross-origin iframes even when
-// the iframe is created from a click, so an autoplay=1 embed without mute=1
-// silently fails to start and shows YouTube's own play button (a second tap).
-// Muted autoplay is always allowed, so on touch devices the video starts muted
-// on the first click, and a tap on our "Turn sound on" button (a real user
-// gesture, the only thing that can unmute) turns the sound on. We never try to
-// unmute programmatically: without a gesture the browser answers by pausing the
-// video. Desktop (hover + fine pointer) can autoplay with sound, so it is left
-// unmuted and shows no button.
+// Every device first tries to start the video WITH sound (the visitor just tapped or
+// clicked to open it). Desktop (hover + fine pointer) is allowed to. Mobile browsers
+// often block unmuted autoplay for cross-origin iframes even when the iframe is
+// created from a tap, and answer with YouTube's own play button: when the video
+// hasn't started after a short delay on a touch device, it falls back to muted
+// autoplay (always allowed), and our "Turn sound on" button (a real user gesture,
+// the only thing that can unmute there) turns the sound on.
 // Age-restricted videos open on YouTube's own age-confirmation screen, where
 // an "Turn sound on" button makes no sense, so they never get one.
 const AGE_RESTRICTED_VIDEO_IDS = ["ZPQFsx9XXoM"]; // RESONANCE : A PLAGUE TALE LEGACY • GAMEPLAY
@@ -62,9 +60,14 @@ export default function VideoModal({
     window.dispatchEvent(new Event(VIDEO_MODAL_OPEN));
     return () => { window.dispatchEvent(new Event(VIDEO_MODAL_CLOSE)); };
   }, []);
-  const [withSound] = useState(canAutoplayWithSound);
+  // Touch device: unmuted autoplay may be refused (see above).
+  const [isTouch] = useState(() => !canAutoplayWithSound());
+  // Whether start commands should keep asking for sound; flipped to false by the
+  // muted fallback.
+  const soundRef = useRef(true);
+  const [iframeSrc] = useState(() => buildSrc(src, true));
   // The "Turn sound on" button shows only while the video is muted.
-  const [muted, setMuted] = useState(!withSound);
+  const [muted, setMuted] = useState(false);
   // On touch devices a tap on the player's own YouTube logo makes the embed
   // open a blank tab (about:blank) before redirecting. A real link laid over the
   // logo goes straight to YouTube instead (desktop keeps the native behaviour).
@@ -117,7 +120,7 @@ export default function VideoModal({
           const now = Date.now();
           if (now - lastKick.current > 250) {
             lastKick.current = now;
-            if (!withSound) sendCommand(iframeRef.current, "mute");
+            if (!soundRef.current) sendCommand(iframeRef.current, "mute");
             sendCommand(iframeRef.current, "playVideo");
           }
         }
@@ -131,7 +134,7 @@ export default function VideoModal({
     };
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, [withSound]);
+  }, []);
 
   // The autoplay URL parameter alone is often ignored by mobile browsers, which
   // leaves YouTube's play button waiting for a second tap. Like the trailer
@@ -146,10 +149,23 @@ export default function VideoModal({
         if (playingRef.current) return;
         // The handshake sent on load is also dropped if the player wasn't ready.
         listen(iframe);
-        if (!withSound) sendCommand(iframe, "mute");
+        if (!soundRef.current) sendCommand(iframe, "mute");
         sendCommand(iframe, "playVideo");
       }, ms)
     );
+    // Touch devices: no playback yet means unmuted autoplay was refused, so
+    // start it muted instead (the visitor can then tap "Turn sound on").
+    if (isTouch) {
+      startTimers.current.push(
+        window.setTimeout(() => {
+          if (playingRef.current) return;
+          soundRef.current = false;
+          setMuted(true);
+          sendCommand(iframe, "mute");
+          sendCommand(iframe, "playVideo");
+        }, 2500)
+      );
+    }
   };
 
   const rootRef = useRef<HTMLDivElement>(null);
@@ -191,14 +207,14 @@ export default function VideoModal({
         <iframe
           ref={iframeRef}
           className="w-full h-full"
-          src={buildSrc(src, withSound)}
+          src={iframeSrc}
           onLoad={(e) => startPlayback(e.currentTarget)}
           title={title}
           allow="autoplay; encrypted-media; fullscreen"
           allowFullScreen
           style={{ border: 0 }}
         />
-        {!withSound && videoId && (
+        {isTouch && videoId && (
           <a
             href={`https://www.youtube.com/watch?v=${videoId}`}
             target="_blank"
