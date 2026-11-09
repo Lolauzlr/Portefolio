@@ -16,7 +16,6 @@ import { useBodyScrollLock, useWheelNav } from "@/components/ScreenshotGallery";
 import { useYoutubeConsent } from "@/lib/youtube-consent";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
 import YoutubeOverlay, { YoutubeLogoLink } from "@/components/YoutubeOverlay";
-import YoutubeNote from "@/components/YoutubeNote";
 
 // Event logo shown at the bottom of a screenshots panel (and on the card).
 const logoOf = (card: object) => {
@@ -788,7 +787,6 @@ export default function TrailerPage() {
             LATEST TRAILERS
           </h2>
           <div className="w-[80px] h-[4px] bg-[#ddff6e]" />
-          <YoutubeNote className="mt-3 max-w-[720px]" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           {recentTrailers.map((card) => (
@@ -871,7 +869,6 @@ export default function TrailerPage() {
             FEATURED TRAILERS
           </h2>
           <div className="w-[80px] h-[4px] bg-[#ddff6e]" />
-          <YoutubeNote className="mt-3 max-w-[720px]" />
         </div>
         <div className="flex flex-col gap-[16px] md:gap-[24px]">
           {watchCards.map((card) => {

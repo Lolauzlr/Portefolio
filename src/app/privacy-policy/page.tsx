@@ -41,9 +41,8 @@ export default function PrivacyPolicyPage() {
       <h2>Embedded videos</h2>
       <p>
         Videos are hosted by YouTube (Google). Nothing is loaded from YouTube until you start a
-        video: each video is shown as a thumbnail with a play button and the YouTube logo, and the
-        notice &quot;Videos play via YouTube&quot; is displayed above them. By clicking play, you
-        agree to load YouTube&apos;s player, from the privacy-enhanced domain youtube-nocookie.com.
+        video: each video is shown as a thumbnail with a play button and the YouTube logo. By
+        clicking play, you agree to load YouTube&apos;s player, from the privacy-enhanced domain youtube-nocookie.com.
         From then on, short silent previews play when you hover a thumbnail. Google may collect
         technical data such as your IP address, under its own privacy policy:{" "}
         <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">

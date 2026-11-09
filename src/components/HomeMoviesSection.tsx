@@ -7,7 +7,6 @@ import { useSupportsHover } from "@/hooks/useSupportsHover";
 import VideoModal from "@/components/VideoModal";
 import { useYoutubeConsent } from "@/lib/youtube-consent";
 import YoutubeOverlay from "@/components/YoutubeOverlay";
-import YoutubeNote from "@/components/YoutubeNote";
 
 function CaretCircleRight() {
   return (
@@ -177,7 +176,6 @@ export default function HomeMoviesSection() {
           LATEST MOVIES
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-2" />
-        <YoutubeNote className="mt-3 max-w-[720px]" />
       </div>
 
       <div className="flex flex-col gap-6 md:gap-10">

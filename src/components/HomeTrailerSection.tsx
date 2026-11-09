@@ -14,7 +14,6 @@ import { useBodyScrollLock, useWheelNav } from "@/components/ScreenshotGallery";
 import { useYoutubeConsent } from "@/lib/youtube-consent";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
 import YoutubeOverlay from "@/components/YoutubeOverlay";
-import YoutubeNote from "@/components/YoutubeNote";
 
 function CaretCircleRight() {
   return (
@@ -253,7 +252,6 @@ export default function HomeTrailerSection() {
           TRAILER
         </h2>
         <div className="w-[80px] h-[4px] bg-[#ddff6e] mt-2" />
-        <YoutubeNote className="mt-3 max-w-[720px]" />
       </div>
 
       <div className="relative">
