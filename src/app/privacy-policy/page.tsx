@@ -25,11 +25,23 @@ export default function PrivacyPolicyPage() {
         <li>Purpose: to answer you and to keep a professional contact, for example for job or project opportunities.</li>
         <li>Legal basis: your request to be contacted (steps prior to a contract) and the legitimate interest of replying to messages sent to her.</li>
         <li>
-          Recipients: Marie Chalandre. Messages go through a third-party form service (Web3Forms,{" "}
+          Recipients: Marie Chalandre. Messages go through a form service, Web3Forms (
           <a href="https://web3forms.com/privacy" target="_blank" rel="noopener noreferrer">
-            web3forms.com/privacy
+            privacy policy
           </a>
-          ) that forwards them to her mailbox and may process data outside the European Union.
+          ), which acts as her processor under a{" "}
+          <a href="https://web3forms.com/dpa" target="_blank" rel="noopener noreferrer">
+            Data Processing Agreement
+          </a>
+          . It forwards your message to her mailbox and relies on Amazon Web Services (storage and
+          e-mail delivery), Hetzner and Cloudflare. To fight spam, your IP address and e-mail
+          address may be sent to the anti-spam services CleanTalk and Akismet.
+        </li>
+        <li>
+          Transfers outside the European Union: Web3Forms operates from India and its providers may
+          process data in several regions. Transfers from the EU are covered by the Standard
+          Contractual Clauses set out in its Data Processing Agreement. Your message is also
+          delivered to a Gmail mailbox (Google).
         </li>
         <li>
           Retention: Web3Forms automatically deletes stored submissions after 3 months. The copy
