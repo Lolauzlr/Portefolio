@@ -18,7 +18,13 @@ export default function LegalNoticePage() {
         This website (mariechalandre.com) is a personal portfolio presenting the work of Marie
         Chalandre, who is also the publication director.
       </p>
-      <p>SIRET: 842 918 492 00013</p>
+      <p>
+        Marie Chalandre, sole proprietor (entrepreneur individuel) - SIRET: 842 918 492 00013.
+      </p>
+      <p>
+        Her postal address is protected (non-diffusion) and is communicated to the competent
+        authorities on request.
+      </p>
       <p>
         Contact: <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
       </p>
