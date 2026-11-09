@@ -27,7 +27,7 @@ export const trailerMetadata = pageMetadata(
   "Video Game Cinematics & Trailers • Marie Chalandre",
   "A selection of video game cinematics and trailers by Marie Chalandre, covering camera animation, real-time cinematics, editing and in-game capture.",
   "/trailer",
-  "https://img.youtube.com/vi/OLEZv_Qyb6Q/maxresdefault.jpg",
+  "/images/thumbnails/OLEZv_Qyb6Q.webp",
 );
 
 export const moviesMetadata = pageMetadata(
