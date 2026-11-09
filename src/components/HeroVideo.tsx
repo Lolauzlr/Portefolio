@@ -24,6 +24,9 @@ type Props = {
   onPlayingChange?: (playing: boolean) => void;
 };
 
+export const VIDEO_MODAL_OPEN = "video-modal-open";
+export const VIDEO_MODAL_CLOSE = "video-modal-close";
+
 const FIT_CLASS = {
   contain: "object-contain",
   "contain-bottom": "object-contain object-bottom",
@@ -90,6 +93,30 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
     else window.addEventListener("load", start, { once: true });
     return () => window.removeEventListener("load", start);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // A video opened full screen takes over: the hero pauses while any video
+  // modal is open and resumes afterwards (unless the visitor paused it).
+  useEffect(() => {
+    let wasPlaying = false;
+    const onOpen = () => {
+      const v = videoRef.current;
+      if (v && !v.paused) {
+        wasPlaying = true;
+        v.pause();
+      }
+    };
+    const onClose = () => {
+      const v = videoRef.current;
+      if (v && wasPlaying && !userPausedRef.current) v.play().catch(() => {});
+      wasPlaying = false;
+    };
+    window.addEventListener(VIDEO_MODAL_OPEN, onOpen);
+    window.addEventListener(VIDEO_MODAL_CLOSE, onClose);
+    return () => {
+      window.removeEventListener(VIDEO_MODAL_OPEN, onOpen);
+      window.removeEventListener(VIDEO_MODAL_CLOSE, onClose);
+    };
   }, []);
 
   // iOS low-power mode can refuse autoplay: retry on the first touch or scroll.

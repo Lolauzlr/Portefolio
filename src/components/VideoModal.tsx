@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { grantYoutube } from "@/lib/youtube-consent";
+import { VIDEO_MODAL_CLOSE, VIDEO_MODAL_OPEN } from "@/components/HeroVideo";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
 
 // Mobile browsers block unmuted autoplay for cross-origin iframes even when
@@ -56,6 +57,11 @@ export default function VideoModal({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   // Opening a video is the visitor's click on a thumbnail that says "plays via YouTube".
   useEffect(() => { grantYoutube(); }, []);
+  // Tell the hero video to pause while this video is open.
+  useEffect(() => {
+    window.dispatchEvent(new Event(VIDEO_MODAL_OPEN));
+    return () => { window.dispatchEvent(new Event(VIDEO_MODAL_CLOSE)); };
+  }, []);
   const [withSound] = useState(canAutoplayWithSound);
   // The "Activer le son" button shows only while the video is muted.
   const [muted, setMuted] = useState(!withSound);
