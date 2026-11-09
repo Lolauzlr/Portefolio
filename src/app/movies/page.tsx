@@ -2,6 +2,7 @@
 
 import { asset } from "@/lib/asset";
 import VideoCard from "@/components/VideoCard";
+import YoutubeNote from "@/components/YoutubeNote";
 
 function ExternalCard({ thumbnail, title, externalUrl }: { thumbnail?: string; title: string; externalUrl?: string }) {
   return (
@@ -126,8 +127,9 @@ export default function MoviesPage() {
         <h2 className="text-[28px] tracking-[3.36px] md:text-[40px] md:tracking-[4.8px] font-[family-name:var(--font-heading)] mb-2">
           FEATURE FILMS
         </h2>
-        <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-6 md:mb-10" />
-        <VideoCard videoId="BFLlIR9A8DY" title="SAINT EX" stickyPreview />
+        <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-3" />
+        <YoutubeNote className="mb-6 md:mb-10 max-w-[720px]" />
+        <VideoCard videoId="BFLlIR9A8DY" title="SAINT EX" />
         <h3 className="text-[24px] tracking-[1.92px] md:text-[28px] md:tracking-[2.24px] font-[family-name:var(--font-heading)] mt-4 md:mt-6 mb-2">
           SAINT EX
         </h3>
@@ -148,7 +150,8 @@ export default function MoviesPage() {
         <h2 className="text-[28px] tracking-[3.36px] md:text-[40px] md:tracking-[4.8px] font-[family-name:var(--font-heading)] mb-2">
           DOCUMENTARY
         </h2>
-        <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-6 md:mb-10" />
+        <div className="w-[80px] h-[4px] bg-[#ddff6e] mb-3" />
+        <YoutubeNote className="mb-6 md:mb-10 max-w-[720px]" />
         <div className="flex flex-col gap-[16px] md:gap-[24px]">
           {documentaries.map((doc) => {
             const media = doc.youtubeId ? (
