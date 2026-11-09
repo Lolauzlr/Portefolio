@@ -3,10 +3,10 @@ import { asset } from "@/lib/asset";
 // Shown on every video thumbnail: a play button (the card itself is the click
 // target) and the YouTube logo, which links to the video on YouTube. The logo
 // tells the visitor, before clicking, that the video is played by YouTube.
-export default function YoutubeOverlay({ videoId }: { videoId: string }) {
+export default function YoutubeOverlay({ videoId, previewing = false }: { videoId: string; previewing?: boolean }) {
   return (
     <>
-      <span aria-hidden className="pointer-events-none absolute inset-0 z-[11] flex items-center justify-center">
+      <span aria-hidden className={`pointer-events-none absolute inset-0 z-[11] flex items-center justify-center transition-opacity ${previewing ? "opacity-0" : ""}`}>
         <span className="flex size-[48px] md:size-[64px] items-center justify-center rounded-full bg-black/55 backdrop-blur-[2px]">
           <svg viewBox="0 0 24 24" className="ml-[3px] size-[22px] md:size-[28px] text-white" fill="currentColor">
             <path d="M8 5v14l11-7z" />

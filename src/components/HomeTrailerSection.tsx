@@ -8,10 +8,12 @@ import { useZoomPan } from "@/hooks/useZoomPan";
 import ZoomControls from "@/components/ZoomControls";
 import TrailerScreenshotNav from "@/components/TrailerScreenshotNav";
 import LandscapeImageViewer, { isPortraitPhone } from "@/components/LandscapeImageViewer";
+import { useSupportsHover } from "@/hooks/useSupportsHover";
 import VideoModal from "@/components/VideoModal";
-import YoutubeOverlay from "@/components/YoutubeOverlay";
 import { useBodyScrollLock, useWheelNav } from "@/components/ScreenshotGallery";
+import { useYoutubeConsent } from "@/lib/youtube-consent";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
+import YoutubeOverlay from "@/components/YoutubeOverlay";
 import YoutubeNote from "@/components/YoutubeNote";
 
 function CaretCircleRight() {
@@ -153,6 +155,9 @@ const trailerCards = [
 ];
 
 export default function HomeTrailerSection() {
+  const supportsHover = useSupportsHover();
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+  const consent = useYoutubeConsent();
   const [videoModal, setVideoModal] = useState<{ videoId: string; title: string; fullWidth?: boolean } | null>(null);
   const [screenshotsData, setScreenshotsData] = useState<{
     category: string;
@@ -266,6 +271,15 @@ export default function HomeTrailerSection() {
             >
               <div
                 className="relative w-full aspect-video cursor-pointer overflow-hidden bg-black"
+                // Skipping these two handlers entirely on touch-only devices
+                // (rather than attaching them and gating in onClick) matters:
+                // WebKit treats any element with a mouseenter/mouseover
+                // listener as hover-aware and eats the first tap to simulate
+                // that hover, only firing click on a second tap. With no
+                // listener attached, the first tap fires click immediately.
+                {...(supportsHover
+                  ? { onMouseEnter: () => setHoveredCard(card.videoId), onMouseLeave: () => setHoveredCard(null) }
+                  : {})}
                 onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
               >
                   <button
@@ -274,13 +288,26 @@ export default function HomeTrailerSection() {
                     aria-label={`Lire la vidéo ${card.title}`}
                     className="absolute inset-0 z-10 w-full h-full cursor-pointer focus-visible:outline-offset-[-4px]"
                   />
-                <img
+                {hoveredCard === card.videoId && consent === "granted" ? (
+                  // Preview only: no native controls and no pointer capture,
+                  // so a click anywhere on the video opens the full-width
+                  // modal (same as the /trailer page).
+                  <iframe
+                    className="absolute inset-0 w-full h-full pointer-events-none"
+                    src={`https://www.youtube-nocookie.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
+                    title={card.title}
+                    allow="autoplay; encrypted-media"
+                    style={{ border: 0 }}
+                  />
+                ) : (
+                  <img
                     src={`https://img.youtube.com/vi/${card.videoId}/maxresdefault.jpg`}
                     alt={card.title}
                     className="w-full h-full object-cover"
                     onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${card.videoId}/hqdefault.jpg`; }}
                   />
-<YoutubeOverlay videoId={card.videoId} />
+                )}
+<YoutubeOverlay videoId={card.videoId} previewing={hoveredCard === card.videoId && consent === "granted"} />
               </div>
               <div className="flex flex-col gap-3 flex-1">
                 <h3 className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">

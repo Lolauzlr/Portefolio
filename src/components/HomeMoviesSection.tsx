@@ -3,8 +3,10 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { asset } from "@/lib/asset";
-import YoutubeOverlay from "@/components/YoutubeOverlay";
+import { useSupportsHover } from "@/hooks/useSupportsHover";
 import VideoModal from "@/components/VideoModal";
+import { useYoutubeConsent } from "@/lib/youtube-consent";
+import YoutubeOverlay from "@/components/YoutubeOverlay";
 import YoutubeNote from "@/components/YoutubeNote";
 
 function CaretCircleRight() {
@@ -31,10 +33,20 @@ function VideoCard({
   onPlay?: () => void;
   className?: string;
 }) {
+  const supportsHover = useSupportsHover();
+  const consent = useYoutubeConsent();
+  const [hovered, setHovered] = useState(false);
 
   return (
     <div
       className={`relative aspect-video cursor-pointer group overflow-hidden ${className || ""}`}
+      // Skipping these two handlers entirely on touch-only devices (rather
+      // than attaching them and gating in onClick) matters: WebKit treats
+      // any element with a mouseenter/mouseover listener as hover-aware and
+      // eats the first tap to simulate that hover, only firing click on a
+      // second tap. With no listener attached, the first tap fires click
+      // immediately.
+      {...(supportsHover ? { onMouseEnter: () => setHovered(true), onMouseLeave: () => setHovered(false) } : {})}
     >
       {onPlay ? (
         <button
@@ -52,7 +64,19 @@ function VideoCard({
           className="absolute inset-0 z-10 cursor-pointer focus-visible:outline-offset-[-4px]"
         />
       ) : null}
-      <>
+      {youtubeId && hovered && consent === "granted" ? (
+        // Preview only: no native controls and no pointer capture, so a
+        // click anywhere on the video opens the full-width modal (same as
+        // the /trailer page).
+        <iframe
+          className="w-full h-full pointer-events-none"
+          src={`https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
+          title={title}
+          allow="autoplay; encrypted-media"
+          style={{ border: 0 }}
+        />
+      ) : (
+        <>
           {youtubeId ? (
             <img
               src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`}
@@ -72,8 +96,9 @@ function VideoCard({
               <path d="M8 5v14l11-7z" />
             </svg>
           </div>
-        {youtubeId && <YoutubeOverlay videoId={youtubeId} />}
-      </>
+        </>
+      )}
+      {youtubeId && <YoutubeOverlay videoId={youtubeId} previewing={hovered && consent === "granted"} />}
     </div>
   );
 }

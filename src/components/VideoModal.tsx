@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { grantYoutube } from "@/lib/youtube-consent";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
 
 // Mobile browsers block unmuted autoplay for cross-origin iframes even when
@@ -53,6 +54,8 @@ export default function VideoModal({
   fullWidth?: boolean;
 }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  // Opening a video is the visitor's click on a thumbnail that says "plays via YouTube".
+  useEffect(() => { grantYoutube(); }, []);
   const [withSound] = useState(canAutoplayWithSound);
   // The "Activer le son" button shows only while the video is muted.
   const [muted, setMuted] = useState(!withSound);

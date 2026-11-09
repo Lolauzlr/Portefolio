@@ -11,9 +11,11 @@ import LandscapeImageViewer, { isPortraitPhone } from "@/components/LandscapeIma
 import JsonLd from "@/components/JsonLd";
 import { personRef } from "@/lib/schema";
 import VideoModal from "@/components/VideoModal";
-import YoutubeOverlay from "@/components/YoutubeOverlay";
+import { useSupportsHover } from "@/hooks/useSupportsHover";
 import { useBodyScrollLock, useWheelNav } from "@/components/ScreenshotGallery";
+import { useYoutubeConsent } from "@/lib/youtube-consent";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
+import YoutubeOverlay from "@/components/YoutubeOverlay";
 import YoutubeNote from "@/components/YoutubeNote";
 
 // Event logo shown at the bottom of a screenshots panel (and on the card).
@@ -63,6 +65,10 @@ export default function TrailerPage() {
     () => zoom.ignoreSwipe()
   );
   const [videoModal, setVideoModal] = useState<{ videoId: string; title: string; fullWidth?: boolean } | null>(null);
+  const supportsHover = useSupportsHover();
+  const [hoveredRecent, setHoveredRecent] = useState<string | null>(null);
+  const [hoveredWatch, setHoveredWatch] = useState<string | null>(null);
+  const consent = useYoutubeConsent();
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [showPause, setShowPause] = useState(false);
@@ -797,6 +803,9 @@ export default function TrailerPage() {
             >
               <div
                 className="relative w-full aspect-video cursor-pointer overflow-hidden bg-black"
+                // Touch-only devices get no hover listeners: WebKit would eat
+                // the first tap to simulate the hover (see useSupportsHover).
+                {...(supportsHover ? { onMouseEnter: () => setHoveredRecent(card.videoId), onMouseLeave: () => setHoveredRecent(null) } : {})}
                 onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
               >
                   <button
@@ -805,13 +814,26 @@ export default function TrailerPage() {
                     aria-label={`Lire la vidéo ${card.title}`}
                     className="absolute inset-0 z-10 w-full h-full cursor-pointer focus-visible:outline-offset-[-4px]"
                   />
-                <img
+                {hoveredRecent === card.videoId && consent === "granted" ? (
+                  // Native YouTube controls enabled (scrub bar + seeking).
+                  // YouTube's own control bar already includes a fullscreen
+                  // button, so no separate expand affordance is needed here.
+                  <iframe
+                    className="absolute inset-0 w-full h-full pointer-events-none"
+                    src={`https://www.youtube-nocookie.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
+                    title={card.title}
+                    allow="autoplay; encrypted-media"
+                    style={{ border: 0 }}
+                  />
+                ) : (
+                  <img
                     src={`https://img.youtube.com/vi/${card.videoId}/maxresdefault.jpg`}
                     alt={card.title}
                     className="w-full h-full object-cover"
                     onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${card.videoId}/hqdefault.jpg`; }}
                   />
-<YoutubeOverlay videoId={card.videoId} />
+                )}
+<YoutubeOverlay videoId={card.videoId} previewing={hoveredRecent === card.videoId && consent === "granted"} />
               </div>
               <div className="flex flex-col gap-3 flex-1">
                 <p className="text-[24px] font-[family-name:var(--font-heading)] tracking-[1.92px]">
@@ -898,6 +920,7 @@ export default function TrailerPage() {
                   <div
                     className="relative w-full md:w-[62%] md:min-w-0 min-[85rem]:w-[792px] flex-shrink-0 cursor-pointer overflow-hidden bg-black"
                     style={{ aspectRatio: "16 / 9" }}
+                    {...(supportsHover ? { onMouseEnter: () => setHoveredWatch(card.videoId), onMouseLeave: () => setHoveredWatch(null) } : {})}
                     onClick={(e) => { e.stopPropagation(); setVideoModal({ videoId: card.videoId, title: card.title, fullWidth: true }); }}
                   >
                       <button
@@ -906,13 +929,27 @@ export default function TrailerPage() {
                         aria-label={`Lire la vidéo ${card.title}`}
                         className="absolute inset-0 z-10 w-full h-full cursor-pointer focus-visible:outline-offset-[-4px]"
                       />
-                    <img
+                    {hoveredWatch === card.videoId && consent === "granted" ? (
+                      // Native YouTube controls enabled (scrub bar +
+                      // seeking). YouTube's own control bar already
+                      // includes a fullscreen button, so no separate expand
+                      // affordance is needed here.
+                      <iframe
+                        className="absolute inset-0 w-full h-full pointer-events-none"
+                        src={`https://www.youtube-nocookie.com/embed/${card.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
+                        title={card.title}
+                        allow="autoplay; encrypted-media"
+                        style={{ border: 0 }}
+                      />
+                    ) : (
+                      <img
                         src={`https://img.youtube.com/vi/${card.videoId}/maxresdefault.jpg`}
                         alt={card.title}
                         className="w-full h-full object-cover"
                         onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${card.videoId}/hqdefault.jpg`; }}
                       />
-<YoutubeOverlay videoId={card.videoId} />
+                    )}
+<YoutubeOverlay videoId={card.videoId} previewing={hoveredWatch === card.videoId && consent === "granted"} />
                   </div>
                   <div className="flex flex-col gap-4 md:gap-6 pt-4 md:pt-6 pl-4 md:pl-6 justify-between flex-1">
                     <div className="flex flex-col gap-4 md:gap-6">

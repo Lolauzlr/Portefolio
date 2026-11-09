@@ -5,7 +5,7 @@ import Link from "next/link";
 export default function YoutubeNote({ className = "" }: { className?: string }) {
   return (
     <p className={`font-[family-name:var(--font-body)] text-[14px] tracking-[1.12px] text-[#dadada] ${className}`}>
-      Videos play via YouTube. By starting a video, you agree to load YouTube&apos;s player.{" "}
+      Videos play via YouTube. By starting a video, you agree to load YouTube&apos;s player and to preview videos when hovering a thumbnail.{" "}
       <Link href="/privacy-policy" className="text-[#0fd1ea] hover:underline">
         Learn more
       </Link>
