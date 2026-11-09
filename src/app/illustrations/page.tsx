@@ -13,8 +13,8 @@ const heroSlides: { src: string; alt: string; title: string; description: React.
   { src: i(25), alt: "Rose", title: "ROSE", description: "Concept Art for a short film • Digital Painting in Adobe Photoshop" },
   {
     src: i(34),
-    alt: "Drunked Monster",
-    title: "DRUNKED MONSTER",
+    alt: "Drunken Monster",
+    title: "DRUNKEN MONSTER",
     description: "Digital Painting: Marie Chalandre • Illustration: Cyril Mornet",
   },
   {
@@ -28,7 +28,7 @@ const heroSlides: { src: string; alt: string; title: string; description: React.
 
 const lightboxSlideList: { src: string; alt: string }[] = [
   { src: i(25), alt: "Rose" },
-  { src: i(34), alt: "Drunked Monster" },
+  { src: i(34), alt: "Drunken Monster" },
   { src: i(32), alt: "Mazou BD" },
   { src: i(35), alt: illustrationAlt(i(35)) },
   { src: i(1), alt: illustrationAlt(i(1)) },
@@ -179,9 +179,9 @@ export default function IllustrationsPage() {
 
           {/* MONSTER IN A BOTTLE — image on top, title below */}
           <div className="flex-shrink-0 flex flex-col gap-[16px] w-[382px]">
-            <LightboxImg src={i(34)} alt="Drunked Monster" className="w-full h-[679px] object-cover" />
+            <LightboxImg src={i(34)} alt="Drunken Monster" className="w-full h-[679px] object-cover" />
             <div className="flex flex-col gap-[12px]">
-              <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">DRUNKED MONSTER</p>
+              <p className="font-[family-name:var(--font-heading)] text-[24px] tracking-[1.92px]">DRUNKEN MONSTER</p>
               <p className="font-[family-name:var(--font-body)] text-[16px] tracking-[1.28px]">
                 Digital Painting: Marie Chalandre • Illustration: Cyril Mornet
               </p>
