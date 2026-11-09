@@ -562,13 +562,13 @@ export default function TrailerPage() {
         )}
 
         {/* YouTube logo: the full video opens from a click on the hero */}
-        <YoutubeLogoLink videoId="OLEZv_Qyb6Q" className="z-30 right-[88px] top-[72px] md:top-auto md:right-[62px] md:bottom-[24px]" />
+        <YoutubeLogoLink videoId="OLEZv_Qyb6Q" className="z-30 right-[88px] bottom-[3px] md:right-[62px] md:bottom-[24px]" />
 
         {/* Mobile: small pause / play button next to the sound button (the hover-only
             pause button doesn't exist on touch screens) */}
         <button type="button"
           onClick={togglePlay}
-          className="absolute right-4 top-[72px] z-30 md:hidden size-[27px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+          className="absolute right-4 bottom-[3px] z-30 md:hidden size-[27px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
           aria-label={isPlaying ? "Pause" : "Play"}
         >
           {isPlaying ? (
@@ -586,7 +586,7 @@ export default function TrailerPage() {
         {/* Sound toggle - always visible, aligned right with ME CONTACTER, bottom with pentagon */}
         <button type="button"
           onClick={toggleMute}
-          className="absolute right-[52px] top-[72px] md:top-auto md:right-[24px] md:bottom-[24px] z-30 md:z-20 size-[27px] md:size-[30px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+          className="absolute right-[52px] bottom-[3px] md:right-[24px] md:bottom-[24px] z-30 md:z-20 size-[27px] md:size-[30px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
           aria-label={isMuted ? "Activer le son" : "Couper le son"}
         >
           {isMuted ? (
@@ -607,7 +607,7 @@ export default function TrailerPage() {
         {/* Pentagon cadre - small chamfer top-right corner */}
         <div
           ref={cadreRef}
-          className="absolute left-4 md:left-[24px] bottom-8 md:bottom-[24px] w-[calc(100%-2rem)] md:w-[calc(100%-3rem)] min-[85rem]:w-[792px] z-20 pointer-events-auto"
+          className="absolute left-4 md:left-[24px] bottom-[44px] md:bottom-[24px] w-[calc(100%-2rem)] md:w-[calc(100%-3rem)] min-[85rem]:w-[792px] z-20 pointer-events-auto"
         >
           {/* Background with blur + pentagon clip */}
           <div
