@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { grantYoutube } from "@/lib/youtube-consent";
 import { VIDEO_MODAL_CLOSE, VIDEO_MODAL_OPEN } from "@/components/HeroVideo";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
@@ -41,7 +41,7 @@ function listen(iframe: HTMLIFrameElement) {
 export default function VideoModal({
   src,
   title,
-  onClose,
+  onClose: onCloseProp,
   fullWidth = false,
 }: {
   src: string;
@@ -55,6 +55,13 @@ export default function VideoModal({
   const iframeRef = useRef<HTMLIFrameElement>(null);
   // Opening a video is the visitor's click on a thumbnail that says "plays via YouTube".
   useEffect(() => { grantYoutube(); }, []);
+  // Closing tells the hero video to resume. It is announced here, inside the
+  // tap itself: iOS in Low Power Mode only lets a video start from a real user
+  // gesture, and the unmount cleanup below can run too late for that.
+  const onClose = useCallback(() => {
+    window.dispatchEvent(new Event(VIDEO_MODAL_CLOSE));
+    onCloseProp();
+  }, [onCloseProp]);
   // Tell the hero video to pause while this video is open.
   useEffect(() => {
     window.dispatchEvent(new Event(VIDEO_MODAL_OPEN));

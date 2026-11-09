@@ -139,15 +139,18 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
     };
   }, []);
 
-  // iOS low-power mode can refuse autoplay: retry on the first touch or scroll.
+  // iOS (notably in Low Power Mode) only lets a video start from a real user
+  // gesture, and touchstart / scroll are not gestures there: touchend and click
+  // are. Until the hero plays, the first tap or swipe anywhere starts it.
   useEffect(() => {
     const kick = () => {
       const v = videoRef.current;
-      if (v && v.paused && !userPausedRef.current && !modalOpenRef.current && loadedRef.current) v.play().catch(() => {});
+      if (!v || !v.paused || userPausedRef.current || modalOpenRef.current || !loadedRef.current) return;
+      v.play().catch(() => {});
     };
-    const events = ["touchstart", "touchmove", "scroll"] as const;
-    events.forEach((e) => window.addEventListener(e, kick, { once: true, passive: true }));
-    return () => events.forEach((e) => window.removeEventListener(e, kick));
+    const events = ["touchend", "pointerup", "click"] as const;
+    events.forEach((e) => window.addEventListener(e, kick, { passive: true, capture: true }));
+    return () => events.forEach((e) => window.removeEventListener(e, kick, { capture: true }));
   }, []);
 
   return (
