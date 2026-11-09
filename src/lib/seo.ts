@@ -11,7 +11,14 @@ export function pageMetadata(title: string, description: string, path: string, i
     title,
     description,
     alternates: { canonical: url },
-    openGraph: { title, description, url, type: "website", images: [{ url: img }] },
+    openGraph: {
+      title,
+      description,
+      url,
+      type: "website",
+      // Our own share images are 1200x630: declaring it lets apps size the card without guessing.
+      images: [image.startsWith("/images/og/") ? { url: img, width: 1200, height: 630, alt: title } : { url: img, alt: title }],
+    },
     twitter: { card: "summary_large_image", title, description, images: [img] },
   };
 }
@@ -20,7 +27,7 @@ export const homeMetadata = pageMetadata(
   "Marie Chalandre • Cinematic Artist & Filmmaker",
   "Cinematic artist and filmmaker working across video games and film, with a focus on cinematics, storyboarding, visual storytelling and illustration.",
   "/",
-  "/images/og/home.jpg",
+  "/images/og/home-2.jpg",
 );
 
 export const trailerMetadata = pageMetadata(
