@@ -562,22 +562,22 @@ export default function TrailerPage() {
         )}
 
         {/* YouTube logo: the full video opens from a click on the hero */}
-        <YoutubeLogoLink videoId="OLEZv_Qyb6Q" className="z-30 right-[52px] top-[72px] md:top-auto md:right-[84px] md:bottom-[33px]" />
+        <YoutubeLogoLink videoId="OLEZv_Qyb6Q" className="z-30 right-[52px] top-[72px] md:top-auto md:right-[62px] md:bottom-[24px]" />
 
         {/* Sound toggle - always visible, aligned right with ME CONTACTER, bottom with pentagon */}
         <button type="button"
           onClick={toggleMute}
-          className="absolute right-4 top-[72px] md:top-auto md:right-[24px] md:bottom-[24px] z-30 md:z-20 size-[27px] md:size-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+          className="absolute right-4 top-[72px] md:top-auto md:right-[24px] md:bottom-[24px] z-30 md:z-20 size-[27px] md:size-[30px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
           aria-label={isMuted ? "Activer le son" : "Couper le son"}
         >
           {isMuted ? (
-            <svg width="32" height="32" className="size-[17px] md:size-[32px]" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="32" height="32" className="size-[17px] md:size-[18px]" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
               <line x1="23" y1="9" x2="17" y2="15" />
               <line x1="17" y1="9" x2="23" y2="15" />
             </svg>
           ) : (
-            <svg width="32" height="32" className="size-[17px] md:size-[32px]" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="32" height="32" className="size-[17px] md:size-[18px]" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
               <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
               <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
