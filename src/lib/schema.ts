@@ -20,6 +20,7 @@ export const websiteSchema = {
   "@type": "WebSite",
   "@id": `${SITE_URL}/#website`,
   name: "Marie Chalandre",
+  alternateName: ["Marie Chalandre Portfolio", "mariechalandre.com"],
   url: `${SITE_URL}/`,
   inLanguage: "en",
   publisher: { "@id": PERSON_ID },

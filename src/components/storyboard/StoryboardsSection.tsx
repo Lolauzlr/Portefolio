@@ -26,15 +26,42 @@ const theTwinsSlides: CarouselSlide[] = [
 ];
 
 const roseSlides: CarouselSlide[] = [
-  { src: "/images/Storyboard/Rose/ROSE-1.webp" },
-  { src: "/images/Storyboard/Rose/ROSE-2.webp" },
-  { src: "/images/Storyboard/Rose/ROSE-3.webp" },
-  { src: "/images/Storyboard/Rose/ROSE-4.webp" },
-  { src: "/images/Storyboard/Rose/ROSE-5.webp" },
-  { src: "/images/Storyboard/Rose/ROSE-6.webp" },
-  { src: "/images/Storyboard/Rose/ROSE-7.webp" },
-  { src: "/images/Storyboard/Rose/ROSE-8.webp" },
-  { src: "/images/Storyboard/Rose/ROSE-9.webp" },
+  {
+    src: "/images/Storyboard/Rose/ROSE-STORYBOARD-01.webp",
+    alt: "Rose storyboard, page 1: a close-up of Rose's eyes reflecting her father's silhouette, the snow-covered garden, a crack forming in the glass door, and adult Rose sitting in her living room",
+  },
+  {
+    src: "/images/Storyboard/Rose/ROSE-STORYBOARD-02.webp",
+    alt: "Rose storyboard, page 2: Rose's eyes well up with tears and she covers her face; young Rose draws behind adult Rose at a desk, a hunter holds a heart on the drawing, and hunting equipment lies beside drawing materials",
+  },
+  {
+    src: "/images/Storyboard/Rose/ROSE-STORYBOARD-03.webp",
+    alt: "Rose storyboard, page 3: Rose stops, realises she is holding a shotgun cartridge and looks towards the door; a vertical tracking shot through the forest, then she picks something up from the snow",
+  },
+  {
+    src: "/images/Storyboard/Rose/ROSE-STORYBOARD-04.webp",
+    alt: "Rose storyboard, page 4: Rose holds a shotgun cartridge, her point of view searches among the trees, and reverse shots show her listening and whistling",
+  },
+  {
+    src: "/images/Storyboard/Rose/ROSE-STORYBOARD-05.webp",
+    alt: "Rose storyboard, page 5: a crow perches on a branch and takes flight, leading Rose along a path through the forest; a bang is heard, Rose stops and sets off again",
+  },
+  {
+    src: "/images/Storyboard/Rose/ROSE-STORYBOARD-06.webp",
+    alt: "Rose storyboard, page 6: Rose emerges from the forest and gazes into the distance filled with wonder, approaches a field of roses, picks a flower and pricks her finger on a thorn",
+  },
+  {
+    src: "/images/Storyboard/Rose/ROSE-STORYBOARD-07.webp",
+    alt: "Rose storyboard, page 7: blood beads on Rose's finger and trickles down, a drop falls into the snow next to a shotgun cartridge, and Rose notices it, startled",
+  },
+  {
+    src: "/images/Storyboard/Rose/ROSE-STORYBOARD-08.webp",
+    alt: "Rose storyboard, page 8: the clouds cover the sky, a transition where Rose replaces the bloodstain, and a vertical tracking shot over the forest",
+  },
+  {
+    src: "/images/Storyboard/Rose/ROSE-STORYBOARD-09.webp",
+    alt: "Rose storyboard, page 9: Rose emerges into the forest, her point of view through a gap in the branches lands on a doe, the hunter's eyes fix on it, and her startled father swings his gun round, pointing straight at Rose",
+  },
 ];
 
 const theUntamedSlides: CarouselSlide[] = [{ src: "/images/Storyboard/The-Untamed/STB_The-Untamed.webp" }];
