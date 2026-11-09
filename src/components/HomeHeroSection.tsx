@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import VideoModal from "@/components/VideoModal";
 import { prefersReducedMotion } from "@/hooks/useReducedMotion";
+import { YoutubeLogoLink } from "@/components/YoutubeOverlay";
 
 const HERO_VIDEO_ID = "yfCtiQ93gis";
 const HERO_VIDEO_TITLE = "HERO VIDEO";
@@ -301,6 +302,9 @@ export default function HomeHeroSection() {
             </svg>
           </button>
         )}
+
+        {/* YouTube logo: the full video opens from a click on the hero */}
+        <YoutubeLogoLink videoId={videoId} className="right-[76px] md:right-[84px] bottom-[41px] md:bottom-[33px]" />
 
         {/* Sound toggle */}
         <button type="button"

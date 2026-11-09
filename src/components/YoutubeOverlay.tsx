@@ -3,6 +3,23 @@ import { asset } from "@/lib/asset";
 // Shown on every video thumbnail: a play button (the card itself is the click
 // target) and the YouTube logo, which links to the video on YouTube. The logo
 // tells the visitor, before clicking, that the video is played by YouTube.
+// The YouTube logo in a dark pill, linking to the video on YouTube. Position it
+// with `className` (absolute offsets).
+export function YoutubeLogoLink({ videoId, className = "" }: { videoId: string; className?: string }) {
+  return (
+    <a
+      href={`https://www.youtube.com/watch?v=${videoId}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Watch on YouTube (opens in a new tab)"
+      onClick={(e) => e.stopPropagation()}
+      className={`absolute z-20 rounded-full bg-black/60 px-3 py-[7px] backdrop-blur-sm transition-colors hover:bg-black/80 ${className}`}
+    >
+      <img src={asset("/images/logo-svg/youtube.svg")} alt="YouTube" className="block h-[13px] md:h-[16px] w-auto" />
+    </a>
+  );
+}
+
 export default function YoutubeOverlay({ videoId, previewing = false }: { videoId: string; previewing?: boolean }) {
   return (
     <>
@@ -13,16 +30,7 @@ export default function YoutubeOverlay({ videoId, previewing = false }: { videoI
           </svg>
         </span>
       </span>
-      <a
-        href={`https://www.youtube.com/watch?v=${videoId}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Watch on YouTube (opens in a new tab)"
-        onClick={(e) => e.stopPropagation()}
-        className="absolute bottom-2 right-2 md:bottom-3 md:right-3 z-20 rounded-full bg-black/60 px-3 py-[7px] backdrop-blur-sm transition-colors hover:bg-black/80"
-      >
-        <img src={asset("/images/logo-svg/youtube.svg")} alt="YouTube" className="block h-[13px] md:h-[16px] w-auto" />
-      </a>
+      <YoutubeLogoLink videoId={videoId} className="bottom-2 right-2 md:bottom-3 md:right-3" />
     </>
   );
 }

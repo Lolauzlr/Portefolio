@@ -15,7 +15,7 @@ import { useSupportsHover } from "@/hooks/useSupportsHover";
 import { useBodyScrollLock, useWheelNav } from "@/components/ScreenshotGallery";
 import { useYoutubeConsent } from "@/lib/youtube-consent";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
-import YoutubeOverlay from "@/components/YoutubeOverlay";
+import YoutubeOverlay, { YoutubeLogoLink } from "@/components/YoutubeOverlay";
 import YoutubeNote from "@/components/YoutubeNote";
 
 // Event logo shown at the bottom of a screenshots panel (and on the card).
@@ -687,6 +687,9 @@ export default function TrailerPage() {
             </svg>
           </button>
         )}
+
+        {/* YouTube logo: the full video opens from a click on the hero */}
+        <YoutubeLogoLink videoId="OLEZv_Qyb6Q" className="z-30 right-4 top-[72px] md:top-auto md:right-[84px] md:bottom-[33px]" />
 
         {/* Sound toggle - always visible, aligned right with ME CONTACTER, bottom with pentagon */}
         <button type="button"
