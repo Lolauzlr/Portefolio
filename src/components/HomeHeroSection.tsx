@@ -144,12 +144,31 @@ export default function HomeHeroSection() {
         )}
 
         {/* YouTube logo: the full video opens from a click on the hero */}
-        <YoutubeLogoLink videoId={HERO_VIDEO_ID} className="right-[52px] md:right-[62px] bottom-[41px] md:bottom-[calc(11.8%+14px)]" />
+        <YoutubeLogoLink videoId={HERO_VIDEO_ID} className="right-[88px] md:right-[62px] bottom-[41px] md:bottom-[calc(11.8%+14px)]" />
+
+        {/* Mobile: small pause / play button next to the sound button (the hover-only
+            pause button doesn't exist on touch screens) */}
+        <button type="button"
+          onClick={togglePlay}
+          className="absolute right-4 bottom-[41px] z-30 md:hidden size-[27px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+          aria-label={isPlaying ? "Pause" : "Play"}
+        >
+          {isPlaying ? (
+            <svg width="15" height="15" viewBox="0 0 20 20" fill="white" aria-hidden="true">
+              <rect x="4" y="3" width="4" height="14" rx="1" />
+              <rect x="12" y="3" width="4" height="14" rx="1" />
+            </svg>
+          ) : (
+            <svg width="15" height="15" viewBox="0 0 20 20" fill="white" aria-hidden="true">
+              <polygon points="6,3 17,10 6,17" />
+            </svg>
+          )}
+        </button>
 
         {/* Sound toggle */}
         <button type="button"
           onClick={toggleMute}
-          className="absolute right-4 md:right-[24px] bottom-[41px] md:bottom-[calc(11.8%+14px)] z-20 size-[27px] md:size-[30px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+          className="absolute right-[52px] md:right-[24px] bottom-[41px] md:bottom-[calc(11.8%+14px)] z-20 size-[27px] md:size-[30px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
           aria-label={isMuted ? "Activer le son" : "Couper le son"}
         >
           {isMuted ? (

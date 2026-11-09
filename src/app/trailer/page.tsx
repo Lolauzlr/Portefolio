@@ -562,12 +562,31 @@ export default function TrailerPage() {
         )}
 
         {/* YouTube logo: the full video opens from a click on the hero */}
-        <YoutubeLogoLink videoId="OLEZv_Qyb6Q" className="z-30 right-[52px] top-[72px] md:top-auto md:right-[62px] md:bottom-[24px]" />
+        <YoutubeLogoLink videoId="OLEZv_Qyb6Q" className="z-30 right-[88px] top-[72px] md:top-auto md:right-[62px] md:bottom-[24px]" />
+
+        {/* Mobile: small pause / play button next to the sound button (the hover-only
+            pause button doesn't exist on touch screens) */}
+        <button type="button"
+          onClick={togglePlay}
+          className="absolute right-4 top-[72px] z-30 md:hidden size-[27px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+          aria-label={isPlaying ? "Pause" : "Play"}
+        >
+          {isPlaying ? (
+            <svg width="15" height="15" viewBox="0 0 20 20" fill="white" aria-hidden="true">
+              <rect x="4" y="3" width="4" height="14" rx="1" />
+              <rect x="12" y="3" width="4" height="14" rx="1" />
+            </svg>
+          ) : (
+            <svg width="15" height="15" viewBox="0 0 20 20" fill="white" aria-hidden="true">
+              <polygon points="6,3 17,10 6,17" />
+            </svg>
+          )}
+        </button>
 
         {/* Sound toggle - always visible, aligned right with ME CONTACTER, bottom with pentagon */}
         <button type="button"
           onClick={toggleMute}
-          className="absolute right-4 top-[72px] md:top-auto md:right-[24px] md:bottom-[24px] z-30 md:z-20 size-[27px] md:size-[30px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+          className="absolute right-[52px] top-[72px] md:top-auto md:right-[24px] md:bottom-[24px] z-30 md:z-20 size-[27px] md:size-[30px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
           aria-label={isMuted ? "Activer le son" : "Couper le son"}
         >
           {isMuted ? (
