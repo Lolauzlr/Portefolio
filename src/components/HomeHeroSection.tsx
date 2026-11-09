@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import VideoModal from "@/components/VideoModal";
+import { flushSync } from "react-dom";
+import VideoModal, { type LocalVideo } from "@/components/VideoModal";
 import HeroVideo, { type HeroVideoHandle } from "@/components/HeroVideo";
 import { prefersReducedMotion } from "@/hooks/useReducedMotion";
 import { YoutubeLogoLink } from "@/components/YoutubeOverlay";
@@ -23,7 +24,7 @@ const MOBILE_VIDEO = {
 };
 
 export default function HomeHeroSection() {
-  const [videoModal, setVideoModal] = useState<{ videoId: string; title: string; fullWidth?: boolean } | null>(null);
+  const [videoModal, setVideoModal] = useState<{ videoId: string; title: string; fullWidth?: boolean; local?: LocalVideo } | null>(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [showPause, setShowPause] = useState(false);
@@ -112,7 +113,8 @@ export default function HomeHeroSection() {
         {/* Click zone - opens the full-width video overlay */}
         <button type="button"
           className="absolute inset-0 w-full h-full z-10 cursor-pointer group focus-visible:outline-offset-[-4px]"
-          onClick={() => setVideoModal({ videoId: HERO_VIDEO_ID, title: HERO_VIDEO_TITLE, fullWidth: true })}
+          // flushSync: the modal (and its video) must start inside the tap, see VideoModal.
+          onClick={() => flushSync(() => setVideoModal({ videoId: HERO_VIDEO_ID, title: HERO_VIDEO_TITLE, fullWidth: true, local: DESKTOP_VIDEO }))}
           aria-label="Open the video"
         />
 
@@ -192,6 +194,7 @@ export default function HomeHeroSection() {
           src={`https://www.youtube-nocookie.com/embed/${videoModal.videoId}?autoplay=1&rel=0`}
           title={videoModal.title}
           fullWidth={videoModal.fullWidth}
+          local={videoModal.local}
           onClose={() => setVideoModal(null)}
         />
       )}

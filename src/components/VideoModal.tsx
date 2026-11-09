@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { grantYoutube } from "@/lib/youtube-consent";
-import { VIDEO_MODAL_CLOSE, VIDEO_MODAL_OPEN } from "@/components/HeroVideo";
+import { AV1_TYPE, VIDEO_MODAL_CLOSE, VIDEO_MODAL_OPEN } from "@/components/HeroVideo";
+import { asset } from "@/lib/asset";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
 
 // Mobile browsers block unmuted autoplay for cross-origin iframes even when the
@@ -38,13 +39,20 @@ function listen(iframe: HTMLIFrameElement) {
   iframe.contentWindow?.postMessage(JSON.stringify({ event: "listening", id: 1 }), "*");
 }
 
+// A self-hosted copy of the same video. On touch devices it is played instead of
+// the YouTube embed: phones only let a video start with sound from a tap in OUR
+// page, never from inside YouTube's iframe (which then asks for a second tap).
+export type LocalVideo = { av1: string; h264: string; poster: string };
+
 export default function VideoModal({
   src,
   title,
   onClose: onCloseProp,
   fullWidth = false,
+  local,
 }: {
   src: string;
+  local?: LocalVideo;
   title: string;
   onClose: () => void;
   // Edge-to-edge: the video takes the full viewport width (shrinking only if
@@ -53,6 +61,7 @@ export default function VideoModal({
   fullWidth?: boolean;
 }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const localRef = useRef<HTMLVideoElement>(null);
   // Opening a video is the visitor's click on a thumbnail that says "plays via YouTube".
   useEffect(() => { grantYoutube(); }, []);
   // Closing tells the hero video to resume. It is announced here, inside the
@@ -69,6 +78,20 @@ export default function VideoModal({
   }, []);
   // Touch device: starts muted (see above).
   const [isTouch] = useState(() => !canAutoplayWithSound());
+  const useLocal = isTouch && !!local;
+  // The caller opens this modal inside the tap (flushSync), so this runs while the
+  // tap is still a user gesture: the video may start with sound.
+  useLayoutEffect(() => {
+    const v = localRef.current;
+    if (!useLocal || !local || !v) return;
+    v.src = asset(v.canPlayType(AV1_TYPE) ? local.av1 : local.h264);
+    v.muted = false;
+    v.play().catch(() => {
+      v.muted = true;
+      v.play().catch(() => {});
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const soundRef = useRef(!isTouch);
   const [iframeSrc] = useState(() => buildSrc(src, !isTouch));
   // The "Turn sound on" button shows only while the video is muted.
@@ -196,37 +219,51 @@ export default function VideoModal({
           instead of staying small until the user physically rotates their
           phone. Desktop and mobile landscape keep the normal centered box. */}
       <div className={`${fullWidth ? "w-[min(100vw,177.78dvh)] h-auto" : "w-full h-full max-w-[90vw] max-h-[90vh] md:max-w-[85vw] md:max-h-[85vh]"} relative aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:w-[min(100vw,177.78dvh)] [@media(orientation:landscape)_and_(max-height:500px)]:h-auto [@media(orientation:landscape)_and_(max-height:500px)]:max-w-none [@media(orientation:landscape)_and_(max-height:500px)]:max-h-none max-md:portrait:fixed max-md:portrait:top-1/2 max-md:portrait:left-1/2 max-md:portrait:w-[min(100dvh,177.78dvw)] max-md:portrait:h-[min(56.25dvh,100dvw)] max-md:portrait:max-w-none max-md:portrait:max-h-none max-md:portrait:-translate-x-1/2 max-md:portrait:-translate-y-1/2 max-md:portrait:rotate-90`}>
-        <iframe
-          ref={iframeRef}
-          className="w-full h-full"
-          src={iframeSrc}
-          onLoad={(e) => startPlayback(e.currentTarget)}
-          title={title}
-          allow="autoplay; encrypted-media; fullscreen"
-          allowFullScreen
-          style={{ border: 0 }}
-        />
-        {isTouch && videoId && (
-          <a
-            href={`https://www.youtube.com/watch?v=${videoId}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Watch on YouTube"
-            className="absolute bottom-[4%] left-[64%] z-10 h-[12%] w-[27%]"
+        {useLocal && local ? (
+          <video
+            ref={localRef}
+            className="h-full w-full bg-black"
+            poster={asset(local.poster)}
+            controls
+            playsInline
+            preload="auto"
+            aria-label={title}
           />
-        )}
-        {muted && !ageRestricted && !hintExpired && (
-          <button
-            type="button"
-            onClick={enableSound}
-            className="absolute bottom-[5.25rem] right-[4.25rem] z-10 flex w-max items-center gap-2 whitespace-nowrap rounded-full bg-black/60 px-4 py-2 text-sm text-white cursor-pointer"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M11 5 6 9H2v6h4l5 4V5z" fill="currentColor" />
-              <path d="m23 9-6 6M17 9l6 6" />
-            </svg>
-            Turn sound on
-          </button>
+        ) : (
+          <>
+          <iframe
+            ref={iframeRef}
+            className="w-full h-full"
+            src={iframeSrc}
+            onLoad={(e) => startPlayback(e.currentTarget)}
+            title={title}
+            allow="autoplay; encrypted-media; fullscreen"
+            allowFullScreen
+            style={{ border: 0 }}
+          />
+          {isTouch && videoId && (
+            <a
+              href={`https://www.youtube.com/watch?v=${videoId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Watch on YouTube"
+              className="absolute bottom-[4%] left-[64%] z-10 h-[12%] w-[27%]"
+            />
+          )}
+          {muted && !ageRestricted && !hintExpired && (
+            <button
+              type="button"
+              onClick={enableSound}
+              className="absolute bottom-[5.25rem] right-[4.25rem] z-10 flex w-max items-center gap-2 whitespace-nowrap rounded-full bg-black/60 px-4 py-2 text-sm text-white cursor-pointer"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M11 5 6 9H2v6h4l5 4V5z" fill="currentColor" />
+                <path d="m23 9-6 6M17 9l6 6" />
+              </svg>
+              Turn sound on
+            </button>
+          )}
+          </>
         )}
       </div>
     </div>

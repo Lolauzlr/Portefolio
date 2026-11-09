@@ -10,7 +10,8 @@ import TrailerScreenshotNav from "@/components/TrailerScreenshotNav";
 import LandscapeImageViewer, { isPortraitPhone } from "@/components/LandscapeImageViewer";
 import JsonLd from "@/components/JsonLd";
 import { absolute, personRef } from "@/lib/schema";
-import VideoModal from "@/components/VideoModal";
+import { flushSync } from "react-dom";
+import VideoModal, { type LocalVideo } from "@/components/VideoModal";
 import HeroVideo, { type HeroVideoHandle } from "@/components/HeroVideo";
 import { useSupportsHover } from "@/hooks/useSupportsHover";
 import { useBodyScrollLock, useWheelNav } from "@/components/ScreenshotGallery";
@@ -65,7 +66,7 @@ export default function TrailerPage() {
     shotCount > 1,
     () => zoom.ignoreSwipe()
   );
-  const [videoModal, setVideoModal] = useState<{ videoId: string; title: string; fullWidth?: boolean } | null>(null);
+  const [videoModal, setVideoModal] = useState<{ videoId: string; title: string; fullWidth?: boolean; local?: LocalVideo } | null>(null);
   const supportsHover = useSupportsHover();
   const [hoveredRecent, setHoveredRecent] = useState<string | null>(null);
   const [hoveredWatch, setHoveredWatch] = useState<string | null>(null);
@@ -530,7 +531,8 @@ export default function TrailerPage() {
         {/* Click zone - opens overlay, or pauses on hover-visible button */}
         <button type="button"
           className="absolute inset-0 w-full h-full z-10 cursor-pointer group focus-visible:outline-offset-[-4px]"
-          onClick={() => setVideoModal({ videoId: "OLEZv_Qyb6Q", title: "ELTA: DEFY ALL GODS • REVEAL TRAILER", fullWidth: true })}
+          // flushSync: the modal (and its video) must start inside the tap, see VideoModal.
+          onClick={() => flushSync(() => setVideoModal({ videoId: "OLEZv_Qyb6Q", title: "ELTA: DEFY ALL GODS • REVEAL TRAILER", fullWidth: true, local: { av1: "/videos/hero-trailer-desktop-av1.mp4", h264: "/videos/hero-trailer-desktop.mp4", poster: "/videos/hero-trailer-desktop-poster.jpg" } }))}
           aria-label="Open the video"
         />
 
@@ -889,6 +891,7 @@ export default function TrailerPage() {
           src={`https://www.youtube-nocookie.com/embed/${videoModal.videoId}?autoplay=1&rel=0`}
           title={videoModal.title}
           fullWidth={videoModal.fullWidth}
+          local={videoModal.local}
           onClose={() => setVideoModal(null)}
         />
       )}

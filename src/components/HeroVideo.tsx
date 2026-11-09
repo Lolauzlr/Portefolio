@@ -33,7 +33,7 @@ const FIT_CLASS = {
   "cover-top": "object-cover object-top",
 } as const;
 
-const AV1_TYPE = 'video/mp4; codecs="av01.0.08M.08"';
+export const AV1_TYPE = 'video/mp4; codecs="av01.0.08M.08"';
 
 // The hero video never competes with the page itself: the poster paints
 // first, the file starts downloading once the page has loaded, and nothing is
