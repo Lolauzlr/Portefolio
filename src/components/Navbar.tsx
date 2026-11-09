@@ -36,7 +36,8 @@ export default function Navbar() {
     <>
       <header className="fixed top-0 left-0 right-0 z-[70] flex items-center justify-center px-4 md:px-8 min-[85rem]:px-[120px] pt-[28px] pb-[20px]">
         {/* Logo - absolutely positioned left */}
-        <Link href="/" className="absolute left-6 md:left-[120px] shrink-0">
+        {/* Mobile: nudged down so the top of the logo sits as far from the top edge as the burger icon */}
+        <Link href="/" className="absolute left-6 md:left-[120px] shrink-0 translate-y-[15px] md:translate-y-0">
           <img
             src={asset("/images/logo-svg/LogoMC.svg")}
             alt="Marie Chalandre"
