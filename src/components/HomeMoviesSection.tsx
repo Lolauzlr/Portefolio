@@ -7,6 +7,7 @@ import { useSupportsHover } from "@/hooks/useSupportsHover";
 import VideoModal from "@/components/VideoModal";
 import { useYoutubeConsent } from "@/lib/youtube-consent";
 import YoutubeOverlay from "@/components/YoutubeOverlay";
+import { videoThumb } from "@/lib/thumbnails";
 
 function CaretCircleRight() {
   return (
@@ -77,12 +78,9 @@ function VideoCard({
       ) : (
         <>
           {youtubeId ? (
-            <img
-              src={`https://img.youtube.com/vi/${youtubeId}/maxresdefault.jpg`}
+            <img src={videoThumb(youtubeId)}
               alt={title}
-              className="w-full h-full object-cover"
-              onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`; }}
-            />
+              className="w-full h-full object-cover" loading="lazy" decoding="async" />
           ) : thumbnail ? (
             <img src={asset(thumbnail)} alt={title} className="w-full h-full object-cover" />
           ) : (

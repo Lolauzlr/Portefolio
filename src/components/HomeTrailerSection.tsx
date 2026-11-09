@@ -14,6 +14,7 @@ import { useBodyScrollLock, useWheelNav } from "@/components/ScreenshotGallery";
 import { useYoutubeConsent } from "@/lib/youtube-consent";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
 import YoutubeOverlay from "@/components/YoutubeOverlay";
+import { videoThumb } from "@/lib/thumbnails";
 
 function CaretCircleRight() {
   return (
@@ -298,12 +299,9 @@ export default function HomeTrailerSection() {
                     style={{ border: 0 }}
                   />
                 ) : (
-                  <img
-                    src={`https://img.youtube.com/vi/${card.videoId}/maxresdefault.jpg`}
+                  <img src={videoThumb(card.videoId)}
                     alt={card.title}
-                    className="w-full h-full object-cover"
-                    onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${card.videoId}/hqdefault.jpg`; }}
-                  />
+                    className="w-full h-full object-cover" loading="lazy" decoding="async" />
                 )}
 <YoutubeOverlay videoId={card.videoId} previewing={hoveredCard === card.videoId && consent === "granted"} />
               </div>

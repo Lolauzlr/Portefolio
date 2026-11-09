@@ -11,11 +11,13 @@ import LandscapeImageViewer, { isPortraitPhone } from "@/components/LandscapeIma
 import JsonLd from "@/components/JsonLd";
 import { personRef } from "@/lib/schema";
 import VideoModal from "@/components/VideoModal";
+import HeroVideo, { type HeroVideoHandle } from "@/components/HeroVideo";
 import { useSupportsHover } from "@/hooks/useSupportsHover";
 import { useBodyScrollLock, useWheelNav } from "@/components/ScreenshotGallery";
 import { useYoutubeConsent } from "@/lib/youtube-consent";
 import { useFocusTrap } from "@/hooks/useFocusTrap";
 import YoutubeOverlay, { YoutubeLogoLink } from "@/components/YoutubeOverlay";
+import { videoThumb } from "@/lib/thumbnails";
 
 // Event logo shown at the bottom of a screenshots panel (and on the card).
 const logoOf = (card: object) => {
@@ -68,7 +70,7 @@ export default function TrailerPage() {
   const [hoveredRecent, setHoveredRecent] = useState<string | null>(null);
   const [hoveredWatch, setHoveredWatch] = useState<string | null>(null);
   const consent = useYoutubeConsent();
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [showPause, setShowPause] = useState(false);
   const [cadreSize, setCadreSize] = useState({ w: 792, h: 201 });
@@ -86,11 +88,9 @@ export default function TrailerPage() {
     () => window.matchMedia("(max-width: 767px) and (orientation: portrait)").matches,
     () => false
   );
-  const mobileVideoRef = useRef<HTMLVideoElement>(null);
-  const ytHostRef = useRef<HTMLDivElement>(null);
-  const playerRef = useRef<YT.Player | null>(null);
+  const videoRef = useRef<HeroVideoHandle>(null);
   // With prefers-reduced-motion the hero video starts paused; the play button starts it.
-  const userPausedRef = useRef(prefersReducedMotion());
+  const [startPaused] = useState(() => prefersReducedMotion());
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const cadreRef = useRef<HTMLDivElement>(null);
@@ -467,134 +467,13 @@ export default function TrailerPage() {
     return i < 0 || n < 2 ? null : { prev: screenshotTrailers[(i - 1 + n) % n], next: screenshotTrailers[(i + 1) % n], isFirst: i === 0, isLast: i === n - 1 };
   })();
 
-  const onPlayerReady = useCallback((event: YT.PlayerEvent) => {
-    event.target.mute();
-    setIsMuted(true);
-    if (userPausedRef.current) {
-      setIsPlaying(false);
-      return;
-    }
-    event.target.playVideo();
-  }, []);
-
-  // Keep the play/pause UI in sync with what the player is really doing:
-  // mobile browsers can refuse or interrupt autoplay, in which case the
-  // play button must show instead of a "pause" state that isn't true.
-  const onPlayerStateChange = useCallback((event: YT.OnStateChangeEvent) => {
-    if (event.data === YT.PlayerState.ENDED) {
-      event.target.playVideo();
-    } else if (event.data === YT.PlayerState.PLAYING) {
-      setIsPlaying(true);
-    } else if (event.data === YT.PlayerState.PAUSED) {
-      setIsPlaying(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    // Portrait phones show the self-hosted loop instead (see isMobile): the YouTube
-    // player is only built elsewhere, and rebuilt when the phone is turned.
-    const wrapper = ytHostRef.current;
-    if (isMobile || !wrapper) return;
-    // The player replaces the element it is given, so it gets a throwaway child
-    // that React doesn't own (clean to recreate after a rotation).
-    const host = document.createElement("div");
-    wrapper.appendChild(host);
-    const createPlayer = () => {
-      if (playerRef.current || !host.isConnected) return;
-      playerRef.current = new YT.Player(host, {
-        host: "https://www.youtube-nocookie.com",
-        videoId: "OLEZv_Qyb6Q",
-        width: "100%",
-        height: "100%",
-        playerVars: {
-          autoplay: userPausedRef.current ? 0 : 1,
-          mute: 1,
-          loop: 1,
-          playlist: "OLEZv_Qyb6Q",
-          controls: 0,
-          showinfo: 0,
-          rel: 0,
-          modestbranding: 1,
-          playsinline: 1,
-          iv_load_policy: 3,
-          disablekb: 1,
-        },
-        events: {
-          onReady: onPlayerReady,
-          onStateChange: onPlayerStateChange,
-        },
-      });
-    };
-
-    // The IFrame API script only runs its ready callback on first load, so
-    // when arriving here by client-side navigation (API already loaded) the
-    // player must be created directly or the hero video never starts.
-    if (typeof YT !== "undefined" && YT.Player) {
-      createPlayer();
-    } else {
-      (window as unknown as Record<string, unknown>).onYouTubeIframeAPIReady = createPlayer;
-      if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
-        const tag = document.createElement("script");
-        tag.src = "https://www.youtube.com/iframe_api";
-        document.head.appendChild(tag);
-      }
-    }
-
-    return () => {
-      playerRef.current?.destroy();
-      playerRef.current = null;
-      wrapper.replaceChildren();
-    };
-  }, [isMobile, onPlayerReady, onPlayerStateChange]);
-
-  // Fallback when the browser blocks autoplay (e.g. iOS low-power mode):
-  // start the muted video on the first touch anywhere on the page.
-  useEffect(() => {
-    const kick = () => {
-      const player = playerRef.current;
-      if (player && player.getPlayerState?.() !== YT.PlayerState.PLAYING && !userPausedRef.current) {
-        player.mute();
-        player.playVideo();
-      }
-    };
-    window.addEventListener("touchstart", kick, { once: true, passive: true });
-    return () => window.removeEventListener("touchstart", kick);
-  }, []);
-
-  // Mobile hero video: muted playsInline autoplay is allowed on iOS/Android,
-  // but low-power mode can still block it, so retry on the first touch.
-  useEffect(() => {
-    if (!isMobile) return;
-    const video = mobileVideoRef.current;
-    if (!video) return;
-    if (prefersReducedMotion()) {
-      video.pause();
-      return;
-    }
-    video.play().catch(() => {});
-    const kick = () => { if (video.paused) video.play().catch(() => {}); };
-    window.addEventListener("touchstart", kick, { once: true, passive: true });
-    return () => window.removeEventListener("touchstart", kick);
-  }, [isMobile]);
-
   const togglePlay = () => {
-    if (!playerRef.current) return;
-    if (isPlaying) {
-      userPausedRef.current = true;
-      playerRef.current.pauseVideo();
-    } else {
-      userPausedRef.current = false;
-      playerRef.current.playVideo();
-    }
+    if (isPlaying) videoRef.current?.pause();
+    else videoRef.current?.play();
   };
 
   const toggleMute = () => {
-    if (!playerRef.current) return;
-    if (isMuted) {
-      playerRef.current.unMute();
-    } else {
-      playerRef.current.mute();
-    }
+    videoRef.current?.setMuted(!isMuted);
     setIsMuted(!isMuted);
   };
 
@@ -629,27 +508,22 @@ export default function TrailerPage() {
           trailer frame and the caption card at the bottom only covers a
           small fraction of it. */}
       <section ref={heroRef} className="relative w-full mx-auto max-w-[calc(100dvh*9/16)] aspect-[9/16] md:max-w-none md:aspect-auto md:h-[min(810px,100dvh)] [@media(orientation:landscape)_and_(max-height:500px)]:!aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:!h-auto [@media(orientation:landscape)_and_(max-height:500px)]:!max-w-[calc(100dvh*16/9)] overflow-hidden">
-        {/* YouTube video background via API */}
+        {/* Self-hosted background video (the poster shows until it starts) */}
         <div
           ref={containerRef}
-          className="absolute inset-0 overflow-hidden pointer-events-none"
+          className="absolute inset-0 overflow-hidden bg-black pointer-events-none"
         >
-          {isMobile && (
-            <video
-              ref={mobileVideoRef}
-              className="absolute inset-0 w-full h-full object-cover"
-              src={asset("/videos/elta-reveal-mobile.mp4")}
-              poster={asset("/videos/elta-reveal-mobile-poster.jpg")}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="auto"
-            />
-          )}
-          <div
-            ref={ytHostRef}
-            className="absolute top-1/2 left-1/2 w-[316.05vw] h-[177.78vw] -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full md:w-[177.78vh] md:h-[100vh] md:min-w-full md:min-h-full [@media(orientation:landscape)_and_(max-height:500px)]:!w-full [@media(orientation:landscape)_and_(max-height:500px)]:!h-full"
+          <HeroVideo
+            // A new player per layout, so the right file is loaded when a
+            // phone is turned.
+            key={isMobile ? "mobile" : "desktop"}
+            ref={videoRef}
+            av1={isMobile ? "/videos/hero-trailer-mobile-av1.mp4" : "/videos/hero-trailer-desktop-av1.mp4"}
+            h264={isMobile ? "/videos/hero-trailer-mobile.mp4" : "/videos/hero-trailer-desktop.mp4"}
+            poster={isMobile ? "/videos/hero-trailer-mobile-poster.jpg" : "/videos/hero-trailer-desktop-poster.jpg"}
+            fit={isMobile ? "cover-top" : "contain"}
+            startPaused={startPaused}
+            onPlayingChange={setIsPlaying}
           />
         </div>
 
@@ -827,12 +701,9 @@ export default function TrailerPage() {
                     style={{ border: 0 }}
                   />
                 ) : (
-                  <img
-                    src={`https://img.youtube.com/vi/${card.videoId}/maxresdefault.jpg`}
+                  <img src={videoThumb(card.videoId)}
                     alt={card.title}
-                    className="w-full h-full object-cover"
-                    onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${card.videoId}/hqdefault.jpg`; }}
-                  />
+                    className="w-full h-full object-cover" loading="lazy" decoding="async" />
                 )}
 <YoutubeOverlay videoId={card.videoId} previewing={hoveredRecent === card.videoId && consent === "granted"} />
               </div>
@@ -942,12 +813,9 @@ export default function TrailerPage() {
                         style={{ border: 0 }}
                       />
                     ) : (
-                      <img
-                        src={`https://img.youtube.com/vi/${card.videoId}/maxresdefault.jpg`}
+                      <img src={videoThumb(card.videoId)}
                         alt={card.title}
-                        className="w-full h-full object-cover"
-                        onError={(e) => { (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${card.videoId}/hqdefault.jpg`; }}
-                      />
+                        className="w-full h-full object-cover" loading="lazy" decoding="async" />
                     )}
 <YoutubeOverlay videoId={card.videoId} previewing={hoveredWatch === card.videoId && consent === "granted"} />
                   </div>

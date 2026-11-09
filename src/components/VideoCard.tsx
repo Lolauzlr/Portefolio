@@ -5,6 +5,7 @@ import { useSupportsHover } from "@/hooks/useSupportsHover";
 import VideoModal from "@/components/VideoModal";
 import { useYoutubeConsent } from "@/lib/youtube-consent";
 import YoutubeOverlay from "@/components/YoutubeOverlay";
+import { videoThumb } from "@/lib/thumbnails";
 
 // Same hover-to-preview / click-to-fullscreen pattern as the trailer cards
 // on /trailer: a static YouTube thumbnail, swapped for a muted autoplaying
@@ -71,14 +72,9 @@ export default function VideoCard({
             style={{ border: 0 }}
           />
         ) : (
-          <img
-            src={`https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`}
+          <img src={videoThumb(videoId)}
             alt={title}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-            }}
-          />
+            className="w-full h-full object-cover" loading="lazy" decoding="async" />
         )}
 <YoutubeOverlay videoId={videoId} previewing={hovered && consent === "granted"} />
       </div>
