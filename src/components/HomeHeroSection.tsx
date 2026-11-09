@@ -90,7 +90,7 @@ export default function HomeHeroSection() {
 
   return (
     <>
-      <section ref={heroRef} className="relative w-full mx-auto max-w-[calc(100dvh*9/14.4)] aspect-[9/14.4] md:max-w-[calc(100dvh*16/9)] md:aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:!max-w-[calc(100dvh*16/9)] bg-[#060000] overflow-hidden">
+      <section ref={heroRef} className="relative w-full mx-auto max-w-[calc(100dvh*9/14.4)] aspect-[9/14.4] md:max-w-[calc(100dvh*1.92)] md:aspect-[1920/1000] [@media(orientation:landscape)_and_(max-height:500px)]:aspect-[1920/1000] [@media(orientation:landscape)_and_(max-height:500px)]:!max-w-[calc(100dvh*1.92)] bg-[#060000] overflow-hidden">
         {/* Self-hosted background video (the poster shows until it starts) */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           {isMobile !== null && (
@@ -102,7 +102,7 @@ export default function HomeHeroSection() {
               av1={source.av1}
               h264={source.h264}
               poster={source.poster}
-              fit={isMobile ? "cover-top" : "contain"}
+              fit={isMobile ? "cover-top" : "contain-bottom"}
               startPaused={startPaused}
               onPlayingChange={setIsPlaying}
             />
@@ -144,12 +144,12 @@ export default function HomeHeroSection() {
         )}
 
         {/* YouTube logo: the full video opens from a click on the hero */}
-        <YoutubeLogoLink videoId={HERO_VIDEO_ID} className="right-[76px] md:right-[84px] bottom-[41px] md:bottom-[33px]" />
+        <YoutubeLogoLink videoId={HERO_VIDEO_ID} className="right-[76px] md:right-[84px] bottom-[41px] md:bottom-[calc(10.4%+23px)]" />
 
         {/* Sound toggle */}
         <button type="button"
           onClick={toggleMute}
-          className="absolute right-4 md:right-[24px] bottom-8 md:bottom-[24px] z-20 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
+          className="absolute right-4 md:right-[24px] bottom-8 md:bottom-[calc(10.4%+14px)] z-20 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
           aria-label={isMuted ? "Activer le son" : "Couper le son"}
         >
           {isMuted ? (

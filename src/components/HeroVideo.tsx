@@ -16,12 +16,19 @@ type Props = {
   h264: string;
   poster: string;
   // "contain": the whole frame stays visible (bars blend into the dark hero);
+  // "contain-bottom": same, anchored to the bottom edge of the hero;
   // "cover-top": fills the frame, anchored to the top edge.
-  fit?: "contain" | "cover-top";
+  fit?: "contain" | "contain-bottom" | "cover-top";
   // Wait for the visitor to press play (prefers-reduced-motion).
   startPaused?: boolean;
   onPlayingChange?: (playing: boolean) => void;
 };
+
+const FIT_CLASS = {
+  contain: "object-contain",
+  "contain-bottom": "object-contain object-bottom",
+  "cover-top": "object-cover object-top",
+} as const;
 
 const AV1_TYPE = 'video/mp4; codecs="av01.0.08M.08"';
 
@@ -99,7 +106,7 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
   return (
     <video
       ref={videoRef}
-      className={`absolute inset-0 h-full w-full ${fit === "contain" ? "object-contain" : "object-cover object-top"}`}
+      className={`absolute inset-0 h-full w-full ${FIT_CLASS[fit]}`}
       poster={asset(poster)}
       muted
       loop
