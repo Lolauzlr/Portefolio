@@ -84,7 +84,7 @@ const HOBBIES = [
   { icon: "boxing-glove", label: "Martial Arts & Sports", desc: "Shotokan Karate, Black Belt 2nd Dan / Boxing / Hiking / Climbing / Running" },
   { icon: "palette", label: "Arts", desc: "Cinema / Animation / Photography / Literature / Philosophy / Comics / Manga / Video Games" },
   { icon: "headphones", label: "Music", desc: "Certificate of Musical Studies (DEM) • Piano & Music Theory / Fingerstyle Guitar" },
-  { icon: "airplane-tilt", label: "Travel", desc: "One-year backpacking world tour • Oct. 23 - Oct. 24 • East & Southeast Asia, Oceania, North & South America\nWWOOFing experience and 7-month stay in Japan • Jul. 16 - Feb. 17" },
+  { icon: "airplane-tilt", label: "Travel", desc: "One-year backpacking world tour • Oct. 23 - Oct. 24 • East & Southeast Asia, Oceania, North & South America\nWoofing experience and 7-month stay in Japan • Jul. 16 - Feb. 17" },
 ] as const;
 
 const ANCHORS = [
