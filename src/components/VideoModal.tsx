@@ -44,6 +44,115 @@ function listen(iframe: HTMLIFrameElement) {
 // page, never from inside YouTube's iframe (which then asks for a second tap).
 export type LocalVideo = { av1: string; h264: string; poster: string };
 
+function formatTime(t: number): string {
+  if (!Number.isFinite(t)) return "0:00";
+  const m = Math.floor(t / 60);
+  const sec = Math.floor(t % 60);
+  return `${m}:${sec.toString().padStart(2, "0")}`;
+}
+
+// Our own copy of the video, with a few controls of our own: the phone's native
+// ones are huge and don't follow the rotated layout. It lives inside the rotated
+// frame, so everything turns with the video.
+function LocalPlayer({ local, title }: { local: LocalVideo; title: string }) {
+  const ref = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const [muted, setMuted] = useState(false);
+  const [time, setTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  // The caller opens the modal inside the tap (flushSync), so this runs while the
+  // tap is still a user gesture: the video may start with sound.
+  useLayoutEffect(() => {
+    const v = ref.current;
+    if (!v) return;
+    v.src = asset(v.canPlayType(AV1_TYPE) ? local.av1 : local.h264);
+    v.muted = false;
+    v.play().catch(() => {
+      v.muted = true;
+      setMuted(true);
+      v.play().catch(() => {});
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const toggle = () => {
+    const v = ref.current;
+    if (!v) return;
+    if (v.paused) v.play().catch(() => {});
+    else v.pause();
+  };
+
+  return (
+    <>
+      <video
+        ref={ref}
+        className="h-full w-full bg-black object-contain"
+        poster={asset(local.poster)}
+        playsInline
+        preload="auto"
+        aria-label={title}
+        onClick={toggle}
+        onPlay={() => setPlaying(true)}
+        onPause={() => setPlaying(false)}
+        onTimeUpdate={(e) => setTime(e.currentTarget.currentTime)}
+        onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
+        onVolumeChange={(e) => setMuted(e.currentTarget.muted)}
+      />
+      <div className="absolute inset-x-0 bottom-0 z-10 flex items-center gap-3 bg-gradient-to-t from-black/75 to-transparent px-4 pb-3 pt-8 text-white">
+        <button type="button" onClick={toggle} aria-label={playing ? "Pause" : "Play"} className="flex size-9 shrink-0 items-center justify-center rounded-full bg-black/50 cursor-pointer">
+          {playing ? (
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="white" aria-hidden="true">
+              <rect x="4" y="3" width="4" height="14" rx="1" />
+              <rect x="12" y="3" width="4" height="14" rx="1" />
+            </svg>
+          ) : (
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="white" aria-hidden="true">
+              <polygon points="6,3 17,10 6,17" />
+            </svg>
+          )}
+        </button>
+        <span className="w-[42px] shrink-0 text-xs tabular-nums">{formatTime(time)}</span>
+        <input
+          type="range"
+          min={0}
+          max={duration || 0}
+          step={0.1}
+          value={time}
+          aria-label="Seek"
+          onChange={(e) => {
+            const v = ref.current;
+            if (v) v.currentTime = Number(e.target.value);
+          }}
+          className="h-1 min-w-0 flex-1 cursor-pointer accent-[#0fd1ea]"
+        />
+        <span className="w-[42px] shrink-0 text-right text-xs tabular-nums">{formatTime(duration)}</span>
+        <button
+          type="button"
+          onClick={() => { const v = ref.current; if (v) v.muted = !v.muted; }}
+          aria-label={muted ? "Turn sound on" : "Turn sound off"}
+          className="flex size-9 shrink-0 items-center justify-center rounded-full bg-black/50 cursor-pointer"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polygon points="11,5 6,9 2,9 2,15 6,15 11,19" fill="white" />
+            {muted ? (
+              <>
+                <line x1="23" y1="9" x2="17" y2="15" />
+                <line x1="17" y1="9" x2="23" y2="15" />
+              </>
+            ) : (
+              <>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+              </>
+            )}
+          </svg>
+        </button>
+      </div>
+    </>
+  );
+}
+
 export default function VideoModal({
   src,
   title,
@@ -61,7 +170,6 @@ export default function VideoModal({
   fullWidth?: boolean;
 }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const localRef = useRef<HTMLVideoElement>(null);
   // Opening a video is the visitor's click on a thumbnail that says "plays via YouTube".
   useEffect(() => { grantYoutube(); }, []);
   // Closing tells the hero video to resume. It is announced here, inside the
@@ -79,36 +187,6 @@ export default function VideoModal({
   // Touch device: starts muted (see above).
   const [isTouch] = useState(() => !canAutoplayWithSound());
   const useLocal = isTouch && !!local;
-  // The caller opens this modal inside the tap (flushSync), so this runs while the
-  // tap is still a user gesture: the video may start with sound.
-  useLayoutEffect(() => {
-    const v = localRef.current;
-    if (!useLocal || !local || !v) return;
-    v.src = asset(v.canPlayType(AV1_TYPE) ? local.av1 : local.h264);
-    v.muted = false;
-    v.play().catch(() => {
-      v.muted = true;
-      v.play().catch(() => {});
-    });
-    // The phone's own full-screen player handles rotation, controls and the
-    // "done" button: Android via the Fullscreen API; an iPhone enters it by
-    // itself when a video without `playsinline` starts.
-    let enteredFullscreen = false;
-    if (v.requestFullscreen) {
-      v.requestFullscreen().then(() => { enteredFullscreen = true; }).catch(() => {});
-    }
-    const leave = () => {
-      if (enteredFullscreen && !document.fullscreenElement) onClose();
-    };
-    const leaveIos = () => onClose();
-    document.addEventListener("fullscreenchange", leave);
-    v.addEventListener("webkitendfullscreen", leaveIos);
-    return () => {
-      document.removeEventListener("fullscreenchange", leave);
-      v.removeEventListener("webkitendfullscreen", leaveIos);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
   const soundRef = useRef(!isTouch);
   const [iframeSrc] = useState(() => buildSrc(src, !isTouch));
   // The "Turn sound on" button shows only while the video is muted.
@@ -211,36 +289,6 @@ export default function VideoModal({
     setMuted(false);
   };
 
-  // Phones: our own copy of the video, played by the phone's full-screen player.
-  if (useLocal && local) {
-    return (
-      <div
-        ref={rootRef}
-        role="dialog"
-        aria-modal="true"
-        aria-label={title}
-        className="fixed top-0 left-0 z-[100] flex h-dvh w-full items-center justify-center bg-black"
-      >
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute top-6 right-6 z-10 text-3xl text-white cursor-pointer"
-          aria-label="Close"
-        >
-          ✕
-        </button>
-        {/* No `playsInline` on purpose: that is what lets an iPhone open it full screen. */}
-        <video
-          ref={localRef}
-          className="h-full w-full bg-black object-contain"
-          poster={asset(local.poster)}
-          controls
-          preload="auto"
-        />
-      </div>
-    );
-  }
-
   return (
     <div
       ref={rootRef}
@@ -266,37 +314,43 @@ export default function VideoModal({
           instead of staying small until the user physically rotates their
           phone. Desktop and mobile landscape keep the normal centered box. */}
       <div className={`${fullWidth ? "w-[min(100vw,177.78dvh)] h-auto" : "w-full h-full max-w-[90vw] max-h-[90vh] md:max-w-[85vw] md:max-h-[85vh]"} relative aspect-video [@media(orientation:landscape)_and_(max-height:500px)]:w-[min(100vw,177.78dvh)] [@media(orientation:landscape)_and_(max-height:500px)]:h-auto [@media(orientation:landscape)_and_(max-height:500px)]:max-w-none [@media(orientation:landscape)_and_(max-height:500px)]:max-h-none max-md:portrait:fixed max-md:portrait:top-1/2 max-md:portrait:left-1/2 max-md:portrait:w-[min(100dvh,177.78dvw)] max-md:portrait:h-[min(56.25dvh,100dvw)] max-md:portrait:max-w-none max-md:portrait:max-h-none max-md:portrait:-translate-x-1/2 max-md:portrait:-translate-y-1/2 max-md:portrait:rotate-90`}>
-        <iframe
-          ref={iframeRef}
-          className="w-full h-full"
-          src={iframeSrc}
-          onLoad={(e) => startPlayback(e.currentTarget)}
-          title={title}
-          allow="autoplay; encrypted-media; fullscreen"
-          allowFullScreen
-          style={{ border: 0 }}
-        />
-        {isTouch && videoId && (
-          <a
-            href={`https://www.youtube.com/watch?v=${videoId}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Watch on YouTube"
-            className="absolute bottom-[4%] left-[64%] z-10 h-[12%] w-[27%]"
+        {useLocal && local ? (
+          <LocalPlayer local={local} title={title} />
+        ) : (
+          <>
+          <iframe
+            ref={iframeRef}
+            className="w-full h-full"
+            src={iframeSrc}
+            onLoad={(e) => startPlayback(e.currentTarget)}
+            title={title}
+            allow="autoplay; encrypted-media; fullscreen"
+            allowFullScreen
+            style={{ border: 0 }}
           />
-        )}
-        {muted && !ageRestricted && !hintExpired && (
-          <button
-            type="button"
-            onClick={enableSound}
-            className="absolute bottom-[5.25rem] right-[4.25rem] z-10 flex w-max items-center gap-2 whitespace-nowrap rounded-full bg-black/60 px-4 py-2 text-sm text-white cursor-pointer"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M11 5 6 9H2v6h4l5 4V5z" fill="currentColor" />
-              <path d="m23 9-6 6M17 9l6 6" />
-            </svg>
-            Turn sound on
-          </button>
+          {isTouch && videoId && (
+            <a
+              href={`https://www.youtube.com/watch?v=${videoId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Watch on YouTube"
+              className="absolute bottom-[4%] left-[64%] z-10 h-[12%] w-[27%]"
+            />
+          )}
+          {muted && !ageRestricted && !hintExpired && (
+            <button
+              type="button"
+              onClick={enableSound}
+              className="absolute bottom-[5.25rem] right-[4.25rem] z-10 flex w-max items-center gap-2 whitespace-nowrap rounded-full bg-black/60 px-4 py-2 text-sm text-white cursor-pointer"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <path d="M11 5 6 9H2v6h4l5 4V5z" fill="currentColor" />
+                <path d="m23 9-6 6M17 9l6 6" />
+              </svg>
+              Turn sound on
+            </button>
+          )}
+          </>
         )}
       </div>
     </div>
