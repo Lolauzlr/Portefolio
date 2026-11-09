@@ -150,3 +150,13 @@ body[data-reading="true"] {
     transition-duration: 120ms !important;
   }
 }
+
+/* Horizontal carousels scroll with the trackpad, touch or the keyboard: their
+   scrollbar is hidden. */
+@utility scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
