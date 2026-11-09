@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { denyYoutube, grantYoutube, useYoutubeConsent } from "@/lib/youtube-consent";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 
 // Mobile browsers block unmuted autoplay for cross-origin iframes even when
 // the iframe is created from a click, so an autoplay=1 embed without mute=1
@@ -54,10 +55,13 @@ export default function VideoModal({
 }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const consent = useYoutubeConsent();
-  const youtubeId = src.match(/\/embed\/([^?&/]+)/)?.[1];
   const [withSound] = useState(canAutoplayWithSound);
   // The "Activer le son" button shows only while the video is muted.
   const [muted, setMuted] = useState(!withSound);
+  // On touch devices a tap on the player's own YouTube logo makes the embed
+  // open a blank tab (about:blank) before redirecting. A real link laid over the
+  // logo goes straight to YouTube instead (desktop keeps the native behaviour).
+  const videoId = src.match(/\/embed\/([\w-]+)/)?.[1];
   const ageRestricted = AGE_RESTRICTED_VIDEO_IDS.some((id) => src.includes(id));
   // ...and leaves together with YouTube's own controls, which fade shortly after
   // playback starts. The player doesn't report control visibility, so the
@@ -68,6 +72,7 @@ export default function VideoModal({
   // Set once the player reports it is playing; stops the start retries below.
   const playingRef = useRef(false);
   const startTimers = useRef<number[]>([]);
+  const lastKick = useRef(0);
   const armHide = (ms: number) => {
     if (hideTimer.current) return;
     hideTimer.current = window.setTimeout(() => setHintExpired(true), ms);
@@ -98,6 +103,17 @@ export default function VideoModal({
         const data = JSON.parse(e.data);
         const m = data?.info?.muted;
         if (typeof m === "boolean") setMuted(m);
+        // The player talks as soon as it is ready: that is the moment a
+        // start command is sure to be heard (a slow phone can be ready well
+        // after the timed retries below), so ask for playback then too.
+        if (!playingRef.current && iframeRef.current && (data?.event === "onReady" || data?.event === "initialDelivery" || data?.event === "infoDelivery")) {
+          const now = Date.now();
+          if (now - lastKick.current > 250) {
+            lastKick.current = now;
+            if (!withSound) sendCommand(iframeRef.current, "mute");
+            sendCommand(iframeRef.current, "playVideo");
+          }
+        }
         if (data?.info?.playerState === 1) {
           playingRef.current = true;
           armHide(4000);
@@ -108,7 +124,7 @@ export default function VideoModal({
     };
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, []);
+  }, [withSound]);
 
   // The autoplay URL parameter alone is often ignored by mobile browsers, which
   // leaves YouTube's play button waiting for a second tap. Like the trailer
@@ -118,7 +134,7 @@ export default function VideoModal({
   const startPlayback = (iframe: HTMLIFrameElement) => {
     listen(iframe);
     startTimers.current.forEach(window.clearTimeout);
-    startTimers.current = [0, 400, 1000, 2000, 3500].map((ms) =>
+    startTimers.current = [0, 400, 1000, 2000, 3500, 5500, 8000].map((ms) =>
       window.setTimeout(() => {
         if (playingRef.current) return;
         // The handshake sent on load is also dropped if the player wasn't ready.
@@ -128,6 +144,9 @@ export default function VideoModal({
       }, ms)
     );
   };
+
+  const rootRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(true, rootRef);
 
   const enableSound = () => {
     const iframe = iframeRef.current;
@@ -139,10 +158,15 @@ export default function VideoModal({
 
   return (
     <div
+      ref={rootRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label={title}
       className="fixed top-0 left-0 w-full h-screen h-dvh z-[100] bg-black/95 flex items-center justify-center"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       <button
+        type="button"
         onClick={onClose}
         className="absolute top-6 right-6 md:top-10 md:right-10 [@media(orientation:landscape)_and_(max-height:500px)]:top-3 [@media(orientation:landscape)_and_(max-height:500px)]:left-4 [@media(orientation:landscape)_and_(max-height:500px)]:right-auto text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer z-10"
         aria-label="Fermer"
@@ -191,9 +215,9 @@ export default function VideoModal({
                 Refuse
               </button>
             </div>
-            {youtubeId && (
+            {videoId && (
               <a
-                href={`https://www.youtube.com/watch?v=${youtubeId}`}
+                href={`https://www.youtube.com/watch?v=${videoId}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm text-[#dadada] underline hover:text-[#7FECFB]"
@@ -203,8 +227,18 @@ export default function VideoModal({
             )}
           </div>
         )}
+        {consent === "granted" && !withSound && videoId && (
+          <a
+            href={`https://www.youtube.com/watch?v=${videoId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Regarder sur YouTube"
+            className="absolute bottom-[4%] left-[64%] z-10 h-[12%] w-[27%]"
+          />
+        )}
         {consent === "granted" && muted && !ageRestricted && !hintExpired && (
           <button
+            type="button"
             onClick={enableSound}
             className="absolute bottom-[5.25rem] right-[4.25rem] z-10 flex w-max items-center gap-2 whitespace-nowrap rounded-full bg-black/60 px-4 py-2 text-sm text-white cursor-pointer"
           >

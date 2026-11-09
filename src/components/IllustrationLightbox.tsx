@@ -1,5 +1,6 @@
 "use client";
 
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { asset } from "@/lib/asset";
 import { useLightboxBehavior } from "@/components/ScreenshotGallery";
@@ -72,6 +73,8 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
   useLightboxBehavior(isOpen, close, hasMultiple ? goPrev : undefined, hasMultiple ? goNext : undefined, () => zoom.isZoomed());
 
   const current = index !== null ? slides[index] : null;
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(current !== null && index !== null, dialogRef);
 
   // Once closed (and the page unpinned by useLightboxBehavior), scroll to the
   // illustration we were on, unless it is already mostly in view.
@@ -97,6 +100,7 @@ export function LightboxProvider({ slides, children }: { slides: LightboxSlide[]
       {children}
       {current && index !== null && (
         <div
+          ref={dialogRef}
           className="fixed inset-0 z-[100] bg-black/95 flex flex-col"
           role="dialog"
           aria-modal="true"

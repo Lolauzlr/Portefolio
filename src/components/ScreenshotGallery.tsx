@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { createWheelGesture } from "@/lib/wheel-gesture";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 
 // Shared by every full-screen image overlay on the site (this gallery and
 // ImageCarousel's own lightbox) so Escape-to-close, arrow-key navigation
@@ -109,17 +110,24 @@ export default function ScreenshotGallery({
   const go = (delta: number) => onIndexChange((index + delta + count) % count);
 
   useLightboxBehavior(true, onClose, count > 1 ? () => go(-1) : undefined, count > 1 ? () => go(1) : undefined);
+  const rootRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(count > 0, rootRef);
 
   if (count === 0) return null;
 
   return (
     <div
+      ref={rootRef}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Galerie d'images"
       className="fixed inset-0 z-[100] bg-black/95 flex flex-col"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <button
+        type="button"
         onClick={onClose}
         className="fixed top-4 right-4 md:top-6 md:right-6 z-20 text-white text-3xl hover:text-[#0fd1ea] transition-colors cursor-pointer"
         aria-label="Fermer"
@@ -133,7 +141,7 @@ export default function ScreenshotGallery({
         </span>
 
         {count > 1 && (
-          <button
+          <button type="button"
             onClick={() => go(-1)}
             className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
             aria-label="Précédent"
@@ -151,7 +159,7 @@ export default function ScreenshotGallery({
         />
 
         {count > 1 && (
-          <button
+          <button type="button"
             onClick={() => go(1)}
             className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
             aria-label="Suivant"
@@ -167,7 +175,7 @@ export default function ScreenshotGallery({
         <div className="bg-[#0d0d0d] px-3 md:px-4 py-3 overflow-x-auto">
           <div className="flex gap-2 justify-center min-w-min mx-auto">
             {images.map((src, i) => (
-              <button
+              <button type="button"
                 key={src}
                 onClick={() => onIndexChange(i)}
                 className={`relative flex-shrink-0 w-[120px] h-[68px] overflow-hidden cursor-pointer transition-all ${

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import VideoModal from "@/components/VideoModal";
+import { prefersReducedMotion } from "@/hooks/useReducedMotion";
 
 const HERO_VIDEO_ID = "yfCtiQ93gis";
 const HERO_VIDEO_TITLE = "HERO VIDEO";
@@ -41,7 +42,9 @@ export default function HomeHeroSection() {
   const [isMuted, setIsMuted] = useState(true);
   const [showPause, setShowPause] = useState(false);
   const playerRef = useRef<YT.Player | null>(null);
-  const userPausedRef = useRef(false);
+  // With prefers-reduced-motion the background video starts paused (poster
+  // frame + play button); the user can still start it with the play button.
+  const userPausedRef = useRef(prefersReducedMotion());
   const heroRef = useRef<HTMLElement>(null);
   const idleTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [playerScale, setPlayerScale] = useState(0.5);
@@ -116,6 +119,10 @@ export default function HomeHeroSection() {
     event.target.mute();
     setIsMuted(true);
     requestMaxQuality(event.target);
+    if (userPausedRef.current) {
+      setIsPlaying(false);
+      return;
+    }
     event.target.playVideo();
   }, []);
 
@@ -151,7 +158,7 @@ export default function HomeHeroSection() {
         width: player.w,
         height: iframeHeight,
         playerVars: {
-          autoplay: 1,
+          autoplay: userPausedRef.current ? 0 : 1,
           mute: 1,
           loop: 1,
           playlist: videoId,
@@ -184,7 +191,24 @@ export default function HomeHeroSection() {
       }
     }
 
+    // Mobile browsers often drop the first playVideo() (sent before the player
+    // is really ready) and then leave the video parked until a tap or scroll.
+    // Keep asking for muted playback until it actually runs.
+    const retry = window.setInterval(() => {
+      const p = playerRef.current;
+      if (!p || typeof p.getPlayerState !== "function" || userPausedRef.current) return;
+      if (p.getPlayerState?.() === YT.PlayerState.PLAYING) {
+        window.clearInterval(retry);
+        return;
+      }
+      p.mute();
+      p.playVideo();
+    }, 500);
+    const stopRetry = window.setTimeout(() => window.clearInterval(retry), 20000);
+
     return () => {
+      window.clearInterval(retry);
+      window.clearTimeout(stopRetry);
       playerRef.current?.destroy();
       playerRef.current = null;
       wrapper.replaceChildren();
@@ -201,8 +225,9 @@ export default function HomeHeroSection() {
         player.playVideo();
       }
     };
-    window.addEventListener("touchstart", kick, { once: true, passive: true });
-    return () => window.removeEventListener("touchstart", kick);
+    const events = ["touchstart", "touchmove", "scroll"] as const;
+    events.forEach((e) => window.addEventListener(e, kick, { once: true, passive: true }));
+    return () => events.forEach((e) => window.removeEventListener(e, kick));
   }, []);
 
   const togglePlay = () => {
@@ -244,15 +269,15 @@ export default function HomeHeroSection() {
         </div>
 
         {/* Click zone - opens the full-width video overlay */}
-        <button
-          className="absolute inset-0 w-full h-full z-10 cursor-pointer group"
+        <button type="button"
+          className="absolute inset-0 w-full h-full z-10 cursor-pointer group focus-visible:outline-offset-[-4px]"
           onClick={() => setVideoModal({ videoId: HERO_VIDEO_ID, title: HERO_VIDEO_TITLE, fullWidth: true })}
           aria-label="Ouvrir la vidéo"
         />
 
         {/* Pause button - visible on mouse move, hides after 5s idle */}
         {isPlaying && showPause && (
-          <button
+          <button type="button"
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[80px] h-[80px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-opacity duration-300 cursor-pointer"
             onClick={(e) => { e.stopPropagation(); togglePlay(); }}
             aria-label="Pause"
@@ -266,7 +291,7 @@ export default function HomeHeroSection() {
 
         {/* Play button - visible when paused */}
         {!isPlaying && (
-          <button
+          <button type="button"
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-[80px] h-[80px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
             onClick={(e) => { e.stopPropagation(); togglePlay(); }}
             aria-label="Play"
@@ -278,7 +303,7 @@ export default function HomeHeroSection() {
         )}
 
         {/* Sound toggle */}
-        <button
+        <button type="button"
           onClick={toggleMute}
           className="absolute right-4 md:right-[24px] bottom-8 md:bottom-[24px] z-20 w-[48px] h-[48px] rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors cursor-pointer"
           aria-label={isMuted ? "Activer le son" : "Couper le son"}
