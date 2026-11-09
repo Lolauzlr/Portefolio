@@ -70,7 +70,7 @@ export default function TrailerPage() {
   const [hoveredRecent, setHoveredRecent] = useState<string | null>(null);
   const [hoveredWatch, setHoveredWatch] = useState<string | null>(null);
   const consent = useYoutubeConsent();
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [showPause, setShowPause] = useState(false);
   const [cadreSize, setCadreSize] = useState({ w: 792, h: 201 });

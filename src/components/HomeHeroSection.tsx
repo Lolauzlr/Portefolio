@@ -24,7 +24,7 @@ const MOBILE_VIDEO = {
 
 export default function HomeHeroSection() {
   const [videoModal, setVideoModal] = useState<{ videoId: string; title: string; fullWidth?: boolean } | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [showPause, setShowPause] = useState(false);
   const videoRef = useRef<HeroVideoHandle>(null);

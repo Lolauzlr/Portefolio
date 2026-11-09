@@ -50,6 +50,8 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
   const videoRef = useRef<HTMLVideoElement>(null);
   const loadedRef = useRef(false);
   const userPausedRef = useRef(startPaused);
+  // True while a video is open full screen: the hero must stay paused.
+  const modalOpenRef = useRef(false);
 
   const load = useCallback(() => {
     const v = videoRef.current;
@@ -64,8 +66,10 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
     if (!v) return;
     load();
     userPausedRef.current = false;
-    v.play().catch(() => {});
-  }, [load]);
+    // A refused play() (iOS low-power mode...) shows the play button; the
+    // retries and the first touch below keep trying.
+    v.play().catch(() => onPlayingChange?.(false));
+  }, [load, onPlayingChange]);
 
   useImperativeHandle(
     ref,
@@ -82,16 +86,30 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
     [play],
   );
 
-  // Start once the page has loaded (unless paused by the visitor / data saving).
+  // Start right after mount (the poster has already painted), unless paused by
+  // the visitor's settings or data saving. Mobile browsers often drop the first
+  // play() (sent before the file is ready): keep asking, muted, until it runs.
   useEffect(() => {
     if (startPaused || shouldSkipDownload()) {
       onPlayingChange?.(false);
       return;
     }
-    const start = () => play();
-    if (document.readyState === "complete") start();
-    else window.addEventListener("load", start, { once: true });
-    return () => window.removeEventListener("load", start);
+    const startTimer = window.setTimeout(play, 100);
+    const retry = window.setInterval(() => {
+      const v = videoRef.current;
+      if (!v || userPausedRef.current || modalOpenRef.current) return;
+      if (!v.paused) {
+        window.clearInterval(retry);
+        return;
+      }
+      v.play().catch(() => {});
+    }, 700);
+    const stopRetry = window.setTimeout(() => window.clearInterval(retry), 20000);
+    return () => {
+      window.clearTimeout(startTimer);
+      window.clearInterval(retry);
+      window.clearTimeout(stopRetry);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -100,6 +118,7 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
   useEffect(() => {
     let wasPlaying = false;
     const onOpen = () => {
+      modalOpenRef.current = true;
       const v = videoRef.current;
       if (v && !v.paused) {
         wasPlaying = true;
@@ -107,6 +126,7 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
       }
     };
     const onClose = () => {
+      modalOpenRef.current = false;
       const v = videoRef.current;
       if (v && wasPlaying && !userPausedRef.current) v.play().catch(() => {});
       wasPlaying = false;
@@ -123,7 +143,7 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
   useEffect(() => {
     const kick = () => {
       const v = videoRef.current;
-      if (v && v.paused && !userPausedRef.current && loadedRef.current) v.play().catch(() => {});
+      if (v && v.paused && !userPausedRef.current && !modalOpenRef.current && loadedRef.current) v.play().catch(() => {});
     };
     const events = ["touchstart", "touchmove", "scroll"] as const;
     events.forEach((e) => window.addEventListener(e, kick, { once: true, passive: true }));
@@ -136,11 +156,16 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
       className={`absolute inset-0 h-full w-full ${FIT_CLASS[fit]}`}
       poster={asset(poster)}
       muted
+      autoPlay
       loop
       playsInline
       preload="none"
       aria-hidden
       onPlay={() => onPlayingChange?.(true)}
+      onCanPlay={(e) => {
+        const v = e.currentTarget;
+        if (v.paused && !userPausedRef.current && !modalOpenRef.current) v.play().catch(() => {});
+      }}
       onPause={() => onPlayingChange?.(false)}
     />
   );
