@@ -80,6 +80,9 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
   // With an intro, a player stays invisible until it really plays, so the
   // browser's black frame never shows between the poster and the first image.
   const [introShown, setIntroShown] = useState(false);
+  // The full video becomes visible (under the frozen intro) a moment before the
+  // intro goes away, so the hand-over never exposes an empty frame.
+  const [mainShown, setMainShown] = useState(false);
   const swappingRef = useRef(false);
 
   // The player the visitor currently sees (and controls).
@@ -147,11 +150,23 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
       swappingRef.current = false;
       if (!userPausedRef.current && !modalOpenRef.current) intro.play().catch(() => {});
     };
+    // The intro stays on top, frozen, until the full video has really put an
+    // image on screen: some browsers (Safari) paint it a moment after play()
+    // resolves, and the poster underneath would flash in between.
+    const revealThenFinish = () => {
+      if (done) return;
+      window.clearTimeout(timer);
+      setMainShown(true);
+      const t = window.setTimeout(finish, 400);
+      const next = () => { window.clearTimeout(t); window.requestAnimationFrame(() => window.setTimeout(finish, 30)); };
+      if ("requestVideoFrameCallback" in m) m.requestVideoFrameCallback(next);
+      else { window.clearTimeout(t); window.setTimeout(finish, 150); }
+    };
     const onSeeked = () => {
       if (done) return;
       // Paused by the visitor: show the full video's frame without playing.
-      if (userPausedRef.current || modalOpenRef.current) finish();
-      else m.play().then(finish, abort);
+      if (userPausedRef.current || modalOpenRef.current) revealThenFinish();
+      else m.play().then(revealThenFinish, abort);
     };
     const timer = window.setTimeout(abort, 1500);
 
@@ -281,7 +296,7 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
     <>
     <video
       ref={videoRef}
-      className={`absolute inset-0 h-full w-full ${FIT_CLASS[fit]} ${hasIntro && introOn ? "opacity-0" : ""}`}
+      className={`absolute inset-0 h-full w-full ${FIT_CLASS[fit]} ${hasIntro && !mainShown ? "opacity-0" : ""}`}
       poster={asset(poster)}
       muted
       autoPlay={!hasIntro}
