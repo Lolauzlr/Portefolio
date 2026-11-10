@@ -96,7 +96,9 @@ export default function Navbar() {
 
       {/* Mobile overlay */}
       {menuOpen && (
-        <nav id="mobile-menu" aria-label="Main navigation" className="fixed inset-0 z-[65] bg-[#15161b]/95 backdrop-blur-md flex flex-col items-center justify-center gap-8 min-[1560px]:hidden">
+        // Phones: links and button are flush left, on the logo's left edge (left-6 above); from md up they stay centered.
+        <nav id="mobile-menu" aria-label="Main navigation"
+          className="fixed inset-0 z-[65] bg-[#15161b]/95 backdrop-blur-md flex flex-col items-start pl-6 md:items-center md:pl-0 justify-center gap-8 min-[1560px]:hidden">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
