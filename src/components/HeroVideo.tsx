@@ -31,6 +31,9 @@ type Props = {
   // poster on a first visit.
   introAv1?: string;
   introH264?: string;
+  // Where in the full video the intro clip starts (seconds): the full video
+  // takes over at the matching moment.
+  introOffset?: number;
   onPlayingChange?: (playing: boolean) => void;
 };
 
@@ -57,7 +60,7 @@ function shouldSkipDownload(): boolean {
 }
 
 const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
-  { av1, h264, poster, fit = "contain", startPaused = false, fallback, introAv1, introH264, onPlayingChange },
+  { av1, h264, poster, fit = "contain", startPaused = false, fallback, introAv1, introH264, introOffset = 0, onPlayingChange },
   ref,
 ) {
   const hasIntro = !!(introAv1 && introH264);
@@ -74,6 +77,9 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
   // The intro clip is the visible player until the full video has buffered.
   const [introOn, setIntroOn] = useState(hasIntro);
   const introOnRef = useRef(hasIntro);
+  // With an intro, a player stays invisible until it really plays, so the
+  // browser's black frame never shows between the poster and the first image.
+  const [introShown, setIntroShown] = useState(false);
   const swappingRef = useRef(false);
 
   // The player the visitor currently sees (and controls).
@@ -120,7 +126,11 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
     if (m.buffered.end(m.buffered.length - 1) < need) return;
 
     swappingRef.current = true;
+    let done = false;
     const finish = () => {
+      if (done) return;
+      done = true;
+      window.clearTimeout(timer);
       introOnRef.current = false;
       setIntroOn(false);
       intro.pause();
@@ -128,20 +138,35 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
       intro.load();
       swappingRef.current = false;
     };
-    try {
-      m.currentTime = intro.currentTime;
-    } catch {
-      /* not seekable yet: starts from 0 */
-    }
-    m.muted = mutedRef.current;
-    if (userPausedRef.current || modalOpenRef.current) {
+    // Could not hand over (seek refused, play() rejected): the intro goes on.
+    const abort = () => {
+      if (done) return;
+      done = true;
+      window.clearTimeout(timer);
+      m.removeEventListener("seeked", onSeeked);
+      swappingRef.current = false;
+      if (!userPausedRef.current && !modalOpenRef.current) intro.play().catch(() => {});
+    };
+    const onSeeked = () => {
+      if (done) return;
       // Paused by the visitor: show the full video's frame without playing.
-      m.addEventListener("seeked", finish, { once: true });
-      window.setTimeout(() => { if (swappingRef.current) finish(); }, 500);
-      return;
+      if (userPausedRef.current || modalOpenRef.current) finish();
+      else m.play().then(finish, abort);
+    };
+    const timer = window.setTimeout(abort, 1500);
+
+    // The intro freezes on its current frame while the full video moves to the
+    // same moment and starts from there: the two never drift apart, so no image
+    // is shown twice or jumps back at the hand-over.
+    intro.pause();
+    m.muted = mutedRef.current;
+    m.addEventListener("seeked", onSeeked, { once: true });
+    try {
+      m.currentTime = intro.currentTime + introOffset;
+    } catch {
+      abort();
     }
-    m.play().then(finish, () => { swappingRef.current = false; });
-  }, []);
+  }, [introOffset]);
 
   // The animated image stands in for a video the browser refuses to autoplay: the
   // hero still counts as playing until the first tap starts the real one.
@@ -256,7 +281,7 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
     <>
     <video
       ref={videoRef}
-      className={`absolute inset-0 h-full w-full ${FIT_CLASS[fit]}`}
+      className={`absolute inset-0 h-full w-full ${FIT_CLASS[fit]} ${hasIntro && introOn ? "opacity-0" : ""}`}
       poster={asset(poster)}
       muted
       autoPlay={!hasIntro}
@@ -283,7 +308,8 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
     {hasIntro && introOn && (
       <video
         ref={introRef}
-        className={`absolute inset-0 h-full w-full ${FIT_CLASS[fit]}`}
+        className={`absolute inset-0 h-full w-full ${FIT_CLASS[fit]} ${introShown ? "" : "opacity-0"}`}
+        onPlaying={() => setIntroShown(true)}
         poster={asset(poster)}
         muted
         autoPlay
