@@ -14,12 +14,17 @@ const HERO_VIDEO_TITLE = "HERO VIDEO";
 const DESKTOP_VIDEO = {
   av1: "/videos/hero-home-desktop-av1.mp4",
   h264: "/videos/hero-home-desktop.mp4",
+  // Short clip played while the full video downloads (see HeroVideo).
+  introAv1: "/videos/hero-home-desktop-intro-av1.mp4",
+  introH264: "/videos/hero-home-desktop-intro.mp4",
   poster: "/videos/hero-home-desktop-poster.jpg",
 };
 // Mobile: the hero is a 9:16 frame, so it plays the vertical edit.
 const MOBILE_VIDEO = {
   av1: "/videos/hero-home-mobile-av1.mp4",
   h264: "/videos/hero-home-mobile.mp4",
+  introAv1: "/videos/hero-home-mobile-intro-av1.mp4",
+  introH264: "/videos/hero-home-mobile-intro.mp4",
   poster: "/videos/hero-home-mobile-poster.jpg",
   fallback: "/videos/hero-home-mobile-loop.webp",
 };
@@ -103,6 +108,8 @@ export default function HomeHeroSection() {
               ref={videoRef}
               av1={source.av1}
               h264={source.h264}
+              introAv1={source.introAv1}
+              introH264={source.introH264}
               poster={source.poster}
               fit={isMobile ? "cover-top" : "contain-bottom"}
               startPaused={startPaused}
