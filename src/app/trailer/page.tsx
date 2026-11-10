@@ -20,6 +20,28 @@ import { useFocusTrap } from "@/hooks/useFocusTrap";
 import YoutubeOverlay, { YoutubeLogoLink } from "@/components/YoutubeOverlay";
 import { videoThumb } from "@/lib/thumbnails";
 
+// Hero video: the full file, a short clip that plays while it downloads (the
+// full video takes over from the same moment, see HeroVideo), and a poster that
+// is the clip's first image. introOffset: where the clip starts in the full video.
+const TRAILER_HERO = {
+  desktop: {
+    av1: "/videos/hero-trailer-desktop-av1.mp4",
+    h264: "/videos/hero-trailer-desktop.mp4",
+    introAv1: "/videos/hero-trailer-desktop-intro-av1.mp4",
+    introH264: "/videos/hero-trailer-desktop-intro.mp4",
+    introOffset: 0.6, // skips the fade in from black
+    poster: "/videos/hero-trailer-desktop-poster.jpg",
+  },
+  mobile: {
+    av1: "/videos/hero-trailer-mobile-av1.mp4",
+    h264: "/videos/hero-trailer-mobile.mp4",
+    introAv1: "/videos/hero-trailer-mobile-intro-av1.mp4",
+    introH264: "/videos/hero-trailer-mobile-intro.mp4",
+    introOffset: 0,
+    poster: "/videos/hero-trailer-mobile-poster.jpg",
+  },
+} as const;
+
 // Event logo shown at the bottom of a screenshots panel (and on the card).
 const logoOf = (card: object) => {
   const { logo, logoAlt } = card as { logo?: string; logoAlt?: string };
@@ -89,6 +111,7 @@ export default function TrailerPage() {
     () => window.matchMedia("(max-width: 767px) and (orientation: portrait)").matches,
     () => false
   );
+  const heroSource = isMobile ? TRAILER_HERO.mobile : TRAILER_HERO.desktop;
   const videoRef = useRef<HeroVideoHandle>(null);
   // With prefers-reduced-motion the hero video starts paused; the play button starts it.
   const [startPaused] = useState(() => prefersReducedMotion());
@@ -514,14 +537,31 @@ export default function TrailerPage() {
           ref={containerRef}
           className="absolute inset-0 overflow-hidden bg-black pointer-events-none"
         >
+          {/* Poster in the page's own HTML: it paints before any JavaScript runs
+              and stays under the video, so nothing flashes between the poster
+              and the first video frame (the video starts on this very frame). */}
+          <picture>
+            <source media="(max-width: 767px) and (orientation: portrait)" srcSet={asset(TRAILER_HERO.mobile.poster)} />
+            <img
+              src={asset(TRAILER_HERO.desktop.poster)}
+              alt=""
+              aria-hidden
+              fetchPriority="high"
+              decoding="async"
+              className="absolute inset-0 h-full w-full object-contain max-md:portrait:object-cover max-md:portrait:object-top"
+            />
+          </picture>
           <HeroVideo
             // A new player per layout, so the right file is loaded when a
             // phone is turned.
             key={isMobile ? "mobile" : "desktop"}
             ref={videoRef}
-            av1={isMobile ? "/videos/hero-trailer-mobile-av1.mp4" : "/videos/hero-trailer-desktop-av1.mp4"}
-            h264={isMobile ? "/videos/hero-trailer-mobile.mp4" : "/videos/hero-trailer-desktop.mp4"}
-            poster={isMobile ? "/videos/hero-trailer-mobile-poster.jpg" : "/videos/hero-trailer-desktop-poster.jpg"}
+            av1={heroSource.av1}
+            h264={heroSource.h264}
+            introAv1={heroSource.introAv1}
+            introH264={heroSource.introH264}
+            introOffset={heroSource.introOffset}
+            poster={heroSource.poster}
             fit={isMobile ? "cover-top" : "contain"}
             startPaused={startPaused}
             fallback={isMobile ? "/videos/hero-trailer-mobile-loop.webp" : undefined}
