@@ -4,6 +4,8 @@ import Link from "next/link";
 import { asset } from "@/lib/asset";
 import { illustrationAlt, illustrationCaption } from "@/data/illustrations";
 import { LightboxImg, LightboxProvider, type LightboxSlide } from "@/components/IllustrationLightbox";
+import JsonLd from "@/components/JsonLd";
+import { homePageSchema } from "@/lib/schema";
 import HomeHeroSection from "@/components/HomeHeroSection";
 import HomeMoviesSection from "@/components/HomeMoviesSection";
 import HomeTrailerSection from "@/components/HomeTrailerSection";
@@ -68,6 +70,7 @@ function ToutVoirLink({ href }: { href: string }) {
 export default function Home() {
   return (
     <div className="flex flex-col gap-6 md:gap-[60px] bg-[#15161b] text-white">
+      <JsonLd data={homePageSchema} />
       {/* Hero */}
       <h1 className="sr-only">Marie Chalandre — Cinematic Artist, Concept Artist &amp; Storyboarder</h1>
       <HomeHeroSection />
@@ -174,6 +177,8 @@ export default function Home() {
             <img
               src={asset("/images/home-page/profil2.webp")}
               alt="Marie Chalandre"
+              width={2009}
+              height={2305}
               className="w-[350px] md:w-[45vw] min-[85rem]:w-[599px] h-auto object-cover"
             />
           </div>
