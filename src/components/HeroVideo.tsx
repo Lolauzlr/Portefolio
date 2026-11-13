@@ -49,6 +49,13 @@ const FIT_CLASS = {
   "cover-top": "object-cover object-top",
 } as const;
 
+// The players are 1px smaller on every side than the poster image placed under
+// them by the pages. Browsers measure the "largest contentful paint" as the
+// biggest element painted: with the same size, or even a sub-pixel more, the
+// video's first frame (seconds later) would replace the poster as the page's
+// main paint and the load would look slower than it is.
+const PLAYER_BOX = "absolute inset-px h-[calc(100%-2px)] w-[calc(100%-2px)]";
+
 export const AV1_TYPE = 'video/mp4; codecs="av01.0.08M.08"';
 
 // The hero video never competes with the page itself: the poster paints
@@ -296,7 +303,7 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
     <>
     <video
       ref={videoRef}
-      className={`absolute inset-0 h-full w-full ${FIT_CLASS[fit]} ${hasIntro && !mainShown ? "opacity-0" : ""}`}
+      className={`${PLAYER_BOX} ${FIT_CLASS[fit]} ${hasIntro && !mainShown ? "opacity-0" : ""}`}
       poster={asset(poster)}
       muted
       autoPlay={!hasIntro}
@@ -323,7 +330,7 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
     {hasIntro && introOn && (
       <video
         ref={introRef}
-        className={`absolute inset-0 h-full w-full ${FIT_CLASS[fit]} ${introShown ? "" : "opacity-0"}`}
+        className={`${PLAYER_BOX} ${FIT_CLASS[fit]} ${introShown ? "" : "opacity-0"}`}
         onPlaying={() => setIntroShown(true)}
         poster={asset(poster)}
         muted
@@ -350,7 +357,7 @@ const HeroVideo = forwardRef<HeroVideoHandle, Props>(function HeroVideo(
         src={asset(fallback)}
         alt=""
         aria-hidden
-        className={`absolute inset-0 h-full w-full ${FIT_CLASS[fit]}`}
+        className={`${PLAYER_BOX} ${FIT_CLASS[fit]}`}
       />
     )}
     </>
