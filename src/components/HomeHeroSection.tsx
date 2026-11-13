@@ -6,7 +6,6 @@ import VideoModal, { type LocalVideo } from "@/components/VideoModal";
 import HeroVideo, { type HeroVideoHandle } from "@/components/HeroVideo";
 import { prefersReducedMotion } from "@/hooks/useReducedMotion";
 import { YoutubeLogoLink } from "@/components/YoutubeOverlay";
-import { asset } from "@/lib/asset";
 
 // The full showreel opens on click (YouTube); the hero itself plays the
 // self-hosted copies below.
@@ -15,19 +14,12 @@ const HERO_VIDEO_TITLE = "HERO VIDEO";
 const DESKTOP_VIDEO = {
   av1: "/videos/hero-home-desktop-av1.mp4",
   h264: "/videos/hero-home-desktop.mp4",
-  // Short clip played while the full video downloads (see HeroVideo).
-  introAv1: "/videos/hero-home-desktop-intro-av1.mp4",
-  introH264: "/videos/hero-home-desktop-intro.mp4",
-  introOffset: 0.6,
   poster: "/videos/hero-home-desktop-poster.jpg",
 };
 // Mobile: the hero is a 9:16 frame, so it plays the vertical edit.
 const MOBILE_VIDEO = {
   av1: "/videos/hero-home-mobile-av1.mp4",
   h264: "/videos/hero-home-mobile.mp4",
-  introAv1: "/videos/hero-home-mobile-intro-av1.mp4",
-  introH264: "/videos/hero-home-mobile-intro.mp4",
-  introOffset: 0.6,
   poster: "/videos/hero-home-mobile-poster.jpg",
   fallback: "/videos/hero-home-mobile-loop.webp",
 };
@@ -103,21 +95,6 @@ export default function HomeHeroSection() {
       <section ref={heroRef} className="relative w-full mx-auto max-w-[calc(100dvh*9/14.4)] aspect-[9/14.4] md:max-w-[calc(100dvh*1.89)] md:aspect-[1920/1016] [@media(orientation:landscape)_and_(max-height:500px)]:aspect-[1920/1016] [@media(orientation:landscape)_and_(max-height:500px)]:!max-w-[calc(100dvh*1.89)] bg-[#060000] overflow-hidden">
         {/* Self-hosted background video (the poster shows until it starts) */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {/* Poster in the page's own HTML: it paints before any JavaScript runs
-              (no black hero while the page loads) and stays under the video, so
-              nothing flashes between the poster and the first video frame. The
-              video starts on this very frame. */}
-          <picture>
-            <source media="(max-width: 767px) and (orientation: portrait)" srcSet={asset(MOBILE_VIDEO.poster)} />
-            <img
-              src={asset(DESKTOP_VIDEO.poster)}
-              alt=""
-              aria-hidden
-              fetchPriority="high"
-              decoding="async"
-              className="absolute inset-0 h-full w-full object-contain object-bottom max-md:portrait:object-cover max-md:portrait:object-top"
-            />
-          </picture>
           {isMobile !== null && (
             <HeroVideo
               // A new player per layout, so the right file is loaded when a
@@ -126,9 +103,6 @@ export default function HomeHeroSection() {
               ref={videoRef}
               av1={source.av1}
               h264={source.h264}
-              introAv1={source.introAv1}
-              introH264={source.introH264}
-              introOffset={source.introOffset}
               poster={source.poster}
               fit={isMobile ? "cover-top" : "contain-bottom"}
               startPaused={startPaused}
